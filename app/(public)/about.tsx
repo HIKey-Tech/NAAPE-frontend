@@ -19,23 +19,23 @@ export default function AboutSection() {
                 }}
             ></div>
 
-            <div className="relative z-10 flex flex-col md:flex-row justify-center items-center md:items-stretch gap-10 w-full max-w-6xl px-4 md:px-8 py-10">
+            <div className="relative z-10 flex flex-col md:flex-row justify-center items-center  gap-10 w-full max-w-full p-6">
                 {/* Left: Card-like video preview */}
-                <div className="flex-shrink-0 flex-grow-0 w-full md:w-[430px] max-w-full">
-                    <div className="relative rounded-[18px] overflow-hidden shadow-2xl bg-[#232835] border border-[#E6EAF1] min-h-[300px]">
+                <div className="flex-shrink-0 flex-grow-0 w-full md:w-fit max-w-fit">
+                    <div className="relative rounded-[18px] overflow-hidden shadow-2xl bg-[#232835] border border-[#E6EAF1] min-h-full">
                         {/* "Browser" like header bar */}
-                        <div className="flex items-center gap-2 px-4 h-[34px] bg-black/20 absolute top-0 left-0 w-full z-10">
+                        {/* <div className="flex items-center gap-2 px-4 h-[34px] bg-black/20 absolute top-0 left-0 w-full z-10">
                             <span className="w-2 h-2 rounded-full bg-[#fff] opacity-60"></span>
                             <span className="w-2 h-2 rounded-full bg-[#fff] opacity-40"></span>
                             <span className="w-2 h-2 rounded-full bg-[#fff] opacity-20"></span>
-                        </div>
+                        </div> */}
                         <Image
                             src="/images/loginpic.jpg"
                             alt="Nigerian pilots in cockpit"
                             width={450}
                             height={450}
                             priority
-                            className="object-cover w-full h-[260px] md:h-[282px] mt-[34px] select-none"
+                            className="object-cover w-full h-full mt-[34px] select-none"
                             style={{
                                 objectPosition: "center",
                             }}
@@ -68,7 +68,7 @@ export default function AboutSection() {
                 </div>
 
                 {/* Right: Content */}
-                <div className="flex-1 flex flex-col justify-center gap-5 md:pl-6 max-w-2xl">
+                <div className="flex-1 flex flex-col justify-center gap-5 w-full">
                     <span className="text-[#CA9414] font-bold text-xs md:text-sm tracking-widest uppercase mb-1 md:mb-0">
                         ABOUT NAAPE
                     </span>
@@ -76,11 +76,11 @@ export default function AboutSection() {
                         Advancing Aviation Excellence<br className="hidden md:block" />
                         and Safety in Nigeria
                     </h2>
-                    <p className="text-[#3B3B46] text-[0.99rem] md:text-base font-normal leading-relaxed mb-2 md:mb-4 max-w-xl">
+                    <p className="text-[#3B3B46] text-[0.99rem] md:text-base font-normal leading-relaxed mb-2 md:mb-4 w-full">
                         Since 1985, the National Association of Aircraft Pilots and Engineers (NAAPE) has been the united voice of Nigeria’s pilots and engineers – our mission is to advance the aviation safety, professionalism, technical expertise in the Nigerian aviation industry through advocacy and the rights of those who keep the skies secure.
                     </p>
                     <NaapButton
-                        className="bg-[#2852B4] hover:bg-[#2347A0] w-fit text-white font-semibold px-7 py-3 text-base shadow rounded transition flex items-center gap-2"
+                        className="bg-[#2852B4] hover:bg-[#2347A0] w-fit text-white font-semibold px-7 py-3 text-base shadow  transition flex items-center gap-2"
                         icon={<FaArrowRight size={16} />}
                         iconPosition="right"
                     >

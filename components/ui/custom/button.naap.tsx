@@ -24,7 +24,7 @@ export const NaapButton = React.forwardRef<HTMLButtonElement, NaapButtonProps>(
     <Button
       ref={ref}
       // Ensure buttons are NOT rounded
-      className={cn("gap-2 rounded-none", className)}
+      className={cn("gap-2 rounded", className)}
       disabled={disabled || loading}
       {...props}
     >
