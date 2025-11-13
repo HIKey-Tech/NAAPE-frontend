@@ -4,8 +4,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/context/provider/provider";
 import { Toaster } from "@/components/ui/sonner";
-import TopNavbar from "@/components/ui/landing/navbar";
-import Footer from "@/components/ui/landing/footer";
+import TopNavbar from "@/components/ui/landing/home/navbar";
+import Footer from "@/components/ui/landing/home/footer";
 
 
 
