@@ -17,8 +17,7 @@ import Footer from "../../components/ui/landing/footer";
 export default function LandingPage() {
     return (
         <main className="flex flex-col min-h-screen bg-[#F5F7FA]">
-            {/* Top Navbar */}
-            <TopNavbar />
+          
             {/* Hero Section */}
             <Hero />
 
@@ -51,8 +50,7 @@ export default function LandingPage() {
             <JoinCommunitySection />
 
 
-            {/* Footer */}
-            <Footer />
+           
 
         </main>
     );

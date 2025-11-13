@@ -1,6 +1,6 @@
 "use client";
 
-import  { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -47,20 +47,7 @@ export default function TopNavbar() {
             setActive(window.location.pathname);
     }, []);
 
-    const navLinks = [
-        { href: "/about", label: "About" },
-        { href: "/membership", label: "Membership" },
-        { type: "dropdown", label: "News", menu: [
-            { href: "/news/industry", label: "Industry News" },
-            { href: "/news/naape", label: "NAAPE News" },
-        ]},
-        { type: "dropdown", label: "Publications", menu: [
-            { href: "/publications/magazines", label: "Magazines" },
-            { href: "/publications/newsletters", label: "Newsletters" },
-        ]},
-        { href: "/gallery", label: "Gallery" },
-        { href: "/contact", label: "Contact" },
-    ];
+
 
     return (
         <nav className="w-full sticky top-0 left-0 z-30 bg-white border-b border-[#E6EAF1] shadow-sm px-6 py-2 flex items-center justify-between relative">
@@ -101,9 +88,8 @@ export default function TopNavbar() {
                     <DropdownMenuTrigger asChild>
                         <Button
                             variant="ghost"
-                            className={`px-2 font-medium flex items-center gap-1 hover:text-[#3970D8] ${
-                                active.startsWith("/news") ? "text-[#2473ea] font-semibold" : ""
-                            }`}
+                            className={`px-2 font-medium flex items-center gap-1 hover:text-[#3970D8] ${active.startsWith("/news") ? "text-[#2473ea] font-semibold" : ""
+                                }`}
                             tabIndex={0}
                         >
                             News
@@ -125,9 +111,8 @@ export default function TopNavbar() {
                     <DropdownMenuTrigger asChild>
                         <Button
                             variant="ghost"
-                            className={`px-2 font-medium flex items-center gap-1 hover:text-[#3970D8] ${
-                                active.startsWith("/publications") ? "text-[#2473ea] font-semibold" : ""
-                            }`}
+                            className={`px-2 font-medium flex items-center gap-1 hover:text-[#3970D8] ${active.startsWith("/publications") ? "text-[#2473ea] font-semibold" : ""
+                                }`}
                             tabIndex={0}
                         >
                             Publications
@@ -222,7 +207,7 @@ export default function TopNavbar() {
                         type="button"
                     >
                         News
-                        <span className="ml-1">{serveOpen ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}</span>
+                        <span className="ml-1">{serveOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}</span>
                     </button>
                     {serveOpen && (
                         <div
@@ -257,7 +242,7 @@ export default function TopNavbar() {
                         type="button"
                     >
                         Publications
-                        <span className="ml-1">{publicationsOpen ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}</span>
+                        <span className="ml-1">{publicationsOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}</span>
                     </button>
                     {publicationsOpen && (
                         <div
