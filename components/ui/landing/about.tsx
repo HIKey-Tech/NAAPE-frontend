@@ -1,4 +1,3 @@
-"use client";
 
 import Image from "next/image";
 import { FaArrowRight } from "react-icons/fa";
@@ -6,7 +5,7 @@ import { NaapButton } from "@/components/ui/custom/button.naap";
 
 export default function AboutSection() {
     return (
-        <section className="relative w-full min-h-[38rem] flex items-center justify-center bg-[#F5F7FA] overflow-hidden md:px-0 md:py-0">
+        <section className="relative w-full min-h-screen flex flex-col md:flex-row items-center justify-center bg-gradient-to-br from-[#F5F7FA] to-[#e5ecfa] overflow-hidden px-4 py-6 md:px-0">
             {/* Soft full-bg overlay */}
             <div
                 className="pointer-events-none absolute inset-0 z-0"
@@ -23,12 +22,7 @@ export default function AboutSection() {
                 {/* Left: Card-like video preview */}
                 <div className="flex-shrink-0 flex-grow-0 w-full md:w-fit max-w-fit">
                     <div className="relative rounded-[18px] overflow-hidden shadow-2xl bg-[#232835] border border-[#E6EAF1] min-h-full">
-                        {/* "Browser" like header bar */}
-                        {/* <div className="flex items-center gap-2 px-4 h-[34px] bg-black/20 absolute top-0 left-0 w-full z-10">
-                            <span className="w-2 h-2 rounded-full bg-[#fff] opacity-60"></span>
-                            <span className="w-2 h-2 rounded-full bg-[#fff] opacity-40"></span>
-                            <span className="w-2 h-2 rounded-full bg-[#fff] opacity-20"></span>
-                        </div> */}
+                       
                         <Image
                             src="/images/loginpic.jpg"
                             alt="Nigerian pilots in cockpit"
@@ -68,7 +62,7 @@ export default function AboutSection() {
                 </div>
 
                 {/* Right: Content */}
-                <div className="flex-1 flex flex-col justify-center gap-5 w-full">
+                <div className=" flex flex-col justify-center gap-5 w-full">
                     <span className="text-[#CA9414] font-bold text-xs md:text-sm tracking-widest uppercase mb-1 md:mb-0">
                         ABOUT NAAPE
                     </span>

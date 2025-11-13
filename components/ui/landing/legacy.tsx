@@ -34,7 +34,7 @@ export default function OurLegacy() {
 
     return (
         <section className="w-full bg-white  md:px-0 flex flex-col items-center">
-            <div className="w-full p-6 max-w-full mx-auto flex flex-col items-center text-center gap-6">
+            <div className="w-full px-6 py-10 max-w-full mx-auto flex flex-col items-center text-center gap-6">
                 <span className="text-[#CA9414] font-semibold text-sm tracking-widest mb-2">
                     OUR LEGACY
                 </span>

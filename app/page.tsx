@@ -1,5 +1,4 @@
-import Image from "next/image";
-import LandingPage from "./(public)";
+import LandingPage from "./(public)/landingpage";
 
 export default function Home() {
   return (

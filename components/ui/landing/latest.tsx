@@ -1,4 +1,3 @@
-"use client";
 
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { NewsCard } from "@/components/ui/custom/news.card";

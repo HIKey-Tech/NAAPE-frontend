@@ -15,9 +15,9 @@ export function LegacyStatCard({
     className = "",
 }: LegacyStatCardProps) {
     return (
-        <Card className={`w-full max-w-md border-[#D3D7DF] shadow-none ${className}`}>
-            <CardContent className="px-8 py-7 flex items-center gap-7">
-                <div className="w-12 h-12 flex items-center p-2 justify-center bg-[#F0F2F6]">
+        <Card className={`w-full max-w-md h-auto border-[#D3D7DF] shadow-none ${className}`}>
+            <CardContent className="px-8 flex items-center gap-7">
+                <div className="w-12 h-12 flex rounded items-center p-2 justify-center bg-[#F0F2F6]">
                     {icon ? (
                         icon
                     ) : (

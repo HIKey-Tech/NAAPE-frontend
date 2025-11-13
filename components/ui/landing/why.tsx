@@ -1,4 +1,4 @@
-"use client";
+
 
 import Image from "next/image";
 import { FaRegCalendarCheck, FaChalkboardTeacher } from "react-icons/fa";
@@ -7,8 +7,8 @@ import { NaapButton } from "@/components/ui/custom/button.naap";
 
 export default function WhyJoinSection() {
     return (
-        <section className="relative w-full max-w-full py-10 px-4 md:px-0 flex flex-col md:flex-row items-center justify-center min-h-[34rem] bg-white">
-            <div className="flex-1 flex flex-col justify-center items-start gap-7 max-w-xl w-full px-1 md:px-10">
+        <section className="relative w-full max-w-full py-12 h-full px-6 md:px-6 flex flex-col md:flex-row items-center justify-center min-h-[34rem] gap-8 bg-white">
+            <div className="flex-1 flex flex-col justify-center items-start gap-6 max-w-xl h-fit w-full">
                 <span className="inline-block bg-[#FFF6E0] text-[#CA9414] font-bold text-xs md:text-sm tracking-widest uppercase rounded-full px-4 py-1 mb-1 md:mb-0 shadow-sm">
                     WHY JOIN NAAPE
                 </span>
@@ -16,7 +16,7 @@ export default function WhyJoinSection() {
                     Championing Excellence And Integrity Across Aviation’s Four Pillars.
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full my-2">
-                    
+
                     {[
                         {
                             icon: <FaRegCalendarCheck />,
@@ -51,7 +51,7 @@ export default function WhyJoinSection() {
                     Become A Member
                 </NaapButton>
             </div>
-            <div className="flex-1 w-full flex items-center justify-center mt-10 md:mt-0 md:pr-10">
+            <div className="flex-1 w-full h-full flex items-center justify-center mt-10 md:mt-0 ">
                 <div className="rounded-xl overflow-hidden shadow-2xl border border-[#E6EAF1] bg-white w-full max-w-full relative">
                     <Image
                         src="/images/plane.jpg"
