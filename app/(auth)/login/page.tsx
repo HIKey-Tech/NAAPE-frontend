@@ -21,7 +21,6 @@ import api from "@/lib/axios";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/public/logo.png";
-import loginpic from "@/public/images/loginpic.jpg"
 import google from "@/public/images/google.png"
 import { toast } from "sonner";
 
@@ -57,7 +56,7 @@ export default function LoginPage() {
                 "email",
                 { message: error.response?.data?.message || "Login Failed" }
             );
-            toast("Login Failed", {  description: `${error}` })
+            toast("Login Failed", { description: `${error}` })
         } finally {
             setLoading(false);
         }
@@ -69,31 +68,32 @@ export default function LoginPage() {
     }
 
     return (
-        <main className="flex min-h-screen items-center justify-center bg-[#F5F7FA] p-14">
-            <div className="flex w-full max-w-full rounded-2xl bg-white shadow-[0_4px_32px_0_rgba(66,88,144,0.10)] overflow-hidden border border-[#E6EAF1]">
+        <main className="min-h-full w-full py-10 px-6 flex items-center justify-center bg-[#f6f7fa]">
+            <div className="flex flex-col md:flex-row w-full max-w-6xl h-full shadow-xl rounded-xl bg-white">
                 {/* Left: Login form */}
-                <div className="flex flex-col flex-1 min-w-[380px] max-w-full px-10 py-[52px] md:px-14 md:py-20 justify-center">
+                <div className="w-full md:w-full h-full py-9 px-5 md:px-10 flex flex-col justify-center">
                     {/* Top NAAPE logo */}
-                    <div className="flex items-center justify-start mb-2">
+                    <div className="flex items-center justify-between mb-6  relative min-h-full w-full">
                         <Image
                             src={logo}
                             alt="NAAPE logo"
                             width={60}
-                            height={45}
-                            className="object-contain"
+                            height={60}
+                            className=""
+                            priority
                         />
+                        {/* Don't have account link */}
+                        <div className="flex justify-end items-center text-[14px] font-normal mb-6">
+                            <span className="text-xs  right-0 top-0 text-[#817F94]">Don&apos;t have account?</span>
+                            <Link
+                                href="/register"
+                                className="ml-1 text-[#3970D8] font-medium hover:underline"
+                            >
+                                Register
+                            </Link>
+                        </div>
                     </div>
 
-                    {/* Don't have account link */}
-                    <div className="flex justify-end text-[14px] font-normal mb-6">
-                        <span className="text-[#817F94]">Don&apos;t have account?</span>
-                        <Link
-                            href="/register"
-                            className="ml-1 text-[#3970D8] font-medium hover:underline"
-                        >
-                            Register
-                        </Link>
-                    </div>
 
                     {/* Welcome / Card */}
                     <div className="">
@@ -203,21 +203,27 @@ export default function LoginPage() {
                     </Form>
                 </div>
 
-                {/* Right (image) */}
-                <div className="hidden md:block md:w-[53%] h-full relative">
+                {/* Right Side Illustration */}
+                <div className="bg-transparent  w-full justify-center items-center relative">
                     <div className="absolute inset-0">
                         <Image
-                            src={loginpic}
-                            alt="Cockpit"
+                            src="/images/plane.jpg"
+                            alt="Cockpit interior with a panoramic view"
                             fill
+                            quality={70}
                             style={{
                                 objectFit: "cover",
                                 objectPosition: "center",
-                                opacity: 1,
+                                transition: "opacity 0.7s ease",
+                                opacity: 0.98,
+                                filter: "brightness(0.92) saturate(1.05)",
+                                borderTopRightRadius: "16px",
+                                borderBottomRightRadius: "16px",
                             }}
                             sizes="(max-width: 900px) 0vw, 53vw"
                             priority
                         />
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0A173550] via-transparent to-transparent h-32 rounded-b-[16px] pointer-events-none" />
                     </div>
                 </div>
             </div>
