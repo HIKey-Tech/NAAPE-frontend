@@ -1,20 +1,19 @@
 "use client";
-import { useAuthStore } from "@/hook/useAuthStore";
+
+import MemberDashboardHome from "@/components/member/dashboard/home";
+import { useAuth } from "@/context/authcontext";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function Dashboard() {
-    const { user, isAuthenticated } = useAuthStore();
     const router = useRouter();
+    const { user } = useAuth();
 
-    useEffect(() => {
-        if (!isAuthenticated) router.replace("/login");
-    }, [isAuthenticated]);
+
+    console.log("user details:", user?.name.toString())
 
     return (
-        <main className="p-8">
-            <h1 className="text-2xl font-bold">Welcome, {user?.name}</h1>
-            <p className="text-gray-600 mt-2">Role: {user?.role}</p>
+        <main className="">
+            <MemberDashboardHome/>
         </main>
     );
 }
