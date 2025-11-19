@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { NaapButton } from "@/components/ui/custom/button.naap";
-import { LucideMail, LucideUser, LucideSend } from "lucide-react";
+import { LucideMail, LucideUser, LucideSend, LucidePhone, LucideMapPin } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import {
@@ -12,7 +12,6 @@ import {
     FormLabel,
     FormMessage,
     FormControl,
-    FormDescription,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
@@ -21,7 +20,7 @@ import Image from "next/image";
 const contactSchema = z.object({
     name: z.string().min(1, "Name is required"),
     email: z.string().min(1, "Email is required").email("Invalid email"),
-    message: z.string().min(8, "Message is required (min 8 characters)")
+    message: z.string().min(8, "Message is required (min 8 characters)"),
 });
 
 type ContactFormValues = z.infer<typeof contactSchema>;
@@ -196,6 +195,55 @@ export default function ContactSection() {
                             sizes="(max-width: 768px) 90vw, 40vw"
                         />
                         <div className="absolute inset-0 bg-gradient-to-tr from-white/70 via-transparent to-blue-100/20 pointer-events-none rounded-xl" aria-hidden="true"></div>
+                    </div>
+                </div>
+                {/* Improved Contact Details - Below the Form */}
+                <div className="w-full max-w-2xl mx-auto mt-16">
+                    <div className="flex flex-col md:flex-row items-center md:items-stretch justify-center gap-0">
+                        <div className="w-full md:w-1/3 flex flex-col items-center md:items-start bg-white rounded-l-xl md:rounded-l-xl md:rounded-r-none shadow p-6 border-b md:border-b-0 md:border-r border-blue-100">
+                            <div className="flex items-center gap-3 mb-2">
+                                <span className="inline-flex items-center justify-center bg-blue-100 text-blue-700 rounded-full p-2">
+                                    <LucideMapPin className="w-6 h-6" />
+                                </span>
+                                <span className="font-semibold text-gray-800 text-base">Office Address</span>
+                            </div>
+                            <div className="text-sm text-gray-600 text-center md:text-left">
+                                NAAPE Secretariat,<br />
+                                Pilots' House,<br />
+                                NAAPE Close,<br />
+                                Off Oba Akinjobi Way,<br />
+                                GRA Ikeja, Lagos, Nigeria
+                            </div>
+                        </div>
+                        <div className="w-full md:w-1/3 flex flex-col items-center md:items-start bg-white border-t md:border-t-0 md:border-l md:border-r border-blue-100 shadow p-6">
+                            <div className="flex items-center gap-3 mb-2">
+                                <span className="inline-flex items-center justify-center bg-blue-100 text-blue-700 rounded-full p-2">
+                                    <LucideMail className="w-6 h-6" />
+                                </span>
+                                <span className="font-semibold text-gray-800 text-base">Email</span>
+                            </div>
+                            <a
+                                href="mailto:national@naape.org"
+                                className="text-blue-700 text-sm underline break-all hover:text-blue-900 transition text-center md:text-left"
+                            >
+                                national@naape.org
+                            </a>
+                        </div>
+                        <div className="w-full md:w-1/3 flex flex-col items-center md:items-start bg-white rounded-b-xl md:rounded-r-xl md:rounded-l-none shadow p-6 border-t md:border-t-0 md:border-l border-blue-100">
+                            <div className="flex items-center gap-3 mb-2">
+                                <span className="inline-flex items-center justify-center bg-blue-100 text-blue-700 rounded-full p-2">
+                                    <LucidePhone className="w-6 h-6" />
+                                </span>
+                                <span className="font-semibold text-gray-800 text-base">Phone</span>
+                            </div>
+                            <a
+                                href="tel:+2348033042097"
+                                className="text-blue-700 text-sm underline hover:text-blue-900 transition text-center md:text-left"
+                            >
+                                +234 (0) 803 304 2097
+                            </a>
+                            <span className="mt-1 text-gray-500 text-xs text-center md:text-left">(Mon-Fri, 9am–5pm)</span>
+                        </div>
                     </div>
                 </div>
             </div>

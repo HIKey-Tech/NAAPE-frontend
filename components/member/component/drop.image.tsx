@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 
 // Define theme variables for easy reuse and consistency
 const COLORS = {
@@ -56,21 +56,24 @@ const defaultIcon = (
 const FILE_TYPES = [
   {
     label: "Image Upload",
+    accept: ".jpg,.jpeg,.png,.gif,.webp",
+    maxSizeMB: 10,
+    maxFiles: 1,
+    isImage: true,
+    icon: defaultIcon,
     message: (
       <>
         <div><strong>Image:</strong> Minimum 800px width recommended</div>
         <div style={{ fontSize: "12px", color: COLORS.subText }}>Max 10MB each. JPEG/JPG/PNG supported.</div>
       </>
     ),
-    icon: defaultIcon,
   },
   {
     label: "PDF Upload",
-    message: (
-      <>
-        <div><strong>PDF:</strong> Max 10MB</div>
-      </>
-    ),
+    accept: ".pdf",
+    maxSizeMB: 10,
+    maxFiles: 1,
+    isImage: false,
     icon: (
       <svg width="54" height="54" viewBox="0 0 54 54" fill="none">
         <rect width="54" height="54" rx="12" fill="#EDF5FB" />
@@ -91,19 +94,113 @@ const FILE_TYPES = [
         </defs>
       </svg>
     ),
-  }
+    message: (
+      <>
+        <div><strong>PDF:</strong> Max 10MB</div>
+      </>
+    ),
+  },
 ];
 
 type DropImageInfoProps = {
   icon?: React.ReactNode;
   message: React.ReactNode;
   label?: string;
+  onFileChange: (files: FileList | null) => void;
+  accept: string;
+  multiple?: boolean;
+  files?: File[] | null;
+  dragActive: boolean;
+  onDragEnter: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
 };
 
-const DropImageInfo: React.FC<DropImageInfoProps> = ({ icon = defaultIcon, message, label }) => {
+const DropImageInfo: React.FC<DropImageInfoProps> = ({
+  icon = defaultIcon,
+  message,
+  label,
+  onFileChange,
+  accept,
+  multiple,
+  files,
+  dragActive,
+  onDragEnter,
+  onDragLeave,
+  onDragOver,
+}) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleClick = () => {
+    inputRef.current?.click();
+  };
+
+  // Render preview if image
+  const renderPreview = () => {
+    if (!files || files.length === 0) return null;
+    // Only preview the first file
+    const file = files[0];
+    if (file.type.startsWith("image/")) {
+      return (
+        <img
+          src={URL.createObjectURL(file)}
+          alt="preview"
+          style={{
+            maxWidth: 120,
+            maxHeight: 100,
+            margin: "8px auto 8px auto",
+            display: "block",
+            borderRadius: 8,
+            boxShadow: "0 1px 6px 0 rgba(36,57,138,0.10)",
+          }}
+        />
+      );
+    }
+    // For PDFs, maybe show a file icon
+    return (
+      <div
+        style={{
+          fontSize: 12,
+          margin: "8px auto 8px auto",
+          color: COLORS.text,
+        }}
+      >
+        {file.name}
+      </div>
+    );
+  };
+
   return (
-    <div style={dropImageStyle}>
-      <div style={{ marginBottom: 16 }}>{icon}</div>
+    <div
+      style={{
+        ...dropImageStyle,
+        border: dragActive
+          ? `2.5px solid ${COLORS.borderHighlight}`
+          : dropImageStyle.border,
+        background: dragActive ? "#F7FAFF" : dropImageStyle.background,
+      }}
+      tabIndex={0}
+      onClick={handleClick}
+      onDrop={e => {
+        e.preventDefault();
+        e.stopPropagation();
+        onFileChange(e.dataTransfer.files);
+      }}
+      onDragOver={onDragOver}
+      onDragEnter={onDragEnter}
+      onDragLeave={onDragLeave}
+    >
+      <input
+        ref={inputRef}
+        type="file"
+        style={{ display: "none" }}
+        accept={accept}
+        multiple={!!multiple}
+        onChange={e => onFileChange(e.target.files)}
+      />
+      <div style={{ marginBottom: 16 }}>
+        {icon}
+      </div>
       {label && (
         <div style={{
           fontWeight: 600,
@@ -126,11 +223,95 @@ const DropImageInfo: React.FC<DropImageInfoProps> = ({ icon = defaultIcon, messa
       >
         {message}
       </div>
+      {renderPreview()}
+      {files && files.length > 0 && (
+        <div
+          style={{
+            fontSize: 12,
+            color: COLORS.text,
+            marginTop: 8,
+            textAlign: "center"
+          }}
+        >
+          <strong>Selected:</strong> {files[0].name}
+        </div>
+      )}
+      <div style={{
+        marginTop: 12,
+        background: "#F0F8FF",
+        fontSize: 12,
+        color: COLORS.text,
+        borderRadius: 4,
+        padding: "2px 8px",
+        display: dragActive ? "inline-block" : "none",
+      }}>
+        Drop to upload
+      </div>
     </div>
   );
 };
 
 export default function DropImageDual() {
+  // Each type gets its own file state
+  const [imageFile, setImageFile] = useState<File[] | null>(null);
+  const [pdfFile, setPdfFile] = useState<File[] | null>(null);
+
+  // Drag active state for each dropzone
+  const [dragImage, setDragImage] = useState(false);
+  const [dragPdf, setDragPdf] = useState(false);
+
+  // Event handlers for drag-and-drop (separate per dropzone)
+  const getHandlers = (
+    setDrag: React.Dispatch<React.SetStateAction<boolean>>,
+    setFiles: React.Dispatch<React.SetStateAction<File[] | null>>,
+    maxSizeMB: number,
+    accept: string[],
+    isImage: boolean
+  ) => {
+    return {
+      onDragEnter: (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault(); e.stopPropagation();
+        setDrag(true);
+      },
+      onDragLeave: (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault(); e.stopPropagation();
+        setDrag(false);
+      },
+      onDragOver: (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault(); e.stopPropagation();
+      },
+      onFileChange: (fileList: FileList | null) => {
+        setDrag(false);
+        if (!fileList || fileList.length === 0) return;
+        const file = fileList[0];
+
+        // Check type and size
+        const validType = accept.some(type =>
+          file.name.toLowerCase().endsWith(type.replace('.', ''))
+          || file.type === type
+        );
+        if (!validType && accept.length > 0) {
+          alert(`File type not supported.\nSupported: ${accept.join(', ')}`);
+          return;
+        }
+        if (file.size > maxSizeMB * 1024 * 1024) {
+          alert(`File size too large. Max ${maxSizeMB}MB allowed.`);
+          return;
+        }
+        setFiles([file]);
+      }
+    };
+  };
+
+  const imageAcceptExts = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
+  const pdfAcceptExts = [".pdf"];
+
+  const imageHandlers = getHandlers(setDragImage, setImageFile, 10, imageAcceptExts, true);
+  const pdfHandlers = getHandlers(setDragPdf, setPdfFile, 10, pdfAcceptExts, false);
+
+  const imageAcceptString = imageAcceptExts.join(",");
+  const pdfAcceptString = pdfAcceptExts.join(",");
+
   return (
     <div
       style={{
@@ -140,14 +321,32 @@ export default function DropImageDual() {
         width: "100%",
       }}
     >
-      {FILE_TYPES.map((info, idx) => (
-        <DropImageInfo
-          key={info.label}
-          icon={info.icon}
-          label={info.label}
-          message={info.message}
-        />
-      ))}
+      <DropImageInfo
+        icon={FILE_TYPES[0].icon}
+        label={FILE_TYPES[0].label}
+        message={FILE_TYPES[0].message}
+        accept={imageAcceptString}
+        onFileChange={imageHandlers.onFileChange}
+        multiple={false}
+        files={imageFile}
+        dragActive={dragImage}
+        onDragEnter={imageHandlers.onDragEnter}
+        onDragLeave={imageHandlers.onDragLeave}
+        onDragOver={imageHandlers.onDragOver}
+      />
+      <DropImageInfo
+        icon={FILE_TYPES[1].icon}
+        label={FILE_TYPES[1].label}
+        message={FILE_TYPES[1].message}
+        accept={pdfAcceptString}
+        onFileChange={pdfHandlers.onFileChange}
+        multiple={false}
+        files={pdfFile}
+        dragActive={dragPdf}
+        onDragEnter={pdfHandlers.onDragEnter}
+        onDragLeave={pdfHandlers.onDragLeave}
+        onDragOver={pdfHandlers.onDragOver}
+      />
     </div>
   );
 }

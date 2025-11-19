@@ -1,8 +1,46 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 
 // Helper: truncate long event titles for better card layout
 const truncate = (text: string, max = 40) =>
     text.length > max ? text.slice(0, max - 1) + "…" : text;
+
+// Animation (fade-in, scale-in) CSS for EventCard in JS (inject once)
+const EVENT_ANIM_CLASS = "event-card-anim";
+const EVENT_ANIM_CSS = `
+.${EVENT_ANIM_CLASS} {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+    transition:
+        opacity 0.72s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.53s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.20s cubic-bezier(.42,0,.58,1);
+}
+.${EVENT_ANIM_CLASS}.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+.${EVENT_ANIM_CLASS}:hover {
+    transform: translateY(-4px) scale(1.025);
+    box-shadow: 0 4px 18px rgba(30,41,59,0.11), 0 1.5px 6px rgba(30,41,59,0.08);
+    transition:
+        opacity 0.7s cubic-bezier(0.4,0,0.2,1),
+        transform 0.17s cubic-bezier(.42,0,.58,1),
+        box-shadow 0.19s cubic-bezier(.42,0,.58,1);
+}
+`;
+// Inject only once per app
+let styleInjected = false;
+function injectEventAnimCSS() {
+    if (typeof window !== "undefined" && !styleInjected) {
+        if (!document.getElementById("eventcard-anim-style")) {
+            const s = document.createElement("style");
+            s.id = "eventcard-anim-style";
+            s.textContent = EVENT_ANIM_CSS;
+            document.head.appendChild(s);
+            styleInjected = true;
+        }
+    }
+}
 
 type EventCardProps = {
     title: string;
@@ -25,19 +63,71 @@ const EventCard: React.FC<EventCardProps> = ({
     registerLabel = "Register",
     disabled = false,
 }) => {
+    const cardRef = useRef<HTMLDivElement | null>(null);
+
+    // Animate on appear using intersection observer
+    useEffect(() => {
+        injectEventAnimCSS();
+        const card = cardRef.current;
+        if (!card) return;
+
+        // Respect prefers-reduced-motion: show immediately if enabled
+        const prefersReducedMotion =
+            typeof window !== "undefined" &&
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        if (prefersReducedMotion) {
+            card.classList.add("visible");
+            return;
+        }
+
+        let timer: ReturnType<typeof setTimeout> | null = null;
+        const observer =
+            typeof window !== "undefined" && "IntersectionObserver" in window
+                ? new window.IntersectionObserver(
+                      (entries) => {
+                          entries.forEach((entry) => {
+                              if (entry.isIntersecting) {
+                                  timer = setTimeout(() => {
+                                      card.classList.add("visible");
+                                  }, 40 + Math.random() * 110);
+                                //   observer.disconnect();
+                              }
+                          });
+                      },
+                      { threshold: 0.17 }
+                  )
+                : null;
+        if (observer) observer.observe(card);
+        else card.classList.add("visible");
+        return () => {
+            if (observer) observer.disconnect();
+            if (timer) clearTimeout(timer);
+        };
+    }, []);
+
     return (
         <div
-            className={`bg-white border border-[#E5EAF2] rounded-2xl shadow-sm overflow-hidden flex flex-col items-stretch min-h-[246px] transition-shadow hover:shadow-md duration-200 ${className}`}
+            ref={cardRef}
+            className={`
+                ${EVENT_ANIM_CLASS}
+                bg-white border border-[#E5EAF2] rounded-2xl shadow-sm
+                overflow-hidden flex flex-col items-stretch min-h-[246px]
+                transition-shadow hover:shadow-md duration-200
+                ${className}
+            `}
             style={{ boxShadow: "0 1px 8px rgba(34,47,67,0.08)" }}
         >
             {/* Banner/Event Image */}
-            <div className="relative w-full h-28 bg-[#F3F6FA] flex items-center justify-center">
+            <div className="relative w-full h-28 bg-[#F3F6FA] flex items-center justify-center overflow-hidden group">
                 <img
                     src={imageUrl}
                     alt={title}
-                    className="object-cover w-full h-full mx-auto my-3  transition-transform group-hover:scale-105"
+                    className="object-cover w-full h-full mx-auto my-3 transition-transform duration-400 group-hover:scale-105"
                     draggable={false}
                     loading="lazy"
+                    style={{ transition: "transform 0.33s cubic-bezier(.42,0,.58,1)" }}
                 />
             </div>
             {/* Event Content */}
@@ -62,8 +152,7 @@ const EventCard: React.FC<EventCardProps> = ({
                     type="button"
                     onClick={onRegister}
                     disabled={disabled}
-                    className={`mt-auto px-5 py-1.5 border border-[#D5E3F7] rounded-md text-[#4267E7] font-medium text-[15px] transition-colors hover:bg-[#F2F7FF] focus:outline-none focus:ring-2 focus:ring-[#B2D7EF] active:bg-[#E7F1FF] ${disabled ? "opacity-60 cursor-not-allowed" : ""
-                        }`}
+                    className={`mt-auto px-5 py-1.5 border border-[#D5E3F7] rounded-md text-[#4267E7] font-medium text-[15px] transition-colors hover:bg-[#F2F7FF] focus:outline-none focus:ring-2 focus:ring-[#B2D7EF] active:bg-[#E7F1FF] ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}
                     aria-label={`Register for ${title}`}
                 >
                     {registerLabel}
@@ -74,4 +163,3 @@ const EventCard: React.FC<EventCardProps> = ({
 };
 
 export default EventCard;
-

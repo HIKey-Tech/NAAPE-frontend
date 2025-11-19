@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 
 // Centralized status config for label, color, and background
 const STATUS_CONFIG: Record<
@@ -38,6 +38,43 @@ type CertCardProps = {
 const truncate = (text: string, max = 98) =>
     text.length > max ? text.slice(0, max) + "…" : text;
 
+// Animation CSS for Card (fade-in/scale-in, on viewport)
+const CARD_ANIMATION_CLASS = "cert-card-anim";
+const CARD_ANIMATION_CSS = `
+.${CARD_ANIMATION_CLASS} {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+    transition:
+        opacity 0.72s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.53s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.${CARD_ANIMATION_CLASS}.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+.${CARD_ANIMATION_CLASS}:hover {
+    transform: translateY(-4px) scale(1.025);
+    box-shadow: 0 4px 16px rgba(30,41,59,0.10), 0 1.5px 6px rgba(30,41,59,0.07);
+    transition:
+        opacity 0.7s cubic-bezier(0.4,0,0.2,1),
+        transform 0.17s cubic-bezier(.42,0,.58,1),
+        box-shadow 0.19s cubic-bezier(.42,0,.58,1);
+}
+`;
+
+let styleInjected = false;
+function injectCardAnimCSS() {
+    if (typeof window !== "undefined" && !styleInjected) {
+        if (!document.getElementById("certcard-anim-style")) {
+            const s = document.createElement("style");
+            s.id = "certcard-anim-style";
+            s.textContent = CARD_ANIMATION_CSS;
+            document.head.appendChild(s);
+            styleInjected = true;
+        }
+    }
+}
+
 const CertCard: React.FC<CertCardProps> = ({
     title,
     startDate,
@@ -47,10 +84,46 @@ const CertCard: React.FC<CertCardProps> = ({
     className = "",
 }) => {
     const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
+    const cardRef = useRef<HTMLDivElement | null>(null);
+    const [visible, setVisible] = React.useState(false);
+
+    useEffect(() => {
+        injectCardAnimCSS();
+        const card = cardRef.current;
+        if (!card) return;
+
+        // If user prefers reduced motion, always show
+        const prefersReducedMotion =
+            typeof window !== "undefined" &&
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (prefersReducedMotion) {
+            setVisible(true);
+            return;
+        }
+
+        // Intersection Observer for fade-in
+        let observer: IntersectionObserver | undefined;
+        observer = new window.IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setVisible(true);
+                    observer?.disconnect();
+                }
+            },
+            { threshold: 0.20 }
+        );
+        observer.observe(card);
+
+        return () => {
+            observer?.disconnect();
+        };
+    }, []);
 
     return (
         <div
-            className={`rounded-2xl border border-[#E5EAF2] shadow-sm bg-white w-full max-w-full p-5 flex flex-col justify-between transition-shadow hover:shadow-md duration-200 ${className}`}
+            ref={cardRef}
+            className={`${CARD_ANIMATION_CLASS} ${visible ? "visible" : ""} rounded-2xl border border-[#E5EAF2] shadow-sm bg-white w-full max-w-full p-5 flex flex-col justify-between transition-shadow hover:shadow-md duration-200 ${className}`}
             style={{ boxShadow: "0 1px 6px rgba(30,41,59,0.06)" }}
         >
             <div>
@@ -86,4 +159,3 @@ const CertCard: React.FC<CertCardProps> = ({
 };
 
 export default CertCard;
-

@@ -11,14 +11,15 @@ import {
     FaBriefcase,
     FaComments,
     FaCog,
-    FaSignOutAlt,
+    FaSignOutAlt
 } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
-import { useCallback, useMemo, useState, useRef } from "react";
+import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/context/authcontext";
 
-// Add animation styles for icons & dropdown
+// Add animation & bottom nav styles
 const iconAnimationStyles = `
 @keyframes icon-bounce {
   0%, 100% { transform: translateY(0);}
@@ -28,20 +29,21 @@ const iconAnimationStyles = `
   60% { transform: translateY(1px);}
   75% { transform: translateY(-1px);}
 }
-.animated-sidebar-icon, .animated-dropdown-icon {
+.animated-sidebar-icon, .animated-bottomnav-icon, .animated-dropdown-icon {
   transition: color 0.2s;
 }
 .sidebar-navitem:hover .animated-sidebar-icon,
-.sidebar-navitem:focus .animated-sidebar-icon {
+.sidebar-navitem:focus .animated-sidebar-icon,
+.bottomnav-item:hover .animated-bottomnav-icon,
+.bottomnav-item:focus .animated-bottomnav-icon {
   animation: icon-bounce 0.5s;
   color: #357AA8 !important;
 }
-.sidebar-navitem-active .animated-sidebar-icon {
+.sidebar-navitem-active .animated-sidebar-icon,
+.bottomnav-item-active .animated-bottomnav-icon {
   animation: icon-bounce 0.7s;
   color: #357AA8 !important;
 }
-
-/* Dropdown submenu icon animation */
 .dropdown-navitem:hover .animated-dropdown-icon,
 .dropdown-navitem:focus .animated-dropdown-icon {
   animation: icon-bounce 0.5s;
@@ -50,6 +52,94 @@ const iconAnimationStyles = `
 .dropdown-active .animated-dropdown-icon {
   animation: icon-bounce 0.7s;
   color: #357AA8 !important;
+}
+/* Mobile Bottom Nav bar */
+@media (max-width: 639px) {
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 58px;
+    z-index: 50;
+    background: #FAFCFE;
+    border-top: 1px solid #E6EFFA;
+    box-shadow: 0 0 6px 0 rgba(44,69,112,0.01), 0 -1px 0 0 #E6EFFA;
+    margin-top: 24px; /* Added: top margin 24 on mobile */
+  }
+  .mobile-bottom-nav ul {
+    flex: 1 1 0;
+    display: flex; width: 100%; height: 100%;
+    padding: 0; margin: 0;
+    align-items: stretch; justify-content: space-around;
+    list-style: none;
+  }
+  .bottomnav-item {
+    flex: 1 1 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-size: 11px; color: #203040;
+    gap: 2px;
+    text-align: center;
+    font-weight: 500;
+    min-width: 0; min-height: 0;
+    height: 58px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+  .bottomnav-item .animated-bottomnav-icon {
+    width: 22px;
+    height: 22px;
+    display: block;
+    margin: 0 auto 1px auto;
+    color: #8CA1B6;
+    transition: color 0.2s;
+  }
+  .bottomnav-item-active {
+    background: #E6F7FF;
+    color: #357AA8;
+    font-weight: 600;
+  }
+  .bottomnav-item-active .animated-bottomnav-icon {
+    color: #357AA8 !important;
+  }
+  .bottomnav-dropdown-panel {
+    position: absolute;
+    bottom: 62px;
+    left: 8px; right: 8px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 6px 36px 0 rgba(23,40,120,0.10), 0 1.5px 0 0 #E6EFFA;
+    border: 1px solid #E6EFFA;
+    z-index: 51;
+    padding: 3px 0;
+    animation: dropdown-fadein 0.21s cubic-bezier(0.42,0,0.58,1);
+  }
+  @keyframes dropdown-fadein {
+    0% { transform: translateY(16px); opacity: 0;}
+    100% { transform: translateY(0); opacity: 1;}
+  }
+  .bottomnav-label {
+    font-size: 11px;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0;
+    margin-top: 0;
+    transition: color 0.2s;
+  }
+  .sidebar-container,
+  .mobile-topbar {
+    display: none !important;
+  }
+}
+/* Hide bottom nav on desktop */
+@media (min-width: 640px) {
+  .mobile-bottom-nav { display: none !important; }
 }
 `;
 
@@ -63,6 +153,8 @@ type NavLink = {
     label: string;
     icon: React.ElementType;
     href?: string;
+    group?: string; // For grouping
+    description?: string;
 };
 
 const user: User = {
@@ -71,17 +163,12 @@ const user: User = {
     avatarUrl: "/user-avatar.jpg",
 };
 
+// Main navigation links, excludes 'Create Publication'
 const navLinksMain: NavLink[] = [
     {
         label: "Home",
         icon: FaHome,
         href: "/dashboard"
-    },
-    // News & Publications will now be handled as a dropdown.
-    {
-        label: "Create Publication",
-        icon: FaPlusSquare,
-        href: "/publications/new"
     },
     {
         label: "Training & Certifications",
@@ -93,11 +180,6 @@ const navLinksMain: NavLink[] = [
         icon: FaCalendarAlt,
         href: "/events"
     },
-    // {
-    //     label: "Job Board",
-    //     icon: FaBriefcase,
-    //     href: "/jobs"
-    // },
     {
         label: "Forum",
         icon: FaComments,
@@ -105,19 +187,41 @@ const navLinksMain: NavLink[] = [
     }
 ];
 
-// Sub-links for the News & Publications dropdown
+// Improved: Publication/News-related links, now with descriptions for better UX
 const publicationsDropdownLinks: NavLink[] = [
     {
-        label: "Publications",
+        label: "All Publications",
         icon: FaBook,
-        href: "/publications"
+        href: "/publications",
+        group: "Publications",
+        description: "Browse all publications"
+    },
+    {
+        label: "Create Publication",
+        icon: FaPlusSquare,
+        href: "/publications/new",
+        group: "Publications",
+        description: "Add a new publication"
     },
     {
         label: "News",
         icon: FaNewspaper,
-        href: "/news"
+        href: "/news",
+        group: "News",
+        description: "Latest news updates"
     }
 ];
+
+const organizePublicationTabsForMobile = (list: NavLink[]) => {
+    return [
+        ...list.filter(l => l.group === "Publications"),
+        ...list.filter(l => l.group === "News"),
+    ];
+};
+
+const publicationsDropdownLinksMobile: NavLink[] = organizePublicationTabsForMobile([
+    ...publicationsDropdownLinks
+]);
 
 const navLinksSecondary: NavLink[] = [
     {
@@ -127,7 +231,6 @@ const navLinksSecondary: NavLink[] = [
     }
 ];
 
-// Improved: strict props and memo for user avatar
 function UserAvatar({ user }: { user: User }) {
     return (
         <div className="flex items-center gap-3 px-3 py-3">
@@ -160,9 +263,9 @@ type NavItemProps = {
     children?: React.ReactNode;
     ariaExpanded?: boolean;
     asButton?: boolean;
+    hideLabelOnMobile?: boolean;
 };
 
-// Animated and accessible NavItem
 function NavItem({
     icon: Icon,
     label,
@@ -172,7 +275,9 @@ function NavItem({
     children,
     ariaExpanded,
     asButton = false,
+    hideLabelOnMobile = false
 }: NavItemProps) {
+    const labelClass = hideLabelOnMobile ? "hidden sm:inline" : "inline";
     const baseClass =
         "sidebar-navitem flex items-center w-full px-5 py-2.5 rounded-lg text-sm font-medium gap-3 mb-0.5 transition-colors whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-[#357AA8]";
     const activeClass = "sidebar-navitem-active bg-[#D8F3FF] text-[#357AA8]";
@@ -192,7 +297,7 @@ function NavItem({
                     onClick={onClick}
                 >
                     <Icon className={`w-5 h-5 flex-shrink-0 ${active ? iconActive : iconInactive}`} />
-                    <span className="flex-1 text-left">{label}</span>
+                    <span className={`flex-1 text-left ${labelClass}`}>{label}</span>
                     {children ? (
                         <svg
                             className={`ml-auto h-3 w-3 transition-transform ${ariaExpanded ? "rotate-90" : ""}`}
@@ -214,7 +319,7 @@ function NavItem({
     const content = (
         <>
             <Icon className={`w-5 h-5 flex-shrink-0 ${active ? iconActive : iconInactive}`} />
-            <span>{label}</span>
+            <span className={labelClass}>{label}</span>
         </>
     );
 
@@ -246,19 +351,21 @@ function NavItem({
     );
 }
 
-// Dropdown NavItem for News & Publications
+// Publications Dropdown for Sidebar (desktop)
 function PublicationsDropdown({ pathname }: { pathname: string | null }) {
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef<HTMLUListElement>(null);
 
-    // Determine active state
+    // Determine if any child tab is active
     const isChildActive = publicationsDropdownLinks.some(
         (link) => pathname === link.href || (link.href && pathname?.startsWith(link.href))
     );
 
-    // Close dropdown when focus leaves the group
+    useEffect(() => {
+        setOpen(false);
+    }, [pathname]);
+
     const handleBlur = (e: React.FocusEvent<HTMLButtonElement | HTMLUListElement>) => {
-        // Only close if new focused element is outside the dropdown
         if (
             dropdownRef.current &&
             e.relatedTarget &&
@@ -268,6 +375,14 @@ function PublicationsDropdown({ pathname }: { pathname: string | null }) {
         }
     };
 
+    const labelClass = "hidden sm:inline";
+
+    const publicationTabs = [
+        ...publicationsDropdownLinks.filter(l => l.group === "Publications" && l.label !== "Create Publication"),
+        ...publicationsDropdownLinks.filter(l => l.group === "News"),
+        ...publicationsDropdownLinks.filter(l => l.label === "Create Publication"),
+    ];
+
     return (
         <NavItem
             icon={FaSearch}
@@ -275,40 +390,41 @@ function PublicationsDropdown({ pathname }: { pathname: string | null }) {
             active={isChildActive}
             asButton
             ariaExpanded={open}
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => setOpen(v => !v)}
         >
             <ul
                 ref={dropdownRef}
                 onBlur={handleBlur}
-                className={`${open ? "block" : "hidden"
-                    } absolute left-0 right-0 top-full z-40 bg-white border border-[#E6EFFA] rounded shadow
-                    mt-1 ml-3 mr-3 py-1 sm:min-w-[198px] max-w-xs
-                `}
+                className={`${open ? "block" : "hidden"} absolute left-0 right-0 top-full z-40 bg-white border border-[#E6EFFA] rounded shadow mt-1 ml-3 mr-3 py-1 sm:min-w-[198px] max-w-xs`}
                 tabIndex={-1}
                 role="menu"
                 aria-label="News & Publications submenu"
             >
-                {publicationsDropdownLinks.map((sublink) => {
-                    // Dropdown icon animation: determine if current navitem is hovered/focused/active
+                {publicationTabs.map((sublink, idx) => {
                     const isActive = pathname === sublink.href;
-                    // Use dropdown specific animation/hover/active classes for icon
+                    const isCreate = sublink.label === "Create Publication";
                     return (
                         <li key={sublink.label} className={`dropdown-navitem${isActive ? " dropdown-active" : ""}`}>
+                            {isCreate && (
+                                <div className="border-t border-[#E6EFFA] my-1" />
+                            )}
                             <Link
                                 href={sublink.href ?? "#"}
-                                className={`flex items-center gap-3 px-4 py-2 rounded text-sm font-medium transition-colors
-                                    hover:bg-[#F5F7FA]
-                                    ${isActive ? "text-[#357AA8] font-semibold bg-[#D8F3FF]" : "text-[#203040]"}
-                                `}
+                                className={`flex items-center gap-3 px-4 py-2 rounded text-sm font-medium transition-colors hover:bg-[#F5F7FA] ${
+                                    isActive ? "text-[#357AA8] font-semibold bg-[#D8F3FF]" : "text-[#203040]"
+                                }`}
                                 role="menuitem"
                                 tabIndex={0}
+                                // CLOSE dropdown panel on nav
+                                onClick={() => setOpen(false)}
                             >
-                                <sublink.icon
-                                    className={`w-4 h-4 flex-shrink-0 animated-dropdown-icon ${isActive ? "text-[#357AA8]" : "text-[#8CA1B6]"
-                                        }`}
-                                    aria-hidden="true"
-                                />
-                                <span>{sublink.label}</span>
+                                <sublink.icon className={`w-4 h-4 flex-shrink-0 animated-dropdown-icon ${
+                                    isActive ? "text-[#357AA8]" : "text-[#8CA1B6]"
+                                }`} aria-hidden="true" />
+                                <span className={labelClass}>{sublink.label}</span>
+                                {sublink.description && (
+                                    <span className="ml-auto text-xs text-[#8CA1B6] hidden sm:inline">{sublink.description}</span>
+                                )}
                             </Link>
                         </li>
                     );
@@ -318,35 +434,253 @@ function PublicationsDropdown({ pathname }: { pathname: string | null }) {
     );
 }
 
-// Lines 81-85 are the following block in navLinksMain:
-/*
-    {
-        label: "Create Publication",
-        icon: FaPlusSquare,
-        href: "/publications/new"
-    },
-*/
+// Mobile BottomNav Dropdown (bottom sheet style)
+function BottomNavDropdown({
+    open,
+    onClose,
+    items,
+    activeHref
+}: {
+    open: boolean;
+    onClose: () => void;
+    items: NavLink[];
+    activeHref: string | null;
+}) {
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
-// We want this link to be *visibly rendered* as part of the sidebar nav,
-// so we need to actually render it in the menu. 
-// Previously, navItemsMain[1] was skipped (return null). Now, always show it!
+    useEffect(() => {
+        if (!open) return;
+        function listener(e: MouseEvent) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(e.target as Node)
+            ) {
+                onClose();
+            }
+        }
+        document.addEventListener("mousedown", listener);
+        return () => document.removeEventListener("mousedown", listener);
+    }, [open, onClose]);
+
+    useEffect(() => {
+        if (!open) return;
+        function keyHandler(e: KeyboardEvent) {
+            if (e.key === "Escape") onClose();
+        }
+        window.addEventListener("keydown", keyHandler);
+        return () => window.removeEventListener("keydown", keyHandler);
+    }, [open, onClose]);
+
+    // Also close dropdown if route (activeHref) changes
+    useEffect(() => {
+        onClose();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeHref]);
+
+    if (!open) return null;
+    const createTab = items.find(link => link.label === "Create Publication");
+    const nonCreateTabs = items.filter(link => link.label !== "Create Publication");
+    return (
+        <div
+            ref={dropdownRef}
+            className="bottomnav-dropdown-panel"
+            tabIndex={-1}
+            aria-label="News & Publications submenu"
+            style={{
+                minWidth: '180px',
+                maxWidth: '90vw'
+            }}
+        >
+            {nonCreateTabs.map(link => {
+                const isActive = activeHref === link.href;
+                return (
+                    <Link
+                        key={link.label}
+                        href={link.href ?? "#"}
+                        onClick={onClose}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium transition-colors hover:bg-[#F5F7FA] ${isActive ? "text-[#357AA8] font-semibold bg-[#D8F3FF]" : "text-[#203040]"}`}
+                        tabIndex={0}
+                    >
+                        <link.icon className={`w-5 h-5 mr-2 animated-dropdown-icon ${isActive ? "text-[#357AA8]" : "text-[#8CA1B6]"}`} aria-hidden="true" />
+                        <span className="bottomnav-label">{link.label}</span>
+                        {link.description && (
+                            <span className="ml-auto text-xs text-[#8CA1B6] hidden sm:inline">{link.description}</span>
+                        )}
+                    </Link>
+                );
+            })}
+            {createTab && (
+                <>
+                    <div className="border-t border-[#E6EFFA] my-1" />
+                    <Link
+                        key={createTab.label}
+                        href={createTab.href ?? "#"}
+                        onClick={onClose}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium transition-colors hover:bg-[#F5F7FA] ${
+                            activeHref === createTab.href ? "text-[#357AA8] font-semibold bg-[#D8F3FF]" : "text-[#203040]"
+                        }`}
+                        tabIndex={0}
+                    >
+                        <createTab.icon className={`w-5 h-5 mr-2 animated-dropdown-icon ${
+                            activeHref === createTab.href ? "text-[#357AA8]" : "text-[#8CA1B6]"
+                        }`} aria-hidden="true" />
+                        <span className="bottomnav-label">{createTab.label}</span>
+                        {createTab.description && (
+                            <span className="ml-auto text-xs text-[#8CA1B6] hidden sm:inline">{createTab.description}</span>
+                        )}
+                    </Link>
+                </>
+            )}
+        </div>
+    );
+}
+
+function SidebarContainer({
+    SidebarContent
+}: { SidebarContent: React.ReactNode }) {
+    return (
+        <div className="hidden sm:block sidebar-container">
+            <aside className="sticky top-0 h-screen">
+                {SidebarContent}
+            </aside>
+        </div>
+    );
+}
+
+function MobileBottomNavBar({
+    pathname,
+    onSignOut
+}: {
+    pathname: string | null;
+    onSignOut: () => void;
+}) {
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+
+    // Only these tabs on mobile: Home, Publications (dropdown with create), Events, Forum, Training
+    const bottomTabs = [
+        {
+            key: "home",
+            icon: FaHome,
+            label: "Home",
+            href: "/dashboard"
+        },
+        {
+            key: "publications",
+            icon: FaBook,
+            label: "Publications",
+            dropdown: publicationsDropdownLinksMobile,
+            iconDropdown: FaSearch
+        },
+        {
+            key: "training",
+            icon: FaChalkboardTeacher,
+            label: "Training",
+            href: "/training"
+        },
+        {
+            key: "events",
+            icon: FaCalendarAlt,
+            label: "Events",
+            href: "/events"
+        },
+        {
+            key: "forum",
+            icon: FaComments,
+            label: "Forum",
+            href: "/forum"
+        }
+    ];
+
+    const isPubActive = publicationsDropdownLinksMobile.some(l =>
+        l.href && (pathname === l.href || pathname?.startsWith(l.href))
+    );
+
+    const visibleTabKeys = ["home", "publications", "events", "forum", "training"];
+    const filteredTabs = bottomTabs.filter(tab => visibleTabKeys.includes(tab.key));
+
+    // Always render all navitems; we do not hide any when dropdown is open
+    useEffect(() => {
+        setDropdownOpen(false);
+    }, [pathname]);
+
+    return (
+        <>
+            <nav
+                className="mobile-bottom-nav"
+                style={{ marginTop: 24 }}
+                role="navigation"
+                aria-label="Mobile bottom navigation"
+            >
+                <ul>
+                    {filteredTabs.map((tab, idx) => {
+                        if (tab.dropdown) {
+                            return (
+                                <li key={tab.key} style={{ position: "relative", zIndex: dropdownOpen ? 100 : undefined }}>
+                                    <button
+                                        type="button"
+                                        className={`bottomnav-item ${isPubActive ? "bottomnav-item-active" : ""}`}
+                                        aria-haspopup="true"
+                                        aria-expanded={dropdownOpen}
+                                        aria-label="News & Publications"
+                                        onClick={() => setDropdownOpen((v) => !v)}
+                                        tabIndex={0}
+                                        style={{
+                                            // When dropdown is open, add shadow and raise stacking for UI clarity
+                                            boxShadow: dropdownOpen ? "0 4px 24px 0 rgba(44,69,112,0.09)" : undefined,
+                                            position: "relative",
+                                            zIndex: dropdownOpen ? 100 : undefined
+                                        }}
+                                    >
+                                        <tab.iconDropdown className={`animated-bottomnav-icon`} aria-hidden="true" />
+                                        <span className="bottomnav-label">{tab.label}</span>
+                                    </button>
+                                    <BottomNavDropdown
+                                        open={dropdownOpen}
+                                        onClose={() => setDropdownOpen(false)}
+                                        items={tab.dropdown}
+                                        activeHref={pathname}
+                                    />
+                                </li>
+                            );
+                        }
+                        const isActive = pathname === tab.href || (tab.href && pathname?.startsWith(tab.href));
+                        return (
+                            <li key={tab.key}>
+                                <Link
+                                    href={tab.href ?? "#"}
+                                    className={`bottomnav-item ${isActive ? "bottomnav-item-active" : ""}`}
+                                    aria-current={isActive ? "page" : undefined}
+                                    tabIndex={0}
+                                    aria-label={tab.label}
+                                    onClick={() => setDropdownOpen(false)}
+                                >
+                                    <tab.icon className="animated-bottomnav-icon" aria-hidden="true" />
+                                    <span className="bottomnav-label">{tab.label}</span>
+                                </Link>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </nav>
+        </>
+    );
+}
 
 export function AppSidebar() {
     const pathname = usePathname();
+    const { logout } = useAuth();
 
     const handleSignOut = useCallback(() => {
-        // TODO: Implement real sign out logic (redirect, API call, etc)
-        alert("Signed out!");
-    }, []);
+        if (window.confirm("Are you sure you want to sign out?")) {
+            logout();
+        }
+    }, [logout]);
 
-    // Memoize nav item rendering; improves performance on navigation updates
-    // Now INCLUDE "Create Publication" at index 1!
     const navItemsMain = useMemo(() =>
         navLinksMain.map((link, idx) => {
-            // Do NOT skip index 1 anymore
             const isActive = link.href
                 ? pathname === link.href ||
-                (idx !== 0 && pathname?.startsWith(link.href))
+                  (idx !== 0 && pathname?.startsWith(link.href))
                 : false;
             return (
                 <NavItem
@@ -357,8 +691,9 @@ export function AppSidebar() {
                     active={isActive}
                 />
             );
-        })
-        , [pathname]);
+        }),
+        [pathname]
+    );
 
     const navItemsSecondary = useMemo(() =>
         navLinksSecondary.map((link) => {
@@ -378,17 +713,25 @@ export function AppSidebar() {
         [pathname]
     );
 
-    return (
+    // Sidebar content for desktop only
+    const SidebarContent = (
         <>
-            {/* Inject animation styles into the page */}
             <style>{iconAnimationStyles}</style>
             <nav
-                className="sticky top-0 w-[92px] sm:w-[228px] min-w-full sm:min-w-[228px] max-w-full border-none bg-[#FAFCFE] h-screen flex flex-col justify-between shadow-none z-30"
+                className={`
+                  w-[76px] sm:w-[228px]
+                  min-w-0 sm:min-w-[228px]
+                  max-w-fit border-none
+                  bg-[#FAFCFE]
+                  h-screen flex flex-col justify-between shadow-none z-50
+                  sidebar-mobile
+                  sm:sticky sm:top-0
+                  sidebar-container
+                `}
                 aria-label="Sidebar Navigation"
                 role="navigation"
-                style={{ /* fallback for sticky if customizations needed */ }}
             >
-                {/* Logo and collapse button */}
+                {/* Logo and collapse/mobile close button */}
                 <header className="flex flex-col border-b border-[#E6EFFA] pb-2">
                     <div className="flex justify-between items-center px-4 pt-3 pb-2">
                         <div className="flex items-center gap-2 min-w-0">
@@ -406,10 +749,11 @@ export function AppSidebar() {
                                 NAAPE, Nigeria association of aircraft pilots & engineers
                             </span>
                         </div>
+                        {/* Desktop: collapse/expand sidebar button placeholder (disabled for now) */}
                         <button
                             type="button"
                             aria-label="Collapse sidebar (not yet implemented)"
-                            className="ml-1 flex items-center justify-center rounded-md hover:bg-[#E5F0FB] transition-colors p-[5px] focus:outline-none focus:ring-2 focus:ring-[#357AA8]"
+                            className="ml-1 sm:flex hidden items-center justify-center rounded-md hover:bg-[#E5F0FB] transition-colors p-[5px] focus:outline-none focus:ring-2 focus:ring-[#357AA8]"
                             tabIndex={0}
                             style={{ border: "1px solid #D7E2ED" }}
                             disabled
@@ -425,12 +769,10 @@ export function AppSidebar() {
                 <ul className="flex-1 w-full flex flex-col py-2 px-0 overflow-y-auto">
                     {/* Home */}
                     {navItemsMain[0]}
-                    {/* News & Publications Dropdown */}
+                    {/* Improved News & Publications Dropdown with close on nav */}
                     <PublicationsDropdown pathname={pathname} />
-                    {/* Create Publication (now visible) */}
-                    {navItemsMain[1]}
-                    {/* rest */}
-                    {navItemsMain.slice(2)}
+                    {/* rest; do NOT render standalone Create Publication navitem */}
+                    {navItemsMain.slice(1)}
                 </ul>
                 <div className="border-t border-[#E6EFFA] bg-transparent">
                     <ul className="flex flex-col py-2 px-0">
@@ -439,12 +781,14 @@ export function AppSidebar() {
                             icon={FaSignOutAlt}
                             label="Sign Out"
                             onClick={handleSignOut}
+                            aria-label="Sign out of your account"
                         />
                     </ul>
                 </div>
                 {/* User Profile Footer */}
                 <footer className="w-full border-t border-[#E6EFFA] bg-[#F6FAFF]">
                     <div className="flex items-center gap-3 px-4 py-3">
+                        {/* Show avatar always, details on sm+ */}
                         <UserAvatar user={user} />
                         <div className="hidden sm:flex flex-col min-w-0">
                             <span className="text-sm font-semibold text-[#16355D] truncate">{user.name}</span>
@@ -453,6 +797,16 @@ export function AppSidebar() {
                     </div>
                 </footer>
             </nav>
+        </>
+    );
+
+    return (
+        <>
+            <style>{iconAnimationStyles}</style>
+            {/* Desktop sidebar */}
+            <SidebarContainer SidebarContent={SidebarContent} />
+            {/* Mobile Bottom Nav */}
+            <MobileBottomNavBar pathname={pathname} onSignOut={handleSignOut} />
         </>
     );
 }

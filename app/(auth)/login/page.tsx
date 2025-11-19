@@ -28,7 +28,7 @@ import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 // Framer Motion
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "@/context/authcontext";
+import { useAuth, User } from "@/context/authcontext";
 
 const formSchema = z.object({
     email: z.email({ message: "Please enter a valid email address" }),
@@ -43,7 +43,7 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
-    const {login} = useAuth()
+    const { login } = useAuth()
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -57,8 +57,17 @@ export default function LoginPage() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setLoading(true);
         try {
+            console.log("user log in values", values)
             const res = await api.post("/auth/login", values);
-            login(res.data.user, res.data.token);
+
+            const userData: User = {
+                _id: res.data._id,
+                name: res.data.name,
+                email: res.data.email,
+                role: res.data.role ?? "member",
+            };
+
+            login(userData, res.data.token);
 
             // setUser(res.data.user, res.data.token)
             router.push("/dashboard");

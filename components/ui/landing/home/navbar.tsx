@@ -10,15 +10,16 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { Menu, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronUp, LogOut, User2 } from "lucide-react";
 import { NaapButton } from "@/components/ui/custom/button.naap";
+import { useAuth } from "@/context/authcontext"; // <-- Import the auth context
 
-// improved accessibility and usability: close drawer on esc or click outside, highlight active links, keep structure clean
 export default function TopNavbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [serveOpen, setServeOpen] = useState(false);
     const [publicationsOpen, setPublicationsOpen] = useState(false);
     const drawerRef = useRef<HTMLDivElement>(null);
+    const { user, logout, isAuthenticated } = useAuth(); // <-- Use auth context
 
     useEffect(() => {
         if (!mobileOpen) return;
@@ -40,14 +41,19 @@ export default function TopNavbar() {
     }, [mobileOpen]);
 
     // determine active route for .active styling (optional enhancement)
-    // This is client-side only and basic — adjust as needed if using Next Router.
     const [active, setActive] = useState("");
     useEffect(() => {
         if (typeof window !== "undefined")
             setActive(window.location.pathname);
     }, []);
 
-
+    // Generate avatar initials
+    function getInitials(name?: string) {
+        if (!name) return "U";
+        const names = name.split(" ");
+        const initials = names[0][0] + (names[1]?.[0] ?? '');
+        return initials.toUpperCase();
+    }
 
     return (
         <nav className="w-full sticky top-0 left-0 z-30 bg-white border-b border-[#E6EAF1] shadow-sm px-6 py-2 flex items-center justify-between relative">
@@ -97,9 +103,9 @@ export default function TopNavbar() {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                        <DropdownMenuItem asChild>
+                        {/* <DropdownMenuItem asChild>
                             <Link href="/news/industry">Industry News</Link>
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                         <DropdownMenuItem asChild>
                             <Link href="/news/naape">NAAPE News</Link>
                         </DropdownMenuItem>
@@ -121,10 +127,10 @@ export default function TopNavbar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuItem asChild>
-                            <Link href="/publications/magazines">Magazines</Link>
+                            <Link href="/publication/members">From Members</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link href="/publications/newsletters">Newsletters</Link>
+                            <Link href="/publication/naape">From NAAPE</Link>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -143,22 +149,58 @@ export default function TopNavbar() {
                 </Link>
             </div>
 
-            {/* Desktop Auth Buttons */}
+            {/* Desktop Auth/User Section */}
             <div className="hidden md:flex items-center gap-2 ml-6">
-                <Link href="/login">
-                    <NaapButton
-                        className="border-[#E3E6ED] bg-white border h-full text-[#2852B4] hover:bg-[#F5F7FA] text-[15px] font-semibold min-w-[96px]"
-                    >
-                        Log In
-                    </NaapButton>
-                </Link>
-                <Link href="/register">
-                    <NaapButton
-                        className="bg-[#2852B4] !rounded hover:bg-[#2347A0] text-white text-[15px] font-semibold min-w-[150px]"
-                    >
-                        Become a member
-                    </NaapButton>
-                </Link>
+                {!isAuthenticated ? (
+                    <>
+                        <Link href="/login">
+                            <NaapButton
+                                className="border-[#E3E6ED] bg-white border h-full text-[#2852B4] hover:bg-[#F5F7FA] text-[15px] font-semibold min-w-[96px]"
+                            >
+                                Log In
+                            </NaapButton>
+                        </Link>
+                        <Link href="/register">
+                            <NaapButton
+                                className="bg-[#2852B4] !rounded hover:bg-[#2347A0] text-white text-[15px] font-semibold min-w-[150px]"
+                            >
+                                Become a member
+                            </NaapButton>
+                        </Link>
+                    </>
+                ) : (
+                    /* If user is logged in, show avatar with dropdown */
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button
+                                className="flex items-center gap-2 px-3 py-1 rounded-lg border border-[#E6EAF1] bg-white shadow-sm hover:bg-[#F5F7FA] transition min-w-[42px] focus:outline-none"
+                                aria-label="Open account menu"
+                                type="button"
+                            >
+                                <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-[#2852B4] text-white font-bold text-base uppercase">
+                                    {getInitials(user?.name)}
+                                </span>
+                                <span className="text-[15px] text-[#2347A0] font-medium max-w-[110px] truncate hidden sm:inline">{user?.name}</span>
+                                <ChevronDown size={18} className="text-[#5671c0]" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="min-w-[190px]">
+                            <DropdownMenuItem asChild>
+                                <Link href="/dashboard">
+                                    <User2 className="w-4 h-4 mr-2" />
+                                    Dashboard
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={logout}
+                                className="!text-red-600 cursor-pointer"
+                            >
+                                <LogOut className="w-4 h-4 mr-2" />
+                                Log Out
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )}
             </div>
 
             {/* Hamburger menu for mobile */}
@@ -214,14 +256,14 @@ export default function TopNavbar() {
                             id="mobile-news-menu"
                             className="flex flex-col bg-white border-l border-[#E6EAF1] ml-5 pl-2 py-1"
                         >
-                            <Link
+                            {/* <Link
                                 href="/news/industry"
                                 className="py-2 text-sm hover:text-[#3970D8] transition"
                                 onClick={() => { setMobileOpen(false); setServeOpen(false); }}
                                 tabIndex={0}
                             >
                                 Industry News
-                            </Link>
+                            </Link> */}
                             <Link
                                 href="/news/naape"
                                 className="py-2 text-sm hover:text-[#3970D8] transition"
@@ -250,20 +292,20 @@ export default function TopNavbar() {
                             className="flex flex-col bg-white border-l border-[#E6EAF1] ml-5 pl-2 py-1"
                         >
                             <Link
-                                href="/publications/magazines"
+                                href="/publication/members"
                                 className="py-2 text-sm hover:text-[#3970D8] transition"
                                 onClick={() => { setMobileOpen(false); setPublicationsOpen(false); }}
                                 tabIndex={0}
                             >
-                                Magazines
+                                From Members
                             </Link>
                             <Link
-                                href="/publications/newsletters"
+                                href="/publication/naape"
                                 className="py-2 text-sm hover:text-[#3970D8] transition"
                                 onClick={() => { setMobileOpen(false); setPublicationsOpen(false); }}
                                 tabIndex={0}
                             >
-                                Newsletters
+                                From NAAPE
                             </Link>
                         </div>
                     )}
@@ -286,18 +328,54 @@ export default function TopNavbar() {
                     </Link>
 
                     <div className="flex flex-col gap-2 mt-2">
-                        <Link href="/login" onClick={() => setMobileOpen(false)}>
-                            <NaapButton
-                                className="w-full border-[#E3E6ED] bg-white text-[#2852B4] hover:bg-[#F5F7FA] text-[15px] font-semibold"
-                            >
-                                Log In
-                            </NaapButton>
-                        </Link>
-                        <Link href="/register" onClick={() => setMobileOpen(false)}>
-                            <NaapButton className="w-full bg-[#2852B4] hover:bg-[#2347A0] text-white text-[15px] font-semibold">
-                                Become a member
-                            </NaapButton>
-                        </Link>
+                        {!isAuthenticated ? (
+                            <>
+                                <Link href="/login" onClick={() => setMobileOpen(false)}>
+                                    <NaapButton
+                                        className="w-full border-[#E3E6ED] bg-white text-[#2852B4] hover:bg-[#F5F7FA] text-[15px] font-semibold"
+                                    >
+                                        Log In
+                                    </NaapButton>
+                                </Link>
+                                <Link href="/register" onClick={() => setMobileOpen(false)}>
+                                    <NaapButton className="w-full bg-[#2852B4] hover:bg-[#2347A0] text-white text-[15px] font-semibold">
+                                        Become a member
+                                    </NaapButton>
+                                </Link>
+                            </>
+                        ) : (
+                            // If user is logged in on mobile, show avatar+dropdown
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button
+                                        className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[#E6EAF1] bg-white shadow-sm hover:bg-[#F5F7FA] transition w-full"
+                                        aria-label="Open account menu"
+                                        type="button"
+                                    >
+                                        <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-[#2852B4] text-white font-bold text-base uppercase">
+                                            {getInitials(user?.name)}
+                                        </span>
+                                        <span className="text-[15px] text-[#2347A0] font-medium truncate">{user?.name}</span>
+                                        <ChevronDown size={18} className="text-[#5671c0]" />
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="start" sideOffset={6} className="min-w-[180px]">
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/dashboard">
+                                            <User2 className="w-4 h-4 mr-2" />
+                                            Dashboard
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={() => { logout(); setMobileOpen(false); }}
+                                        className="!text-red-600 cursor-pointer"
+                                    >
+                                        <LogOut className="w-4 h-4 mr-2" />
+                                        Log Out
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )}
                     </div>
                 </div>
             )}

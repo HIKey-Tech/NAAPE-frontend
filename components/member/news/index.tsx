@@ -1,16 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import PublicationCard from "../component/publication.card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
-import { FaFilter } from "react-icons/fa";
-import { ChevronDown } from "lucide-react";
+import { FilterHeader } from "../component/header";
 import { NewsCard } from "@/components/ui/custom/news.card";
 
-// Sample publications - in a real app, fetch from API
+// Sample news items - in a real app, fetch from API
 const NEWS = Array.from({ length: 9 }).map((_, i) => ({
     imageUrl: "/images/plane.jpg",
     title: "Aero Certification " + (i + 1),
@@ -19,10 +12,9 @@ const NEWS = Array.from({ length: 9 }).map((_, i) => ({
     status: "published",
 }));
 
-
 export default function NewsCpmponent() {
     const [search, setSearch] = useState("");
-    const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
+    const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({
         from: undefined,
         to: undefined,
     });
@@ -34,118 +26,19 @@ export default function NewsCpmponent() {
     );
 
     return (
-        <div className="px-8 py-8">
-            {/* Header */}
-            <h1 className="text-[19px] md:text-xl font-semibold text-[#233256] mb-2">
-                News
-            </h1>
-            <div className="flex items-center justify-between gap-2 flex-wrap mb-4">
-                <div className="flex gap-2 flex-1 min-w-0">
-                    <Input
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search News..."
-                        className="w-full max-w-xs text-[15px] rounded-md"
-                    />
-                </div>
-                <div className="flex gap-2 items-center shrink-0">
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant="secondary"
-                                className="rounded-md px-4 text-[14px] font-medium shadow-sm flex items-center"
-                                aria-label="Sort News"
-                            >
-                                <span>{/* Show current sort method, e.g. "Newest" */}
-                                    Newest
-                                </span>
-                                <ChevronDown className="ml-1 w-4 h-4" />
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-36 p-0" align="end">
-                            <div className="flex flex-col">
-                                <button
-                                    className="px-4 py-2 text-left hover:bg-[#F3F6FA] text-[14px]"
-                                    // onClick={() => { setSort("newest"); ...}}
-                                >
-                                    Newest
-                                </button>
-                                <button
-                                    className="px-4 py-2 text-left hover:bg-[#F3F6FA] text-[14px]"
-                                    // onClick={() => { setSort("oldest"); ...}}
-                                >
-                                    Oldest
-                                </button>
-                                <button
-                                    className="px-4 py-2 text-left hover:bg-[#F3F6FA] text-[14px]"
-                                    // onClick={() => { setSort("az"); ...}}
-                                >
-                                    Title A-Z
-                                </button>
-                                <button
-                                    className="px-4 py-2 text-left hover:bg-[#F3F6FA] text-[14px]"
-                                    // onClick={() => { setSort("za"); ...}}
-                                >
-                                    Title Z-A
-                                </button>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
-                    <Popover open={filterOpen} onOpenChange={setFilterOpen}>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant="outline"
-                                className="rounded-md px-3 text-[14px] font-medium flex items-center gap-1 border-[#E3E9F0]"
-                            >
-                                <FaFilter size={14} className="mr-1" />
-                                <span>Filter</span>
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-4" align="end">
-                            <div className="flex flex-col gap-2">
-                                <span className="text-[14px] font-medium text-[#233256] mb-1">
-                                    Date Range
-                                </span>
-                                <Calendar
-                                    mode="range"
-                                    selected={{
-                                        from: dateRange.from,
-                                        to: dateRange.to,
-                                    }}
-                                    onSelect={(range: any) =>
-                                        setDateRange({
-                                            from: range?.from,
-                                            to: range?.to,
-                                        })
-                                    }
-                                    initialFocus
-                                />
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="mt-2"
-                                    onClick={() => {
-                                        setDateRange({ from: undefined, to: undefined });
-                                        setFilterOpen(false);
-                                    }}
-                                >
-                                    Clear
-                                </Button>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
-                    <div className="bg-[#F3F6FA] flex items-center gap-1 rounded-md px-2 py-1 border border-[#E3E9F0] text-[#475569] text-[13px] font-medium">
-                        {dateRange.from && dateRange.to
-                            ? `${format(dateRange.from, "MMM d, yyyy")} - ${format(
-                                dateRange.to,
-                                "MMM d, yyyy"
-                            )}`
-                            : "No Date Selected"}
-                    </div>
-                </div>
-            </div>
-            {/* News Cards Grid */}
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="px-0 sm:px-0 py-4 bg-white w-full">
+            <FilterHeader
+                title="News"
+                search={search}
+                setSearch={setSearch}
+                filterOpen={filterOpen}
+                setFilterOpen={setFilterOpen}
+                dateRange={dateRange}
+                setDateRange={setDateRange}
+                searchPlaceholder="Search News..."
+                sortLabel="Newest"
+            />
+            <div className="grid gap-6 px-6 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredPublications.length === 0 ? (
                     <div className="col-span-full text-center text-[#96A6BF] text-[16px] py-16 font-medium">
                         Nothing New
@@ -156,12 +49,14 @@ export default function NewsCpmponent() {
                             key={idx}
                             imageUrl={news.imageUrl}
                             title={news.title}
-                            summary={"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam nec."}
+                            summary={
+                                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam nec."
+                            }
                             authorName={news.author}
                             authorRole={"Engineer"}
-                            authorAvatarUrl={ ""}
-                            linkUrl={ "#"}
-                            category={ "Naape News"}
+                            authorAvatarUrl={""}
+                            linkUrl={"#"}
+                            category={"Naape News"}
                         />
                     ))
                 )}

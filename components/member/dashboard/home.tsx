@@ -11,7 +11,10 @@ import {
     MdWork,
 } from "react-icons/md";
 
-// More robust TypeScript types for clarity
+// Framer Motion imports
+import { motion, AnimatePresence } from "framer-motion";
+
+// TypeScript types
 type DashboardCardData = {
     icon: React.ReactNode;
     value: number;
@@ -45,7 +48,7 @@ type EventData = {
     registerLabel: string;
 };
 
-// Demo data arrays
+// Demo data arrays (unchanged)
 const dashboardCardsData: DashboardCardData[] = [
     {
         icon: <MdAttachMoney className="text-[#4267E7] text-2xl" />,
@@ -76,6 +79,27 @@ const publicationsData: PublicationData[] = [
         author: "Emeka Okezie",
         date: "Jan 31, 2023",
         status: "published",
+    },
+    {
+        imageUrl: "/images/plane.jpg",
+        title: "Next Generation Avionics Systems",
+        author: "Emeka Okezie",
+        date: "Jan 31, 2023",
+        status: "pending",
+    },
+    {
+        imageUrl: "/images/plane.jpg",
+        title: "Next Generation Avionics Systems",
+        author: "Emeka Okezie",
+        date: "Jan 31, 2023",
+        status: "pending",
+    },
+    {
+        imageUrl: "/images/plane.jpg",
+        title: "Next Generation Avionics Systems",
+        author: "Emeka Okezie",
+        date: "Jan 31, 2023",
+        status: "pending",
     },
     {
         imageUrl: "/images/plane.jpg",
@@ -153,6 +177,19 @@ const eventsData: EventData[] = [
     },
 ];
 
+// Simple fade/slide/scale variants for staggered animation
+const staggerContainer = {
+    hidden: {},
+    show: {
+        transition: { staggerChildren: 0.11, delayChildren: 0.07 },
+    },
+};
+
+const cardFadeSlide = {
+    hidden: { opacity: 0, y: 35, scale: 0.98 },
+    show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 58, damping: 16 } },
+};
+
 type SectionHeaderProps = {
     title: string;
     linkLabel?: string;
@@ -199,81 +236,268 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
     </div>
 );
 
+const HorizontalScrollContainer: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = "" }) => (
+    <div
+        className={`flex gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-[#d1d5db] scrollbar-track-transparent -mx-2 px-2 ${className}`}
+        style={{ WebkitOverflowScrolling: 'touch' }}
+    >
+        {children}
+    </div>
+);
+
 const MemberDashboardHome: React.FC = () => {
     return (
-        <section className="w-full max-w-full px-4  py-8">
+        <section className="w-full max-w-full px-2 sm:px-4 py-8">
             {/* Welcome Header */}
-            <div className="mb-6">
+            <motion.div
+                className="mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.48, ease: [0.40, 0.00, 0.20, 1] }}
+            >
                 <div className="text-[16px] font-medium text-[#212B36]">
                     Good Morning, Engr. Akeem!
                 </div>
                 <div className="text-[13px] text-[#919EAB] mt-0.5">
                     Here’s what’s happening in your aviation network today.
                 </div>
-            </div>
+            </motion.div>
 
             {/* Dashboard Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 w-full gap-5 mb-8">
-                {dashboardCardsData.map((card, idx) => (
-                    <DashboardCard
-                        key={idx}
-                        icon={card.icon}
-                        value={card.value}
-                        label={card.label}
-                    />
-                ))}
+            {/* On mobile, cards are slidable (horizontal scroll); on >=sm, use grid */}
+            <div className="sm:hidden mb-8">
+                <HorizontalScrollContainer>
+                    <AnimatePresence>
+                    <motion.div
+                        className="flex gap-4"
+                        variants={staggerContainer}
+                        initial="hidden"
+                        animate="show"
+                        exit="exit"
+                    >
+                        {dashboardCardsData.map((card, idx) => (
+                            <motion.div
+                                key={idx}
+                                className="shrink-0 w-[83vw] max-w-xs"
+                                style={{ minWidth: '200px' }}
+                                variants={cardFadeSlide as any}
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.97 }}
+                            >
+                                <DashboardCard
+                                    icon={card.icon}
+                                    value={card.value}
+                                    label={card.label}
+                                />
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                    </AnimatePresence>
+                </HorizontalScrollContainer>
             </div>
+            <motion.div
+                className="hidden sm:grid grid-cols-2 md:grid-cols-4 w-full gap-5 mb-8"
+                variants={staggerContainer}
+                initial="hidden"
+                animate="show"
+            >
+                {dashboardCardsData.map((card, idx) => (
+                    <motion.div
+                        key={idx}
+                        variants={cardFadeSlide as any}
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                    >
+                        <DashboardCard
+                            icon={card.icon}
+                            value={card.value}
+                            label={card.label}
+                        />
+                    </motion.div>
+                ))}
+            </motion.div>
 
             {/* News & Publications */}
             <section className="mb-10">
                 <SectionHeader title="News & Publications" href="/publications" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 w-full md:grid-cols-3 gap-4 ">
-                    {publicationsData.map((pub, idx) => (
-                        <PublicationCard
-                            key={idx}
-                            imageUrl={pub.imageUrl}
-                            title={pub.title}
-                            author={pub.author}
-                            date={pub.date}
-                            status={pub.status}
-                        />
-                    ))}
+                {/* Slidable on mobile below sm - horizontal scroll container, grid on sm+ */}
+                <div className="sm:hidden">
+                    <HorizontalScrollContainer className="">
+                        <AnimatePresence>
+                        <motion.div
+                            className="flex gap-4"
+                            variants={staggerContainer}
+                            initial="hidden"
+                            animate="show"
+                            exit="exit"
+                        >
+                            {publicationsData.map((pub, idx) => (
+                                <motion.div
+                                    key={idx}
+                                    className="shrink-0 w-[87vw] max-w-sm"
+                                    style={{ minWidth: '220px' }}
+                                    variants={cardFadeSlide as any}
+                                    whileHover={{ scale: 1.025 }}
+                                    whileTap={{ scale: 0.96 }}
+                                >
+                                    <PublicationCard
+                                        imageUrl={pub.imageUrl}
+                                        title={pub.title}
+                                        author={pub.author}
+                                        date={pub.date}
+                                        status={pub.status}
+                                    />
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                        </AnimatePresence>
+                    </HorizontalScrollContainer>
                 </div>
+                <motion.div
+                    className="hidden sm:grid grid-cols-3 md:grid-cols-4 gap-4"
+                    variants={staggerContainer}
+                    initial="hidden"
+                    animate="show"
+                >
+                    {publicationsData.map((pub, idx) => (
+                        <motion.div
+                            key={idx}
+                            variants={cardFadeSlide as any}
+                            whileHover={{ scale: 1.025 }}
+                            whileTap={{ scale: 0.96 }}
+                        >
+                            <PublicationCard
+                                imageUrl={pub.imageUrl}
+                                title={pub.title}
+                                author={pub.author}
+                                date={pub.date}
+                                status={pub.status}
+                            />
+                        </motion.div>
+                    ))}
+                </motion.div>
             </section>
 
             {/* Training & Certifications */}
             <section className="mb-10">
                 <SectionHeader title="Training & Certifications" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {certificationsData.map((cert, idx) => (
-                        <CertCard
-                            key={idx}
-                            title={cert.title}
-                            startDate={cert.startDate}
-                            description={cert.description}
-                            status={cert.status}
-                            progress={cert.progress}
-                        />
-                    ))}
+                <div className="sm:hidden">
+                    <HorizontalScrollContainer>
+                        <AnimatePresence>
+                        <motion.div
+                            className="flex gap-4"
+                            variants={staggerContainer}
+                            initial="hidden"
+                            animate="show"
+                            exit="exit"
+                        >
+                            {certificationsData.map((cert, idx) => (
+                                <motion.div
+                                    key={idx}
+                                    className="shrink-0 w-[87vw] max-w-sm"
+                                    style={{ minWidth: '220px' }}
+                                    variants={cardFadeSlide as any}
+                                    whileHover={{ scale: 1.025 }}
+                                    whileTap={{ scale: 0.97 }}
+                                >
+                                    <CertCard
+                                        title={cert.title}
+                                        startDate={cert.startDate}
+                                        description={cert.description}
+                                        status={cert.status}
+                                        progress={cert.progress}
+                                    />
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                        </AnimatePresence>
+                    </HorizontalScrollContainer>
                 </div>
+                <motion.div
+                    className="hidden sm:grid grid-cols-2 md:grid-cols-3 gap-4"
+                    variants={staggerContainer}
+                    initial="hidden"
+                    animate="show"
+                >
+                    {certificationsData.map((cert, idx) => (
+                        <motion.div
+                            key={idx}
+                            variants={cardFadeSlide as any}
+                            whileHover={{ scale: 1.025 }}
+                            whileTap={{ scale: 0.97 }}
+                        >
+                            <CertCard
+                                title={cert.title}
+                                startDate={cert.startDate}
+                                description={cert.description}
+                                status={cert.status}
+                                progress={cert.progress}
+                            />
+                        </motion.div>
+                    ))}
+                </motion.div>
             </section>
 
             {/* Upcoming Events */}
             <section>
                 <SectionHeader title="Upcoming Events" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {eventsData.map((ev, idx) => (
-                        <EventCard
-                            key={idx}
-                            title={ev.title}
-                            date={ev.date}
-                            location={ev.location}
-                            imageUrl={ev.imageUrl}
-                            onRegister={ev.onRegister}
-                            registerLabel={ev.registerLabel}
-                        />
-                    ))}
+                <div className="sm:hidden">
+                    <HorizontalScrollContainer>
+                        <AnimatePresence>
+                        <motion.div
+                            className="flex gap-4"
+                            variants={staggerContainer}
+                            initial="hidden"
+                            animate="show"
+                            exit="exit"
+                        >
+                            {eventsData.map((ev, idx) => (
+                                <motion.div
+                                    key={idx}
+                                    className="shrink-0 w-[87vw] max-w-sm"
+                                    style={{ minWidth: '220px' }}
+                                    variants={cardFadeSlide as any}
+                                    whileHover={{ scale: 1.025 }}
+                                    whileTap={{ scale: 0.97 }}
+                                >
+                                    <EventCard
+                                        title={ev.title}
+                                        date={ev.date}
+                                        location={ev.location}
+                                        imageUrl={ev.imageUrl}
+                                        onRegister={ev.onRegister}
+                                        registerLabel={ev.registerLabel}
+                                    />
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                        </AnimatePresence>
+                    </HorizontalScrollContainer>
                 </div>
+                <motion.div
+                    className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-4"
+                    variants={staggerContainer}
+                    initial="hidden"
+                    animate="show"
+                >
+                    {eventsData.map((ev, idx) => (
+                        <motion.div
+                            key={idx}
+                            variants={cardFadeSlide as any}
+                            whileHover={{ scale: 1.025 }}
+                            whileTap={{ scale: 0.97 }}
+                        >
+                            <EventCard
+                                title={ev.title}
+                                date={ev.date}
+                                location={ev.location}
+                                imageUrl={ev.imageUrl}
+                                onRegister={ev.onRegister}
+                                registerLabel={ev.registerLabel}
+                            />
+                        </motion.div>
+                    ))}
+                </motion.div>
             </section>
         </section>
     );

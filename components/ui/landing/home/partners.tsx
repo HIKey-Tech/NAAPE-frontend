@@ -1,5 +1,7 @@
+"use client"
 
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 const partners = [
   {
@@ -28,21 +30,68 @@ const partners = [
   },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const partnerVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 60, damping: 12 } },
+};
+
 export default function PartnersSection() {
   return (
-    <section className="w-full max-w-screen-xl mx-auto py-14 px-6 flex flex-col items-center text-center">
-      <span className="text-xs md:text-sm text-[#CA9414] font-semibold tracking-widest uppercase mb-2">
+    <motion.section
+      className="w-full max-w-screen-xl mx-auto py-14 px-6 flex flex-col items-center text-center"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.4 }}
+      transition={{ staggerChildren: 0.15 }}
+    >
+      <motion.span
+        className="text-xs md:text-sm text-[#CA9414] font-semibold tracking-widest uppercase mb-2"
+        initial={{ opacity: 0, y: -15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.5, type: "spring" }}
+      >
         YOU ARE IN GOOD COMPANY
-      </span>
-      <h2 className="text-2xl md:text-3xl font-extrabold text-[#232835] mb-2">
+      </motion.span>
+      <motion.h2
+        className="text-2xl md:text-3xl font-extrabold text-[#232835] mb-2"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5, type: "spring" }}
+      >
         Our Partners & Affiliations
-      </h2>
-      <p className="mb-7 md:mb-10 max-w-2xl text-xs md:text-sm text-[#232835]/80">
+      </motion.h2>
+      <motion.p
+        className="mb-7 md:mb-10 max-w-2xl text-xs md:text-sm text-[#232835]/80"
+        initial={{ opacity: 0, y: -15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.6, type: "spring" }}
+      >
         We collaborate with leading aviation bodies, government agencies, and global organizations to advance professional standards and promote the growth of the aviation industry.
-      </p>
-      <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-x-6 gap-y-6 items-center justify-center">
-        {partners.map((partner) => (
-          <div key={partner.name} className="flex flex-col items-center">
+      </motion.p>
+      <motion.div
+        className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-x-6 gap-y-6 items-center justify-center"
+        variants={containerVariants}
+      >
+        {partners.map((partner, idx) => (
+          <motion.div
+            key={partner.name}
+            className="flex flex-col items-center"
+            variants={partnerVariants as any}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 70 }}
+          >
             <div className="mb-1">
               <Image
                 src={partner.logo}
@@ -53,9 +102,9 @@ export default function PartnersSection() {
               />
             </div>
             <span className="text-xs text-[#636877] font-medium">{partner.name}</span>
-          </div>
+          </motion.div>
         ))}
-      </div>
-    </section>
+      </motion.div>
+    </motion.section>
   );
 }

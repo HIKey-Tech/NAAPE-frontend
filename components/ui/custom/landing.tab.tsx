@@ -4,6 +4,7 @@ import * as React from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { LucideSearch } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 /**
  * Tab descriptor
@@ -34,8 +35,8 @@ export interface LandingTabsProps {
 }
 
 /**
- * Search form for consistent search UX with feedback and accessible markup.
- * Uses NaapButton for the search button.
+ * Enhanced SearchForm with better UX: auto focus, clear, keyboard support, ARIA.
+ * Improved layout and accessibility for all screens.
  */
 const SearchForm: React.FC<{
     onSearch: (term: string) => void | Promise<void>;
@@ -56,8 +57,21 @@ const SearchForm: React.FC<{
     label,
     inputProps,
 }) => {
+    const inputRef = React.useRef<HTMLInputElement>(null);
+
+    React.useEffect(() => {
+        // Blur input when not searching for better UX
+        if (inputRef.current && !isSearching) {
+            inputRef.current.blur();
+        }
+    }, [isSearching]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!searchTerm.trim()) {
+            inputRef.current?.focus();
+            return;
+        }
         setIsSearching(true);
         try {
             await onSearch(searchTerm);
@@ -66,27 +80,49 @@ const SearchForm: React.FC<{
         }
     };
 
+    const handleClear = () => {
+        setSearchTerm("");
+        inputRef.current?.focus();
+    };
+
     return (
         <form
-            className="flex items-center mt-2 sm:mt-0"
+            className="flex flex-row items-center w-full gap-2 md:gap-1 mt-2 md:mt-0"
             onSubmit={handleSubmit}
             role="search"
             aria-label={label}
+            autoComplete="off"
         >
-            <input
-                type="text"
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                placeholder={placeholder}
-                aria-label={placeholder}
-                className="px-2 py-1 border border-gray-200 bg-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-black w-32 md:w-48 h-8 transition-all"
-                disabled={isSearching}
-                {...inputProps}
-            />
-            {/* Use NaapButton for search */}
+            <div className="relative flex flex-1 min-w-0">
+                <input
+                    ref={inputRef}
+                    type="text"
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                    placeholder={placeholder}
+                    aria-label={placeholder}
+                    className="px-3 py-2 border border-gray-200 bg-white rounded-l-md rounded-r-none focus:outline-none focus:ring-2 focus:ring-blue-400 text-black w-full text-sm transition-all min-w-0"
+                    disabled={isSearching}
+                    {...inputProps}
+                />
+                {/* Clear button for UX */}
+                {searchTerm && (
+                    <button
+                        type="button"
+                        onClick={handleClear}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-0 outline-none text-gray-400 hover:text-blue-500 focus:text-blue-500 p-0"
+                        aria-label="Clear search"
+                        tabIndex={0}
+                    >
+                        <svg viewBox="0 0 18 18" width="16" height="16" fill="none">
+                            <path d="M5 5l8 8M13 5l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                    </button>
+                )}
+            </div>
             <NaapButton
                 type="submit"
-                className="rounded-l-none h-8 px-4"
+                className="h-10 md:h-8 px-4 md:px-3 text-xs md:text-sm rounded-l-none rounded-r-md whitespace-nowrap"
                 variant="primary"
                 loading={isSearching}
                 loadingText="Searching..."
@@ -94,8 +130,9 @@ const SearchForm: React.FC<{
                 icon={<LucideSearch className="h-4 w-4" />}
                 iconPosition="left"
                 tooltip={label}
+                aria-label={label}
             >
-                <span className="hidden sm:inline">Search</span>
+                <span className="hidden xs:inline sm:inline">Search</span>
                 <span className="sr-only">Search</span>
             </NaapButton>
         </form>
@@ -103,7 +140,8 @@ const SearchForm: React.FC<{
 };
 
 /**
- * The main landing tabs UI.
+ * LandingTabs with improved accessibility, clearer structure, and robust animations.
+ * Improved layout and usability for all screens.
  */
 export function LandingTabs({
     tabs,
@@ -125,6 +163,14 @@ export function LandingTabs({
     const [activeTab, setActiveTab] = React.useState<string>(
         defaultValue ?? (tabs[0]?.value ?? "")
     );
+    // Track the previous tab index for animation direction
+    const prevTabIndex = React.useRef<number>(
+        tabs.findIndex(t => t.value === (defaultValue ?? (tabs[0]?.value ?? "")))
+    );
+    const getCurrentTabIndex = React.useCallback(
+        () => tabs.findIndex(t => t.value === activeTab),
+        [tabs, activeTab]
+    );
 
     // Keep activeTab in sync with defaultValue and tabs changes, but avoid infinite updates
     React.useEffect(() => {
@@ -132,29 +178,62 @@ export function LandingTabs({
         setActiveTab(prev => (prev !== initialTab ? initialTab : prev));
     }, [defaultValue, tabs]);
 
+    // Update prevTabIndex on tab change
+    React.useEffect(() => {
+        prevTabIndex.current = getCurrentTabIndex();
+    }, [activeTab, getCurrentTabIndex]);
+
     const handleTabChange = React.useCallback(
         (value: string) => {
+            prevTabIndex.current = getCurrentTabIndex();
             setActiveTab(value);
+            setSearchTerm(""); // Clear search on tab switch (UX)
             onTabChange?.(value);
         },
-        [onTabChange]
+        [onTabChange, getCurrentTabIndex]
     );
 
     const renderPanels = React.useCallback(() => {
         if (!tabPanel) return null;
-        // Only render the active tab's panel for efficiency
         const tab = tabs.find(t => t.value === activeTab);
         if (!tab) return null;
         return (
-            <div className="mt-2" key={tab.value}>
-                {tabPanel(tab, true)}
-            </div>
+            <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                    key={tab.value}
+                    className="mt-3 sm:mt-4 w-full"
+                    initial={{
+                        opacity: 0,
+                        x: getCurrentTabIndex() > prevTabIndex.current ? 70 : -70,
+                        scale: 0.97,
+                    }}
+                    animate={{
+                        opacity: 1,
+                        x: 0,
+                        scale: 1,
+                        transition: { duration: 0.45, ease: [0.32, 0.72, 0, 1] },
+                    }}
+                    exit={{
+                        opacity: 0,
+                        x: getCurrentTabIndex() < prevTabIndex.current ? 70 : -70,
+                        scale: 0.97,
+                        transition: { duration: 0.32, ease: [0.32, 0.72, 0, 1] },
+                    }}
+                    aria-live="polite"
+                >
+                    {tabPanel(tab, true)}
+                </motion.div>
+            </AnimatePresence>
         );
-    }, [tabPanel, tabs, activeTab]);
+    }, [tabPanel, tabs, activeTab, getCurrentTabIndex]);
 
     return (
         <div
-            className={`flex flex-row items-center justify-center bg-black transition-all ${className}`}
+            className={`
+                flex flex-col gap-2 w-full max-w-full items-center justify-center
+                bg-white transition-all p-1 sm:p-0
+                ${className}
+            `}
         >
             {showTabs ? (
                 <Tabs
@@ -162,39 +241,65 @@ export function LandingTabs({
                     onValueChange={handleTabChange}
                     className="flex flex-col w-full"
                 >
-                    <div className="flex justify-between w-full h-full">
+                    <div
+                        className={`
+                            flex flex-col md:flex-row w-full h-full gap-2 md:gap-3
+                            items-stretch md:items-center
+                        `}
+                    >
                         <TabsList
-                            className={`bg-transparent p-0 flex space-x-2 ${tabListClassName}`}
+                            className={`
+                                bg-transparent p-0 flex flex-row space-x-1 md:space-x-2 w-full md:w-fit overflow-x-auto scrollbar-hide
+                                ${tabListClassName}
+                            `}
+                            tabIndex={-1}
                         >
                             {tabs.map((tab) => (
                                 <TabsTrigger
                                     key={tab.value}
                                     value={tab.value}
-                                    className="text-xs md:text-sm w-auto text-black hover:text-blue-400 px-2 py-1 font-semibold focus-visible:ring-1 focus-visible:ring-blue-400 rounded transition-colors border-b-2 border-transparent data-[state=active]:border-blue-400 data-[state=active]:text-blue-400"
+                                    className={`
+                                        text-sm md:text-base w-full md:w-auto min-w-[80px] md:min-w-[100px]
+                                        text-black hover:text-blue-500 px-2 md:px-3 py-2 md:py-2 font-semibold
+                                        focus-visible:ring-2 focus-visible:ring-blue-400 rounded transition-colors border-b-2 border-transparent
+                                        data-[state=active]:border-blue-500 data-[state=active]:text-blue-500
+                                        whitespace-nowrap
+                                        ${
+                                            activeTab === tab.value
+                                                ? "shadow-sm bg-blue-50"
+                                                : "bg-white"
+                                        }
+                                    `}
                                     aria-selected={activeTab === tab.value}
                                     tabIndex={0}
                                 >
                                     {tab.icon && (
-                                        <span className="mr-1" aria-hidden="true">
+                                        <motion.span
+                                            className="mr-1"
+                                            aria-hidden="true"
+                                            animate={activeTab === tab.value ? { scale: 1.18 } : { scale: 1 }}
+                                            transition={{ type: "spring", stiffness: 500, damping: 34 }}
+                                        >
                                             {tab.icon}
-                                        </span>
+                                        </motion.span>
                                     )}
                                     {tab.label}
                                 </TabsTrigger>
                             ))}
                         </TabsList>
-
                         {showSearch && onSearch && (
-                            <SearchForm
-                                onSearch={onSearch}
-                                isSearching={isSearching}
-                                setIsSearching={setIsSearching}
-                                searchTerm={searchTerm}
-                                setSearchTerm={setSearchTerm}
-                                placeholder={searchPlaceholder}
-                                label={searchLabel}
-                                inputProps={searchInputProps}
-                            />
+                            <div className="w-full md:w-auto mt-2 md:mt-0 md:ml-auto flex-shrink-0">
+                                <SearchForm
+                                    onSearch={onSearch}
+                                    isSearching={isSearching}
+                                    setIsSearching={setIsSearching}
+                                    searchTerm={searchTerm}
+                                    setSearchTerm={setSearchTerm}
+                                    placeholder={searchPlaceholder}
+                                    label={searchLabel}
+                                    inputProps={searchInputProps}
+                                />
+                            </div>
                         )}
                     </div>
 
@@ -202,7 +307,6 @@ export function LandingTabs({
                     {children}
                 </Tabs>
             ) : (
-                // In case showTabs is false, still show children
                 children
             )}
         </div>

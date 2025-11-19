@@ -1,17 +1,21 @@
-// app/(auth)/layout.tsx
 import Footer from '@/components/ui/landing/home/footer';
 import TopNavbar from '@/components/ui/landing/home/navbar';
+import { Providers } from '@/context/provider/provider';
 import { ReactNode } from 'react';
 
-export default function AuthLayout({ children }: { children: ReactNode }) {
+export default function PublicLayout({ children }: { children: ReactNode }) {
     return (
 
-
-        <main>
-            <TopNavbar />
-            {children}
-            <Footer />
-        </main>
+        <>
+            <Providers>
+                
+            <main>
+                <TopNavbar />
+                {children}
+                <Footer />
+            </main>
+</Providers>
+        </>
 
     );
 }
