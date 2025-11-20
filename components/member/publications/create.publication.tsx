@@ -26,24 +26,26 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FaTimes } from "react-icons/fa";
+import { useCreatePublication } from "@/hooks/usePublications";
+import { toast } from "sonner";
+import { uploadToCloudinary } from "@/app/api/cloudinary";
 
 const publicationSchema = z.object({
   title: z.string().min(2, { message: "Title is required" }),
   tags: z.string().optional(),
   category: z.string().min(1, { message: "Category is required" }),
   allowComments: z.boolean().optional(),
-  description: z.string().min(2, { message: "Description is required" }),
+  content: z.string().min(2, { message: "Description is required" }),
   // Images handled separately
 });
 
 type PublicationInput = z.infer<typeof publicationSchema>;
 
 const categories = [
-  { value: "science", label: "Science" },
-  { value: "engineering", label: "Engineering" },
-  { value: "mathematics", label: "Mathematics" },
-  { value: "technology", label: "Technology" },
-  { value: "other", label: "Other" },
+  { value: "News", label: "News" },
+  { value: "Engineering", label: "Engineering" },
+  { value: "Pilot", label: "Pilot" },
+  { value: "General", label: "General" },
 ];
 
 // Improved pill component for tags
@@ -89,36 +91,80 @@ function TagPill({
   );
 }
 
-export default function CreatePublicationPage() {
+export default function CreatePublicationComponent() {
   const form = useForm<PublicationInput>({
     resolver: zodResolver(publicationSchema),
     defaultValues: {
       title: "",
       tags: "",
       category: "",
-      allowComments: false,
-      description: "",
+      // allowComments: false,
+      content: "",
     },
   });
 
   const [submitting, setSubmitting] = React.useState(false);
+  const [imageFile, setImageFile] = React.useState<File | null>(null);
 
-  // Placeholder upload handler
-  const handleDrop = (files: FileList | null) => {};
+  const createPublication = useCreatePublication();
+
+  // Use DropImageDual and store file in component state
+  const handleDrop = (files: FileList | null) => {
+    if (files && files.length > 0) {
+      setImageFile(files[0]);
+    } else {
+      setImageFile(null);
+    }
+  };
+
+  // Pass handleDrop to DropImageDual as prop (assumes DropImageDual supports an onDrop prop)
+  // Adjust to your DropImageDual signature as needed.
 
   const onSubmit = async (values: PublicationInput) => {
     setSubmitting(true);
-    await new Promise((res) => setTimeout(res, 900));
-    setSubmitting(false);
-    alert("Publication submitted!\n\n" + JSON.stringify(values, null, 2));
+
+    let imageUrl: string | null = null;
+    if (imageFile) {
+      imageUrl = await uploadToCloudinary(imageFile);
+    }
+
+    // Merge values + image url, prepare payload for creation
+    const payload = {
+      title: values.title,
+      content: values.content,
+      category: values.category,
+      image: imageUrl || "",
+    };
+
+    console.log('payload', payload)
+    try {
+      await createPublication.mutateAsync(payload);
+      setSubmitting(false);
+      toast.success(
+        <>
+          <div className="font-bold mb-1">Publication submitted!</div>
+          <div className="text-sm text-[#244]">Your publication has been submitted and is awaiting approval.</div>
+        </>
+      );
+      form.reset();
+      setImageFile(null); // clear image after successful submission
+    } catch (error: any) {
+      setSubmitting(false);
+      toast.error(
+        <span>
+          Failed to submit publication:{" "}
+          {error?.message || "Unknown error. Please try again."}
+        </span>
+      );
+    }
   };
 
   const handleDraft = () => {
-    alert("Draft saved (not really, implement me)!");
+    toast.info("Draft saved (not really, implement me)!");
   };
 
   return (
-    <div className="max-w-full mx-auto px-4 py-7 bg-white shadow-sm rounded-lg">
+    <div className="max-w-full mx-auto px-4  py-7 bg-white shadow-sm rounded-lg">
       <h1 className="text-2xl font-bold mb-4 text-[#16355D]">
         Create New Publication
       </h1>
@@ -317,7 +363,7 @@ export default function CreatePublicationPage() {
           {/* Description */}
           <FormField
             control={form.control}
-            name="description"
+            name="content"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[#203040] font-medium mb-1 block">
@@ -344,11 +390,26 @@ export default function CreatePublicationPage() {
                 (optional, recommended to attract more readers)
               </span>
             </FormLabel>
-            <DropImageDual />
+            {/* @ts-expect-error DropImageDual props typing needs update */}
+            <DropImageDual onDrop={handleDrop} imageFile={imageFile} />
+            {imageFile && (
+              <div className="text-xs text-gray-500 mt-2 flex items-center gap-2">
+                <span>Selected file:</span>
+                <span className="font-mono">{imageFile.name}</span>
+                <button
+                  type="button"
+                  onClick={() => setImageFile(null)}
+                  aria-label="Remove selected image"
+                  className="text-red-600 hover:underline ml-2"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-row items-center justify-end gap-3 pt-3">
+          <div className="flex flex-row items-center pb-20 justify-end gap-3 pt-3">
             <NaapButton
               type="button"
               variant="ghost"

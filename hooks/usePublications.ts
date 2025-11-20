@@ -1,8 +1,9 @@
 import { createPublication, fetchAllPublications, getSinglePublication } from "@/app/api/publication/publication";
+import { IPublication } from "@/app/api/publication/types";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const usePublications = () => {
-    return useQuery({
+    return useQuery<IPublication[]>({
         queryKey: ['publications'],
         queryFn: fetchAllPublications
     })
@@ -20,8 +21,8 @@ export const useCreatePublication = () => {
 };
 
 export const useGetSinglePublication = (id: string) => {
-    return useQuery({
-        queryKey: ['single_publication'],
-        queryFn: ()=> getSinglePublication(id)
+    return useQuery<IPublication>({
+        queryKey: ['single_publication', id],
+        queryFn: () => getSinglePublication(id)
     })
 }

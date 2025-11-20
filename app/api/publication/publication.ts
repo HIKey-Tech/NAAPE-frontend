@@ -10,10 +10,10 @@ export async function fetchAllPublications() {
     }
 
 }
-
+``
 export async function getSinglePublication(id: string){
     try {
-        const response = await api.get("/publications/${id}")
+        const response = await api.get(`/publications/${id}`)
         return response.data;
         
     } catch (error) {
@@ -24,7 +24,7 @@ export async function getSinglePublication(id: string){
 
 export async function createPublication(data: any){
     try {
-        const response = api.post("/publications", data)
+        const response = await api.post("/publications", data)
         return response
         
     } catch (error) {

@@ -2,9 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import DashboardCard from "@/components/member/component/dashboardcard";
-import { PublicationTable, Publication } from "../components/table";
+import { PublicationTable } from "../components/table";
 import { useAuth } from "@/context/authcontext";
-import { fetchAllPublications } from "@/app/api/publication/publication";
 import { usePublications } from "@/hooks/usePublications";
 
 // Dashboard stats API shape (example, adjust as needed)
@@ -57,10 +56,7 @@ const AdminOverview: React.FC = () => {
     const [stats, setStats] = useState<DashboardStats>(DEFAULT_STATS);
     const [statsLoading, setStatsLoading] = useState<boolean>(true);
 
-    const [publications, setPublications] = useState<Publication[]>([]);
-    const [pubLoading, setPubLoading] = useState<boolean>(true);
-    const { data } = usePublications()
-    console.log('all pubs', data)
+    const { data: publications, isPending: pubLoading } = usePublications()
 
 
     // Fetch Dashboard Stats
@@ -89,26 +85,7 @@ const AdminOverview: React.FC = () => {
         fetchStats();
     }, []);
 
-    // Fetch publications (recent 9)
-    useEffect(() => {
-        async function fetchPublications() {
-            try {
-                setPubLoading(true);
-                // Replace with your real API endpoint & query as needed
-                const res = await fetch("/api/admin/publications?limit=9");
-                if (!res.ok) throw new Error("Failed to fetch publications");
-                const data = await res.json();
-                // Expect data to be: { publications: Publication[] }
-                setPublications(Array.isArray(data.publications) ? data.publications : []);
-            } catch (err) {
-                // Optionally handle error
-                setPublications([]);
-            } finally {
-                setPubLoading(false);
-            }
-        }
-        fetchPublications();
-    }, []);
+   
 
     // Prepare dashboard stats for cards (order must match icons)
     const cards = [
@@ -172,7 +149,7 @@ const AdminOverview: React.FC = () => {
                 {pubLoading ? (
                     <div className="py-16 text-center text-gray-400 text-base font-semibold">Loading...</div>
                 ) : (
-                    <PublicationTable publications={publications} />
+                    <PublicationTable publications={publications ?? []} />
                 )}
             </div>
         </section>

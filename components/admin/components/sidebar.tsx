@@ -3,7 +3,6 @@
 import {
     FaHome,
     FaSearch,
-    FaNewspaper,
     FaBook,
     FaPlusSquare,
     FaChalkboardTeacher,
@@ -162,17 +161,17 @@ const navLinksMain: NavLink[] = [
     {
         label: "Members",
         icon: FaBriefcase, // Use FaBriefcase for Members (more representative of "members" than "ChalkboardTeacher")
-        href: "/training"
+        href: "/admin/training"
     },
     {
         label: "Events",
         icon: FaCalendarAlt, // Events: Calendar icon is correct
-        href: "/events"
+        href: "/admin/events"
     },
     {
         label: "Forum",
         icon: FaComments, // Forum: Comments/discussion
-        href: "/forum"
+        href: "/admin/forum"
     }
 ];
 
@@ -181,14 +180,14 @@ const publicationsDropdownLinks: NavLink[] = [
     {
         label: "All Publications",
         icon: FaBook,
-        href: "/publications",
+        href: "/admin/publications",
         group: "Publications",
         description: "Browse all publications"
     },
     {
         label: "Create Publication",
         icon: FaPlusSquare,
-        href: "/publications/new",
+        href: "/admin/publications/new",
         group: "Publications",
         description: "Add a new publication"
     },
@@ -216,7 +215,7 @@ const navLinksSecondary: NavLink[] = [
     {
         label: "Settings",
         icon: FaCog,
-        href: "/settings"
+        href: "/admin/settings"
     }
 ];
 
@@ -548,7 +547,7 @@ function MobileBottomNavBar({
             key: "home",
             icon: FaHome,
             label: "Home",
-            href: "/dashboard"
+            href: "/admin/dashboard"
         },
         {
             key: "publications",
@@ -561,19 +560,19 @@ function MobileBottomNavBar({
             key: "training",
             icon: FaChalkboardTeacher,
             label: "Training",
-            href: "/training"
+            href: "/admin/training"
         },
         {
             key: "events",
             icon: FaCalendarAlt,
             label: "Events",
-            href: "/events"
+            href: "/admin/events"
         },
         {
             key: "forum",
             icon: FaComments,
             label: "Forum",
-            href: "/forum"
+            href: "/admin/forum"
         }
     ];
 
