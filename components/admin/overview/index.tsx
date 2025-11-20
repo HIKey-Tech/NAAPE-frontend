@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import DashboardCard from "@/components/member/component/dashboardcard";
 import { PublicationTable, Publication } from "../components/table";
 import { useAuth } from "@/context/authcontext";
-import { fetchAllPublications } from "@/app/api/publication/get.publication";
+import { fetchAllPublications } from "@/app/api/publication/publication";
 import { usePublications } from "@/hooks/usePublications";
 
 // Dashboard stats API shape (example, adjust as needed)
