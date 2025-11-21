@@ -1,8 +1,9 @@
 import React, { useRef, useEffect } from "react";
+import type { IPublication } from "@/app/api/publication/types";
 
 // Centralized status style config with semantic color keys
 const STATUS_STYLES: Record<
-    "pending" | "published" | "rejected",
+    "pending" | "approved" | "rejected",
     { label: string; bg: string; text: string }
 > = {
     pending: {
@@ -10,8 +11,8 @@ const STATUS_STYLES: Record<
         bg: "bg-[#FFF2CA]",
         text: "text-[#E2A900]",
     },
-    published: {
-        label: "Published",
+    approved: {
+        label: "Approved",
         bg: "bg-[#DAFBE8]",
         text: "text-[#27AE60]",
     },
@@ -24,13 +25,13 @@ const STATUS_STYLES: Record<
 
 type PublicationStatus = keyof typeof STATUS_STYLES;
 
+// Accept an IPublication object directly as the prop
 type PublicationCardProps = {
-    imageUrl: string;
-    title: string;
-    author: string;
-    date: string;
-    status: PublicationStatus;
+    publication?: IPublication | null;
     className?: string;
+    isAdmin?: boolean;
+    onAccept?: () => void;
+    onReject?: () => void;
 };
 
 // Helper: Intelligently splits a long title for improved 2-line layout
@@ -79,19 +80,58 @@ function injectAnimationCSS() {
     }
 }
 
+// Defensive against undefined/null publication
 const PublicationCard: React.FC<PublicationCardProps> = ({
-    imageUrl,
-    title,
-    author,
-    date,
-    status,
+    publication,
     className = "",
+    isAdmin = false,
+    onAccept,
+    onReject
 }) => {
-    const statusInfo = STATUS_STYLES[status] ?? STATUS_STYLES["pending"];
+    // Guard clause for undefined or null publication
+    if (!publication) {
+        return (
+            <div
+                className={`
+                    ${ANIMATION_CLASS}
+                    bg-white border border-[#E5EAF2]
+                    rounded-2xl shadow-sm
+                    max-w-full w-full overflow-hidden
+                    flex flex-col items-center justify-center
+                    text-[#96A6BF]
+                    py-12
+                    ${className}
+                `}
+                style={{ boxShadow: "0 1px 6px rgba(30,41,59,0.05)" }}
+            >
+                Invalid publication data.
+            </div>
+        );
+    }
+
+    // Use fields directly from the publication
+    const {
+        title,
+        content,
+        author,
+        createdAt,
+        image,
+        status
+    } = publication;
+
+    // Map status for display: show "Published" if "approved"
+    const statusValue: PublicationStatus = status === "approved" ? "approved" : status;
+    const statusInfo = STATUS_STYLES[statusValue] ?? STATUS_STYLES["pending"];
+    const visibleStatusLabel =
+        statusValue === "approved"
+            ? "Published"
+            : statusInfo.label;
+
     const [mainTitle, subTitle] = splitTitle(title);
+
     const cardRef = useRef<HTMLDivElement | null>(null);
 
-    // Fade-in on viewport (intersection observer):
+    // Fade-in on viewport (intersection observer)
     useEffect(() => {
         injectAnimationCSS();
         const card = cardRef.current;
@@ -120,7 +160,6 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                                   timer = setTimeout(() => {
                                       card.classList.add("visible");
                                   }, 45 + Math.random() * 120);
-                                //   observer.disconnect();
                               }
                           });
                       }
@@ -159,7 +198,7 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                 lg:h-48
             `}>
                 <img
-                    src={imageUrl}
+                    src={image || "/images/plane.jpg"}
                     alt={title}
                     className="object-cover w-full h-full transition-transform duration-400 group-hover:scale-[1.07]"
                     draggable={false}
@@ -212,12 +251,28 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                             mt-2 sm:mt-0 self-start sm:self-auto
                             transition-all duration-200
                         `}
-                        title={statusInfo.label}
+                        title={visibleStatusLabel}
                     >
                         <span className="text-[18px] sm:text-[22px] mr-1 leading-none">●</span>
-                        {statusInfo.label}
+                        {visibleStatusLabel}
                     </span>
                 </div>
+                {/* Publication Content - NOW ABOVE AUTHOR/DATE */}
+                {content && (
+                    <div
+                        className="
+                            text-[14px] sm:text-[15px]
+                            text-[#384D6B]
+                            mt-2 sm:mt-2.5
+                            line-clamp-2 sm:line-clamp-3
+                            overflow-hidden
+                            break-words
+                        "
+                        title={content}
+                    >
+                        {content}
+                    </div>
+                )}
                 <div
                     className="
                         text-[13px] sm:text-[15px]
@@ -229,8 +284,31 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                         whitespace-nowrap
                     "
                 >
-                    by {author} &ndash; {date}
+                    by {author?.name ?? "Unknown"} &ndash; {createdAt ? new Date(createdAt).toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric"
+                    }) : "Unknown date"}
                 </div>
+                {/* ADMIN ACTION BUTTONS */}
+                {isAdmin && statusValue === "pending" && (
+                    <div className="mt-3 flex gap-3 justify-end">
+                        <button
+                            className="bg-green-100 text-green-700 hover:bg-green-200 transition-colors font-medium px-3 py-1 rounded text-[13px] focus:outline-none"
+                            type="button"
+                            onClick={onAccept}
+                        >
+                            Accept
+                        </button>
+                        <button
+                            className="bg-red-100 text-red-700 hover:bg-red-200 transition-colors font-medium px-3 py-1 rounded text-[13px] focus:outline-none"
+                            type="button"
+                            onClick={onReject}
+                        >
+                            Reject
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

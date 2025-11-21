@@ -2,10 +2,10 @@ import { approvePublication, createPublication, fetchAllPublications, getSingleP
 import { IPublication } from "@/app/api/publication/types";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-export const usePublications = () => {
+export const usePublications = (status?: string) => {
     return useQuery<IPublication[]>({
-        queryKey: ['publications'],
-        queryFn: fetchAllPublications
+        queryKey: ['publications', status],
+        queryFn: () => fetchAllPublications(status)
     })
 }
 

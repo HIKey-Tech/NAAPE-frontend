@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -17,6 +17,7 @@ interface CommonHeaderProps {
   setDateRange: (range: { from?: Date; to?: Date }) => void;
   searchPlaceholder?: string;
   sortLabel?: string;
+  extraFilters?: ReactNode;
 }
 
 export const FilterHeader: React.FC<CommonHeaderProps> = ({
@@ -29,6 +30,7 @@ export const FilterHeader: React.FC<CommonHeaderProps> = ({
   setDateRange,
   searchPlaceholder,
   sortLabel,
+  extraFilters,
 }) => (
   <div
     className="sticky w-full px-6 bg-white pb-2 mb-7 z-30"
@@ -42,13 +44,14 @@ export const FilterHeader: React.FC<CommonHeaderProps> = ({
       {title}
     </h1>
     <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between mb-2">
-      <div className="flex gap-2 flex-1 min-w-0">
+      <div className="flex flex-col flex-1 min-w-0 gap-2">
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={searchPlaceholder || `Search ${title}...`}
           className="w-full max-w-xs text-[15px] rounded-md"
         />
+        {extraFilters && <div>{extraFilters}</div>}
       </div>
       <div className="flex gap-3 items-center shrink-0 mt-2 md:mt-0">
         <Button

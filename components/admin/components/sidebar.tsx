@@ -10,7 +10,8 @@ import {
     FaBriefcase,
     FaComments,
     FaCog,
-    FaSignOutAlt
+    FaSignOutAlt,
+    FaUsers
 } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
@@ -160,8 +161,8 @@ const navLinksMain: NavLink[] = [
     },
     {
         label: "Members",
-        icon: FaBriefcase, // Use FaBriefcase for Members (more representative of "members" than "ChalkboardTeacher")
-        href: "/admin/training"
+        icon: FaUsers, // FaUsers better represents a group of members
+        href: "/admin/members"
     },
     {
         label: "Events",

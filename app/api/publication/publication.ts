@@ -1,10 +1,11 @@
 import api from "@/lib/axios";
 
 
-export async function fetchAllPublications() {
+export async function fetchAllPublications(status?: string) {
     try {
-        const response = await api.get("/publications");
-        return response.data.data;
+        const url = status ? `/publications?status=${status}` : "/publications";
+        const res = await api.get(url);
+        return res.data.data; //
     } catch (error: any) {
         throw error;
     }
