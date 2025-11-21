@@ -13,7 +13,11 @@ const PUBLICATION_STATUSES = [
     { label: "Rejected", value: "rejected" },
 ];
 
-export default function AllPublicationsPage() {
+interface PubProps {
+isAdmin: boolean
+}
+
+export default function AllPublicationsPage({ isAdmin}: PubProps) {
     const [search, setSearch] = useState("");
     const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({
         from: undefined,
@@ -131,7 +135,7 @@ export default function AllPublicationsPage() {
                         <PublicationCard
                             key={pub._id}
                             publication={pub}
-                            isAdmin={true}
+                            isAdmin={isAdmin}
                         />
                     ))
                 )}

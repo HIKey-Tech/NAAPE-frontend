@@ -6,7 +6,7 @@ export default function PublicationPage() {
 
     return (
         <main className="">
-            < AllPublicationsPage />
+            < AllPublicationsPage isAdmin={false} />
         </main>
     );
 }
