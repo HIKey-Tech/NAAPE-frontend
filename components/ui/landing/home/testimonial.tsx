@@ -69,7 +69,7 @@ export default function TestimonialsSection() {
     // Clean up and reset for desktop (show all)
     setActive(0);
     if (intervalRef.current) clearInterval(intervalRef.current);
-    return () => {};
+    return () => { };
   }, [isMobile]);
 
   // Dots navigation
