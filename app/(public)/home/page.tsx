@@ -7,13 +7,13 @@ import { motion, useAnimation } from "framer-motion";
 import { LuPlane } from "react-icons/lu";
 import Hero from "@/components/ui/landing/home/hero";
 import AboutSection from "@/components/ui/landing/home/about";
-import WhyJoinSection from "@/components/ui/landing/membership/why.join";
 import LatestNews from "@/components/ui/landing/home/latest";
 import UpcomingEvents from "@/components/ui/landing/home/events";
 import PartnersSection from "@/components/ui/landing/home/partners";
 import TestimonialsSection from "@/components/ui/landing/home/testimonial";
 import FAQSection from "@/components/ui/landing/home/faq";
 import JoinCommunitySection from "@/components/ui/landing/home/join";
+import WhyJoinSection from "@/components/ui/landing/home/why";
 
 // Define the section anchors
 const SECTIONS = [
