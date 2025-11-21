@@ -26,6 +26,33 @@ import { motion } from "framer-motion";
 
 import { Eye, EyeOff, User, Mail, Lock, ShieldCheck } from "lucide-react";
 
+/**
+ * implement this @useMembers.ts (8-17) here:
+ * Exposes: useMembers() - which returns { members }
+ * where members is an array of member objects, each with properties:
+ *   name: string, avatarUrl: string, testimonial: string, role: string
+ * Example:
+ *   [
+ *     { name: "Lottana Chika", avatarUrl: "/images/avatar-female.jpg", testimonial: "...", role: "Member, NAAPE" },
+ *     { name: "...", ... }
+ *   ]
+ */
+function useMembers() {
+    // In reality, you might fetch this, but here it's hardcoded as per instructions
+    return {
+        members: [
+            {
+                name: "Lottana Chika",
+                avatarUrl: "/images/leader.png",
+                testimonial:
+                    'With NAAPE, your customer relationship can be as enjoyable as your product. When it\'s this easy, customers keep on coming back.',
+                role: "Member, NAAPE",
+            },
+            // Additional member samples could go here
+        ],
+    };
+}
+
 const signupSchema = z
     .object({
         name: z
@@ -61,6 +88,8 @@ export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
 
+    const { members } = useMembers();
+
     const form = useForm<SignupFormValues>({
         resolver: zodResolver(signupSchema),
         defaultValues: {
@@ -79,15 +108,34 @@ export default function RegisterPage() {
                 email: values.email.trim(),
                 password: values.password,
             });
-            toast.success("Registration Successful", {
-                description: "Welcome! Please log in.",
-            });
+            toast.success(
+                <div>
+                    <div className="font-semibold">Registration Successful 🎉</div>
+                    <div className="text-sm mt-1">Welcome to NAAPE!</div>
+                </div>, 
+                {
+                    duration: 4000,
+                    position: "top-center",
+                    icon: "👏",
+                    className: "bg-green-50 border border-green-200 text-green-700"
+                }
+            );
             router.push("/dashboard");
         } catch (error: any) {
-            toast.error("Registration Failed", {
-                description:
-                    error?.response?.data?.message ?? "Please try again.",
-            });
+            toast.error(
+                <div>
+                    <div className="font-semibold">Registration Failed</div>
+                    <div className="text-sm mt-1">
+                        {error?.response?.data?.message ?? "An unexpected error occurred. Please try again."}
+                    </div>
+                </div>, 
+                {
+                    duration: 5000,
+                    position: "top-center",
+                    icon: "❌",
+                    className: "bg-red-50 border border-red-200 text-red-700"
+                }
+            );
         } finally {
             setLoading(false);
         }
@@ -406,37 +454,39 @@ export default function RegisterPage() {
                         </motion.div>
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0A173550] via-transparent to-transparent h-32 rounded-b-[16px] pointer-events-none z-10" />
                         {/* Testimonial Card */}
-                        <motion.div
-                            className="absolute bottom-6 left-6 right-6 bg-white/95 rounded-lg p-4 shadow-lg flex flex-col gap-2 max-w-[364px] z-20"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.7, delay: 0.7, ease: "easeOut" }}
-                        >
-                            <blockquote className="text-[14px] font-medium text-[#193853] italic opacity-90">
-                                &quot;With NAAPE, your customer relationship can be as enjoyable as your product.
-                                When it&#39;s this easy, customers keep on coming back.&quot;
-                            </blockquote>
-                            <div className="flex items-center gap-2 mt-1">
-                                <div className="h-8 w-8 rounded-full overflow-hidden bg-[#eeeeee] flex items-center justify-center">
-                                    <Image
-                                        src="/images/avatar-female.jpg"
-                                        alt="Member profile"
-                                        width={32}
-                                        height={32}
-                                        className="object-cover"
-                                        priority
-                                    />
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="font-semibold text-xs text-[#2852B4] leading-none">
-                                        Lottana Chika
-                                    </span>
-                                    <span className="text-xs text-[#5a6472] leading-none">
-                                        Member, NAAPE
-                                    </span>
-                                </div>
-                            </div>
-                        </motion.div>
+                        {/* Use members from useMembers */}
+                        {members && members.length > 0 && (
+                          <motion.div
+                              className="absolute bottom-6 left-6 right-6 bg-white/95 rounded-lg p-4 shadow-lg flex flex-col gap-2 max-w-[364px] z-20"
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.7, delay: 0.7, ease: "easeOut" }}
+                          >
+                              <blockquote className="text-[14px] font-medium text-[#193853] italic opacity-90">
+                                &quot;{members[0].testimonial}&quot;
+                              </blockquote>
+                              <div className="flex items-center gap-2 mt-1">
+                                  <div className="h-8 w-8 rounded-full overflow-hidden bg-[#eeeeee] flex items-center justify-center">
+                                      <Image
+                                          src={members[0].avatarUrl}
+                                          alt="Member profile"
+                                          width={32}
+                                          height={32}
+                                          className="object-cover"
+                                          priority
+                                      />
+                                  </div>
+                                  <div className="flex flex-col">
+                                      <span className="font-semibold text-xs text-[#2852B4] leading-none">
+                                          {members[0].name}
+                                      </span>
+                                      <span className="text-xs text-[#5a6472] leading-none">
+                                          {members[0].role}
+                                      </span>
+                                  </div>
+                              </div>
+                          </motion.div>
+                        )}
                     </motion.div>
                 </motion.div>
             </motion.div>

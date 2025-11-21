@@ -1,7 +1,21 @@
 "use client";
 
-import { getAllMembers, getMemberDashboardStats } from "@/app/api/member/member";
-import { useQuery } from "@tanstack/react-query";
+import { createMember, getAllMembers, getMemberDashboardStats } from "@/app/api/member/member";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+
+
+export const useCreateMember = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: createMember,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["members"] });
+        },
+    });
+};
+
 
 export const useMembers = () => {
     return useQuery({
