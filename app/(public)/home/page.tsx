@@ -1,19 +1,19 @@
 "use client"
-import Hero from "../../components/ui/landing/home/hero";
-import OurLegacy from "../../components/ui/landing/home/legacy";
-import AboutSection from "../../components/ui/landing/home/about";
-import WhyJoinSection from "../../components/ui/landing/home/why";
-import LatestNews from "../../components/ui/landing/home/latest";
-import UpcomingEvents from "../../components/ui/landing/home/events";
-import PartnersSection from "../../components/ui/landing/home/partners";
-import TestimonialsSection from "../../components/ui/landing/home/testimonial";
-import FAQSection from "../../components/ui/landing/home/faq";
-import JoinCommunitySection from "../../components/ui/landing/home/join";
+
 import TopNavbar from "@/components/ui/landing/home/navbar";
 import Footer from "@/components/ui/landing/home/footer";
 import { useRef, useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { LuPlane } from "react-icons/lu";
+import Hero from "@/components/ui/landing/home/hero";
+import AboutSection from "@/components/ui/landing/home/about";
+import WhyJoinSection from "@/components/ui/landing/membership/why.join";
+import LatestNews from "@/components/ui/landing/home/latest";
+import UpcomingEvents from "@/components/ui/landing/home/events";
+import PartnersSection from "@/components/ui/landing/home/partners";
+import TestimonialsSection from "@/components/ui/landing/home/testimonial";
+import FAQSection from "@/components/ui/landing/home/faq";
+import JoinCommunitySection from "@/components/ui/landing/home/join";
 
 // Define the section anchors
 const SECTIONS = [
