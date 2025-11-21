@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect, useRef, useCallback } from "react";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import {
     FaArrowRight,
@@ -11,7 +10,7 @@ import {
     FaChalkboardTeacher,
     FaUserFriends,
 } from "react-icons/fa";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { LegacyStatCard } from "@/components/ui/custom/legacy.card";
 
 // Animation variants
@@ -92,7 +91,7 @@ const ctaVariants = {
     },
 };
 
-// Slideshow images
+// Gallery images (remove slider, modern grid gallery)
 const IMAGES = [
     {
         src: "/images/event1.jpg",
@@ -115,22 +114,6 @@ const IMAGES = [
         alt: "Aircraft parked on tarmac",
     },
 ];
-
-const slideMotion = {
-    initial: { opacity: 0, x: 56, scale: 0.96 },
-    animate: {
-        opacity: 1,
-        x: 0,
-        scale: 1,
-        transition: { duration: 0.4, type: "spring", stiffness: 60, damping: 13 },
-    },
-    exit: {
-        opacity: 0,
-        x: -56,
-        scale: 0.96,
-        transition: { duration: 0.34 },
-    },
-};
 
 // Stats section
 const stats = [
@@ -162,25 +145,6 @@ const stats = [
 ];
 
 export default function Hero() {
-    const [current, setCurrent] = useState(0);
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const AUTO_SLIDE_DELAY = 5000;
-
-    useEffect(() => {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(
-            () => setCurrent((prev) => (prev + 1) % IMAGES.length),
-            AUTO_SLIDE_DELAY
-        );
-        return () => {
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        };
-    }, [current]);
-
-    const goToSlide = useCallback((idx: number) => {
-        setCurrent(idx);
-    }, []);
-
     return (
         <section className="relative w-full h-screen min-h-screen flex flex-col md:flex-col items-center justify-center bg-gradient-to-br from-[#F5F7FA] to-[#e5ecfa] overflow-hidden px-4 py-8 ">
             {/* Decorative aviation-themed background */}
@@ -246,47 +210,53 @@ export default function Hero() {
                     </motion.div>
                 </motion.div>
 
-                {/* Right: Slideshow */}
+                {/* Right: Modern Image Gallery */}
                 <motion.div
                     className="flex-1 flex w-full justify-center items-center"
                     variants={rightVariants as any}
                 >
-                    <div className="relative w-full h-fit flex items-center justify-center max-w-[420px] aspect-square">
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={IMAGES[current].src}
-                                className="rounded-2xl shadow-xl overflow-hidden border border-[#E6EAF1] bg-white w-full h-full flex items-center justify-center absolute inset-0"
-                                initial={slideMotion.initial}
-                                animate={slideMotion.animate as any}
-                                exit={slideMotion.exit}
-                            >
-                                <Image
-                                    src={IMAGES[current].src}
-                                    alt={IMAGES[current].alt}
-                                    width={420}
-                                    height={420}
-                                    className="object-cover w-full h-full"
-                                    priority
-                                    draggable={false}
-                                />
-                            </motion.div>
-                        </AnimatePresence>
-                        {/* Slideshow dots */}
-                        <div className="absolute z-10 bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                    {/* Increase size: make max-w-[550px] (was 420px), and aspect-square remains */}
+                    <div className="relative w-full flex items-center justify-center max-w-[550px] aspect-square">
+                        <motion.div
+                            // Optionally, increase grid gap for large images
+                            className="grid grid-cols-2 grid-rows-3 gap-4 w-full h-full rounded-2xl overflow-hidden"
+                            initial={{ opacity: 0, y: 40 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.7, type: "spring", stiffness: 70, damping: 15 }}
+                        >
                             {IMAGES.map((img, idx) => (
-                                <button
+                                <div
                                     key={img.src}
-                                    aria-label={`Show slide ${idx + 1}`}
-                                    onClick={() => goToSlide(idx)}
-                                    className={`w-full h-2.5 rounded-full border outline-none transition
-                    ${idx === current
-                                            ? "bg-[#2852B4] border-[#2852B4] shadow-lg scale-110"
-                                            : "bg-white/80 border-[#CED6E0] hover:bg-[#e8f0ff] hover:scale-105"}`}
-                                    tabIndex={0}
-                                    type="button"
-                                />
+                                    className={`
+                                        ${idx === 0
+                                            ? "row-span-2 col-span-1"
+                                            : idx === 1
+                                                ? "col-span-1 row-span-1"
+                                                : idx === 2
+                                                    ? "col-span-1 row-span-2"
+                                                    : "col-span-1 row-span-1"}
+                                        relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 group
+                                    `}
+                                    // Increase the minHeight for larger display
+                                    style={
+                                        idx === 0 || idx === 2
+                                            ? { minHeight: "190px", minWidth: "0" }
+                                            : { minHeight: "110px", minWidth: "0" }
+                                    }
+                                >
+                                    <Image
+                                        src={img.src}
+                                        alt={img.alt}
+                                        fill
+                                        className="object-cover object-center group-hover:scale-[1.045] transition-transform duration-300"
+                                        draggable={false}
+                                        sizes="(max-width: 550px) 100vw, 550px"
+                                    />
+                                    <span className="absolute left-0 bottom-0 w-full h-16 bg-gradient-to-t from-[#213765ad] to-transparent pointer-events-none"></span>
+                                    {/* <span className="absolute left-1 bottom-2 text-xs xs:text-sm font-medium text-white drop-shadow">{img.alt}</span> */}
+                                </div>
                             ))}
-                        </div>
+                        </motion.div>
                     </div>
                 </motion.div>
             </motion.div>
