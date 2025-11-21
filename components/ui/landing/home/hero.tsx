@@ -146,7 +146,7 @@ const stats = [
 
 export default function Hero() {
     return (
-        <section className="relative w-full h-screen min-h-screen flex flex-col md:flex-col items-center justify-center bg-gradient-to-br from-[#F5F7FA] to-[#e5ecfa] overflow-hidden px-4 py-8 ">
+        <section className="relative w-full h-full min-h-full flex flex-col md:flex-col items-center justify-center bg-gradient-to-br from-[#F5F7FA] to-[#e5ecfa] overflow-hidden px-4 py-8 ">
             {/* Decorative aviation-themed background */}
             <div
                 aria-hidden
