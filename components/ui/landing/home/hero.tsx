@@ -207,11 +207,11 @@ export default function Hero() {
                 {/* Left: Headline & CTA */}
                 <motion.div
                     className="flex-1 text-center md:text-left flex flex-col items-center md:items-start gap-6 md:gap-8"
-                    variants={leftVariants}
+                    variants={leftVariants as any}
                 >
                     <motion.h1
                         className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#232835] leading-tight md:leading-[1.11]"
-                        variants={headingVariants}
+                        variants={headingVariants as any}
                     >
                         Empowering Nigeria&apos;s
                         <br />
@@ -225,7 +225,7 @@ export default function Hero() {
                     </motion.p>
                     <motion.div
                         className="flex flex-col sm:flex-row gap-3 md:gap-5 mt-2 md:mt-4 w-full max-w-sm md:max-w-full items-center md:items-start"
-                        variants={ctaVariants}
+                        variants={ctaVariants as any}
                     >
                         <Link href="/register" className="w-full sm:w-auto" aria-label="Join NAAPE">
                             <NaapButton
@@ -249,7 +249,7 @@ export default function Hero() {
                 {/* Right: Slideshow */}
                 <motion.div
                     className="flex-1 flex w-full justify-center items-center"
-                    variants={rightVariants}
+                    variants={rightVariants as any}
                 >
                     <div className="relative w-full h-fit flex items-center justify-center max-w-[420px] aspect-square">
                         <AnimatePresence mode="wait">
@@ -257,7 +257,7 @@ export default function Hero() {
                                 key={IMAGES[current].src}
                                 className="rounded-2xl shadow-xl overflow-hidden border border-[#E6EAF1] bg-white w-full h-full flex items-center justify-center absolute inset-0"
                                 initial={slideMotion.initial}
-                                animate={slideMotion.animate}
+                                animate={slideMotion.animate as any}
                                 exit={slideMotion.exit}
                             >
                                 <Image
@@ -300,7 +300,7 @@ export default function Hero() {
                 {stats.map(({ icon, value, label }, idx) => (
                     <motion.div
                         key={idx}
-                        variants={leftVariants}
+                        variants={leftVariants as any}
                         whileHover={{ scale: 1.04, boxShadow: "0 8px 32px #2852B41a" }}
                     >
                         <LegacyStatCard

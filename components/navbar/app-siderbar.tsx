@@ -11,7 +11,7 @@ import {
     FaBriefcase,
     FaComments,
     FaCog,
-    FaSignOutAlt
+    FaSignOutAlt,
 } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
@@ -19,7 +19,7 @@ import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/authcontext";
 
-// Add animation & bottom nav styles
+// Animation & responsive styles for sidebar and mobile nav (inject once)
 const iconAnimationStyles = `
 @keyframes icon-bounce {
   0%, 100% { transform: translateY(0);}
@@ -64,7 +64,7 @@ const iconAnimationStyles = `
     background: #FAFCFE;
     border-top: 1px solid #E6EFFA;
     box-shadow: 0 0 6px 0 rgba(44,69,112,0.01), 0 -1px 0 0 #E6EFFA;
-    margin-top: 24px; /* Added: top margin 24 on mobile */
+    margin-top: 24px;
   }
   .mobile-bottom-nav ul {
     flex: 1 1 0;
@@ -137,7 +137,6 @@ const iconAnimationStyles = `
     display: none !important;
   }
 }
-/* Hide bottom nav on desktop */
 @media (min-width: 640px) {
   .mobile-bottom-nav { display: none !important; }
 }
@@ -146,70 +145,63 @@ const iconAnimationStyles = `
 type User = {
     name: string;
     email: string;
-    avatarUrl: string;
+    avatarUrl?: string;
 };
 
 type NavLink = {
     label: string;
     icon: React.ElementType;
     href?: string;
-    group?: string; // For grouping
+    group?: string;
     description?: string;
 };
 
-const user: User = {
-    name: "Engr. Aksem",
-    email: "engr.aksem@gmail.com",
-    avatarUrl: "/user-avatar.jpg",
-};
-
-// Main navigation links, excludes 'Create Publication'
+// Navigation Definitions
 const navLinksMain: NavLink[] = [
     {
         label: "Home",
         icon: FaHome,
-        href: "/dashboard"
+        href: "/dashboard",
     },
     {
         label: "Training & Certifications",
         icon: FaChalkboardTeacher,
-        href: "/training"
+        href: "/training",
     },
     {
         label: "Events",
         icon: FaCalendarAlt,
-        href: "/events"
+        href: "/events",
     },
     {
         label: "Forum",
         icon: FaComments,
-        href: "/forum"
-    }
+        href: "/forum",
+    },
 ];
 
-// Improved: Publication/News-related links, now with descriptions for better UX
 const publicationsDropdownLinks: NavLink[] = [
     {
         label: "All Publications",
         icon: FaBook,
         href: "/publications",
         group: "Publications",
-        description: "Browse all publications"
+        description: "Browse all publications",
     },
     {
         label: "Create Publication",
         icon: FaPlusSquare,
         href: "/publications/new",
         group: "Publications",
-        description: "Add a new publication"
+        description: "Add a new publication",
     },
     {
         label: "News",
         icon: FaNewspaper,
         href: "/news",
         group: "News",
-        description: "Latest news updates"
-    }
+        description: "Latest news updates",
+    },
 ];
 
 const organizePublicationTabsForMobile = (list: NavLink[]) => {
@@ -218,41 +210,37 @@ const organizePublicationTabsForMobile = (list: NavLink[]) => {
         ...list.filter(l => l.group === "News"),
     ];
 };
-
-const publicationsDropdownLinksMobile: NavLink[] = organizePublicationTabsForMobile([
-    ...publicationsDropdownLinks
-]);
+const publicationsDropdownLinksMobile: NavLink[] = organizePublicationTabsForMobile(publicationsDropdownLinks);
 
 const navLinksSecondary: NavLink[] = [
     {
         label: "Settings",
         icon: FaCog,
-        href: "/settings"
-    }
+        href: "/settings",
+    },
 ];
 
-function UserAvatar({ user }: { user: User }) {
+// Profile Components
+function SidebarProfileCard({ user }: { user: User }) {
     return (
-        <div className="flex items-center gap-3 px-3 py-3">
+        <div className="flex items-center gap-3 px-4 py-3">
             <Image
-                src={user.avatarUrl}
+                src={user.avatarUrl ?? ''}
                 alt={user.name}
                 width={32}
                 height={32}
                 className="w-8 h-8 rounded-full border border-[#D9E7F5] object-cover"
                 priority
             />
-            <div className="flex flex-col min-w-0 leading-tight">
-                <span className="text-sm font-semibold text-[#16355D] truncate">
-                    {user.name}
-                </span>
-                <span className="text-xs text-[#96A6BF] truncate">
-                    {user.email}
-                </span>
+            <div className="hidden sm:flex flex-col min-w-0">
+                <span className="text-sm font-semibold text-[#16355D] truncate">{user.name}</span>
+                <span className="text-xs text-[#768EA6] truncate">{user.email}</span>
             </div>
         </div>
     );
 }
+
+
 
 type NavItemProps = {
     icon: React.ElementType;
@@ -668,7 +656,7 @@ function MobileBottomNavBar({
 
 export function AppSidebar() {
     const pathname = usePathname();
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
 
     const handleSignOut = useCallback(() => {
         if (window.confirm("Are you sure you want to sign out?")) {
@@ -787,14 +775,7 @@ export function AppSidebar() {
                 </div>
                 {/* User Profile Footer */}
                 <footer className="w-full border-t border-[#E6EFFA] bg-[#F6FAFF]">
-                    <div className="flex items-center gap-3 px-4 py-3">
-                        {/* Show avatar always, details on sm+ */}
-                        <UserAvatar user={user} />
-                        <div className="hidden sm:flex flex-col min-w-0">
-                            <span className="text-sm font-semibold text-[#16355D] truncate">{user.name}</span>
-                            <span className="text-xs text-[#768EA6] truncate">{user.email}</span>
-                        </div>
-                    </div>
+                    {user && <SidebarProfileCard user={user} />}
                 </footer>
             </nav>
         </>
