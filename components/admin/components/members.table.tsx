@@ -37,7 +37,7 @@ const MemberAvatar: React.FC<{ name: string; image?: string }> = ({ name, image 
             src={image}
             alt={name}
             title={name}
-            className="w-9 h-9 rounded-full object-cover border border-gray-200"
+            className="w-10 h-10 rounded-full object-cover border border-gray-200"
             loading="lazy"
             onError={(e) =>
                 ((e.target as HTMLImageElement).style.display = "none")
@@ -45,7 +45,7 @@ const MemberAvatar: React.FC<{ name: string; image?: string }> = ({ name, image 
         />
     ) : (
         <span
-            className={`w-9 h-9 rounded-full flex items-center justify-center border border-gray-200 overflow-hidden text-md font-bold select-none ${avatarColor(
+            className={`w-10 h-10 rounded-full flex items-center justify-center border border-gray-200 overflow-hidden text-base font-bold select-none ${avatarColor(
                 name || ""
             )}`}
             title={name}
@@ -82,7 +82,7 @@ function AdminActionButton({
 }) {
     return (
         <button
-            className="bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors font-medium px-3 py-1 rounded text-[13px] focus:outline-none flex items-center gap-1 disabled:opacity-60"
+            className="bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors font-medium px-4 py-2 rounded text-[14px] focus:outline-none flex items-center gap-2 disabled:opacity-60"
             type="button"
             aria-busy={isLoading}
             disabled={isLoading}
@@ -92,7 +92,7 @@ function AdminActionButton({
             {isLoading ? (
                 <>
                     <svg
-                        className="animate-spin w-4 h-4 mr-1 inline-block"
+                        className="animate-spin w-4 h-4 mr-2 inline-block"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -116,7 +116,7 @@ function AdminActionButton({
             ) : (
                 <>
                     <svg
-                        className="w-4 h-4 mr-1 inline-block"
+                        className="w-4 h-4 mr-2 inline-block"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth={2}
@@ -154,19 +154,19 @@ export const MembersTable: React.FC<MembersTableProps> = ({
             <table className="min-w-full divide-y divide-gray-200 text-[15px]">
                 <thead className="bg-gray-50">
                     <tr>
-                        <th className="px-4 py-3 font-semibold text-left text-gray-700 w-10"></th>
-                        <th className="px-4 py-3 font-semibold text-left text-gray-700 w-[200px]">Name</th>
-                        <th className="px-4 py-3 font-semibold text-left text-gray-700">Email</th>
-                        <th className="px-4 py-3 font-semibold text-left text-gray-700 w-36">Role</th>
-                        <th className="px-4 py-3 font-semibold text-left text-gray-700">Joined</th>
-                        <th className="px-4 py-3 font-semibold text-left text-gray-700 w-36">Action</th>
+                        <th className="px-6 py-4 font-semibold text-left text-gray-700 w-10"></th>
+                        <th className="px-6 py-4 font-semibold text-left text-gray-700 w-[220px]">Name</th>
+                        <th className="px-6 py-4 font-semibold text-left text-gray-700">Email</th>
+                        <th className="px-6 py-4 font-semibold text-left text-gray-700 w-40">Role</th>
+                        <th className="px-6 py-4 font-semibold text-left text-gray-700">Joined</th>
+                        <th className="px-6 py-4 font-semibold text-left text-gray-700 w-40">Action</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                     {isLoading ? (
                         <tr>
-                            <td colSpan={6} className="text-center py-12 text-gray-400 text-base font-semibold">
-                                <div className="flex flex-col items-center justify-center gap-2">
+                            <td colSpan={6} className="text-center py-16 text-gray-400 text-base font-semibold">
+                                <div className="flex flex-col items-center justify-center gap-3">
                                     <svg className="animate-spin w-6 h-6 text-blue-400 mb-2" viewBox="0 0 24 24">
                                         <circle
                                             className="opacity-25"
@@ -189,9 +189,9 @@ export const MembersTable: React.FC<MembersTableProps> = ({
                         </tr>
                     ) : members.length === 0 ? (
                         <tr>
-                            <td colSpan={6} className="text-center py-12 text-gray-400 text-base font-semibold">
-                                <div className="flex flex-col items-center justify-center gap-2">
-                                    <svg width="36" height="36" fill="none" viewBox="0 0 24 24" className="mx-auto text-gray-200 mb-1">
+                            <td colSpan={6} className="text-center py-16 text-gray-400 text-base font-semibold">
+                                <div className="flex flex-col items-center justify-center gap-3">
+                                    <svg width="36" height="36" fill="none" viewBox="0 0 24 24" className="mx-auto text-gray-200 mb-2">
                                         <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" className="text-gray-200"></circle>
                                         <path
                                             d="M8.5,12A3.5,3.5,0,0,1,12,15.5,3.5,3.5,0,0,1,15.5,12"
@@ -209,13 +209,13 @@ export const MembersTable: React.FC<MembersTableProps> = ({
                         members.map((member, idx) => (
                             <tr key={member._id} className="hover:bg-blue-50/50 transition-colors group">
                                 {/* Index */}
-                                <td className="px-4 py-3 text-gray-400 text-xs font-mono">{idx + 1}</td>
+                                <td className="px-6 py-4 text-gray-400 text-xs font-mono">{idx + 1}</td>
                                 {/* Name & Avatar */}
-                                <td className="px-4 py-3 flex items-center gap-3 min-w-[170px]">
+                                <td className="px-6 py-4 flex items-center gap-4 min-w-[170px]">
                                     <MemberAvatar name={member.name} image={member.image} />
                                     <div className="min-w-0">
                                         <div
-                                            className="font-medium text-gray-900 leading-5 truncate max-w-[120px]"
+                                            className="font-medium text-gray-900 leading-5 truncate max-w-[150px]"
                                             title={member.name}
                                         >
                                             {member.name}
@@ -223,20 +223,20 @@ export const MembersTable: React.FC<MembersTableProps> = ({
                                     </div>
                                 </td>
                                 {/* Email */}
-                                <td className="px-4 py-3 text-gray-700 whitespace-nowrap max-w-[220px] truncate" title={member.email}>
+                                <td className="px-6 py-4 text-gray-700 whitespace-nowrap max-w-[260px] truncate" title={member.email}>
                                     <a
                                         href={`mailto:${member.email}`}
-                                        className="hover:underline outline-none focus-visible:ring-2 rounded px-0.5 transition"
+                                        className="hover:underline outline-none focus-visible:ring-2 rounded px-1.5 transition"
                                     >
                                         {member.email}
                                     </a>
                                 </td>
                                 {/* Role */}
-                                <td className="px-4 py-3 whitespace-nowrap">
+                                <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={
                                         member.role === "admin"
-                                            ? "inline-flex items-center gap-1 px-2 py-1 rounded text-green-700 bg-green-100 font-medium text-xs"
-                                            : "inline-flex items-center gap-1 px-2 py-1 rounded text-gray-700 bg-gray-100 font-medium text-xs"
+                                            ? "inline-flex items-center gap-1.5 px-3 py-1 rounded text-green-700 bg-green-100 font-medium text-xs"
+                                            : "inline-flex items-center gap-1.5 px-3 py-1 rounded text-gray-700 bg-gray-100 font-medium text-xs"
                                     }>
                                         {member.role === "admin"
                                             ? <svg className="w-4 h-4 inline-block" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -250,13 +250,13 @@ export const MembersTable: React.FC<MembersTableProps> = ({
                                     </span>
                                 </td>
                                 {/* Joined */}
-                                <td className="px-4 py-3 text-gray-700 whitespace-nowrap" title={member.createdAt}>
+                                <td className="px-6 py-4 text-gray-700 whitespace-nowrap" title={member.createdAt}>
                                     {formatDate(member.createdAt)}
                                 </td>
                                 {/* Action */}
-                                <td className="px-4 py-3 whitespace-nowrap text-right">
+                                <td className="px-6 py-4 whitespace-nowrap text-right">
                                     {member.role === "admin" ? (
-                                        <span className="text-gray-400 italic text-[13px] flex items-center gap-1" title="Already an admin">
+                                        <span className="text-gray-400 italic text-[13px] flex items-center gap-2" title="Already an admin">
                                             <svg className="w-4 h-4 inline-block" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16"></path></svg>
                                             Already admin
                                         </span>
