@@ -115,7 +115,7 @@ const AdminOverview: React.FC = () => {
         <section className="w-full max-w-full px-2 sm:px-4 py-8">
             {/* Welcome Header */}
             <div className="text-[16px] font-medium text-[#212B36] mb-6">
-                Good Morning, Admin. {user?.name}!
+                Good to see you,{user?.name}!
                 <div className="text-[13px] text-[#919EAB] mt-0.5 font-normal">
                     Here's what's new today.
                 </div>
