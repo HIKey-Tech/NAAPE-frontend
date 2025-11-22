@@ -31,9 +31,7 @@ const contentVariants = {
     visible: { opacity: 1, y: 0, transition: { delay: 0.18, duration: 0.42, type: "spring", stiffness: 50, damping: 18 } }
 };
 
-const buttonVariants = {
-    hover: { backgroundColor: "#232B43", color: "#fff" }
-};
+// Remove explicit buttonVariants since we will use Tailwind for theme
 
 export function EventCard({
     imageUrl,
@@ -46,7 +44,7 @@ export function EventCard({
 }: EventCardProps) {
     return (
         <motion.div
-            className={`rounded-lg overflow-hidden shadow-sm bg-[#0A1328] flex flex-col transition hover:shadow-lg ${className}`}
+            className={`rounded-lg overflow-hidden shadow-sm bg-card flex flex-col transition hover:shadow-lg ${className}`}
             variants={cardVariants as any}
             initial="hidden"
             whileInView="visible"
@@ -74,18 +72,17 @@ export function EventCard({
                 className="flex-1 flex flex-col px-5 pt-5 pb-7"
                 variants={contentVariants as any}
             >
-                <h4 className="text-xs md:text-sm text-[#5F6282] font-semibold mb-1">{title}</h4>
-                <div className="text-[#C8CBD4] text-sm font-medium mb-1">
+                <h4 className="text-xs md:text-sm text-primary font-semibold mb-1">{title}</h4>
+                <div className="text-muted-foreground text-sm font-medium mb-1">
                     {date} - {time}
                 </div>
-                <div className="text-[#C8CBD4] text-xs mb-4">
+                <div className="text-muted-foreground text-xs mb-4">
                     {venue}
                 </div>
                 <div className="mt-auto">
                     <Link href={registerUrl ?? "#"} passHref>
                         <motion.button
-                            className="w-full border border-[#2C3049] text-[#4561FF] hover:bg-[#232B43] rounded py-1.5 text-sm font-semibold transition"
-                            variants={buttonVariants}
+                            className="w-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded py-1.5 text-sm font-semibold transition"
                             whileHover="hover"
                             type="button"
                         >

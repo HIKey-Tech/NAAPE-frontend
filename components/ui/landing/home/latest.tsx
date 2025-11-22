@@ -107,20 +107,20 @@ function SlideArrows({ current, total, onPrev, onNext }: { current: number; tota
                 type="button"
                 aria-label="Previous"
                 onClick={onPrev}
-                className="text-[#2852B4] bg-white border border-[#D6DBEA] rounded-full p-1 shadow hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="text-primary bg-white border border-[#D6DBEA] rounded-full p-1 shadow hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
                 disabled={current === 0}
             >
-                <svg width="28" height="28" fill="none"><path d="M17 20l-6-6 6-6" stroke="#2852B4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <svg width="28" height="28" fill="none"><path d="M17 20l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
             <span className="text-xs text-[#233]">{current + 1} / {total}</span>
             <button
                 type="button"
                 aria-label="Next"
                 onClick={onNext}
-                className="text-[#2852B4] bg-white border border-[#D6DBEA] rounded-full p-1 shadow hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="text-primary bg-white border border-[#D6DBEA] rounded-full p-1 shadow hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
                 disabled={current === total - 1}
             >
-                <svg width="28" height="28" fill="none"><path d="M11 8l6 6-6 6" stroke="#2852B4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <svg width="28" height="28" fill="none"><path d="M11 8l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
         </div>
     )
@@ -244,7 +244,7 @@ export default function LatestNews() {
             >
                 <a href="/news">
                     <NaapButton
-                        className="bg-[#2852B4] hover:bg-[#2347A0] text-white font-semibold px-7 py-3 text-base shadow transition"
+                        className="bg-primary hover:bg-primary/90 text-white font-semibold px-7 py-3 text-base shadow transition"
                     >
                         View All
                     </NaapButton>

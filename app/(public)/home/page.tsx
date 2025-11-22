@@ -123,6 +123,16 @@ function PlaneTrail() {
         });
     }, [controls, planeTop]);
 
+    // Get primary color from CSS variable (see globals.css, --primary)
+    // Fallback to #2852B4 if the variable is not set, but it should be from Tailwind/your theme.
+    // Use it for the icon and shadow.
+    const primaryColor = typeof window !== "undefined"
+        ? getComputedStyle(document.documentElement).getPropertyValue("--primary")?.trim() || "#2852B4"
+        : "#2852B4";
+    // Compose a drop-shadow (blue) using the primary color if possible.
+    // For oklch colors, CSS can handle drop-shadow well.
+    const dropShadow = `drop-shadow(0 6px 24px ${primaryColor}cc)`;
+
     return (
         <>
             {/* Plane icon plying (flying) around */}
@@ -141,15 +151,19 @@ function PlaneTrail() {
             >
                 <motion.div
                     animate={controls}
-                    style={{ filter: "drop-shadow(0 6px 24px #1d4ed8cc)" }}
+                    // Use Tailwind "text-primary" to color the icon and apply the shadow using primary color
+                    style={{
+                        filter: dropShadow,
+                    }}
                 >
                     <LuPlane
                         size={72}
-                        color="#2852B4"
-                        className="select-none"
+                        // Color: use CSS variable if possible, fallback to #2852B4
+                        color="var(--primary, #2852B4)"
+                        className="select-none text-primary"
                         style={{
                             width: 72,
-                            height: 72
+                            height: 72,
                         }}
                     />
                 </motion.div>

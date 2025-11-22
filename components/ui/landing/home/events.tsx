@@ -7,6 +7,9 @@ import { EventCard } from "@/components/ui/custom/events.card";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Use Tailwind primary color via bg-primary, text-primary, etc.
+// Remove all hard-coded #2852B4 in favor of Tailwind's primary
+
 const eventsList = [
     {
         imageUrl: "/images/event1.jpg",
@@ -159,7 +162,7 @@ function EventsMobileSlider({ events }: { events: typeof eventsList }) {
                 onClick={handlePrev}
                 style={{ top: "40%" }}
             >
-                <FaChevronLeft size={20} className="text-[#2852B4]" />
+                <FaChevronLeft size={20} className="text-primary" />
             </button>
             <div className="w-full flex justify-center px-6" style={{ minHeight: 350 }}>
                 <AnimatePresence custom={direction} mode="wait" initial={false}>
@@ -184,13 +187,13 @@ function EventsMobileSlider({ events }: { events: typeof eventsList }) {
                 onClick={handleNext}
                 style={{ top: "40%" }}
             >
-                <FaChevronRight size={20} className="text-[#2852B4]" />
+                <FaChevronRight size={20} className="text-primary" />
             </button>
             <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
                 {events.map((_, i) => (
                     <motion.span
                         key={i}
-                        className={`inline-block w-2 h-2 rounded-full ${i === active ? "bg-[#2852B4]" : "bg-gray-300"}`}
+                        className={`inline-block w-2 h-2 rounded-full ${i === active ? "bg-primary" : "bg-gray-300"}`}
                         layoutId="event-slider-dot"
                         transition={{ type: "spring", stiffness: 380, damping: 22 }}
                     />
@@ -246,7 +249,7 @@ export default function UpcomingEvents() {
             >
                 <a href="/events">
                     <NaapButton
-                        className="bg-[#2852B4] hover:bg-[#2347A0] text-white font-semibold px-7 py-3 text-base shadow transition"
+                        className="bg-primary hover:bg-primary/90 text-white font-semibold px-7 py-3 text-base shadow transition"
                     >
                         View All Events
                     </NaapButton>

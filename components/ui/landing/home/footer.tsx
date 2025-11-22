@@ -5,7 +5,7 @@ import { FaYoutube, FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "re
 
 export default function Footer() {
     return (
-        <footer className="bg-[#2043A2] text-white text-sm w-full mt-auto pt-12 pb-4 px-4 md:px-16 transition-all">
+        <footer className="bg-primary text-white text-sm w-full mt-auto pt-12 pb-4 px-4 md:px-16 transition-all">
             {/* Top Section */}
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-16 mb-8 relative">
                 <div className="flex flex-row items-center gap-4 mb-6 md:mb-0">
@@ -92,7 +92,7 @@ export default function Footer() {
                     </div>
                     <Link
                         href="/membership"
-                        className="inline-block mt-2 px-5 py-2 rounded-md bg-[#FFD600] text-[#2043A2] font-semibold text-xs uppercase shadow hover:bg-yellow-300 transition-colors"
+                        className="inline-block mt-2 px-5 py-2 rounded-md bg-[#FFD600] text-primary font-semibold text-xs uppercase shadow hover:bg-yellow-300 transition-colors"
                     >
                         Become a Member
                     </Link>

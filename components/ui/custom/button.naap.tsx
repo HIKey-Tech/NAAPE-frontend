@@ -72,12 +72,13 @@ export const NaapButton = React.forwardRef<HTMLButtonElement, NaapButtonProps>(
             </>
         );
 
+        // Use CSS variables from globals.css for primary styles
         const extraClasses = [
             "gap-2",
             "rounded", "h-full", // ensure buttons are  rounded at all
             fullWidth ? "w-full" : "",
             variant === "primary"
-                ? "bg-blue-600 text-white hover:bg-blue-700"
+                ? "bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[color-mix(in_oklch,var(--primary)_90%,#000_10%)]"
                 : variant === "ghost"
                     ? "bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-100"
                     : "", // default stays unstyled

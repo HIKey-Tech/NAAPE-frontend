@@ -5,7 +5,6 @@ import { FaRegCalendarCheck, FaChalkboardTeacher } from "react-icons/fa";
 import { MdSecurity, MdTrendingUp } from "react-icons/md";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { motion } from "framer-motion";
-import { AnyCaaRecord } from "dns";
 
 const containerVariants = {
     hidden: { opacity: 0, y: 32 },
@@ -104,7 +103,10 @@ export default function WhyJoinSection() {
                             custom={idx}
                             variants={pillarItemVariants as any}
                         >
-                            <span className="w-10 h-10 flex items-center justify-center bg-[#F5F7FA] rounded-lg text-[#2852B4] text-2xl mb-1">
+                            <span
+                                className="w-10 h-10 flex items-center justify-center bg-[#F5F7FA] rounded-lg text-2xl mb-1"
+                                style={{ color: "var(--primary)" }}
+                            >
                                 {pillar.icon}
                             </span>
                             <p className="text-[#363749] text-sm font-medium">
@@ -115,7 +117,7 @@ export default function WhyJoinSection() {
                 </motion.div>
                 <motion.div variants={fadeInUp as any}>
                     <NaapButton
-                        className="bg-[#2852B4] hover:bg-[#2347A0] text-white font-semibold px-7 py-3 text-base shadow w-fit transition mt-2"
+                        className="bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white font-semibold px-7 py-3 text-base shadow w-fit transition mt-2"
                     >
                         Become A Member
                     </NaapButton>

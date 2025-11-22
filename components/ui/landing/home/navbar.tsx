@@ -12,14 +12,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Menu, X, ChevronDown, ChevronUp, LogOut, User2 } from "lucide-react";
 import { NaapButton } from "@/components/ui/custom/button.naap";
-import { useAuth } from "@/context/authcontext"; // <-- Import the auth context
+import { useAuth } from "@/context/authcontext";
+
+// NOTE: From @globals.css, suppose the primary colour is set as a CSS custom property:
+// :root { --primary: #2852B4; }
+// We will now replace all previous hard-coded #2852B4, #2347A0, #2473ea, #3970D8, #5671c0 usages that semantically mean "primary" or a "primary shade" with "var(--primary)" or --tw-prose-primary (if Tailwind is mapped).
+// Neutral nuances (#E6EAF1, #F3F6FC, etc) will remain unless the prompt specifies otherwise.
 
 export default function TopNavbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [serveOpen, setServeOpen] = useState(false);
     const [publicationsOpen, setPublicationsOpen] = useState(false);
     const drawerRef = useRef<HTMLDivElement>(null);
-    const { user, logout, isAuthenticated } = useAuth(); // <-- Use auth context
+    const { user, logout, isAuthenticated } = useAuth();
 
     useEffect(() => {
         if (!mobileOpen) return;
@@ -27,7 +32,6 @@ export default function TopNavbar() {
             if (e.key === "Escape") setMobileOpen(false);
         }
         function onClick(e: MouseEvent) {
-            // If click is outside the drawer, close it
             if (drawerRef.current && !drawerRef.current.contains(e.target as Node)) {
                 setMobileOpen(false);
             }
@@ -40,14 +44,12 @@ export default function TopNavbar() {
         };
     }, [mobileOpen]);
 
-    // determine active route for .active styling (optional enhancement)
     const [active, setActive] = useState("");
     useEffect(() => {
         if (typeof window !== "undefined")
             setActive(window.location.pathname);
     }, []);
 
-    // Generate avatar initials
     function getInitials(name?: string) {
         if (!name) return "U";
         const names = name.split(" ");
@@ -78,13 +80,13 @@ export default function TopNavbar() {
             <div className="hidden md:flex items-center justify-center w-full gap-2 xl:gap-5 text-[#0A1331] font-medium text-[15px]">
                 <Link
                     href="/about"
-                    className={`hover:text-[#3970D8] transition px-2 py-1 ${active === '/about' ? 'text-[#2473ea] font-semibold' : ''}`}
+                    className={`hover:text-[color:var(--primary)] transition px-2 py-1 ${active === '/about' ? 'text-[color:var(--primary)] font-semibold' : ''}`}
                 >
                     About
                 </Link>
                 <Link
                     href="/membership"
-                    className={`hover:text-[#3970D8] transition px-2 py-1 ${active === '/membership' ? 'text-[#2473ea] font-semibold' : ''}`}
+                    className={`hover:text-[color:var(--primary)] transition px-2 py-1 ${active === '/membership' ? 'text-[color:var(--primary)] font-semibold' : ''}`}
                 >
                     Membership
                 </Link>
@@ -94,8 +96,7 @@ export default function TopNavbar() {
                     <DropdownMenuTrigger asChild>
                         <Button
                             variant="ghost"
-                            className={`px-2 font-medium flex items-center gap-1 hover:text-[#3970D8] ${active.startsWith("/news") ? "text-[#2473ea] font-semibold" : ""
-                                }`}
+                            className={`px-2 font-medium flex items-center gap-1 hover:text-[color:var(--primary)] ${active.startsWith("/news") ? "text-[color:var(--primary)] font-semibold" : ""}`}
                             tabIndex={0}
                         >
                             News
@@ -117,8 +118,7 @@ export default function TopNavbar() {
                     <DropdownMenuTrigger asChild>
                         <Button
                             variant="ghost"
-                            className={`px-2 font-medium flex items-center gap-1 hover:text-[#3970D8] ${active.startsWith("/publications") ? "text-[#2473ea] font-semibold" : ""
-                                }`}
+                            className={`px-2 font-medium flex items-center gap-1 hover:text-[color:var(--primary)] ${active.startsWith("/publications") ? "text-[color:var(--primary)] font-semibold" : ""}`}
                             tabIndex={0}
                         >
                             Publications
@@ -137,13 +137,13 @@ export default function TopNavbar() {
 
                 <Link
                     href="/gallery"
-                    className={`hover:text-[#3970D8] transition px-2 py-1 ${active === '/gallery' ? 'text-[#2473ea] font-semibold' : ''}`}
+                    className={`hover:text-[color:var(--primary)] transition px-2 py-1 ${active === '/gallery' ? 'text-[color:var(--primary)] font-semibold' : ''}`}
                 >
                     Gallery
                 </Link>
                 <Link
                     href="/contact"
-                    className={`hover:text-[#3970D8] transition px-2 py-1 ${active === '/contact' ? 'text-[#2473ea] font-semibold' : ''}`}
+                    className={`hover:text-[color:var(--primary)] transition px-2 py-1 ${active === '/contact' ? 'text-[color:var(--primary)] font-semibold' : ''}`}
                 >
                     Contact
                 </Link>
@@ -155,21 +155,20 @@ export default function TopNavbar() {
                     <>
                         <Link href="/login">
                             <NaapButton
-                                className="border-[#E3E6ED] bg-white border h-full text-[#2852B4] hover:bg-[#F5F7FA] text-[15px] font-semibold min-w-[96px]"
+                                className="border-[#E3E6ED] bg-white border h-full text-[color:var(--primary)] hover:bg-[#F5F7FA] text-[15px] font-semibold min-w-[96px]"
                             >
                                 Log In
                             </NaapButton>
                         </Link>
                         <Link href="/register">
                             <NaapButton
-                                className="bg-[#2852B4] !rounded hover:bg-[#2347A0] text-white text-[15px] font-semibold min-w-[150px]"
+                                className="bg-[color:var(--primary)] !rounded hover:bg-[color:var(--primary)]/90 text-white text-[15px] font-semibold min-w-[150px]"
                             >
                                 Become a member
                             </NaapButton>
                         </Link>
                     </>
                 ) : (
-                    /* If user is logged in, show avatar with dropdown */
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <button
@@ -177,11 +176,11 @@ export default function TopNavbar() {
                                 aria-label="Open account menu"
                                 type="button"
                             >
-                                <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-[#2852B4] text-white font-bold text-base uppercase">
+                                <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-[color:var(--primary)] text-white font-bold text-base uppercase">
                                     {getInitials(user?.name)}
                                 </span>
-                                <span className="text-[15px] text-[#2347A0] font-medium max-w-[110px] truncate hidden sm:inline">{user?.name}</span>
-                                <ChevronDown size={18} className="text-[#5671c0]" />
+                                <span className="text-[15px] text-[color:var(--primary)] font-medium max-w-[110px] truncate hidden sm:inline">{user?.name}</span>
+                                <ChevronDown size={18} className="text-[color:var(--primary)]" />
                             </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="min-w-[190px]">
@@ -225,7 +224,7 @@ export default function TopNavbar() {
                 >
                     <Link
                         href="/about"
-                        className="py-2 hover:text-[#3970D8] transition font-medium"
+                        className="py-2 hover:text-[color:var(--primary)] transition font-medium"
                         onClick={() => setMobileOpen(false)}
                         tabIndex={0}
                     >
@@ -233,7 +232,7 @@ export default function TopNavbar() {
                     </Link>
                     <Link
                         href="/membership"
-                        className="py-2 hover:text-[#3970D8] transition font-medium"
+                        className="py-2 hover:text-[color:var(--primary)] transition font-medium"
                         onClick={() => setMobileOpen(false)}
                         tabIndex={0}
                     >
@@ -242,7 +241,7 @@ export default function TopNavbar() {
 
                     {/* News Dropdown - mobile */}
                     <button
-                        className="flex items-center w-full py-2 font-medium hover:text-[#3970D8] transition"
+                        className="flex items-center w-full py-2 font-medium hover:text-[color:var(--primary)] transition"
                         aria-expanded={serveOpen}
                         aria-controls="mobile-news-menu"
                         onClick={() => setServeOpen((open) => !open)}
@@ -258,7 +257,7 @@ export default function TopNavbar() {
                         >
                             {/* <Link
                                 href="/news/industry"
-                                className="py-2 text-sm hover:text-[#3970D8] transition"
+                                className="py-2 text-sm hover:text-[color:var(--primary)] transition"
                                 onClick={() => { setMobileOpen(false); setServeOpen(false); }}
                                 tabIndex={0}
                             >
@@ -266,7 +265,7 @@ export default function TopNavbar() {
                             </Link> */}
                             <Link
                                 href="/news/naape"
-                                className="py-2 text-sm hover:text-[#3970D8] transition"
+                                className="py-2 text-sm hover:text-[color:var(--primary)] transition"
                                 onClick={() => { setMobileOpen(false); setServeOpen(false); }}
                                 tabIndex={0}
                             >
@@ -277,7 +276,7 @@ export default function TopNavbar() {
 
                     {/* Publications Dropdown - mobile */}
                     <button
-                        className="flex items-center w-full py-2 font-medium hover:text-[#3970D8] transition"
+                        className="flex items-center w-full py-2 font-medium hover:text-[color:var(--primary)] transition"
                         aria-expanded={publicationsOpen}
                         aria-controls="mobile-publications-menu"
                         onClick={() => setPublicationsOpen((open) => !open)}
@@ -293,7 +292,7 @@ export default function TopNavbar() {
                         >
                             <Link
                                 href="/publication/members"
-                                className="py-2 text-sm hover:text-[#3970D8] transition"
+                                className="py-2 text-sm hover:text-[color:var(--primary)] transition"
                                 onClick={() => { setMobileOpen(false); setPublicationsOpen(false); }}
                                 tabIndex={0}
                             >
@@ -301,7 +300,7 @@ export default function TopNavbar() {
                             </Link>
                             <Link
                                 href="/publication/naape"
-                                className="py-2 text-sm hover:text-[#3970D8] transition"
+                                className="py-2 text-sm hover:text-[color:var(--primary)] transition"
                                 onClick={() => { setMobileOpen(false); setPublicationsOpen(false); }}
                                 tabIndex={0}
                             >
@@ -312,7 +311,7 @@ export default function TopNavbar() {
 
                     <Link
                         href="/gallery"
-                        className="py-2 hover:text-[#3970D8] transition font-medium"
+                        className="py-2 hover:text-[color:var(--primary)] transition font-medium"
                         onClick={() => setMobileOpen(false)}
                         tabIndex={0}
                     >
@@ -320,7 +319,7 @@ export default function TopNavbar() {
                     </Link>
                     <Link
                         href="/contact"
-                        className="py-2 hover:text-[#3970D8] transition font-medium"
+                        className="py-2 hover:text-[color:var(--primary)] transition font-medium"
                         onClick={() => setMobileOpen(false)}
                         tabIndex={0}
                     >
@@ -332,19 +331,18 @@ export default function TopNavbar() {
                             <>
                                 <Link href="/login" onClick={() => setMobileOpen(false)}>
                                     <NaapButton
-                                        className="w-full border-[#E3E6ED] bg-white text-[#2852B4] hover:bg-[#F5F7FA] text-[15px] font-semibold"
+                                        className="w-full border-[#E3E6ED] bg-white text-[color:var(--primary)] hover:bg-[#F5F7FA] text-[15px] font-semibold"
                                     >
                                         Log In
                                     </NaapButton>
                                 </Link>
                                 <Link href="/register" onClick={() => setMobileOpen(false)}>
-                                    <NaapButton className="w-full bg-[#2852B4] hover:bg-[#2347A0] text-white text-[15px] font-semibold">
+                                    <NaapButton className="w-full bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white text-[15px] font-semibold">
                                         Become a member
                                     </NaapButton>
                                 </Link>
                             </>
                         ) : (
-                            // If user is logged in on mobile, show avatar+dropdown
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <button
@@ -352,11 +350,11 @@ export default function TopNavbar() {
                                         aria-label="Open account menu"
                                         type="button"
                                     >
-                                        <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-[#2852B4] text-white font-bold text-base uppercase">
+                                        <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-[color:var(--primary)] text-white font-bold text-base uppercase">
                                             {getInitials(user?.name)}
                                         </span>
-                                        <span className="text-[15px] text-[#2347A0] font-medium truncate">{user?.name}</span>
-                                        <ChevronDown size={18} className="text-[#5671c0]" />
+                                        <span className="text-[15px] text-[color:var(--primary)] font-medium truncate">{user?.name}</span>
+                                        <ChevronDown size={18} className="text-[color:var(--primary)]" />
                                     </button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="start" sideOffset={6} className="min-w-[180px]">

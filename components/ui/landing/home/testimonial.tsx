@@ -38,7 +38,9 @@ const cardVariants = {
 };
 
 function useIsMobile(breakpoint: number = 768) {
-  const [isMobile, setIsMobile] = useState<boolean>(typeof window === "undefined" ? false : window.innerWidth < breakpoint);
+  const [isMobile, setIsMobile] = useState<boolean>(
+    typeof window === "undefined" ? false : window.innerWidth < breakpoint
+  );
   useEffect(() => {
     function handler() {
       setIsMobile(window.innerWidth < breakpoint);
@@ -69,7 +71,7 @@ export default function TestimonialsSection() {
     // Clean up and reset for desktop (show all)
     setActive(0);
     if (intervalRef.current) clearInterval(intervalRef.current);
-    return () => { };
+    return () => {};
   }, [isMobile]);
 
   // Dots navigation
@@ -100,7 +102,7 @@ export default function TestimonialsSection() {
         TESTIMONIALS
       </motion.span>
       <motion.h2
-        className="text-2xl md:text-3xl font-extrabold text-[#232835] mb-3 text-center"
+        className="text-2xl md:text-3xl font-extrabold text-foreground mb-3 text-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.2 }}
@@ -143,8 +145,8 @@ export default function TestimonialsSection() {
                   key={i}
                   aria-label={`Go to testimonial ${i + 1}`}
                   className={`
-                    h-2.5 w-2.5 rounded-full 
-                    ${i === active ? "bg-[#2852B4] scale-110" : "bg-[#D7DDF1]"}
+                    h-2.5 w-2.5 rounded-full
+                    ${i === active ? "bg-primary scale-110" : "bg-muted"}
                     transition-all
                   `}
                   style={{ transition: "background .2s, transform .2s" }}

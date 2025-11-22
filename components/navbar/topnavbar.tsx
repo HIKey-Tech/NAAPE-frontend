@@ -4,22 +4,86 @@ import { FaRegCommentDots, FaRegBell } from "react-icons/fa";
 import Image from "next/image";
 import { useState } from "react";
 import { useAuth } from "@/context/authcontext";
+import { useRouter } from "next/navigation"; // <--- Added for navigation
 
+// Utility to get initials from name
+function getInitials(name: string | undefined) {
+    if (!name) return "U";
+    const parts = name
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((n) => n[0]?.toUpperCase() || "");
+    return parts.length ? parts.join("") : "U";
+}
+
+// Avatar component: shows image if available, else fallback to initials
+function UserAvatar({
+    src,
+    alt,
+    fallback,
+    className = "",
+    size = 32,
+}: {
+    src?: string;
+    alt?: string;
+    fallback: string;
+    className?: string;
+    size?: number;
+}) {
+    const [imageLoaded, setImageLoaded] = useState(true);
+    return (
+        <span className={`relative block ${className}`} style={{ width: size, height: size }}>
+            {src && imageLoaded ? (
+                <Image
+                    src={src}
+                    alt={alt || ""}
+                    width={size}
+                    height={size}
+                    className={`w-full h-full rounded-full object-cover border border-[#D9E7F5] bg-gray-100 transition-shadow duration-150 hover:shadow-lg`}
+                    onError={() => setImageLoaded(false)}
+                    priority
+                />
+            ) : (
+                <span
+                    className={`
+                        w-full h-full flex items-center justify-center rounded-full
+                        bg-gradient-to-tr from-blue-200 to-blue-50
+                        border border-[#D9E7F5] text-[#295681] font-semibold select-none
+                        text-base
+                    `}
+                    style={{ fontSize: size > 24 ? 16 : 14 }}
+                    aria-label={alt}
+                >
+                    {fallback}
+                </span>
+            )}
+            <span
+                className="absolute bottom-0 right-0 block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-green-400 to-green-600 border-2 border-white shadow"
+                aria-label="Online"
+            />
+        </span>
+    );
+}
 
 export default function TopNavbar() {
     // This can later come from context/auth/user
 
-const checkUser = useAuth()
+    const checkUser = useAuth();
+    const router = useRouter(); // <--- Use router for navigation
     const user = {
         name: checkUser.user?.name || "Loading",
         role: checkUser.user?.role || "Loading",
-        avatarUrl: "/user-avatar.jpg",
+        // avatarUrl: checkUser.user?.avatarUrl || "", // should be user image if available
     };
 
     // For improved example: notification count and user menu dropdown
     const [notificationCount] = useState(3); // Example
     const [showUserDropdown, setShowUserDropdown] = useState(false);
     const [showNotificationsDropdown, setShowNotificationsDropdown] = useState(false);
+
+    // Initials logic
+    const initials = getInitials(user.name);
 
     return (
         <nav
@@ -148,21 +212,13 @@ const checkUser = useAuth()
                         type="button"
                     >
                         <span className="relative w-8 h-8">
-                            <span className="inline-block relative">
-                                <Image
-                                    src={"/images/plane.jpg"}
-                                    alt={user.name}
-                                    width={32}
-                                    height={32}
-                                    className="w-8 h-8 rounded-full object-cover border border-[#D9E7F5] bg-gray-100 transition-shadow duration-150 hover:shadow-lg"
-                                    priority
-                                />
-                                <span
-                                    className="absolute bottom-0 right-0 block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-green-400 to-green-600 border-2 border-white shadow"
-                                    aria-label="Online"
-                                />
-                            </span>
-                            {/* Online indicator dot */}
+                            <UserAvatar
+                                src={''}
+                                alt={user.name}
+                                fallback={initials}
+                                size={32}
+                            />
+                            {/* Online indicator dot - visually duplicate for legacy, but real dot is in UserAvatar */}
                             <span
                                 className="absolute bottom-0 right-0 block w-2 h-2 bg-green-500 border-2 border-white rounded-full shadow ring-1 ring-white"
                                 aria-label="Online"
@@ -202,6 +258,10 @@ const checkUser = useAuth()
                                     className="w-full flex items-center gap-2 text-left px-4 py-2 text-sm text-[#16355D] hover:bg-[#F3F6FB] focus:bg-[#F3F6FB] transition"
                                     tabIndex={0}
                                     role="menuitem"
+                                    onClick={() => {
+                                        setShowUserDropdown(false);
+                                        router.push("/profile"); // Navigate to profile page
+                                    }}
                                 >
                                     <svg width="16" height="16" fill="none" viewBox="0 0 20 20" className="text-[#A6B5C6]">
                                         <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-6 8a6 6 0 0112 0H4z" stroke="#A6B5C6" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />

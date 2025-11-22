@@ -1,4 +1,4 @@
-import { getAdminStats } from "@/app/api/admin/admin.stats";
+import { getAdminStats } from "@/app/api/admin/admin";
 import { useQuery } from "@tanstack/react-query";
 
 export const useAdminStats = () => {

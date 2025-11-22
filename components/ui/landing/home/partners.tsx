@@ -56,7 +56,7 @@ export default function PartnersSection() {
       transition={{ staggerChildren: 0.15 }}
     >
       <motion.span
-        className="text-xs md:text-sm text-[#CA9414] font-semibold tracking-widest uppercase mb-2"
+        className="text-xs md:text-sm text-primary font-semibold tracking-widest uppercase mb-2"
         initial={{ opacity: 0, y: -15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.5, type: "spring" }}
@@ -64,7 +64,7 @@ export default function PartnersSection() {
         YOU ARE IN GOOD COMPANY
       </motion.span>
       <motion.h2
-        className="text-2xl md:text-3xl font-extrabold text-[#232835] mb-2"
+        className="text-2xl md:text-3xl font-extrabold text-foreground mb-2"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5, type: "spring" }}
@@ -72,7 +72,7 @@ export default function PartnersSection() {
         Our Partners & Affiliations
       </motion.h2>
       <motion.p
-        className="mb-7 md:mb-10 max-w-2xl text-xs md:text-sm text-[#232835]/80"
+        className="mb-7 md:mb-10 max-w-2xl text-xs md:text-sm text-foreground/80"
         initial={{ opacity: 0, y: -15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.6, type: "spring" }}
@@ -101,7 +101,7 @@ export default function PartnersSection() {
                 className="object-contain grayscale hover:grayscale-0 transition"
               />
             </div>
-            <span className="text-xs text-[#636877] font-medium">{partner.name}</span>
+            <span className="text-xs text-muted-foreground font-medium">{partner.name}</span>
           </motion.div>
         ))}
       </motion.div>

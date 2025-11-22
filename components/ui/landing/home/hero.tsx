@@ -125,28 +125,36 @@ const stats = [
                 <span className="inline sm:hidden">&amp;</span> Compliance Advocacy
             </>
         ),
-        icon: <FaShieldAlt size={28} className="text-[#CA9414]" />,
+        icon: (
+            <FaShieldAlt size={28} className="text-[#CA9414] dark:text-[#CA9414]" />
+        ),
     },
     {
         value: "39+",
         label: <>Years of Aviation Leadership</>,
-        icon: <FaRegClock size={28} className="text-[#2347A0]" />,
+        icon: (
+            <FaRegClock size={28} className="text-primary" />
+        ),
     },
     {
         value: "50+",
         label: <>Training &amp; Development Programs</>,
-        icon: <FaChalkboardTeacher size={28} className="text-[#3970D8]" />,
+        icon: (
+            <FaChalkboardTeacher size={28} className="text-[#3970D8]" />
+        ),
     },
     {
         value: "1200+",
         label: <>Pilots &amp; Engineers Represented</>,
-        icon: <FaUserFriends size={28} className="text-[#2852B4]" />,
+        icon: (
+            <FaUserFriends size={28} className="text-primary" />
+        ),
     },
 ];
 
 export default function Hero() {
     return (
-        <section className="relative w-full h-full min-h-full flex flex-col md:flex-col items-center justify-center bg-gradient-to-br from-[#F5F7FA] to-[#e5ecfa] overflow-hidden px-4 py-8 ">
+        <section className="relative w-full h-full min-h-full flex flex-col md:flex-col items-center justify-center bg-gradient-to-br from-[#F5F7FA] to-[#e5ecfa] dark:from-[#232835] dark:to-[#2f3650] overflow-hidden px-4 py-8 ">
             {/* Decorative aviation-themed background */}
             <div
                 aria-hidden
@@ -174,15 +182,15 @@ export default function Hero() {
                     variants={leftVariants as any}
                 >
                     <motion.h1
-                        className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#232835] leading-tight md:leading-[1.11]"
+                        className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#232835] dark:text-white leading-tight md:leading-[1.11]"
                         variants={headingVariants as any}
                     >
                         Empowering Nigeria&apos;s
                         <br />
-                        <span className="text-[#2852B4]">Aviators and Engineers</span>
+                        <span className="text-primary">Aviators and Engineers</span>
                     </motion.h1>
                     <motion.p
-                        className="text-[#565C69] text-base md:text-lg max-w-lg md:max-w-xl"
+                        className="text-[#565C69] dark:text-[#B1B8C7] text-base md:text-lg max-w-lg md:max-w-xl"
                         variants={paragraphVariants}
                     >
                         NAAPE unites and elevates aircraft pilots and engineers across Nigeria—advocating standards, safety, and professional excellence for every member in our aviation community.
@@ -193,7 +201,7 @@ export default function Hero() {
                     >
                         <Link href="/register" className="w-full sm:w-auto" aria-label="Join NAAPE">
                             <NaapButton
-                                className="bg-[#2852B4] hover:bg-[#233672] w-full h-full sm:w-auto text-white text-base font-semibold px-7 py-3 shadow transition-colors"
+                                className="bg-primary hover:bg-primary/80 w-full h-full sm:w-auto text-white text-base font-semibold px-7 py-3 shadow transition-colors"
                                 icon={<FaArrowRight size={18} />}
                                 iconPosition="right"
                             >
@@ -202,7 +210,7 @@ export default function Hero() {
                         </Link>
                         <Link href="/about" className="w-full sm:w-auto" aria-label="Learn More about NAAPE">
                             <NaapButton
-                                className="border-[#2852B4] h-full border text-[#2852B4] hover:bg-[#f7fafd] text-base font-semibold px-7 py-3 w-full sm:w-auto bg-transparent transition-colors"
+                                className="border border-primary h-full text-primary hover:bg-primary/10 text-base font-semibold px-7 py-3 w-full sm:w-auto bg-transparent transition-colors"
                             >
                                 Learn More
                             </NaapButton>

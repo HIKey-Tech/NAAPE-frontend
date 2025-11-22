@@ -74,7 +74,7 @@ export default function AboutSection() {
                         Since 1985, the National Association of Aircraft Pilots and Engineers (NAAPE) has been the united voice of Nigeria’s pilots and engineers – our mission is to advance the aviation safety, professionalism, technical expertise in the Nigerian aviation industry through advocacy and the rights of those who keep the skies secure.
                     </p>
                     <NaapButton
-                        className="bg-[#2852B4] hover:bg-[#2347A0] w-fit text-white font-semibold px-7 py-3 text-base shadow  transition flex items-center gap-2"
+                        className="bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 w-fit text-white font-semibold px-7 py-3 text-base shadow  transition flex items-center gap-2"
                         icon={<FaArrowRight size={16} />}
                         iconPosition="right"
                     >
