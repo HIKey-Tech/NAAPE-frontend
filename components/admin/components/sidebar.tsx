@@ -19,7 +19,14 @@ import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/authcontext";
 
-// Add animation & bottom nav styles
+// Use CSS vars for primary and secondary color from globals.css
+const PRIMARY_COLOR = "oklch(0.32 0.13 266.81)";
+const PRIMARY_COLOR_VAR = "var(--color-primary)";
+const PRIMARY_COLOR_TEXT = "text-primary";
+const PRIMARY_COLOR_TEXT_VAR = "var(--color-primary)";
+const PRIMARY_COLOR_BG_VAR = "var(--color-primary)";
+const PRIMARY_COLOR_BG = "bg-primary"; // tailwind support
+
 const iconAnimationStyles = `
 @keyframes icon-bounce {
   0%, 100% { transform: translateY(0);}
@@ -37,21 +44,21 @@ const iconAnimationStyles = `
 .bottomnav-item:hover .animated-bottomnav-icon,
 .bottomnav-item:focus .animated-bottomnav-icon {
   animation: icon-bounce 0.5s;
-  color: #357AA8 !important;
+  color: var(--color-primary) !important;
 }
 .sidebar-navitem-active .animated-sidebar-icon,
 .bottomnav-item-active .animated-bottomnav-icon {
   animation: icon-bounce 0.7s;
-  color: #357AA8 !important;
+  color: var(--color-primary) !important;
 }
 .dropdown-navitem:hover .animated-dropdown-icon,
 .dropdown-navitem:focus .animated-dropdown-icon {
   animation: icon-bounce 0.5s;
-  color: #357AA8 !important;
+  color: var(--color-primary) !important;
 }
 .dropdown-active .animated-dropdown-icon {
   animation: icon-bounce 0.7s;
-  color: #357AA8 !important;
+  color: var(--color-primary) !important;
 }
 /* Mobile Bottom Nav bar */
 @media (max-width: 639px) {
@@ -100,11 +107,11 @@ const iconAnimationStyles = `
   }
   .bottomnav-item-active {
     background: #E6F7FF;
-    color: #357AA8;
+    color: var(--color-primary);
     font-weight: 600;
   }
   .bottomnav-item-active .animated-bottomnav-icon {
-    color: #357AA8 !important;
+    color: var(--color-primary) !important;
   }
   .bottomnav-dropdown-panel {
     position: absolute;
@@ -156,34 +163,40 @@ type NavLink = {
 const navLinksMain: NavLink[] = [
     {
         label: "Overview",
-        icon: FaHome, // Dashboard/Overview: Home icon is correct
+        icon: FaHome,
         href: "/admin/dashboard"
     },
     {
         label: "Members",
-        icon: FaUsers, // FaUsers better represents a group of members
+        icon: FaUsers,
         href: "/admin/members"
     },
     {
         label: "Events",
-        icon: FaCalendarAlt, // Events: Calendar icon is correct
+        icon: FaCalendarAlt,
         href: "/admin/events"
     },
     {
         label: "Forum",
-        icon: FaComments, // Forum: Comments/discussion
+        icon: FaComments,
         href: "/admin/forum"
     }
 ];
 
-// Improved: Publication/News-related links, now with descriptions for better UX
 const publicationsDropdownLinks: NavLink[] = [
     {
         label: "All Publications",
+        icon: FaSearch,
+        href: "/admin/publications/all-publications",
+        group: "Publications",
+        description: "All publications"
+    },
+    {
+        label: "My Publications",
         icon: FaBook,
         href: "/admin/publications",
         group: "Publications",
-        description: "Browse all publications"
+        description: "My publications"
     },
     {
         label: "Create Publication",
@@ -192,13 +205,23 @@ const publicationsDropdownLinks: NavLink[] = [
         group: "Publications",
         description: "Add a new publication"
     },
-    // {
-    //     label: "News",
-    //     icon: FaNewspaper,
-    //     href: "/news",
-    //     group: "News",
-    //     description: "Latest news updates"
-    // }
+];
+const newsDropdownLinks: NavLink[] = [
+    {
+        label: "All News",
+        icon: FaSearch,
+        href: "/admin/publications/all-publications",
+        group: "News",
+        description: "All News"
+    },
+
+    {
+        label: "Create News",
+        icon: FaPlusSquare,
+        href: "/admin/news/new",
+        group: "Publications",
+        description: "New news"
+    },
 ];
 
 const organizePublicationTabsForMobile = (list: NavLink[]) => {
@@ -207,9 +230,15 @@ const organizePublicationTabsForMobile = (list: NavLink[]) => {
         ...list.filter(l => l.group === "News"),
     ];
 };
+// const newsTabsForMobile = (list: NavLink[]) => {
+//     return [
+//         ...list.filter(l => l.group === "News"),
+//     ];
+// };
 
 const publicationsDropdownLinksMobile: NavLink[] = organizePublicationTabsForMobile([
-    ...publicationsDropdownLinks
+    ...publicationsDropdownLinks,
+    ...newsDropdownLinks
 ]);
 
 const navLinksSecondary: NavLink[] = [
@@ -267,12 +296,13 @@ function NavItem({
     asButton = false,
     hideLabelOnMobile = false
 }: NavItemProps) {
+    // Use Tailwind primary color for ring and active by mapping to class or inline style
     const labelClass = hideLabelOnMobile ? "hidden sm:inline" : "inline";
     const baseClass =
-        "sidebar-navitem flex items-center w-full px-5 py-2.5 rounded-lg text-sm font-medium gap-3 mb-0.5 transition-colors whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-[#357AA8]";
-    const activeClass = "sidebar-navitem-active bg-[#D8F3FF] text-[#357AA8]";
+        "sidebar-navitem flex items-center w-full px-5 py-2.5 rounded-lg text-sm font-medium gap-3 mb-0.5 transition-colors whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-primary";
+    const activeClass = "sidebar-navitem-active bg-[#D8F3FF] text-primary"; // (Background matches UI, text uses primary via CSS var)
     const hoverInactive = "hover:bg-[#F5F7FA] text-[#203040]";
-    const iconActive = "animated-sidebar-icon text-[#357AA8]";
+    const iconActive = "animated-sidebar-icon text-primary";
     const iconInactive = "animated-sidebar-icon text-[#8CA1B6]";
 
     if (asButton) {
@@ -285,8 +315,9 @@ function NavItem({
                     aria-haspopup={children ? "menu" : undefined}
                     aria-expanded={ariaExpanded}
                     onClick={onClick}
+                    style={active ? { color: "var(--color-primary)" } : undefined}
                 >
-                    <Icon className={`w-5 h-5 flex-shrink-0 ${active ? iconActive : iconInactive}`} />
+                    <Icon className={`w-5 h-5 flex-shrink-0 ${active ? iconActive : iconInactive}`} style={active ? { color: "var(--color-primary)" } : undefined} />
                     <span className={`flex-1 text-left ${labelClass}`}>{label}</span>
                     {children ? (
                         <svg
@@ -308,7 +339,7 @@ function NavItem({
 
     const content = (
         <>
-            <Icon className={`w-5 h-5 flex-shrink-0 ${active ? iconActive : iconInactive}`} />
+            <Icon className={`w-5 h-5 flex-shrink-0 ${active ? iconActive : iconInactive}`} style={active ? { color: "var(--color-primary)" } : undefined} />
             <span className={labelClass}>{label}</span>
         </>
     );
@@ -321,6 +352,7 @@ function NavItem({
                     aria-current={active ? "page" : undefined}
                     className={`${baseClass} ${active ? activeClass : hoverInactive}`}
                     tabIndex={0}
+                    style={active ? { color: "var(--color-primary)" } : undefined}
                 >
                     {content}
                 </Link>
@@ -334,6 +366,7 @@ function NavItem({
                 className={`${baseClass} ${hoverInactive} ${active ? activeClass : ""}`}
                 onClick={onClick}
                 tabIndex={0}
+                style={active ? { color: "var(--color-primary)" } : undefined}
             >
                 {content}
             </button>
@@ -376,7 +409,7 @@ function PublicationsDropdown({ pathname }: { pathname: string | null }) {
     return (
         <NavItem
             icon={FaSearch}
-            label="News & Publications"
+            label="Publications"
             active={isChildActive}
             asButton
             ariaExpanded={open}
@@ -400,15 +433,98 @@ function PublicationsDropdown({ pathname }: { pathname: string | null }) {
                             )}
                             <Link
                                 href={sublink.href ?? "#"}
-                                className={`flex items-center gap-3 px-4 py-2 rounded text-sm font-medium transition-colors hover:bg-[#F5F7FA] ${isActive ? "text-[#357AA8] font-semibold bg-[#D8F3FF]" : "text-[#203040]"
+                                className={`flex items-center gap-3 px-4 py-2 rounded text-sm font-medium transition-colors hover:bg-[#F5F7FA] ${isActive ? "font-semibold bg-[#D8F3FF] text-primary" : "text-[#203040]"
                                     }`}
                                 role="menuitem"
                                 tabIndex={0}
                                 // CLOSE dropdown panel on nav
                                 onClick={() => setOpen(false)}
+                                style={isActive ? { color: "var(--color-primary)" } : undefined}
                             >
-                                <sublink.icon className={`w-4 h-4 flex-shrink-0 animated-dropdown-icon ${isActive ? "text-[#357AA8]" : "text-[#8CA1B6]"
-                                    }`} aria-hidden="true" />
+                                <sublink.icon className={`w-4 h-4 flex-shrink-0 animated-dropdown-icon${isActive ? " text-primary" : " text-[#8CA1B6]"}`
+                                } style={isActive ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
+                                <span className={labelClass}>{sublink.label}</span>
+                                {sublink.description && (
+                                    <span className="ml-auto text-xs text-[#8CA1B6] hidden sm:inline">{sublink.description}</span>
+                                )}
+                            </Link>
+                        </li>
+                    );
+                })}
+            </ul>
+        </NavItem>
+    );
+}
+
+// News Dropdown for Sidebar (desktop)
+function NewsDropdown({ pathname }: { pathname: string | null }) {
+    const [open, setOpen] = useState(false);
+    const dropdownRef = useRef<HTMLUListElement>(null);
+
+    // Determine if any child tab is active
+    const isChildActive = newsDropdownLinks.some(
+        (link) => pathname === link.href || (link.href && pathname?.startsWith(link.href))
+    );
+
+    useEffect(() => {
+        setOpen(false);
+    }, [pathname]);
+
+    const handleBlur = (e: React.FocusEvent<HTMLButtonElement | HTMLUListElement>) => {
+        if (
+            dropdownRef.current &&
+            e.relatedTarget &&
+            !dropdownRef.current.contains(e.relatedTarget as Node)
+        ) {
+            setOpen(false);
+        }
+    };
+
+    const labelClass = "hidden sm:inline";
+
+    const newsTabs = [
+        ...newsDropdownLinks.filter(l => l.group === "News" && l.label !== "Create News"),
+        ...newsDropdownLinks.filter(l => l.group === "News"),
+        ...newsDropdownLinks.filter(l => l.label === "Create News"),
+    ];
+
+    return (
+        <NavItem
+            icon={FaSearch}
+            label="Publications"
+            active={isChildActive}
+            asButton
+            ariaExpanded={open}
+            onClick={() => setOpen(v => !v)}
+        >
+            <ul
+                ref={dropdownRef}
+                onBlur={handleBlur}
+                className={`${open ? "block" : "hidden"} absolute left-0 right-0 top-full z-40 bg-white border border-[#E6EFFA] rounded shadow mt-1 ml-3 mr-3 py-1 sm:min-w-[198px] max-w-xs`}
+                tabIndex={-1}
+                role="menu"
+                aria-label="News"
+            >
+                {newsTabs.map((sublink, idx) => {
+                    const isActive = pathname === sublink.href;
+                    const isCreate = sublink.label === "Create News";
+                    return (
+                        <li key={sublink.label} className={`dropdown-navitem${isActive ? " dropdown-active" : ""}`}>
+                            {isCreate && (
+                                <div className="border-t border-[#E6EFFA] my-1" />
+                            )}
+                            <Link
+                                href={sublink.href ?? "#"}
+                                className={`flex items-center gap-3 px-4 py-2 rounded text-sm font-medium transition-colors hover:bg-[#F5F7FA] ${isActive ? "font-semibold bg-[#D8F3FF] text-primary" : "text-[#203040]"
+                                    }`}
+                                role="menuitem"
+                                tabIndex={0}
+                                // CLOSE dropdown panel on nav
+                                onClick={() => setOpen(false)}
+                                style={isActive ? { color: "var(--color-primary)" } : undefined}
+                            >
+                                <sublink.icon className={`w-4 h-4 flex-shrink-0 animated-dropdown-icon${isActive ? " text-primary" : " text-[#8CA1B6]"}`
+                                } style={isActive ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
                                 <span className={labelClass}>{sublink.label}</span>
                                 {sublink.description && (
                                     <span className="ml-auto text-xs text-[#8CA1B6] hidden sm:inline">{sublink.description}</span>
@@ -486,10 +602,12 @@ function BottomNavDropdown({
                         key={link.label}
                         href={link.href ?? "#"}
                         onClick={onClose}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium transition-colors hover:bg-[#F5F7FA] ${isActive ? "text-[#357AA8] font-semibold bg-[#D8F3FF]" : "text-[#203040]"}`}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium transition-colors hover:bg-[#F5F7FA] ${isActive ? "font-semibold bg-[#D8F3FF] text-primary" : "text-[#203040]"}`}
                         tabIndex={0}
+                        style={isActive ? { color: "var(--color-primary)" } : undefined}
                     >
-                        <link.icon className={`w-5 h-5 mr-2 animated-dropdown-icon ${isActive ? "text-[#357AA8]" : "text-[#8CA1B6]"}`} aria-hidden="true" />
+                        <link.icon className={`w-5 h-5 mr-2 animated-dropdown-icon${isActive ? " text-primary" : " text-[#8CA1B6]"}`
+                        } style={isActive ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
                         <span className="bottomnav-label">{link.label}</span>
                         {link.description && (
                             <span className="ml-auto text-xs text-[#8CA1B6] hidden sm:inline">{link.description}</span>
@@ -504,12 +622,13 @@ function BottomNavDropdown({
                         key={createTab.label}
                         href={createTab.href ?? "#"}
                         onClick={onClose}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium transition-colors hover:bg-[#F5F7FA] ${activeHref === createTab.href ? "text-[#357AA8] font-semibold bg-[#D8F3FF]" : "text-[#203040]"
+                        className={`flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium transition-colors hover:bg-[#F5F7FA] ${activeHref === createTab.href ? "font-semibold bg-[#D8F3FF] text-primary" : "text-[#203040]"
                             }`}
                         tabIndex={0}
+                        style={activeHref === createTab.href ? { color: "var(--color-primary)" } : undefined}
                     >
-                        <createTab.icon className={`w-5 h-5 mr-2 animated-dropdown-icon ${activeHref === createTab.href ? "text-[#357AA8]" : "text-[#8CA1B6]"
-                            }`} aria-hidden="true" />
+                        <createTab.icon className={`w-5 h-5 mr-2 animated-dropdown-icon${activeHref === createTab.href ? " text-primary" : " text-[#8CA1B6]"}`
+                        } style={activeHref === createTab.href ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
                         <span className="bottomnav-label">{createTab.label}</span>
                         {createTab.description && (
                             <span className="ml-auto text-xs text-[#8CA1B6] hidden sm:inline">{createTab.description}</span>
@@ -557,12 +676,12 @@ function MobileBottomNavBar({
             dropdown: publicationsDropdownLinksMobile,
             iconDropdown: FaSearch
         },
-        {
-            key: "training",
-            icon: FaChalkboardTeacher,
-            label: "Training",
-            href: "/admin/training"
-        },
+        // {
+        //     key: "training",
+        //     icon: FaChalkboardTeacher,
+        //     label: "Training",
+        //     href: "/admin/training"
+        // },
         {
             key: "events",
             icon: FaCalendarAlt,
@@ -580,8 +699,11 @@ function MobileBottomNavBar({
     const isPubActive = publicationsDropdownLinksMobile.some(l =>
         l.href && (pathname === l.href || pathname?.startsWith(l.href))
     );
+    // const isNewsActive = newsDropdownLinksMobile.some(l =>
+    //     l.href && (pathname === l.href || pathname?.startsWith(l.href))
+    // );
 
-    const visibleTabKeys = ["home", "publications", "events", "forum", "training"];
+    const visibleTabKeys = ["home", "publications", "news", "events", "forum", "training"];
     const filteredTabs = bottomTabs.filter(tab => visibleTabKeys.includes(tab.key));
 
     // Always render all navitems; we do not hide any when dropdown is open
@@ -613,10 +735,11 @@ function MobileBottomNavBar({
                                         style={{
                                             boxShadow: dropdownOpen ? "0 4px 24px 0 rgba(44,69,112,0.09)" : undefined,
                                             position: "relative",
-                                            zIndex: dropdownOpen ? 100 : undefined
+                                            zIndex: dropdownOpen ? 100 : undefined,
+                                            color: isPubActive ? "var(--color-primary)" : undefined
                                         }}
                                     >
-                                        <tab.iconDropdown className={`animated-bottomnav-icon`} aria-hidden="true" />
+                                        <tab.iconDropdown className={`animated-bottomnav-icon`} style={isPubActive ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
                                         <span className="bottomnav-label">{tab.label}</span>
                                     </button>
                                     <BottomNavDropdown
@@ -638,8 +761,9 @@ function MobileBottomNavBar({
                                     tabIndex={0}
                                     aria-label={tab.label}
                                     onClick={() => setDropdownOpen(false)}
+                                    style={isActive ? { color: "var(--color-primary)" } : undefined}
                                 >
-                                    <tab.icon className="animated-bottomnav-icon" aria-hidden="true" />
+                                    <tab.icon className="animated-bottomnav-icon" style={isActive ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
                                     <span className="bottomnav-label">{tab.label}</span>
                                 </Link>
                             </li>
@@ -659,21 +783,14 @@ export function AdminSidebar() {
     if (loading) {
         return (
             <>
-                <div className="flex items-center justify-center h-screen bg-white text-[#357AA8] text-lg font-bold">
+                <div className="flex items-center justify-center h-screen bg-white text-primary text-lg font-bold" style={{ color: "var(--color-primary)" }}>
                     Loading user...
                 </div>
             </>
         );
     }
 
-    if (!isAuthenticated || !user) {
-        // Hide sidebar if not authenticated
-        return (
-            <div className="flex items-center justify-center h-screen bg-white text-[#d93025] text-lg font-bold">
-                Not authorized. Please sign in.
-            </div>
-        );
-    }
+    
 
     const handleSignOut = useCallback(() => {
         if (typeof window !== "undefined" && window.confirm("Are you sure you want to sign out?")) {
@@ -740,7 +857,7 @@ export function AdminSidebar() {
                 <header className="flex flex-col border-b border-[#E6EFFA] pb-2">
                     <div className="flex justify-between items-center px-4 pt-3 pb-2">
                         <div className="flex items-center gap-2 min-w-0">
-                            <Link href="/" aria-label="Home" className="block shrink-0 focus:outline-none focus:ring-2 focus:ring-[#357AA8]">
+                            <Link href="/" aria-label="Home" className="block shrink-0 focus:outline-none focus:ring-2 focus:ring-primary">
                                 <Image
                                     src="/logo.png"
                                     alt="Logo"
@@ -758,7 +875,7 @@ export function AdminSidebar() {
                         <button
                             type="button"
                             aria-label="Collapse sidebar (not yet implemented)"
-                            className="ml-1 sm:flex hidden items-center justify-center rounded-md hover:bg-[#E5F0FB] transition-colors p-[5px] focus:outline-none focus:ring-2 focus:ring-[#357AA8]"
+                            className="ml-1 sm:flex hidden items-center justify-center rounded-md hover:bg-[#E5F0FB] transition-colors p-[5px] focus:outline-none focus:ring-2 focus:ring-primary"
                             tabIndex={0}
                             style={{ border: "1px solid #D7E2ED" }}
                             disabled
@@ -794,7 +911,7 @@ export function AdminSidebar() {
                 <footer className="w-full border-t border-[#E6EFFA] bg-[#F6FAFF]">
                     <div className="flex items-center gap-3 px-4 py-3">
                         {/* Show avatar always, details on sm+ */}
-                        <UserAvatar user={user} />
+                        <UserAvatar user={user ?? {}} />
                         <div className="hidden sm:flex flex-col min-w-0">
                             <span className="text-sm font-semibold text-[#16355D] truncate">{user?.name || "Loading..."}</span>
                             <span className="text-xs text-[#768EA6] truncate">{user?.email}</span>

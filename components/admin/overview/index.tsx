@@ -6,6 +6,7 @@ import { PublicationTable } from "../components/table";
 import { useAuth } from "@/context/authcontext";
 import { usePublications } from "@/hooks/usePublications";
 import { useAdminStats } from "@/hooks/useAdminStats";
+import Link from "next/link";
 
 // Stats interfaces based on new structure from the provided JSON
 interface UsersStats {
@@ -73,23 +74,23 @@ const dashboardIconMap = [
     // 4: Total Users (Person Group icon)
     (
         <svg className="w-7 h-7 text-[#4267E7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <circle cx="7" cy="10" r="3" strokeWidth="2.2"/>
-            <circle cx="17" cy="10" r="3" strokeWidth="2.2"/>
-            <path d="M7 13c-2 0-4 1-4 3v2h8v-2c0-2-2-3-4-3zM17 13c-2 0-4 1-4 3v2h8v-2c0-2-2-3-4-3z" strokeWidth="2.2"/>
+            <circle cx="7" cy="10" r="3" strokeWidth="2.2" />
+            <circle cx="17" cy="10" r="3" strokeWidth="2.2" />
+            <path d="M7 13c-2 0-4 1-4 3v2h8v-2c0-2-2-3-4-3zM17 13c-2 0-4 1-4 3v2h8v-2c0-2-2-3-4-3z" strokeWidth="2.2" />
         </svg>
     ),
     // 5: Members (User icon)
     (
         <svg className="w-7 h-7 text-[#4267E7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <circle cx="12" cy="8" r="4" strokeWidth="2.2"/>
-            <path d="M4 20v-1a7 7 0 0114 0v1" strokeWidth="2.2"/>
+            <circle cx="12" cy="8" r="4" strokeWidth="2.2" />
+            <path d="M4 20v-1a7 7 0 0114 0v1" strokeWidth="2.2" />
         </svg>
     ),
     // 6: Admins (Shield with Check icon)
     (
         <svg className="w-7 h-7 text-[#4267E7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path d="M12 3l7 4v5c0 5.25-3.75 9-7 9s-7-3.75-7-9V7l7-4z" strokeWidth="2.2"/>
-            <path d="M9.5 12.5l2 2 3-3" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 3l7 4v5c0 5.25-3.75 9-7 9s-7-3.75-7-9V7l7-4z" strokeWidth="2.2" />
+            <path d="M9.5 12.5l2 2 3-3" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
     ),
 ];
@@ -199,12 +200,12 @@ const AdminOverview: React.FC = () => {
                     <h2 className="text-[17px] sm:text-lg font-semibold text-[#222F43] tracking-tight">
                         Recent Publications
                     </h2>
-                    <a
-                        href="#"
+                    <Link
+                        href="/admin/publications/all-publications"
                         className="text-[#4267E7] text-[13px] font-medium hover:underline focus:outline-none focus:text-[#2143B7] transition-colors"
                     >
                         View All
-                    </a>
+                    </Link>
                 </div>
                 {pubLoading ? (
                     <div className="py-16 text-center text-gray-400 text-base font-semibold">Loading...</div>

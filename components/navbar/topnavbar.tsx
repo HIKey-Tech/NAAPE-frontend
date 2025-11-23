@@ -4,9 +4,14 @@ import { FaRegCommentDots, FaRegBell } from "react-icons/fa";
 import Image from "next/image";
 import { useState } from "react";
 import { useAuth } from "@/context/authcontext";
-import { useRouter } from "next/navigation"; // <--- Added for navigation
+import { useRouter } from "next/navigation";
+import {
+    useNotifications,
+    useMarkNotificationRead,
+    useMarkAllNotificationsRead,
+    useDeleteNotification,
+} from "@/hooks/useNotification";
 
-// Utility to get initials from name
 function getInitials(name: string | undefined) {
     if (!name) return "U";
     const parts = name
@@ -17,7 +22,6 @@ function getInitials(name: string | undefined) {
     return parts.length ? parts.join("") : "U";
 }
 
-// Avatar component: shows image if available, else fallback to initials
 function UserAvatar({
     src,
     alt,
@@ -67,20 +71,26 @@ function UserAvatar({
 }
 
 export default function TopNavbar() {
-    // This can later come from context/auth/user
-
     const checkUser = useAuth();
-    const router = useRouter(); // <--- Use router for navigation
+    const router = useRouter();
     const user = {
         name: checkUser.user?.name || "Loading",
         role: checkUser.user?.role || "Loading",
-        // avatarUrl: checkUser.user?.avatarUrl || "", // should be user image if available
+        // avatarUrl: checkUser.user?.avatarUrl || "",
     };
 
-    // For improved example: notification count and user menu dropdown
-    const [notificationCount] = useState(3); // Example
+    // Notifications integration
+    const { data: notifications, isPending: notificationsLoading } = useNotifications();
+    const markNotificationRead = useMarkNotificationRead();
+    const markAllNotificationsRead = useMarkAllNotificationsRead();
+    const deleteNotification = useDeleteNotification();
+
+    // Calculate unread count
+    const notificationCount = notifications?.filter((n: { read: boolean }) => !n.read).length || 0;
+
     const [showUserDropdown, setShowUserDropdown] = useState(false);
     const [showNotificationsDropdown, setShowNotificationsDropdown] = useState(false);
+
 
     // Initials logic
     const initials = getInitials(user.name);
@@ -89,7 +99,7 @@ export default function TopNavbar() {
         <nav
             className={`
                 w-full
-                h-[54px] sm:h-16    // Improve mobile: 54px on small, 64px ("h-16") on sm+
+                h-[54px] sm:h-16
                 min-h-[54px] sm:min-h-16
                 flex items-center justify-between
                 px-2 sm:px-4
@@ -108,7 +118,7 @@ export default function TopNavbar() {
             <div className="flex-1 flex items-center">
                 {/* Show logo on mobile only */}
                 <div className="sm:hidden flex items-center">
-                    <Image 
+                    <Image
                         src="/images/plane.jpg"
                         alt="Logo"
                         width={40}
@@ -167,27 +177,56 @@ export default function TopNavbar() {
                     </button>
                     {showNotificationsDropdown && (
                         <div className="absolute right-0 mt-2 w-72 max-w-[95vw] sm:w-80 sm:max-w-[90vw] bg-white border border-[#E6EAF0] rounded-lg shadow-lg z-20">
-                            <div className="p-4 border-b border-[#E6EAF0] font-semibold text-[#16355D]">
-                                Notifications
+                            <div className="p-4 border-b border-[#E6EAF0] font-semibold text-[#16355D] flex justify-between items-center">
+                                <span>Notifications</span>
+                                {notificationCount > 0 && (
+                                    <button
+                                        onClick={() => markAllNotificationsRead.mutate()}
+                                        className="text-xs text-blue-600 hover:underline px-1"
+                                        disabled={markAllNotificationsRead.isPending}
+                                    >
+                                        Mark all as read
+                                    </button>
+                                )}
                             </div>
                             <div className="max-h-60 overflow-y-auto divide-y divide-[#F1F4F8]">
-                                {notificationCount === 0 ? (
-                                    <div className="p-4 text-sm text-[#8CA1B6] text-center">No new notifications.</div>
+                                {notificationsLoading ? (
+                                    <div className="p-4 text-sm text-[#8CA1B6] text-center">Loading…</div>
+                                ) : (!notifications || notifications.length === 0) ? (
+                                    <div className="p-4 text-sm text-[#8CA1B6] text-center">No notifications.</div>
                                 ) : (
-                                    <>
-                                        <div className="p-4 hover:bg-[#F6FAFE] cursor-pointer">
-                                            <div className="font-medium text-[#203040]">3 new comments on your post</div>
-                                            <div className="text-xs text-[#A9B5C7] mt-1">5 min ago</div>
+                                    notifications.map((notif: any) => (
+                                        <div
+                                            className={`
+                                                p-4 flex flex-col cursor-pointer hover:bg-[#F6FAFE] group
+                                                ${!notif.read ? "bg-blue-50/40 border-l-2 border-blue-200" : ""}
+                                            `}
+                                            key={notif.id}
+                                            onClick={() => {
+                                                if (!notif.read && !markNotificationRead.isPending) {
+                                                    markNotificationRead.mutate(notif.id);
+                                                }
+                                            }}
+                                        >
+                                            <div className="flex justify-between items-center">
+                                                <div className={`font-medium text-[#203040] ${notif.read ? "" : "font-bold"}`}>{notif.message}</div>
+                                                <button
+                                                    aria-label="Delete notification"
+                                                    className="opacity-60 hover:opacity-100 p-1 text-[#AEBFD3]"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        deleteNotification.mutate(notif.id);
+                                                    }}
+                                                    disabled={deleteNotification.isPending}
+                                                >
+                                                    <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
+                                                        <path d="M4 4l8 8M4 12L12 4" stroke="#D04545" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div className="text-xs text-[#A9B5C7] mt-1">{notif.createdAt ? new Date(notif.createdAt).toLocaleString() : ""}</div>
                                         </div>
-                                        <div className="p-4 hover:bg-[#F6FAFE] cursor-pointer">
-                                            <div className="font-medium text-[#203040]">Your submission was approved</div>
-                                            <div className="text-xs text-[#A9B5C7] mt-1">1 hour ago</div>
-                                        </div>
-                                        <div className="p-4 hover:bg-[#F6FAFE] cursor-pointer">
-                                            <div className="font-medium text-[#203040]">Reminder: Complete your profile</div>
-                                            <div className="text-xs text-[#A9B5C7] mt-1">Yesterday</div>
-                                        </div>
-                                    </>
+                                    ))
                                 )}
                             </div>
                         </div>
@@ -218,7 +257,7 @@ export default function TopNavbar() {
                                 fallback={initials}
                                 size={32}
                             />
-                            {/* Online indicator dot - visually duplicate for legacy, but real dot is in UserAvatar */}
+                            {/* Online indicator dot */}
                             <span
                                 className="absolute bottom-0 right-0 block w-2 h-2 bg-green-500 border-2 border-white rounded-full shadow ring-1 ring-white"
                                 aria-label="Online"
@@ -260,7 +299,7 @@ export default function TopNavbar() {
                                     role="menuitem"
                                     onClick={() => {
                                         setShowUserDropdown(false);
-                                        router.push("/profile"); // Navigate to profile page
+                                        router.push("/profile");
                                     }}
                                 >
                                     <svg width="16" height="16" fill="none" viewBox="0 0 20 20" className="text-[#A6B5C6]">

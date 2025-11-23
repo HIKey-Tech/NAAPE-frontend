@@ -11,7 +11,15 @@ export async function fetchAllPublications(status?: string) {
     }
 
 }
-``
+
+export const getMyPublications = async (status?: string) => {
+    const params: any = {};
+    if (status) params.status = status;
+
+    const res = await api.get("/publications/my", { params });
+    return res.data.data;
+};
+
 export async function getSinglePublication(id: string) {
     try {
         const response = await api.get(`/publications/${id}`)

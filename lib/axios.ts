@@ -2,8 +2,10 @@
 
 import axios from "axios";
 
+const baseURL = process.env.BASE_URL;
+
 const api = axios.create({
-    baseURL: "http://localhost:5000/api",
+    baseURL: `https://naape-backend.onrender.com/api`,
     headers: {
         "Content-Type": "application/json",
     },

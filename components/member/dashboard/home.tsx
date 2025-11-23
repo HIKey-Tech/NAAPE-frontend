@@ -322,7 +322,7 @@ const PublicationsSection: React.FC = () => {
 
     return (
         <section className="mb-10">
-            <SectionHeader title="News & Publications" href="/publications" />
+            <SectionHeader title="Publications" href="/forum" linkLabel="Join The Conversation" />
             {loading ? (
                 <>
                     {/* Mobile shimmer */}

@@ -1,4 +1,4 @@
-import { approvePublication, createPublication, fetchAllPublications, getSinglePublication, rejectPublication } from "@/app/api/publication/publication";
+import { approvePublication, createPublication, fetchAllPublications, getMyPublications, getSinglePublication, rejectPublication } from "@/app/api/publication/publication";
 import { IPublication } from "@/app/api/publication/types";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -19,6 +19,14 @@ export const useCreatePublication = () => {
         },
     });
 };
+
+export function useMyPublications(status?: string) {
+    return useQuery({
+        queryKey: ["my_publications", status],
+        queryFn: () => getMyPublications(status),
+    });
+}
+
 
 export const useGetSinglePublication = (id: string) => {
     return useQuery<IPublication>({
