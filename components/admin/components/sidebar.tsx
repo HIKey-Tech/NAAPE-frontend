@@ -210,7 +210,7 @@ const newsDropdownLinks: NavLink[] = [
     {
         label: "All News",
         icon: FaSearch,
-        href: "/admin/publications/all-publications",
+        href: "/admin/news",
         group: "News",
         description: "All News"
     },
@@ -220,7 +220,7 @@ const newsDropdownLinks: NavLink[] = [
         icon: FaPlusSquare,
         href: "/admin/news/new",
         group: "Publications",
-        description: "New news"
+        description: "Create news"
     },
 ];
 
@@ -402,7 +402,6 @@ function PublicationsDropdown({ pathname }: { pathname: string | null }) {
 
     const publicationTabs = [
         ...publicationsDropdownLinks.filter(l => l.group === "Publications" && l.label !== "Create Publication"),
-        ...publicationsDropdownLinks.filter(l => l.group === "News"),
         ...publicationsDropdownLinks.filter(l => l.label === "Create Publication"),
     ];
 
@@ -484,14 +483,13 @@ function NewsDropdown({ pathname }: { pathname: string | null }) {
 
     const newsTabs = [
         ...newsDropdownLinks.filter(l => l.group === "News" && l.label !== "Create News"),
-        ...newsDropdownLinks.filter(l => l.group === "News"),
         ...newsDropdownLinks.filter(l => l.label === "Create News"),
     ];
 
     return (
         <NavItem
             icon={FaSearch}
-            label="Publications"
+            label="News"
             active={isChildActive}
             asButton
             ariaExpanded={open}
@@ -676,12 +674,12 @@ function MobileBottomNavBar({
             dropdown: publicationsDropdownLinksMobile,
             iconDropdown: FaSearch
         },
-        // {
-        //     key: "training",
-        //     icon: FaChalkboardTeacher,
-        //     label: "Training",
-        //     href: "/admin/training"
-        // },
+        {
+            key: "news",
+            icon: FaChalkboardTeacher,
+            label: "News",
+            href: "/admin/news"
+        },
         {
             key: "events",
             icon: FaCalendarAlt,
@@ -790,7 +788,7 @@ export function AdminSidebar() {
         );
     }
 
-    
+
 
     const handleSignOut = useCallback(() => {
         if (typeof window !== "undefined" && window.confirm("Are you sure you want to sign out?")) {
@@ -891,8 +889,9 @@ export function AdminSidebar() {
                 <ul className="flex-1 w-full flex flex-col py-2 px-0 overflow-y-auto">
                     {/* Home */}
                     {navItemsMain[0]}
-                    {/* Improved News & Publications Dropdown with close on nav */}
+                    {/* Improved Publications and News Dropdown with close on nav */}
                     <PublicationsDropdown pathname={pathname} />
+                    <NewsDropdown pathname={pathname} />
                     {/* rest; do NOT render standalone Create Publication navitem */}
                     {navItemsMain.slice(1)}
                 </ul>

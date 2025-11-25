@@ -18,7 +18,15 @@ export async function getAllMembers() {
 }
 
 
-export const getMemberDashboardStats = async () => {
-    const res = await api.get("/member-dashboard");
-    return res.data.data;
-};
+/**
+ * Fetches statistics for the member dashboard.
+ * Returns structured data or throws a relevant error.
+ */
+export async function getMemberDashboardStats() {
+    try {
+        const response = await api.get("/member-dashboard");
+        return response.data?.data ?? {};
+    } catch (error: any) {
+        throw error.response?.data || error.message || error;
+    }
+}

@@ -251,7 +251,12 @@ const DropImageInfo: React.FC<DropImageInfoProps> = ({
   );
 };
 
-export default function DropImageDual() {
+// New: Add prop to control PDF visibility
+type DropImageDualProps = {
+  showPdf?: boolean;
+};
+
+export default function DropImageDual({ showPdf = false }: DropImageDualProps) {
   // Each type gets its own file state
   const [imageFile, setImageFile] = useState<File[] | null>(null);
   const [pdfFile, setPdfFile] = useState<File[] | null>(null);
@@ -312,11 +317,14 @@ export default function DropImageDual() {
   const imageAcceptString = imageAcceptExts.join(",");
   const pdfAcceptString = pdfAcceptExts.join(",");
 
+  // Only show two columns if both are present
+  const columnCount = showPdf ? 2 : 1;
+
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "1fr 1fr",
+        gridTemplateColumns: columnCount === 2 ? "1fr 1fr" : "1fr",
         gap: "28px",
         width: "100%",
       }}
@@ -334,19 +342,21 @@ export default function DropImageDual() {
         onDragLeave={imageHandlers.onDragLeave}
         onDragOver={imageHandlers.onDragOver}
       />
-      <DropImageInfo
-        icon={FILE_TYPES[1].icon}
-        label={FILE_TYPES[1].label}
-        message={FILE_TYPES[1].message}
-        accept={pdfAcceptString}
-        onFileChange={pdfHandlers.onFileChange}
-        multiple={false}
-        files={pdfFile}
-        dragActive={dragPdf}
-        onDragEnter={pdfHandlers.onDragEnter}
-        onDragLeave={pdfHandlers.onDragLeave}
-        onDragOver={pdfHandlers.onDragOver}
-      />
+      {showPdf && (
+        <DropImageInfo
+          icon={FILE_TYPES[1].icon}
+          label={FILE_TYPES[1].label}
+          message={FILE_TYPES[1].message}
+          accept={pdfAcceptString}
+          onFileChange={pdfHandlers.onFileChange}
+          multiple={false}
+          files={pdfFile}
+          dragActive={dragPdf}
+          onDragEnter={pdfHandlers.onDragEnter}
+          onDragLeave={pdfHandlers.onDragLeave}
+          onDragOver={pdfHandlers.onDragOver}
+        />
+      )}
     </div>
   );
 }
