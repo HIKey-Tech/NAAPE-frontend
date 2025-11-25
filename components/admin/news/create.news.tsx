@@ -233,7 +233,9 @@ export default function CreateNewsComponent() {
                             Cover Image&nbsp;
                             <span className="text-[#8CA1B6] font-normal">(optional)</span>
                         </FormLabel>
-                        <DropImageDual value={imageFile} onChange={handleImageFile} />
+                        <DropImageDual
+                            showPdf={false}
+                        />
                         {imageFile && (
                             <div className="text-xs text-gray-600 mt-2 flex items-center gap-2">
                                 <span>Selected:</span>
