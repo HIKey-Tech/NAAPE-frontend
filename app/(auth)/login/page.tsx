@@ -60,7 +60,6 @@ export default function LoginPage() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setLoading(true);
         try {
-            console.log("user log in values", values)
             const res = await api.post("/auth/login", values);
 
             const userData: User = {

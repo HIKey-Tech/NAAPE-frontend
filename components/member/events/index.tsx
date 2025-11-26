@@ -1,59 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import EventCard from "../component/event.card";
 import { FilterHeader } from "../component/header";
 import { useEvents } from "@/hooks/useEvents";
-
-// Restore admin check: button only shows if user is admin
-function isAdmin() {
-    if (typeof window !== "undefined") {
-        return sessionStorage.getItem("role") === "admin";
-    }
-    return false;
-}
+import { useAuth } from "@/context/authcontext";
+import { NaapButton } from "@/components/ui/custom/button.naap"; // Use NAAP styled button
 
 function getArrayFromEvents(events: any): any[] {
-    // Accept almost any backend response shape
-    if (Array.isArray(events)) {
-        return events;
-    }
-    // If API returns { data: [...] }
-    if (events && Array.isArray(events.data)) {
-        return events.data;
-    }
-    // If API returns an object with an 'events' array property
-    if (events && Array.isArray(events.events)) {
-        return events.events;
-    }
-    // Nothing found
+    if (Array.isArray(events)) return events;
+    if (events && Array.isArray(events.data)) return events.data;
+    if (events && Array.isArray(events.events)) return events.events;
     return [];
+}
+
+// ---------- Hook: reactive admin check ----------
+function useAdmin() {
+    const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+    const { user } = useAuth();
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const role = user?.role;
+            setIsAdmin(role === "admin");
+            // Optionally: console.log("tony role", role?.toString());
+        }
+        // Only run when user changes
+    }, [user]);
+
+    return isAdmin;
 }
 
 export default function EventsComponent() {
     const [search, setSearch] = useState("");
-    const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({
-        from: undefined,
-        to: undefined,
-    });
+    const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
     const [filterOpen, setFilterOpen] = useState(false);
 
     const { data: events, isPending: isLoading, isError } = useEvents();
-
-    // Robustly extract events array
     const eventsArr = getArrayFromEvents(events);
-
-    // Filter fetched events by search, only if eventsArr is array
     const filteredEvents = eventsArr.filter((evt: any) =>
         evt?.title?.toLowerCase().includes(search.toLowerCase())
     );
 
-    // Handler for "Create Event"
+    const isAdmin = useAdmin(); // will be null until checked
+
     const handleCreateEvent = () => {
         if (typeof window !== "undefined") {
-            window.location.href = "/admin/event/new";
+            window.location.href = "/admin/events/new";
         }
     };
+
+    // === Render ===
+    // Don't show Create button until we know if admin
+    if (isAdmin === null) return null; // optional: show loader instead
 
     return (
         <div className="px-4 sm:px-0 py-4 bg-white w-full">
@@ -68,17 +67,23 @@ export default function EventsComponent() {
                 searchPlaceholder="Search for events..."
                 sortLabel="Newest"
             />
-            {/* Show Create Event button only if user is admin */}
-            {isAdmin() && (
+
+            {isAdmin && (
                 <div className="flex justify-end px-6 mt-1 mb-4">
-                    <button
+                    <NaapButton
+                        variant="primary"
                         onClick={handleCreateEvent}
-                        className="bg-[#4267E7] px-5 py-2 rounded-lg text-white font-medium hover:bg-[#274fb7] focus:outline-none focus:ring-2 focus:ring-[#B2D7EF] transition"
+                        iconPosition="left"
+                        icon={
+                            <span className="text-lg font-bold leading-none">+</span>
+                        }
+                        type="button"
                     >
-                        + Create an event
-                    </button>
+                        Create an event
+                    </NaapButton>
                 </div>
             )}
+
             <div className="grid gap-6 px-6 sm:grid-cols-2 lg:grid-cols-3">
                 {isLoading ? (
                     <div className="col-span-full text-center text-[#96A6BF] text-[16px] py-16 font-medium">
@@ -89,9 +94,20 @@ export default function EventsComponent() {
                         Failed to load events.
                     </div>
                 ) : filteredEvents.length === 0 ? (
-                    <div className="col-span-full text-center text-[#96A6BF] text-[16px] py-16 font-medium">
-                        Nothing New
-                    </div>
+                    <>
+                        <div className="col-span-full text-center text-[#96A6BF] text-[16px] py-16 font-medium">
+                            Nothing New
+                            {isAdmin && (
+                                <>
+                                    <br />
+                                    <span className="text-[#274fb7]">
+                                        You can <strong>create a new event</strong> to get started!
+                                    </span>
+                                </>
+                            )}
+                        </div>
+                        
+                    </>
                 ) : (
                     filteredEvents.map((event: any, idx: number) => (
                         <EventCard

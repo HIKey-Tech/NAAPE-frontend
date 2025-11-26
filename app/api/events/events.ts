@@ -6,6 +6,6 @@ export const fetchEvents = async () => {
 };
 
 export const createEventApi = async (data: any) => {
-    const res = await axios.post("/api/events", data);
+    const res = await axios.post("/events", data);
     return res.data;
 };
