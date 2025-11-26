@@ -324,13 +324,13 @@ export default function LatestNews() {
                 variants={buttonVariants as any}
             >
                 <Link href="/news/naape" passHref >
-                    <a>
+                    
                         <NaapButton
                             className="bg-primary hover:bg-primary/90 text-white font-semibold px-7 py-3 text-base shadow transition"
                         >
                             View All
                         </NaapButton>
-                    </a>
+                    
                 </Link>
             </motion.div>
         </motion.section>
