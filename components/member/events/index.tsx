@@ -5,7 +5,8 @@ import EventCard from "../component/event.card";
 import { FilterHeader } from "../component/header";
 import { useEvents } from "@/hooks/useEvents";
 import { useAuth } from "@/context/authcontext";
-import { NaapButton } from "@/components/ui/custom/button.naap"; // Use NAAP styled button
+import { NaapButton } from "@/components/ui/custom/button.naap";
+import { useRouter } from "next/navigation"; // for event card navigation
 
 function getArrayFromEvents(events: any): any[] {
     if (Array.isArray(events)) return events;
@@ -14,27 +15,25 @@ function getArrayFromEvents(events: any): any[] {
     return [];
 }
 
-// ---------- Hook: reactive admin check ----------
-function useAdmin() {
-    const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+// ---------- Hook: get user role ----------
+function useUserRole(): string | null {
     const { user } = useAuth();
+    const [role, setRole] = useState<string | null>(null);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            const role = user?.role;
-            setIsAdmin(role === "admin");
-            // Optionally: console.log("tony role", role?.toString());
+            setRole(user?.role ?? null);
         }
-        // Only run when user changes
     }, [user]);
 
-    return isAdmin;
+    return role;
 }
 
 export default function EventsComponent() {
     const [search, setSearch] = useState("");
     const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
     const [filterOpen, setFilterOpen] = useState(false);
+    const router = useRouter();
 
     const { data: events, isPending: isLoading, isError } = useEvents();
     const eventsArr = getArrayFromEvents(events);
@@ -42,7 +41,9 @@ export default function EventsComponent() {
         evt?.title?.toLowerCase().includes(search.toLowerCase())
     );
 
-    const isAdmin = useAdmin(); // will be null until checked
+    const role = useUserRole();
+    const isAdmin = role === "admin";
+    const isMember = role === "member";
 
     const handleCreateEvent = () => {
         if (typeof window !== "undefined") {
@@ -50,9 +51,8 @@ export default function EventsComponent() {
         }
     };
 
-    // === Render ===
-    // Don't show Create button until we know if admin
-    if (isAdmin === null) return null; // optional: show loader instead
+    // Render
+    if (role === null) return null; // optional: show loader instead
 
     return (
         <div className="px-4 sm:px-0 py-4 bg-white w-full">
@@ -106,17 +106,32 @@ export default function EventsComponent() {
                                 </>
                             )}
                         </div>
-                        
                     </>
                 ) : (
                     filteredEvents.map((event: any, idx: number) => (
                         <EventCard
                             key={event.id ?? idx}
+                            id={event.id}
                             title={event.title}
                             date={event.date}
                             location={event.location || "Life Camp, Abuja"}
                             imageUrl={event.imageUrl || "/images/plane.jpg"}
                             disabled={false}
+                            // Click card navigates to event details per role
+                            onRegister={() => {
+                                if (event.id) {
+                                    if (isAdmin) {
+                                        router.push(`/admin/events/${event.id}`);
+                                    } else if (isMember) {
+                                        router.push(`/events/${event.id}`);
+                                    } else {
+                                        // fallback: default to event details for unknown role
+                                        router.push(`/events/${event.id}`);
+                                    }
+                                }
+                            }}
+                            className="cursor-pointer"
+                            registerLabel="View Details"
                         />
                     ))
                 )}

@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 // Helper: truncate long event titles for better card layout
 const truncate = (text: string, max = 40) =>
@@ -51,6 +52,8 @@ type EventCardProps = {
     className?: string;
     registerLabel?: string;
     disabled?: boolean;
+    // Optionally support event id for navigation
+    id?: string;
 };
 
 const EventCard: React.FC<EventCardProps> = ({
@@ -58,12 +61,14 @@ const EventCard: React.FC<EventCardProps> = ({
     date,
     location,
     imageUrl,
-    onRegister,
+    onRegister, // no longer used
     className = "",
     registerLabel = "Register",
     disabled = false,
+    id,
 }) => {
     const cardRef = useRef<HTMLDivElement | null>(null);
+    const router = useRouter();
 
     // Animate on appear using intersection observer
     useEffect(() => {
@@ -106,6 +111,16 @@ const EventCard: React.FC<EventCardProps> = ({
             if (timer) clearTimeout(timer);
         };
     }, []);
+
+    // Extract event id from imageUrl if not provided in props
+    // This only works if imageUrl includes "/events/{id}/..." or similar.
+    // For fully robust navigation, the parent should always pass event id.
+    let eventId = id;
+    if (!eventId) {
+        // As seen in usage in index.tsx: key={event.id ?? idx}
+        // so, try to extract id from imageUrl if possible, else fallback
+        // But here, we cannot do that. So we just do nothing if no id.
+    }
 
     return (
         <div
@@ -150,10 +165,14 @@ const EventCard: React.FC<EventCardProps> = ({
                 {/* Register Button */}
                 <button
                     type="button"
-                    onClick={onRegister}
-                    disabled={disabled}
-                    className={`mt-auto px-5 py-1.5 border border-[#D5E3F7] rounded-md text-[#4267E7] font-medium text-[15px] transition-colors hover:bg-[#F2F7FF] focus:outline-none focus:ring-2 focus:ring-[#B2D7EF] active:bg-[#E7F1FF] ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}
-                    aria-label={`Register for ${title}`}
+                    onClick={() => {
+                        if (eventId) {
+                            router.push(`/events/${eventId}`);
+                        }
+                    }}
+                    disabled={disabled || !eventId}
+                    className={`mt-auto px-5 py-1.5 border border-[#D5E3F7] rounded-md text-[#4267E7] font-medium text-[15px] transition-colors hover:bg-[#F2F7FF] focus:outline-none focus:ring-2 focus:ring-[#B2D7EF] active:bg-[#E7F1FF] ${disabled || !eventId ? "opacity-60 cursor-not-allowed" : ""}`}
+                    aria-label={`View details and register for ${title}`}
                 >
                     {registerLabel}
                 </button>

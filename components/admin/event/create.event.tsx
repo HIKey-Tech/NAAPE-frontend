@@ -2,7 +2,7 @@
 
 import React from "react";
 import { z } from "zod";
-import { useForm, FieldValues } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +17,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useCreateEvent } from "@/hooks/useEvents";
 import { NaapButton } from "@/components/ui/custom/button.naap";
+import { uploadToCloudinary } from "@/app/api/cloudinary";
 
 // Validation schema
 const eventSchema = z.object({
@@ -35,6 +36,12 @@ const eventSchema = z.object({
     .string()
     .optional()
     .or(z.literal("")),
+  description: z
+    .string()
+    .min(2, "Description must be at least 2 characters.")
+    .max(2000, "Description must be at most 2000 characters.")
+    .optional()
+    .or(z.literal("")),
 });
 
 type EventFormValues = z.infer<typeof eventSchema>;
@@ -44,13 +51,14 @@ const DEFAULT_VALUES: EventFormValues = {
   date: "",
   location: "",
   imageUrl: "",
+  description: "",
 };
 
 // Visual helper for dropzone
 function ImageDropzone({ previewUrl, uploading, onImageSelect }: {
   previewUrl: string;
   uploading: boolean;
-  onImageSelect: (file: File) => void;
+  onImageSelect: (file?: File) => void;
 }) {
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -151,11 +159,9 @@ function ImageDropzone({ previewUrl, uploading, onImageSelect }: {
       {previewUrl && !uploading &&
         <NaapButton
           type="button"
-        //   size="xs"
           color="danger"
           className="absolute top-3 right-3 px-2 py-1"
-          onClick={e => { e.stopPropagation(); onImageSelect(undefined as any); /* triggers clear */ }}
-        //   ariaLabel="Remove image"
+          onClick={e => { e.stopPropagation(); onImageSelect(undefined); }}
         >
           Remove
         </NaapButton>
@@ -197,6 +203,8 @@ const CreateEvent: React.FC = () => {
   const [previewUrl, setPreviewUrl] = React.useState<string>("");
   const [successMsg, setSuccessMsg] = React.useState<string | null>(null);
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
+  const [imageFile, setImageFile] = React.useState<File | null>(null);
+  const [imageLoading, setImageLoading] = React.useState(false);
   const router = useRouter();
 
   const form = useForm<EventFormValues>({
@@ -207,12 +215,9 @@ const CreateEvent: React.FC = () => {
 
   const createEventMutation = useCreateEvent();
 
-  // Lint fix: use isPending for React Query v5+ or status for v4
-  // fallback to status (ok to keep .isLoading if hook is custom and provides that field)
-  const uploading =
-    createEventMutation.isPending;
+  // Either .isPending (react-query 5+) or .isLoading
+  const uploading = createEventMutation.isPending || imageLoading;
 
-  // Reset all notifications on any field change
   React.useEffect(() => {
     const subscription = form.watch(() => {
       setErrorMsg(null);
@@ -221,31 +226,63 @@ const CreateEvent: React.FC = () => {
     return () => subscription.unsubscribe();
   }, [form]);
 
-  // Handle Image
+  // Handle Image preview (client url, does not upload yet)
   const handleImageChange = React.useCallback((file?: File) => {
     if (!file) {
       setPreviewUrl("");
+      setImageFile(null);
       form.setValue("imageUrl", "");
       form.trigger("imageUrl");
       return;
     }
     if (!file.type.startsWith("image/")) return;
-    if (file.size > 2 * 1024 * 1024) { // 2MB limit
+    if (file.size > 2 * 1024 * 1024) {
       setErrorMsg("Image must be under 2MB.");
       return;
     }
     const localUrl = URL.createObjectURL(file);
     setPreviewUrl(localUrl);
-    form.setValue("imageUrl", localUrl);
+    setImageFile(file);
+    // Show preview but imageUrl is still empty until upload
+    form.setValue("imageUrl", localUrl); // for required field logic
     form.trigger("imageUrl");
   }, [form]);
+
+  // Use cloudinary utils for image upload
+  async function uploadImageIfNeeded(file?: File): Promise<string | undefined> {
+    if (!file) return undefined;
+    try {
+      setImageLoading(true);
+        const url: any = await uploadToCloudinary(file);
+      return url;
+    } catch (err) {
+      setErrorMsg("Failed to upload image.");
+      return undefined;
+    } finally {
+      setImageLoading(false);
+    }
+  }
 
   const onSubmit = async (values: EventFormValues) => {
     setErrorMsg(null);
     setSuccessMsg(null);
-    const payload = { ...values };
-    if (!payload.imageUrl) {
-      delete payload.imageUrl;
+
+    let payload: any = { ...values };
+
+    // If imageFile exists, upload and use the returned URL, using cloudinary helper
+    if (imageFile) {
+      const remoteUrl = await uploadImageIfNeeded(imageFile);
+      if (!remoteUrl) {
+        setErrorMsg("Could not upload the image.");
+        return;
+      }
+      payload.imageUrl = remoteUrl;
+    } else {
+      if (!payload.imageUrl) delete payload.imageUrl;
+    }
+
+    if (!payload.description) {
+      delete payload.description;
     }
 
     createEventMutation.mutate(payload, {
@@ -253,6 +290,7 @@ const CreateEvent: React.FC = () => {
         setSuccessMsg("🎉 Event created!");
         form.reset(DEFAULT_VALUES);
         setPreviewUrl("");
+        setImageFile(null);
         setTimeout(() => {
           router.push("/admin/events");
         }, 900);
@@ -307,6 +345,28 @@ const CreateEvent: React.FC = () => {
                           disabled={uploading}
                           autoFocus
                           className="text-[15px] px-4 py-2 rounded-md border border-[#DFE7FA] focus:border-[#4267E7] focus:ring-[#cdd8f7] bg-[#FBFCFF] transition"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs mt-1" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        <span className="text-[15px] font-medium text-[#294e8c]">Description</span>
+                      </FormLabel>
+                      <FormControl>
+                        <textarea
+                          {...field}
+                          placeholder="Event description (optional)"
+                          maxLength={2000}
+                          rows={4}
+                          disabled={uploading}
+                          className="text-[15px] px-4 py-2 rounded-md border border-[#DFE7FA] focus:border-[#4267E7] focus:ring-[#cdd8f7] bg-[#FBFCFF] transition resize-none"
                         />
                       </FormControl>
                       <FormMessage className="text-xs mt-1" />
