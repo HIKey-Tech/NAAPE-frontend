@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import {
     FaArrowRight,
@@ -12,6 +13,66 @@ import {
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { LegacyStatCard } from "@/components/ui/custom/legacy.card";
+
+// --- Improved Typewriter Effect Hook ---
+function useTypewriter(
+    text: string,
+    options: {
+        speed?: number;
+        delay?: number;
+        smartDelayPunctuation?: boolean;
+        onDone?: () => void;
+    } = {}
+) {
+    const [displayed, setDisplayed] = useState("");
+    const [done, setDone] = useState(false);
+    const i = useRef(0);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const { speed = 18, delay = 330, smartDelayPunctuation = true, onDone } = options;
+
+    const getDelay = (char: string, nextChar: string) => {
+        // Add a slightly longer pause at key punctuation
+        if (!smartDelayPunctuation) return speed;
+        if (char === "," || char === ";" || char === ":") return speed * 7;
+        if (char === "—" || char === "." || char === "!" || char === "?")
+            return speed * 12;
+        // Slight pause after spaces following punctuation, but don't double pause
+        if ((char === " " || char === "\u00a0") && [",", ";", ":", ".", "!", "?", "—"].includes(nextChar)) {
+            return 0;
+        }
+        return speed;
+    };
+
+    useEffect(() => {
+        setDisplayed("");
+        setDone(false);
+        i.current = 0;
+
+        function typeNext() {
+            if (i.current < text.length) {
+                setDisplayed((t) => t + text.charAt(i.current));
+                let char = text.charAt(i.current);
+                let nextChar = text.charAt(i.current + 1);
+                i.current += 1;
+                const pause = getDelay(char, nextChar);
+                timeoutRef.current = setTimeout(typeNext, pause);
+            } else {
+                setDone(true);
+                if (onDone) onDone();
+            }
+        }
+        // Start with a short initial delay
+        timeoutRef.current = setTimeout(typeNext, delay);
+
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
+        // eslint-disable-next-line
+    }, [text, speed, delay, smartDelayPunctuation]);
+
+    return { displayed, done };
+}
 
 // Animation variants
 const containerVariants = {
@@ -152,7 +213,42 @@ const stats = [
     },
 ];
 
+// The string to type out
+const heroTypewriteText =
+    "NAAPE unites and elevates aircraft pilots and engineers across Nigeria—advocating standards, safety, and professional excellence for every member in our aviation community.";
+
 export default function Hero() {
+    const [showCursor, setShowCursor] = useState(true);
+
+    // Flashing cursor interval (pauses when finished typing)
+    useEffect(() => {
+        let interval: NodeJS.Timeout | null = null;
+        if (showCursor) {
+            interval = setInterval(() => {
+                setShowCursor((v) => !v);
+            }, 540);
+        }
+        return () => {
+            if (interval) clearInterval(interval);
+            setShowCursor(true);
+        };
+    }, [showCursor]);
+
+    const { displayed, done } = useTypewriter(heroTypewriteText, {
+        speed: 18,
+        delay: 340,
+        smartDelayPunctuation: true,
+        onDone: () => setShowCursor(false),
+    });
+
+    // For accessibility: expose the full sentence after typing for screen readers
+    const [srText, setSrText] = useState("");
+    useEffect(() => {
+        if (done) setSrText(heroTypewriteText);
+        else setSrText("");
+    }, [done]);
+
+    // Optionally, visually split the sentence if needed for emphasis
     return (
         <section className="relative w-full h-full min-h-full flex flex-col md:flex-col items-center justify-center bg-gradient-to-br from-[#F5F7FA] to-[#e5ecfa] dark:from-[#232835] dark:to-[#2f3650] overflow-hidden px-4 py-8 ">
             {/* Decorative aviation-themed background */}
@@ -190,10 +286,37 @@ export default function Hero() {
                         <span className="text-primary">Aviators and Engineers</span>
                     </motion.h1>
                     <motion.p
-                        className="text-[#565C69] dark:text-[#B1B8C7] text-base md:text-lg max-w-lg md:max-w-xl"
+                        className="text-[#565C69] dark:text-[#B1B8C7] text-base md:text-lg max-w-lg md:max-w-xl min-h-[3.8em] md:min-h-[2.7em] font-normal whitespace-pre-line"
                         variants={paragraphVariants}
+                        aria-live="polite"
                     >
-                        NAAPE unites and elevates aircraft pilots and engineers across Nigeria—advocating standards, safety, and professional excellence for every member in our aviation community.
+                        <span aria-hidden="true">
+                            {displayed}
+                            <span className="inline-block align-baseline w-4" aria-hidden>
+                                {!done && showCursor && (
+                                    <span
+                                        className="ml-0.5 animate-blink font-mono text-[#232835] dark:text-white"
+                                        style={{
+                                            fontWeight: "bold",
+                                            letterSpacing: "0.01em",
+                                            opacity: 0.70,
+                                            fontSize: "1.04em",
+                                            position: "relative",
+                                            top: "1px",
+                                        }}
+                                    >
+                                        |
+                                    </span>
+                                )}
+                            </span>
+                        </span>
+                        {/*
+                            For accessibility:
+                            Display full sentence for screen readers, hidden visually until typewriter completes.
+                        */}
+                        {done && (
+                            <span className="sr-only">{srText}</span>
+                        )}
                     </motion.p>
                     <motion.div
                         className="flex flex-col sm:flex-row gap-3 md:gap-5 mt-2 md:mt-4 w-full max-w-sm md:max-w-full items-center md:items-start"
@@ -290,6 +413,19 @@ export default function Hero() {
                     </motion.div>
                 ))}
             </motion.div>
+            <style jsx global>{`
+                @keyframes blink {
+                    0%, 100% {
+                        opacity: 0.70;
+                    }
+                    50% {
+                        opacity: 0;
+                    }
+                }
+                .animate-blink {
+                    animation: blink 1.14s steps(2, start) infinite;
+                }
+            `}</style>
         </section>
     );
 }
