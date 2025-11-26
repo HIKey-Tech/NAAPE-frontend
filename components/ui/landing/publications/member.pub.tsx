@@ -3,6 +3,8 @@
 import React from "react";
 import CustomHeroSection from "../../custom/hero.section";
 import PublishedPublicationCard from "@/components/ui/custom/publication.card";
+import Link from "next/link";
+import { NaapButton } from "../../custom/button.naap";
 
 // Example hero slides for publications page
 const heroSlides = [
@@ -23,29 +25,29 @@ const heroSlides = [
     },
 ];
 
-// Sample publications for demonstration (should be replaced by real data in production)
+// Publications data, IDs must match dynamic page names and routing
 const publications = [
     {
+        id: "safety-protocols",
         imageUrl: "/images/event1.jpg",
         title: "Safety Protocols in Modern Aviation",
         summary: "A deep dive into protocols ensuring flight safety in today's advanced aviation sector.",
         authorName: "Jane Doe",
         authorRole: "Pilot",
         authorAvatarUrl: '/images/leader.png',
-        linkUrl: "#",
         category: "Safety",
-        publishedDate: "Mar 21, 2024",
+        publishedDate: "2024-03-21",
     },
     {
+        id: "maintaining-avionics",
         imageUrl: "/images/plane.jpg",
         title: "Maintaining Avionics: A Modern Perspective",
         summary: "Best practices for avionics maintenance based on latest industry research.",
         authorName: "Engr. Ifeanyi Okeke",
         authorRole: "Avionics Engineer",
         authorAvatarUrl: '/images/leader.png',
-        linkUrl: "#",
         category: "Avionics",
-        publishedDate: "Dec 17, 2023",
+        publishedDate: "2023-12-17",
     },
 ];
 
@@ -53,9 +55,7 @@ export default function MemberPublicationsComponent() {
     return (
         <main className="w-full min-h-screen flex flex-col">
             <CustomHeroSection
-                heading={
-                    <>Member Publications</>
-                }
+                heading={<>Member Publications</>}
                 subheading={
                     <>
                         Dive into a curated library of articles, research, and technical reports authored by members of the National Association of Aircraft Pilots and Engineers. Stay informed, inspired, and connected with the latest developments and thought leadership in the aviation community.
@@ -72,32 +72,43 @@ export default function MemberPublicationsComponent() {
                     Browse Publications
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {publications.map((pub, idx) => (
+                    {publications.map((pub) => (
                         <PublishedPublicationCard
-                            key={pub.title + pub.publishedDate}
+                            key={pub.id}
                             imageUrl={pub.imageUrl}
                             title={pub.title}
                             summary={pub.summary}
                             authorName={pub.authorName}
                             authorRole={pub.authorRole}
                             authorAvatarUrl={pub.authorAvatarUrl}
-                            linkUrl={pub.linkUrl}
+                            // Route to the detail page by ID per dynamic route [id]
+                            linkUrl={`/publication/members/${pub.id}`}
                             category={pub.category}
-                            publishedDate={pub.publishedDate}
+                            publishedDate={
+                                // Format as "Mar 21, 2024" if available, else raw
+                                pub.publishedDate
+                                    ? (new Date(pub.publishedDate)).toLocaleDateString("en-US", {
+                                        year: "numeric",
+                                        month: "short",
+                                        day: "numeric",
+                                    })
+                                    : ""
+                            }
                             className=""
                         />
                     ))}
                 </div>
                 {/* Call to Action or Upload/Submit new Publication (optional, for members) */}
                 <div className="mt-10 text-center">
-                    <button
-                        className="bg-[#2043A2] hover:bg-[#183077] text-white font-semibold py-3 px-7 rounded-full shadow transition-all text-base"
-                        // onClick={} // Link to submission page if available
-                        disabled
-                        title="Feature coming soon"
+                    <NaapButton
+                        variant="primary"
+                        className="py-3 px-7 text-base font-semibold shadow"
+                        onClick={() => window.location.href = "/login"}
+                        tooltip="Sign in to submit your publication"
+                        fullWidth={false}
                     >
-                        Submit Your Publication (Coming Soon)
-                    </button>
+                        Submit Your Publication
+                    </NaapButton>
                 </div>
             </section>
         </main>

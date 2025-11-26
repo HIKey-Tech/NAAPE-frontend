@@ -3,6 +3,7 @@
 import React from "react";
 import CustomHeroSection from "../../custom/hero.section";
 import PublishedPublicationCard from "@/components/ui/custom/publication.card";
+import Link from "next/link";
 
 // Hero slides for NAAPE publications page
 const heroSlides = [
@@ -23,40 +24,40 @@ const heroSlides = [
     },
 ];
 
-// Example NAAPE official publications (replace with real data/DB fetch in prod)
+// The IDs must match dynamic [id] routes for /publication/naape/[id]
 const naapePublications = [
     {
+        id: "annual-report-2023",
         imageUrl: "/images/plane.jpg",
         title: "2023 NAAPE Annual Report",
         summary: "A comprehensive overview of NAAPE's activities, achievements, and industry impact throughout 2023.",
         authorName: "NAAPE Secretariat",
         authorRole: "Secretariat",
         authorAvatarUrl: "/images/leader.png",
-        linkUrl: "#",
         category: "Annual Report",
-        publishedDate: "Apr 10, 2024",
+        publishedDate: "2024-04-10",
     },
     {
+        id: "aviation-safety-guidance-2024",
         imageUrl: "/images/handplane.jpg",
         title: "Updated Aviation Safety Guidance 2024",
         summary: "Official NAAPE recommendations for flight safety updated for evolving regulatory standards and technologies.",
         authorName: "NAAPE Technical Committee",
         authorRole: "Technical Committee",
         authorAvatarUrl: "/images/leader.png",
-        linkUrl: "#",
         category: "Guidance",
-        publishedDate: "Feb 14, 2024",
+        publishedDate: "2024-02-14",
     },
     {
+        id: "rpas-drones-nigerian-airspace",
         imageUrl: "/images/leader.png",
         title: "NAAPE Research: RPAS/Drones in Nigerian Airspace",
         summary: "Assessment of risks, opportunities, and regulatory considerations regarding unmanned aerial systems in Nigeria.",
         authorName: "NAAPE Research Group",
         authorRole: "Research",
         authorAvatarUrl: "/images/plane.jpg",
-        linkUrl: "#",
         category: "Research",
-        publishedDate: "Sep 7, 2023",
+        publishedDate: "2023-09-07",
     },
 ];
 
@@ -64,9 +65,7 @@ export default function NaapePublicationsComponent() {
     return (
         <main className="w-full min-h-screen flex flex-col">
             <CustomHeroSection
-                heading={
-                    <>NAAPE Publications</>
-                }
+                heading={<>NAAPE Publications</>}
                 subheading={
                     <>
                         Access officially released publications, research, and guidelines from the National Association of Aircraft Pilots and Engineers. Stay updated with NAAPE's authoritative thought leadership, technical standards, and reports powering the aviation industry.
@@ -83,18 +82,27 @@ export default function NaapePublicationsComponent() {
                     Browse Official Publications
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {naapePublications.map((pub, idx) => (
+                    {naapePublications.map((pub) => (
                         <PublishedPublicationCard
-                            key={pub.title + pub.publishedDate}
+                            key={pub.id}
                             imageUrl={pub.imageUrl}
                             title={pub.title}
                             summary={pub.summary}
                             authorName={pub.authorName}
                             authorRole={pub.authorRole}
                             authorAvatarUrl={pub.authorAvatarUrl}
-                            linkUrl={pub.linkUrl}
+                            // Route to the detail page by ID per dynamic route [id]
+                            linkUrl={`/publication/naape/${pub.id}`}
                             category={pub.category}
-                            publishedDate={pub.publishedDate}
+                            publishedDate={
+                                pub.publishedDate
+                                    ? (new Date(pub.publishedDate)).toLocaleDateString("en-US", {
+                                        year: "numeric",
+                                        month: "short",
+                                        day: "numeric",
+                                    })
+                                    : ""
+                            }
                             className=""
                         />
                     ))}

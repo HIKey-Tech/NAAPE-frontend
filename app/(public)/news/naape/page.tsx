@@ -5,6 +5,8 @@ import NewsHeroSection from "@/components/ui/landing/news";
 import type { ReactNode } from "react";
 import { LandingTabs } from "@/components/ui/custom/landing.tab";
 import { NewsCard } from "@/components/ui/custom/news.card";
+import { useRouter } from "next/navigation"; // Add router for navigation
+import Link from "next/link";
 
 // Tab icon examples (optional, import icons you want to use)
 import { Newspaper, Calendar, Users } from "lucide-react";
@@ -26,7 +28,7 @@ const NAAPE_NEWS_HERO_SLIDES: NewsSlide[] = [
         headline: "NAAPE Celebrates Successful Annual General Meeting",
         excerpt: "The National Association of Aircraft Pilots and Engineers (NAAPE) held its 2024 AGM, uniting aviation professionals to inspire growth.",
         caption: "Lagos, 2024 · Photo: NAAPE",
-        link: "https://naape.org.ng/news/agm-2024",
+        link: "/news/naape/agm-2024", // Use local route
     },
     {
         src: "/images/event1.jpg",
@@ -34,7 +36,7 @@ const NAAPE_NEWS_HERO_SLIDES: NewsSlide[] = [
         headline: "NAAPE Hosts National Aviation Safety Workshop",
         excerpt: "Experts discussed current trends and best practices in aviation safety during NAAPE's national workshop.",
         caption: "NAAPE Headquarters · Feb 2024",
-        link: "https://naape.org.ng/news/safety-workshop",
+        link: "/news/naape/workshop-2024",
     },
     {
         src: "/images/event2.jpg",
@@ -42,7 +44,7 @@ const NAAPE_NEWS_HERO_SLIDES: NewsSlide[] = [
         headline: "NAAPE Champions Women in Aviation Initiative",
         excerpt: "A special forum spotlighted female trailblazers, promoting inclusivity within Nigeria's aviation sector.",
         caption: "NAAPE Women in Aviation, March 2024",
-        link: "https://naape.org.ng/news/women-in-aviation",
+        link: "/news/naape/wia-2024",
     },
 ];
 
@@ -71,7 +73,7 @@ const ALL_NEWS: NewsItem[] = [
         date: "2024-04-20",
         image: "/images/news/naape/naape-banner.jpg",
         tag: "Events",
-        link: "https://naape.org.ng/news/agm-2024",
+        link: "/news/naape/agm-2024", // Use local route
     },
     {
         id: "workshop-2024",
@@ -80,7 +82,7 @@ const ALL_NEWS: NewsItem[] = [
         date: "2024-02-18",
         image: "/images/news/naape/safety-workshop.jpg",
         tag: "Events",
-        link: "https://naape.org.ng/news/safety-workshop",
+        link: "/news/naape/workshop-2024",
     },
     {
         id: "wia-2024",
@@ -89,7 +91,7 @@ const ALL_NEWS: NewsItem[] = [
         date: "2024-03-10",
         image: "/images/news/naape/women-in-aviation.jpg",
         tag: "Initiatives",
-        link: "https://naape.org.ng/news/women-in-aviation",
+        link: "/news/naape/wia-2024",
     },
 ];
 
@@ -111,6 +113,7 @@ function filterNews(tab: string, search: string) {
 
 // Adapted NewsList component to use NewsCard
 function NewsList({ news }: { news: NewsItem[] }) {
+    const router = useRouter();
     if (!news.length) {
         return (
             <div className="py-12 text-center text-gray-500">
@@ -121,19 +124,21 @@ function NewsList({ news }: { news: NewsItem[] }) {
     return (
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {news.map(item => (
-                <NewsCard
-                    key={item.id}
-                    imageUrl={item.image || ""}
-                    title={item.title}
-                    summary={item.summary}
-                    // For this example, generic/fallback author, role, and avatar are provided.
-                    // In real data, replace with actual author fields.
-                    authorName="NAAPE"
-                    authorRole={item.tag || undefined}
-                    authorAvatarUrl="/images/logos/naape.svg"
-                    linkUrl={item.link || "#"}
-                    category={item.tag}
-                />
+                <div key={item.id}>
+                    {/* Wrap NewsCard in a Link so it navigates via Next.js routes */}
+                    <Link href={item.link || "#"} className="block focus:outline-none" tabIndex={0}>
+                        <NewsCard
+                            imageUrl={item.image || ""}
+                            title={item.title}
+                            summary={item.summary}
+                            authorName="NAAPE"
+                            authorRole={item.tag || undefined}
+                            authorAvatarUrl="/images/logos/naape.svg"
+                            linkUrl={item.link || "#"} // for button fallback
+                            category={item.tag}
+                        />
+                    </Link>
+                </div>
             ))}
         </div>
     );
