@@ -27,13 +27,16 @@ export default function Footer() {
                     <span className="uppercase tracking-wider font-bold text-[#FFD600] mb-4 block text-sm">Quick Links</span>
                     <ul className="flex flex-col gap-2 text-[15px]">
                         <li>
+                            <Link href="/" className="hover:text-[#FFD600] transition-colors">Home</Link>
+                        </li>
+                        <li>
                             <Link href="/about" className="hover:text-[#FFD600] transition-colors">About Us</Link>
                         </li>
                         <li>
-                            <Link href="/news" className="hover:text-[#FFD600] transition-colors">News</Link>
+                            <Link href="/news/naape" className="hover:text-[#FFD600] transition-colors">News</Link>
                         </li>
                         <li>
-                            <Link href="/publications" className="hover:text-[#FFD600] transition-colors">Publications</Link>
+                            <Link href="/publications/naape" className="hover:text-[#FFD600] transition-colors">Publications</Link>
                         </li>
                         <li>
                             <Link href="/events" className="hover:text-[#FFD600] transition-colors">Events</Link>

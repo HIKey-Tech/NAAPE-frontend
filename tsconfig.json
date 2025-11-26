@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "app/(private)/(admin)/admin/profile"  ],
+, "app/(private)/(admin)/admin/profile", "app/(public)/about/organs-of-association"  ],
   "exclude": ["node_modules"]
 }

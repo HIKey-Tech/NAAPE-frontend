@@ -78,12 +78,29 @@ export default function TopNavbar() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center justify-center w-full gap-2 xl:gap-5 text-[#0A1331] font-medium text-[15px]">
-                <Link
-                    href="/about"
-                    className={`hover:text-[color:var(--primary)] transition px-2 py-1 ${active === '/about' ? 'text-[color:var(--primary)] font-semibold' : ''}`}
-                >
-                    About
-                </Link>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            className={`px-2 font-medium flex items-center gap-1 hover:text-[color:var(--primary)] ${active.startsWith("/about") ? "text-[color:var(--primary)] font-semibold" : ""}`}
+                            tabIndex={0}
+                        >
+                            About
+                            <ChevronDown size={16} />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem asChild>
+                            <Link href="/about/nac-members">NAC Memers</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/about/organs-of-association">Organs of Association</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/about/rights-and-responsibilites">Rights and Responsibilites</Link>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
                 <Link
                     href="/membership"
                     className={`hover:text-[color:var(--primary)] transition px-2 py-1 ${active === '/membership' ? 'text-[color:var(--primary)] font-semibold' : ''}`}
