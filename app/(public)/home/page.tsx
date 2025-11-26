@@ -263,7 +263,7 @@ function PlaneTrail() {
         if (ref) {
             const rect = ref.getBoundingClientRect();
             const scrollY = window.scrollY || window.pageYOffset;
-            const offset = scrollY + rect.top + rect.height * 0.1; 
+            const offset = scrollY + rect.top + rect.height * 0.1;
             setPlaneTop(offset);
         }
     }, [activeIndex, sectionRefs]);
