@@ -4,47 +4,60 @@ import { useState, useEffect, useRef } from "react";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { NewsCard } from "@/components/ui/custom/news.card";
 import { motion, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
+import Link from "next/link";
 
-// Dummy Latest News Data
+// Dynamically import NewsDetails for client-side routing to NewsDetails
+const NewsDetails = dynamic(() => import("@/components/ui/custom/news.details"), { ssr: false });
+
+// Dummy Latest News Data, with minimal example 'content' for NewsDetails. In reality this should come from the backend.
 const newsList = [
     {
         imageUrl: "/images/plane.jpg",
         title: "Tenants of Safety in Nigerian Aviation Industry",
+        content: `<p>Discover the central principles driving safety across Nigerian skies. Our experts weigh in on best practices, cutting-edge procedures, and regulatory milestones.</p>`,
         summary: "Discover the central principles driving safety across Nigerian skies. Our experts weigh in on best practices, cutting-edge procedures, and regulatory milestones.",
-        authorName: "Samuel Ajayi",
-        authorRole: "Aviation Analyst",
-        authorAvatarUrl: "",
-        linkUrl: "/news/safety-nigerian-aviation",
+        date: "2024-05-05T10:00:00Z",
+        author: {
+            name: "Samuel Ajayi",
+            role: "Aviation Analyst",
+        },
         category: "Insight",
     },
     {
         imageUrl: "/images/plane.jpg",
         title: "Tenants of Safety in Nigerian Aviation Industry",
+        content: `<p>Discover the central principles driving safety across Nigerian skies. Our experts weigh in on best practices, cutting-edge procedures, and regulatory milestones.</p>`,
         summary: "Discover the central principles driving safety across Nigerian skies. Our experts weigh in on best practices, cutting-edge procedures, and regulatory milestones.",
-        authorName: "Samuel Ajayi",
-        authorRole: "Aviation Analyst",
-        authorAvatarUrl: "",
-        linkUrl: "/news/safety-nigerian-aviation",
+        date: "2024-05-05T10:00:00Z",
+        author: {
+            name: "Samuel Ajayi",
+            role: "Aviation Analyst",
+        },
         category: "Insight",
     },
     {
         imageUrl: "/images/plane.jpg",
         title: "Meet the New Aviation Minister: A Vision for Safer Skies",
+        content: `<p>NAAPE meets with the new Minister of Aviation ... future prospects and collaborative growth to ensure Nigerian skies remain among Africa's safest.</p>`,
         summary: "NAAPE meets with the new Minister of Aviation to discuss future prospects and collaborative growth to ensure Nigerian skies remain among Africa's safest.",
-        authorName: "Ngozi Okoronkwo",
-        authorRole: "NAAPE Correspondent",
-        authorAvatarUrl: "",
-        linkUrl: "/news/new-aviation-minister",
+        date: "2024-05-07T10:00:00Z",
+        author: {
+            name: "Ngozi Okoronkwo",
+            role: "NAAPE Correspondent",
+        },
         category: "Leadership",
     },
     {
         imageUrl: "/images/plane.jpg",
         title: "NAAPE Quarterly Magazine now out!",
+        content: `<p>The latest NAAPE magazine features sector trends, regulatory updates, interviews with top engineers, and news from the association’s leadership.</p>`,
         summary: "The latest NAAPE magazine features sector trends, regulatory updates, interviews with top engineers, and news from the association’s leadership.",
-        authorName: "Editorial Board",
-        authorRole: "NAAPE",
-        authorAvatarUrl: "",
-        linkUrl: "/news/naape-magazine-issue",
+        date: "2024-05-11T10:00:00Z",
+        author: {
+            name: "Editorial Board",
+            role: "NAAPE",
+        },
         category: "Publication",
     },
 ];
@@ -126,10 +139,13 @@ function SlideArrows({ current, total, onPrev, onNext }: { current: number; tota
     )
 }
 
+// Maintain local state for whether to show NewsDetails (modal-style in this demo)
 export default function LatestNews() {
-    // State for slideshow (mobile)
     const [active, setActive] = useState(0);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+    // State for showing full news details (as pop-in modal/popup, or you could handle navigation)
+    const [showDetails, setShowDetails] = useState<null | { index: number }>(null);
 
     // Clean up interval if component unmounts (prevent memory leaks)
     useEffect(() => {
@@ -170,6 +186,25 @@ export default function LatestNews() {
         }
     };
 
+    // Util to map home news data to NewsDetails props for the modal/detail
+    function getNewsDetailsProps(index: number) {
+        const news = newsList[index];
+        return {
+            imageUrl: news.imageUrl,
+            title: news.title,
+            content: news.content,
+            date: news.date,
+            author: {
+                name: news.author?.name || "",
+                // avatarUrl: news.author?.avatarUrl || undefined, // removed because not on type
+                role: news.author?.role || undefined,
+            },
+            category: news.category,
+            backHref: "#",
+            className: "",
+        };
+    }
+
     return (
         <motion.section
             className="w-full max-w-full mx-auto min-h-full p-6 my-6"
@@ -178,6 +213,31 @@ export default function LatestNews() {
             viewport={{ once: true, amount: 0.18 }}
             variants={containerVariants}
         >
+            {/* NewsDetails popup using NewsDetails component */}
+            <AnimatePresence>
+                {showDetails !== null && (
+                    <motion.div
+                        key="detail-modal"
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{ overflowY: "auto" }}
+                        onClick={() => setShowDetails(null)}
+                    >
+                        <div
+                            className="max-w-2xl mx-auto w-full p-2 sm:p-4"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <NewsDetails {...getNewsDetailsProps(showDetails.index)} />
+                            <div className="flex justify-end mt-2">
+                                <NaapButton onClick={() => setShowDetails(null)} variant="ghost" className="mt-2">Close</NaapButton>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <motion.div className="mb-8 flex flex-col items-center ">
                 <motion.span
                     className="text-[#CA9414] font-bold text-xs md:text-sm tracking-widest uppercase mb-2"
@@ -213,7 +273,17 @@ export default function LatestNews() {
                                 exit={{ opacity: 0, x: -60 }}
                                 transition={{ type: "spring", stiffness: 55, damping: 16, duration: 0.34 }}
                             >
-                                <NewsCard {...newsList[active]} />
+                                <button
+                                    style={{ display: "block", width: "100%", border: "none", background: "none", padding: 0, cursor: "pointer" }}
+                                    onClick={() => setShowDetails({ index: active })}
+                                    aria-label={`Read more about ${newsList[active].title}`}
+                                >
+                                    <NewsCard
+                                        {...newsList[active]}
+                                        authorName={newsList[active].author?.name || ""}
+                                        linkUrl={`/news/naape/${encodeURIComponent(newsList[active].title.replace(/\s+/g, "-").toLowerCase())}`}
+                                    />
+                                </button>
                             </motion.div>
                         </AnimatePresence>
                     </div>
@@ -232,7 +302,18 @@ export default function LatestNews() {
                 >
                     {newsList.map((news, index) => (
                         <motion.div key={index} variants={cardVariants as any}>
-                            <NewsCard {...news} />
+                            <button
+                                style={{ display: "block", width: "100%", border: "none", background: "none", padding: 0, cursor: "pointer" }}
+                                onClick={() => setShowDetails({ index })}
+                                aria-label={`Read more about ${news.title}`}
+                            >
+                                <NewsCard
+                                    {...news}
+                                    authorName={news.author?.name || ""}
+                                    authorRole={news.author?.role || ""}
+                                    linkUrl={`/news/naape/${encodeURIComponent(news.title.replace(/\s+/g, "-").toLowerCase())}`}
+                                />
+                            </button>
                         </motion.div>
                     ))}
                 </motion.div>
@@ -242,13 +323,15 @@ export default function LatestNews() {
                 className="flex justify-center mt-10"
                 variants={buttonVariants as any}
             >
-                <a href="/news">
-                    <NaapButton
-                        className="bg-primary hover:bg-primary/90 text-white font-semibold px-7 py-3 text-base shadow transition"
-                    >
-                        View All
-                    </NaapButton>
-                </a>
+                <Link href="/news/naape" passHref >
+                    <a>
+                        <NaapButton
+                            className="bg-primary hover:bg-primary/90 text-white font-semibold px-7 py-3 text-base shadow transition"
+                        >
+                            View All
+                        </NaapButton>
+                    </a>
+                </Link>
             </motion.div>
         </motion.section>
     );
