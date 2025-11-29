@@ -1,4 +1,5 @@
 import api from "@/lib/axios";
+import axios from "axios";
 
 
 export async function fetchAllPublications(status?: string) {
@@ -31,10 +32,19 @@ export async function getSinglePublication(id: string) {
     }
 }
 
-export async function createPublication(data: any) {
+export async function createPublication(data: FormData) {
+    const token = localStorage.getItem("token"); // or cookies
+
     try {
-        const response = await api.post("/publications", data)
-        return response
+
+        const BASE_URL = "http://localhost:5000/api"
+        const response = await axios.post(`${BASE_URL}/publications`, data, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`
+            }
+        })
+        return response.data
 
     } catch (error) {
         throw error

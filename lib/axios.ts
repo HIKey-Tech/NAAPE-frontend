@@ -1,7 +1,17 @@
 
 import axios from "axios";
 
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000";
+const baseURL = "http://localhost:5000";
+// process.env.NEXT_PUBLIC_BASE_URL ||
+
+// const publish: boolean = false
+
+// const headers = {
+//     if(publish == true) {
+
+//     }
+// }
+
 
 const api = axios.create({
     baseURL: `${baseURL}/api`,

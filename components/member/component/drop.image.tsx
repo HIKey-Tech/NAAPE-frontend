@@ -1,6 +1,12 @@
-import React, { useRef, useState } from "react";
+"use client";
 
-// Define theme variables for easy reuse and consistency
+import React, { useRef, useState, useEffect, useCallback } from "react";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+
+const ACCEPT_IMAGE = "image/jpeg,image/png,image/gif,image/webp,image/jpg";
+const MAX_IMAGE_SIZE_MB = 10;
+
 const COLORS = {
   background: "#fff",
   border: "#b9cdf1",
@@ -14,28 +20,35 @@ const COLORS = {
   subText: "#757575",
 };
 
-const dropImageStyle: React.CSSProperties = {
-  background: COLORS.background,
-  border: `2px dashed ${COLORS.border}`,
-  borderRadius: "14px",
-  minHeight: "210px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  flexDirection: "column",
-  width: "100%",
-  position: "relative",
-  transition: "border 0.2s, box-shadow 0.2s",
-  cursor: "pointer",
-  boxShadow: "0 2px 6px 0 rgba(185, 205, 241, 0.07)",
-};
+function isImageFile(file: File): boolean {
+  const validTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+    "image/jpg",
+  ];
+  if (validTypes.includes(file.type)) return true;
+
+  const name = file.name.toLowerCase();
+  return [".jpg", ".jpeg", ".png", ".gif", ".webp"].some((ext) =>
+    name.endsWith(ext)
+  );
+}
 
 const defaultIcon = (
   <svg width="54" height="54" viewBox="0 0 54 54" fill="none">
     <rect width="54" height="54" rx="12" fill={COLORS.iconBg} />
     <g filter="url(#icon_dropshadow)">
       <rect x="12" y="14" width="30" height="26" rx="4" fill={COLORS.iconRect} />
-      <rect x="12.5" y="14.5" width="29" height="25" rx="3.5" stroke={COLORS.iconRectStroke} />
+      <rect
+        x="12.5"
+        y="14.5"
+        width="29"
+        height="25"
+        rx="3.5"
+        stroke={COLORS.iconRectStroke}
+      />
     </g>
     <circle cx="19.5" cy="21.5" r="2.5" fill={COLORS.iconCircle} />
     <path
@@ -44,319 +57,170 @@ const defaultIcon = (
       fillOpacity=".4"
     />
     <defs>
-      <filter id="icon_dropshadow" x="10" y="12" width="34" height="30" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-        <feFlood floodOpacity="0" result="BackgroundImageFix"/>
-        <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-        <feGaussianBlur stdDeviation="1" result="effect1_foregroundBlur"/>
+      <filter
+        id="icon_dropshadow"
+        x="10"
+        y="12"
+        width="34"
+        height="30"
+        filterUnits="userSpaceOnUse"
+        colorInterpolationFilters="sRGB"
+      >
+        <feFlood floodOpacity="0" result="BackgroundImageFix" />
+        <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+        <feGaussianBlur stdDeviation="1" result="effect1_foregroundBlur" />
       </filter>
     </defs>
   </svg>
 );
 
-const FILE_TYPES = [
-  {
-    label: "Image Upload",
-    accept: ".jpg,.jpeg,.png,.gif,.webp",
-    maxSizeMB: 10,
-    maxFiles: 1,
-    isImage: true,
-    icon: defaultIcon,
-    message: (
-      <>
-        <div><strong>Image:</strong> Minimum 800px width recommended</div>
-        <div style={{ fontSize: "12px", color: COLORS.subText }}>Max 10MB each. JPEG/JPG/PNG supported.</div>
-      </>
-    ),
-  },
-  {
-    label: "PDF Upload",
-    accept: ".pdf",
-    maxSizeMB: 10,
-    maxFiles: 1,
-    isImage: false,
-    icon: (
-      <svg width="54" height="54" viewBox="0 0 54 54" fill="none">
-        <rect width="54" height="54" rx="12" fill="#EDF5FB" />
-        <g filter="url(#icon_pdf_shadow)">
-          <rect x="15" y="12" width="24" height="30" rx="4" fill="#E0EDFC"/>
-          <rect x="15.5" y="12.5" width="23" height="29" rx="3.5" stroke="#97B9D6"/>
-        </g>
-        <rect x="19" y="18" width="16" height="2" rx="1" fill="#87B4DC" />
-        <rect x="19" y="23" width="10" height="2" rx="1" fill="#A9CCE9" />
-        <rect x="19" y="28" width="12" height="2" rx="1" fill="#A9CCE9" />
-        <text x="21" y="40" fontSize="7" fontFamily="Arial, sans-serif" fontWeight="bold" fill="#87B4DC">PDF</text>
-        <defs>
-          <filter id="icon_pdf_shadow" x="13" y="10" width="28" height="34" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-            <feFlood floodOpacity="0" result="BackgroundImageFix"/>
-            <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-            <feGaussianBlur stdDeviation="1" result="effect1_foregroundBlur"/>
-          </filter>
-        </defs>
-      </svg>
-    ),
-    message: (
-      <>
-        <div><strong>PDF:</strong> Max 10MB</div>
-      </>
-    ),
-  },
-];
-
-type DropImageInfoProps = {
-  icon?: React.ReactNode;
-  message: React.ReactNode;
-  label?: string;
-  onFileChange: (files: FileList | null) => void;
-  accept: string;
-  multiple?: boolean;
-  files?: File[] | null;
-  dragActive: boolean;
-  onDragEnter: (e: React.DragEvent<HTMLDivElement>) => void;
-  onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
-  onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
+type DropImageProps = {
+  value: File | undefined;
+  onDrop: (file: File | undefined) => void;
+  inputRef?: React.RefObject<HTMLInputElement>;
+  disabled?: boolean;
 };
 
-const DropImageInfo: React.FC<DropImageInfoProps> = ({
-  icon = defaultIcon,
-  message,
-  label,
-  onFileChange,
-  accept,
-  multiple,
-  files,
-  dragActive,
-  onDragEnter,
-  onDragLeave,
-  onDragOver,
-}) => {
-  const inputRef = useRef<HTMLInputElement>(null);
+export default function DropImageDual({
+  value,
+  onDrop,
+  inputRef,
+  disabled = false,
+}: DropImageProps) {
+  const localInputRef = useRef<HTMLInputElement>(null);
+  const actualRef = inputRef || localInputRef;
 
-  const handleClick = () => {
-    inputRef.current?.click();
-  };
+  const [dragActive, setDragActive] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  // Render preview if image
-  const renderPreview = () => {
-    if (!files || files.length === 0) return null;
-    // Only preview the first file
-    const file = files[0];
-    if (file.type.startsWith("image/")) {
-      return (
-        <img
-          src={URL.createObjectURL(file)}
-          alt="preview"
-          style={{
-            maxWidth: 120,
-            maxHeight: 100,
-            margin: "8px auto 8px auto",
-            display: "block",
-            borderRadius: 8,
-            boxShadow: "0 1px 6px 0 rgba(36,57,138,0.10)",
-          }}
-        />
-      );
+  useEffect(() => {
+    if (value instanceof File && isImageFile(value)) {
+      const url = URL.createObjectURL(value);
+      setPreviewUrl(url);
+
+      return () => URL.revokeObjectURL(url);
     }
-    // For PDFs, maybe show a file icon
-    return (
-      <div
-        style={{
-          fontSize: 12,
-          margin: "8px auto 8px auto",
-          color: COLORS.text,
-        }}
-      >
-        {file.name}
-      </div>
-    );
+    setPreviewUrl(null);
+  }, [value]);
+
+  const handleBrowse = () => {
+    if (!disabled) actualRef.current?.click();
   };
 
-  return (
-    <div
-      style={{
-        ...dropImageStyle,
-        border: dragActive
-          ? `2.5px solid ${COLORS.borderHighlight}`
-          : dropImageStyle.border,
-        background: dragActive ? "#F7FAFF" : dropImageStyle.background,
-      }}
-      tabIndex={0}
-      onClick={handleClick}
-      onDrop={e => {
-        e.preventDefault();
-        e.stopPropagation();
-        onFileChange(e.dataTransfer.files);
-      }}
-      onDragOver={onDragOver}
-      onDragEnter={onDragEnter}
-      onDragLeave={onDragLeave}
-    >
-      <input
-        ref={inputRef}
-        type="file"
-        style={{ display: "none" }}
-        accept={accept}
-        multiple={!!multiple}
-        onChange={e => onFileChange(e.target.files)}
-      />
-      <div style={{ marginBottom: 16 }}>
-        {icon}
-      </div>
-      {label && (
-        <div style={{
-          fontWeight: 600,
-          fontSize: "15px",
-          color: COLORS.text,
-          marginBottom: 6,
-          textAlign: "center",
-        }}>
-          {label}
-        </div>
-      )}
-      <div
-        style={{
-          fontSize: "13px",
-          color: COLORS.subText,
-          textAlign: "center",
-          width: "92%",
-          lineHeight: 1.6,
-        }}
-      >
-        {message}
-      </div>
-      {renderPreview()}
-      {files && files.length > 0 && (
-        <div
-          style={{
-            fontSize: 12,
-            color: COLORS.text,
-            marginTop: 8,
-            textAlign: "center"
-          }}
-        >
-          <strong>Selected:</strong> {files[0].name}
-        </div>
-      )}
-      <div style={{
-        marginTop: 12,
-        background: "#F0F8FF",
-        fontSize: 12,
-        color: COLORS.text,
-        borderRadius: 4,
-        padding: "2px 8px",
-        display: dragActive ? "inline-block" : "none",
-      }}>
-        Drop to upload
-      </div>
-    </div>
-  );
-};
-
-// New: Add prop to control PDF visibility
-type DropImageDualProps = {
-  showPdf?: boolean;
-};
-
-export default function DropImageDual({ showPdf = false }: DropImageDualProps) {
-  // Each type gets its own file state
-  const [imageFile, setImageFile] = useState<File[] | null>(null);
-  const [pdfFile, setPdfFile] = useState<File[] | null>(null);
-
-  // Drag active state for each dropzone
-  const [dragImage, setDragImage] = useState(false);
-  const [dragPdf, setDragPdf] = useState(false);
-
-  // Event handlers for drag-and-drop (separate per dropzone)
-  const getHandlers = (
-    setDrag: React.Dispatch<React.SetStateAction<boolean>>,
-    setFiles: React.Dispatch<React.SetStateAction<File[] | null>>,
-    maxSizeMB: number,
-    accept: string[],
-    isImage: boolean
-  ) => {
-    return {
-      onDragEnter: (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault(); e.stopPropagation();
-        setDrag(true);
-      },
-      onDragLeave: (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault(); e.stopPropagation();
-        setDrag(false);
-      },
-      onDragOver: (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault(); e.stopPropagation();
-      },
-      onFileChange: (fileList: FileList | null) => {
-        setDrag(false);
-        if (!fileList || fileList.length === 0) return;
-        const file = fileList[0];
-
-        // Check type and size
-        const validType = accept.some(type =>
-          file.name.toLowerCase().endsWith(type.replace('.', ''))
-          || file.type === type
-        );
-        if (!validType && accept.length > 0) {
-          alert(`File type not supported.\nSupported: ${accept.join(', ')}`);
-          return;
-        }
-        if (file.size > maxSizeMB * 1024 * 1024) {
-          alert(`File size too large. Max ${maxSizeMB}MB allowed.`);
-          return;
-        }
-        setFiles([file]);
+  const handleFileSelection = useCallback(
+    (files: FileList | null) => {
+      if (!files?.length) {
+        onDrop(undefined);
+        return;
       }
-    };
+
+      const file = Array.from(files).find(isImageFile);
+      if (!file) {
+        window.alert(
+          "Only image files are allowed. Supported: JPG, JPEG, PNG, GIF, WEBP."
+        );
+        onDrop(undefined);
+        return;
+      }
+
+      if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+        window.alert(`File too large. Max size is ${MAX_IMAGE_SIZE_MB}MB.`);
+        onDrop(undefined);
+        return;
+      }
+
+      onDrop(file);
+    },
+    [onDrop]
+  );
+
+  const dragEvents = {
+    onDragEnter: (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setDragActive(true);
+    },
+    onDragOver: (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+    },
+    onDragLeave: (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setDragActive(false);
+    },
+    onDrop: (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setDragActive(false);
+      if (!disabled) handleFileSelection(e.dataTransfer.files);
+    },
   };
 
-  const imageAcceptExts = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
-  const pdfAcceptExts = [".pdf"];
-
-  const imageHandlers = getHandlers(setDragImage, setImageFile, 10, imageAcceptExts, true);
-  const pdfHandlers = getHandlers(setDragPdf, setPdfFile, 10, pdfAcceptExts, false);
-
-  const imageAcceptString = imageAcceptExts.join(",");
-  const pdfAcceptString = pdfAcceptExts.join(",");
-
-  // Only show two columns if both are present
-  const columnCount = showPdf ? 2 : 1;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFileSelection(e.target.files);
+    e.target.value = ""; // allow reselection of same file
+  };
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: columnCount === 2 ? "1fr 1fr" : "1fr",
-        gap: "28px",
-        width: "100%",
-      }}
-    >
-      <DropImageInfo
-        icon={FILE_TYPES[0].icon}
-        label={FILE_TYPES[0].label}
-        message={FILE_TYPES[0].message}
-        accept={imageAcceptString}
-        onFileChange={imageHandlers.onFileChange}
-        multiple={false}
-        files={imageFile}
-        dragActive={dragImage}
-        onDragEnter={imageHandlers.onDragEnter}
-        onDragLeave={imageHandlers.onDragLeave}
-        onDragOver={imageHandlers.onDragOver}
-      />
-      {showPdf && (
-        <DropImageInfo
-          icon={FILE_TYPES[1].icon}
-          label={FILE_TYPES[1].label}
-          message={FILE_TYPES[1].message}
-          accept={pdfAcceptString}
-          onFileChange={pdfHandlers.onFileChange}
-          multiple={false}
-          files={pdfFile}
-          dragActive={dragPdf}
-          onDragEnter={pdfHandlers.onDragEnter}
-          onDragLeave={pdfHandlers.onDragLeave}
-          onDragOver={pdfHandlers.onDragOver}
-        />
-      )}
+    <div>
+      <div className="flex flex-col items-center select-none">
+        <div
+          role="button"
+          tabIndex={0}
+          aria-disabled={disabled}
+          onClick={handleBrowse}
+          {...dragEvents}
+          className={cn(
+            "w-full flex flex-col items-center px-3 py-7 transition-all rounded-[14px] min-h-[210px] shadow-sm cursor-pointer",
+            dragActive
+              ? "border-2 border-blue-400 bg-blue-50"
+              : "border-2 border-dashed border-[#b9cdf1] bg-white hover:bg-blue-50"
+          )}
+        >
+          <input
+            ref={actualRef}
+            type="file"
+            className="hidden"
+            accept={ACCEPT_IMAGE}
+            disabled={disabled}
+            onChange={handleInputChange}
+            aria-label="Choose an image"
+          />
+
+          <div className="mb-4">{defaultIcon}</div>
+
+          <div className="font-semibold text-base text-[#585858] mb-1 text-center">
+            Upload Image
+          </div>
+
+          <p className="text-xs text-center text-[#757575] leading-relaxed mb-2 w-11/12">
+            <strong>Image:</strong> Minimum recommended width 800px.<br />
+            Max 10MB • JPG, JPEG, PNG, GIF, WEBP
+          </p>
+
+          {previewUrl && (
+            <div className="w-full flex justify-center mb-3">
+              <Image
+                src={previewUrl}
+                alt="Preview"
+                width={120}
+                height={100}
+                // unoptimized
+                className="rounded-md border object-contain shadow"
+              />
+            </div>
+          )}
+
+          {value && (
+            <div className="text-xs text-center text-[#585858] mt-1">
+              <strong>Selected:</strong> {value.name}
+            </div>
+          )}
+
+          {dragActive && (
+            <div className="mt-3 bg-[#F0F8FF] text-xs text-[#585858] rounded px-2 py-0.5">
+              Drop to upload
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

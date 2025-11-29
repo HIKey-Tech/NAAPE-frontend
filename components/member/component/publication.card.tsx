@@ -402,7 +402,7 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
         >
             <div className="w-full bg-gradient-to-tr from-blue-200/50 to-gray-100 relative h-40 sm:h-50 md:h-56 lg:h-64 overflow-hidden">
                 <img
-                    src={image || "/images/plane.jpg"}
+                    src={image}
                     alt={title}
                     className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-[1.045] group-hover:brightness-105"
                     draggable={false}

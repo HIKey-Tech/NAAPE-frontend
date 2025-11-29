@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +23,6 @@ import {
     SelectItem,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { uploadToCloudinary } from "@/app/api/cloudinary";
 import DropImageDual from "@/components/member/component/drop.image";
 import { useCreateNews } from "@/hooks/useNews";
 
@@ -40,11 +39,19 @@ const newsSchema = z.object({
     category: z.enum(["Engineering", "Pilot", "General", "Announcement"], {
         message: "Invalid category selected",
     }),
-    imageUrl: z
-        .string()
-        .url("Image URL must be valid")
-        .optional()
-        .or(z.literal("")),
+    imageFile: z
+        .any()
+        .refine(
+            (file) =>
+                !file ||
+                (file instanceof File &&
+                    [undefined, "image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type) &&
+                    file.size <= 8 * 1024 * 1024),
+            {
+                message: "Only jpeg, png, webp, gif images up to 8MB are allowed.",
+            }
+        )
+        .optional(),
 });
 
 type NewsInput = z.infer<typeof newsSchema>;
@@ -68,12 +75,26 @@ export default function CreateNewsComponent() {
             title: "",
             category: defaultCategory,
             content: "",
-            imageUrl: "",
+            imageFile: "",
         },
         mode: "onBlur",
     });
 
     const createNews = useCreateNews();
+    const imageInputRef = useRef<HTMLInputElement | null>(null);
+    const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+
+    const handleDrop = useCallback(
+        (file: File | null) => {
+            form.setValue("imageFile", file, {
+                shouldValidate: Boolean(file),
+                shouldDirty: true,
+            });
+            setImagePreviewUrl(file ? URL.createObjectURL(file) : null);
+        },
+        [form]
+    );
+
     const titleInputRef = useRef<HTMLInputElement>(null);
 
     const handleImageFile = (file: File | null) => setImageFile(file);
@@ -83,7 +104,7 @@ export default function CreateNewsComponent() {
             title: "",
             category: defaultCategory,
             content: "",
-            imageUrl: "",
+            imageFile: "",
         });
         setImageFile(null);
         titleInputRef.current?.focus();
@@ -91,26 +112,28 @@ export default function CreateNewsComponent() {
 
     const onSubmit = async (values: NewsInput) => {
         setSubmitting(true);
-        let imageUrl: string | undefined;
+
+        const file = values.imageFile as File | null;
 
         try {
-            if (imageFile) {
-                setImageUploading(true);
-                const uploadedUrl = await uploadToCloudinary(imageFile);
-                imageUrl = uploadedUrl ?? undefined;
-                setImageUploading(false);
-            } else if (values.imageUrl && values.imageUrl.trim() !== "") {
-                imageUrl = values.imageUrl.trim();
-            }
 
-            const payload: Omit<NewsInput, "imageUrl"> & { image?: string } = {
+
+            const payload = {
                 title: values.title.trim(),
                 content: values.content.trim(),
                 category: values.category,
-                image: imageUrl || undefined,
             };
 
-            await createNews.mutateAsync(payload);
+            const formData = new FormData();
+            formData.append("title", payload.title);
+            formData.append("content", payload.content);
+            formData.append("category", payload.category);
+
+            if (file instanceof File) {
+                formData.append("image", file)
+            }
+
+            await createNews.mutateAsync(formData);
             toast.success("News created successfully.");
             resetForm();
         } catch (error: any) {
@@ -229,55 +252,32 @@ export default function CreateNewsComponent() {
 
                     {/* Image */}
                     <div>
-                        <FormLabel className={`${labelBase} text-[#144] mb-2`}>
-                            Cover Image&nbsp;
-                            <span className="text-[#8CA1B6] font-normal">(optional)</span>
-                        </FormLabel>
-                        <DropImageDual
-                            showPdf={false}
+                        <FormField
+                            control={form.control}
+                            name="imageFile"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-[#203040] font-medium mb-2 block">
+                                        Upload Cover Image{" "}
+                                        <span className="text-[#8CA1B6] font-normal">
+                                            (optional, recommended to attract more readers)
+                                        </span>
+                                    </FormLabel>
+                                    <DropImageDual
+                                        value={field.value ?? undefined}
+                                        onDrop={file => {
+                                            field.onChange(file ?? null);
+                                            handleDrop(file ?? null);
+                                        }}
+                                        inputRef={imageInputRef as React.RefObject<HTMLInputElement>}
+                                        disabled={submitting}
+                                    // previewUrl={imagePreviewUrl || undefined}
+                                    // onRemove={onRemoveImage}
+                                    />
+                                    <FormMessage className="text-xs text-red-600 mt-1" />
+                                </FormItem>
+                            )}
                         />
-                        {imageFile && (
-                            <div className="text-xs text-gray-600 mt-2 flex items-center gap-2">
-                                <span>Selected:</span>
-                                <span className="font-mono">{imageFile.name}</span>
-                                <button
-                                    type="button"
-                                    onClick={() => setImageFile(null)}
-                                    aria-label="Remove selected image"
-                                    className="text-[#b11919] hover:underline ml-2"
-                                >
-                                    Remove
-                                </button>
-                                {imageUploading && (
-                                    <span className="text-[#3a66a2] animate-pulse ml-2">(uploading...)</span>
-                                )}
-                            </div>
-                        )}
-                        {!imageFile && (
-                            <FormField
-                                control={form.control}
-                                name="imageUrl"
-                                render={({ field }) => (
-                                    <FormItem className="mt-2">
-                                        <FormLabel className="text-xs text-[#493] font-normal">
-                                            or paste an image URL
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                placeholder="https://example.com/my-image.jpg"
-                                                className={`${inputBase} h-[36px] text-sm`}
-                                                maxLength={250}
-                                                type="url"
-                                                spellCheck={false}
-                                                autoCorrect="off"
-                                            />
-                                        </FormControl>
-                                        <FormMessage className="text-xs text-red-500 mt-1" />
-                                    </FormItem>
-                                )}
-                            />
-                        )}
                     </div>
 
                     {/* Action Buttons */}

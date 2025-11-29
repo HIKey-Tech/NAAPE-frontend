@@ -12,9 +12,10 @@ export const useSingleNews = (id: string) =>
     });
 
 export const useCreateNews = () => {
-    const qc = useQueryClient();
+    const queryClient = useQueryClient();
+
     return useMutation({
         mutationFn: createNews,
-        onSuccess: () => qc.invalidateQueries({ queryKey: ["news"] }),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["news"] }),
     });
 };

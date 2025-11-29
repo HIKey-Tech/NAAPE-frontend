@@ -1,18 +1,17 @@
 import axios from "axios";
 
-export const uploadToCloudinary = async (file: File): Promise<string | null> => {
-  const url = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD!}/image/upload`;
-  const preset = 'naape_publication_images';
 
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", preset);
+// use for later
+// const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL!
+const token = localStorage.getItem("token"); // or cookies
 
-  try {
-    const response = await axios.post(url, formData); // IMPORTANT: use axios, NOT api
-    return response.data.secure_url;
-  } catch (error) {
-    console.error("Cloudinary upload failed:", error);
-    return null;
-  }
-};
+
+export async function uploadToImageToBackend(endpoint: string, formData: FormData) {
+  return axios.post(`http://localhost:5000/api/${endpoint}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+
+    },
+  });
+}
