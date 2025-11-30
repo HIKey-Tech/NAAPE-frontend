@@ -1,46 +1,41 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { useCreateEvent } from "@/hooks/useEvents";
 import { NaapButton } from "@/components/ui/custom/button.naap";
-import { uploadToCloudinary } from "@/app/api/cloudinary";
+import DropImageDual from "@/components/member/component/drop.image";
+import { toast } from "sonner";
 
-// Validation schema
+// --- Validation Schema ---
 const eventSchema = z.object({
-  title: z
-    .string()
-    .min(2, "Title must be at least 2 characters.")
-    .max(80, "Title must be at most 80 characters."),
-  date: z
-    .string()
-    .min(1, "Date is required."),
-  location: z
-    .string()
-    .min(2, "Location must be at least 2 characters.")
-    .max(60, "Location must be at most 60 characters."),
-  imageUrl: z
-    .string()
-    .optional()
-    .or(z.literal("")),
+  title: z.string().min(2, "Title must be at least 2 characters.").max(80, "Title must be at most 80 characters."),
+  date: z.string().min(1, "Date is required."),
+  location: z.string().min(2, "Location must be at least 2 characters.").max(60, "Location must be at most 60 characters."),
+  imageFile: z.any().refine(
+    (file) =>
+      !file ||
+      (file instanceof File &&
+        [undefined, "image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type) &&
+        file.size <= 8 * 1024 * 1024),
+    { message: "Only jpeg, png, webp, gif images up to 8MB are allowed." }
+  ),
   description: z
     .string()
     .min(2, "Description must be at least 2 characters.")
     .max(2000, "Description must be at most 2000 characters.")
-    .optional()
     .or(z.literal("")),
 });
 
@@ -50,137 +45,18 @@ const DEFAULT_VALUES: EventFormValues = {
   title: "",
   date: "",
   location: "",
-  imageUrl: "",
+  imageFile: "",
   description: "",
 };
 
-// Visual helper for dropzone
-function ImageDropzone({ previewUrl, uploading, onImageSelect }: {
-  previewUrl: string;
-  uploading: boolean;
-  onImageSelect: (file?: File) => void;
-}) {
-  const inputRef = React.useRef<HTMLInputElement | null>(null);
-
-  // Drag-over styling
-  const [dragActive, setDragActive] = React.useState(false);
-
-  const onDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(true);
-  };
-  const onDragEnter = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(true);
-  };
-  const onDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-  };
-  const onDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      onImageSelect(e.dataTransfer.files[0]);
-    }
-  };
-
-  const onLabelClick = () => {
-    inputRef.current?.click();
-  };
-
-  return (
-    <div
-      className={`
-        relative w-full h-40 bg-[#F3F6FA] flex items-center justify-center
-        overflow-hidden group border-2
-        transition-all duration-200
-        ${dragActive ? 'border-blue-400 bg-[#eaf2fd]' : 'border-dashed border-[#D5E3F7]'}
-        rounded-xl mb-3
-      `}
-      onDragOver={onDragOver}
-      onDragEnter={onDragEnter}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
-      aria-label="Event image dropzone"
-      tabIndex={0}
-    >
-      {previewUrl ? (
-        <img
-          src={previewUrl}
-          alt="Preview"
-          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105 rounded-xl"
-          draggable={false}
-          loading="lazy"
-        />
-      ) : (
-        <div className="flex flex-col items-center justify-center w-full h-full text-[#A6B3CB] pointer-events-none select-none">
-          <svg width="48" height="48" fill="none" viewBox="0 0 48 48">
-            <rect width="48" height="48" rx="12" fill="#EAF0FA" />
-            <path
-              d="M16 26.3l4.6 5.63a2.4 2.4 0 003.397.22l10-9.138"
-              stroke="#C4D1EF"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-            <circle cx="19" cy="20" r="3" fill="#D5E3F7" />
-          </svg>
-          <span className="text-sm mt-2">Drag and drop an image here <span className="font-semibold text-[#4267E7]">or click below</span></span>
-          <span className="text-xs mt-1 text-[#96A6BF]">(optional, max 2MB)</span>
-        </div>
-      )}
-      <input
-        ref={inputRef}
-        id="event-image-upload"
-        type="file"
-        accept="image/*"
-        className="hidden"
-        disabled={uploading}
-        onChange={e => {
-          if (e.target.files?.[0]) onImageSelect(e.target.files[0]);
-        }}
-      />
-      <Label
-        htmlFor="event-image-upload"
-        className={
-          "absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#fff] border border-[#D5E3F7] px-3 py-1.5 rounded shadow text-xs text-[#4267E7] font-medium cursor-pointer hover:bg-[#EDF2FF] focus-visible:ring-2 focus-visible:ring-[#B2D7EF]"
-          + (uploading ? " opacity-50 cursor-not-allowed" : "")
-        }
-        style={{ zIndex: 2, pointerEvents: uploading ? "none" : "auto" }}
-        tabIndex={0}
-        onClick={e => { e.preventDefault(); onLabelClick(); }}
-      >
-        Upload
-      </Label>
-      {previewUrl && !uploading &&
-        <NaapButton
-          type="button"
-          color="danger"
-          className="absolute top-3 right-3 px-2 py-1"
-          onClick={e => { e.stopPropagation(); onImageSelect(undefined); }}
-        >
-          Remove
-        </NaapButton>
-      }
-      {dragActive && (
-        <div className="absolute inset-0 bg-blue-100 bg-opacity-20 pointer-events-none rounded-xl border-2 border-blue-400 border-dashed"></div>
-      )}
-    </div>
-  );
-};
-
-const AnimatedPanel: React.FC<React.PropsWithChildren<{ className?: string }>> = ({ children, className }) => (
+const AnimatedPanel: React.FC<React.PropsWithChildren<{ className?: string }>> = ({
+  children,
+  className = "",
+}) => (
   <div
-    className={
-      "bg-white border border-[#e5eaf2] rounded-2xl shadow transition-shadow hover:shadow-md flex flex-col min-h-[500px] w-full overflow-hidden " +
-      (className ?? "")
-    }
+    className={`bg-white border border-[#e5eaf2] rounded-2xl shadow transition-shadow hover:shadow-md flex flex-col min-h-[500px] w-full overflow-hidden ${className}`}
     style={{
-      animation: "fadein-up .7s cubic-bezier(0.18,0.8,0.27,1) both"
+      animation: "fadein-up .7s cubic-bezier(0.18,0.8,0.27,1) both",
     }}
   >
     {children}
@@ -193,116 +69,77 @@ const AnimatedPanel: React.FC<React.PropsWithChildren<{ className?: string }>> =
   </div>
 );
 
-const FormSection: React.FC<React.PropsWithChildren<{ className?: string }>> = ({ children, className }) => (
-  <div className={`flex flex-col flex-1 px-7 py-6 gap-6 ${className ?? ""}`}>
-    {children}
-  </div>
+const FormSection: React.FC<React.PropsWithChildren<{ className?: string }>> = ({
+  children,
+  className = "",
+}) => (
+  <div className={`flex flex-col flex-1 px-7 py-6 gap-6 ${className}`}>{children}</div>
 );
 
 const CreateEvent: React.FC = () => {
-  const [previewUrl, setPreviewUrl] = React.useState<string>("");
-  const [successMsg, setSuccessMsg] = React.useState<string | null>(null);
-  const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
-  const [imageFile, setImageFile] = React.useState<File | null>(null);
-  const [imageLoading, setImageLoading] = React.useState(false);
+  // State
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [imageLoading] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+
   const router = useRouter();
 
+  // Form
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventSchema),
     defaultValues: DEFAULT_VALUES,
     mode: "onTouched",
   });
 
+  // API Mutation
   const createEventMutation = useCreateEvent();
-
-  // Either .isPending (react-query 5+) or .isLoading
   const uploading = createEventMutation.isPending || imageLoading;
 
-  React.useEffect(() => {
-    const subscription = form.watch(() => {
-      setErrorMsg(null);
-      setSuccessMsg(null);
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
+  // Image drop handler
+  const handleDrop = useCallback(
+    (file: File | null) => {
+      form.setValue("imageFile", file, {
+        shouldValidate: Boolean(file),
+        shouldDirty: true,
+      });
+      setImagePreviewUrl(file ? URL.createObjectURL(file) : null);
+    },
+    [form]
+  );
 
-  // Handle Image preview (client url, does not upload yet)
-  const handleImageChange = React.useCallback((file?: File) => {
-    if (!file) {
-      setPreviewUrl("");
-      setImageFile(null);
-      form.setValue("imageUrl", "");
-      form.trigger("imageUrl");
-      return;
-    }
-    if (!file.type.startsWith("image/")) return;
-    if (file.size > 2 * 1024 * 1024) {
-      setErrorMsg("Image must be under 2MB.");
-      return;
-    }
-    const localUrl = URL.createObjectURL(file);
-    setPreviewUrl(localUrl);
-    setImageFile(file);
-    // Show preview but imageUrl is still empty until upload
-    form.setValue("imageUrl", localUrl); // for required field logic
-    form.trigger("imageUrl");
-  }, [form]);
+  // Clear messages on field changes
+  // Removed setErrorMsg/setSuccessMsg message state, so nothing needed here
 
-  // Use cloudinary utils for image upload
-  async function uploadImageIfNeeded(file?: File): Promise<string | undefined> {
-    if (!file) return undefined;
-    try {
-      setImageLoading(true);
-        const url: any = await uploadToCloudinary(file);
-      return url;
-    } catch (err) {
-      setErrorMsg("Failed to upload image.");
-      return undefined;
-    } finally {
-      setImageLoading(false);
-    }
-  }
-
+  // Handle submit
   const onSubmit = async (values: EventFormValues) => {
-    setErrorMsg(null);
-    setSuccessMsg(null);
+    const file = values.imageFile as File | null;
 
-    let payload: any = { ...values };
+    try {
+      const formData = new FormData();
+      formData.append("title", values.title.trim());
+      formData.append("date", values.date.trim());
+      formData.append("location", values.location.trim());
+      formData.append("description", values.description.trim());
+      if (file instanceof File) formData.append("image", file);
 
-    // If imageFile exists, upload and use the returned URL, using cloudinary helper
-    if (imageFile) {
-      const remoteUrl = await uploadImageIfNeeded(imageFile);
-      if (!remoteUrl) {
-        setErrorMsg("Could not upload the image.");
-        return;
-      }
-      payload.imageUrl = remoteUrl;
-    } else {
-      if (!payload.imageUrl) delete payload.imageUrl;
+      createEventMutation.mutate(formData, {
+        onSuccess: () => {
+          toast.success("🎉 Event created!");
+          form.reset(DEFAULT_VALUES);
+          setImagePreviewUrl("");
+          setTimeout(() => router.push("/admin/events"), 900);
+        },
+        onError: (err: any) => {
+          toast.error(
+            err?.response?.data?.message ||
+              err?.message ||
+              "Failed to create event."
+          );
+        },
+      });
+    } catch (error) {
+      toast.error("Unexpected error creating event.");
     }
-
-    if (!payload.description) {
-      delete payload.description;
-    }
-
-    createEventMutation.mutate(payload, {
-      onSuccess: () => {
-        setSuccessMsg("🎉 Event created!");
-        form.reset(DEFAULT_VALUES);
-        setPreviewUrl("");
-        setImageFile(null);
-        setTimeout(() => {
-          router.push("/admin/events");
-        }, 900);
-      },
-      onError: (err: any) => {
-        setErrorMsg(
-          err?.response?.data?.message ||
-            err?.message ||
-            "Failed to create event."
-        );
-      },
-    });
   };
 
   return (
@@ -310,8 +147,12 @@ const CreateEvent: React.FC = () => {
       <div className="w-full max-w-lg mx-auto">
         <AnimatedPanel>
           <div className="flex justify-between items-center px-7 pt-7 pb-2 border-b border-[#edf2fa]">
-            <h2 className="text-2xl font-bold text-[#274fb7] tracking-tight">Create Event</h2>
-            <span className="text-xs text-[#96A6BF] font-semibold uppercase">Admin</span>
+            <h2 className="text-2xl font-bold text-[#274fb7] tracking-tight">
+              Create Event
+            </h2>
+            <span className="text-xs text-[#96A6BF] font-semibold uppercase">
+              Admin
+            </span>
           </div>
           <Form {...form}>
             <form
@@ -321,10 +162,29 @@ const CreateEvent: React.FC = () => {
             >
               {/* Banner / Dropzone */}
               <div className="px-7 pt-7">
-                <ImageDropzone
-                  previewUrl={previewUrl}
-                  uploading={Boolean(uploading)}
-                  onImageSelect={handleImageChange}
+                <FormField
+                  control={form.control}
+                  name="imageFile"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#203040] font-medium mb-2 block">
+                        Upload Cover Image{" "}
+                        <span className="text-[#8CA1B6] font-normal">
+                          (optional, recommended to attract more readers)
+                        </span>
+                      </FormLabel>
+                      <DropImageDual
+                        value={field.value ?? undefined}
+                        onDrop={file => {
+                          field.onChange(file ?? null);
+                          handleDrop(file ?? null);
+                        }}
+                        inputRef={imageInputRef as React.RefObject<HTMLInputElement>}
+                        disabled={uploading}
+                      />
+                      <FormMessage className="text-xs text-red-600 mt-1" />
+                    </FormItem>
+                  )}
                 />
               </div>
 
@@ -335,7 +195,9 @@ const CreateEvent: React.FC = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <span className="text-[15px] font-medium text-[#294e8c]">Event Title</span>
+                        <span className="text-[15px] font-medium text-[#294e8c]">
+                          Event Title
+                        </span>
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -357,7 +219,9 @@ const CreateEvent: React.FC = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <span className="text-[15px] font-medium text-[#294e8c]">Description</span>
+                        <span className="text-[15px] font-medium text-[#294e8c]">
+                          Description
+                        </span>
                       </FormLabel>
                       <FormControl>
                         <textarea
@@ -381,7 +245,9 @@ const CreateEvent: React.FC = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            <span className="text-[15px] font-medium text-[#294e8c]">Date</span>
+                            <span className="text-[15px] font-medium text-[#294e8c]">
+                              Date
+                            </span>
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -404,7 +270,9 @@ const CreateEvent: React.FC = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            <span className="text-[15px] font-medium text-[#294e8c]">Location</span>
+                            <span className="text-[15px] font-medium text-[#294e8c]">
+                              Location
+                            </span>
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -427,7 +295,7 @@ const CreateEvent: React.FC = () => {
                 <NaapButton
                   type="submit"
                   variant="primary"
-                  loading={Boolean(uploading)}
+                  loading={uploading}
                   disabled={uploading}
                   className="mt-4 px-7 py-2.5 font-semibold text-[15px]"
                   icon={!uploading ? (
@@ -438,16 +306,6 @@ const CreateEvent: React.FC = () => {
                 >
                   Create Event
                 </NaapButton>
-                {successMsg && (
-                  <span className="text-green-700 bg-green-50 border border-green-200 rounded py-1 px-2 text-[14px] text-center mt-2 shadow-sm transition-all">
-                    {successMsg}
-                  </span>
-                )}
-                {errorMsg && (
-                  <span className="text-[#D14343] bg-[#f6dad9] border border-[#ffc5c2] rounded py-1 px-2 text-[14px] text-center mt-2 shadow transition-all">
-                    {errorMsg}
-                  </span>
-                )}
               </div>
             </form>
           </Form>

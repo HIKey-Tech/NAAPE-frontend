@@ -201,7 +201,9 @@ const CreatePublicationComponent: React.FC = () => {
         formData.append("image", file);
       }
 
-      await createPublication.mutateAsync(formData);
+      await createPublication.mutateAsync(formData, {
+        
+      });
 
       toast.success(
         <div>
