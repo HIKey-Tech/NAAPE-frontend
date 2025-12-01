@@ -16,6 +16,7 @@ export const createEventApi = async (data: FormData) => {
                 Authorization: `Bearer ${token}`
             }
         })
+        
         return response.data
 
     } catch (error) {
