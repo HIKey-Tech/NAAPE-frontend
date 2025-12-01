@@ -3,39 +3,87 @@
 import * as React from "react";
 import { LandingTabs, TabItem } from "@/components/ui/custom/landing.tab";
 
-// Placeholder images: Replace with real data or fetch from API in production.
+// Placeholder gallery: Replace with real data or fetch from API in production.
 const photoCategories: Record<string, { src: string; alt: string }[]> = {
   events: [
     {
-      src: "/images/leader.png",
+      src: "/gallery/1.jpeg",
       alt: "Award ceremony with Nigerian flag",
     },
     {
-      src: "/images/leader.png",
+      src: "/gallery/2.jpeg",
       alt: "Attendees at seminar, someone writing",
     },
     {
-      src: "/images/leader.png",
+      src: "/gallery/3.jpeg",
       alt: "Attendees, woman in purple dress, mask",
     },
     {
-      src: "/images/leader.png",
+      src: "/gallery/4.jpeg",
+      alt: "Black-and-white portrait of smiling girl",
+    },
+    {
+      src: "/gallery/5.jpeg",
+      alt: "Black-and-white portrait of smiling girl",
+    },
+    {
+      src: "/gallery/6.jpeg",
+      alt: "Black-and-white portrait of smiling girl",
+    },
+    {
+      src: "/gallery/7.jpeg",
+      alt: "Black-and-white portrait of smiling girl",
+    },
+    {
+      src: "/gallery/8.jpeg",
+      alt: "Black-and-white portrait of smiling girl",
+    },
+    {
+      src: "/gallery/9.jpeg",
+      alt: "Black-and-white portrait of smiling girl",
+    },
+    {
+      src: "/gallery/10.jpeg",
+      alt: "Black-and-white portrait of smiling girl",
+    },
+    {
+      src: "/gallery/11.jpeg",
+      alt: "Black-and-white portrait of smiling girl",
+    },
+    {
+      src: "/gallery/12.jpeg",
+      alt: "Black-and-white portrait of smiling girl",
+    },
+    {
+      src: "/gallery/13.jpeg",
+      alt: "Black-and-white portrait of smiling girl",
+    },
+    {
+      src: "/gallery/14.jpeg",
+      alt: "Black-and-white portrait of smiling girl",
+    },
+    {
+      src: "/gallery/15.jpeg",
+      alt: "Black-and-white portrait of smiling girl",
+    },
+    {
+      src: "/gallery/16.jpeg",
       alt: "Black-and-white portrait of smiling girl",
     },
   ],
   members: [
     {
-      src: "/images/leader.png",
+      src: "/gallery/leader.jpeg",
       alt: "NAAPE member group",
     },
     {
-      src: "/images/leader.png",
+      src: "/gallery/leader.jpeg",
       alt: "Member portrait smiling",
     },
   ],
   highlights: [
     {
-      src: "/images/leader.png",
+      src: "/gallery/leader.jpeg",
       alt: "Special highlight moment",
     },
   ],

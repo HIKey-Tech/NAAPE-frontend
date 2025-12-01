@@ -33,24 +33,30 @@ export async function getSinglePublication(id: string) {
 }
 
 export async function createPublication(data: FormData) {
-    const token = localStorage.getItem("token"); // or cookies
+    const token = localStorage.getItem("token");
+    console.log("TOKEN FROM LOCALSTORAGE:", token);
+
+
+    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL!
+        ? `${process.env.NEXT_PUBLIC_BASE_URL!}/api`
+        : "http://localhost:5000/api";
+
+    // const BASE_URL = "http://localhost:5000/api"
 
     try {
-
-        const BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL}/api` || "http://localhost:5000/api"
         const response = await axios.post(`${BASE_URL}/publications`, data, {
             headers: {
                 "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${token}`
-            }
-        })
-        return response.data
+                Authorization: `Bearer ${token}`,
+            },
+        });
 
+        return response.data;
     } catch (error) {
-        throw error
-
+        throw error;
     }
 }
+
 
 // Accept publication
 export const approvePublication = async (id: string) => {

@@ -14,7 +14,8 @@ export async function getSingleNews(id: string) {
 export async function createNews(data: FormData) {
     const token = localStorage.getItem("token");
     try {
-        const BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL}/api` || "http://localhost:5000/api"
+        const BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL!}/api` || "http://localhost:5000/api"
+
         const response = await axios.post(`${BASE_URL}/news`, data, {
             headers: {
                 "Content-Type": "multipart/form-data",

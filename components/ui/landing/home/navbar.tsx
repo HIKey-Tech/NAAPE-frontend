@@ -91,7 +91,10 @@ export default function TopNavbar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuItem asChild>
-                            <Link href="/about/nac-members">NAC Memers</Link>
+                            <Link href="/about/about-us">About Us</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/about/nac-members">NAC Members</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                             <Link href="/about/organs-of-association">Organs of Association</Link>
