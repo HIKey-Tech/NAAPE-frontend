@@ -112,7 +112,7 @@ export default function RegisterPage() {
                 <div>
                     <div className="font-semibold">Registration Successful 🎉</div>
                     <div className="text-sm mt-1">Welcome to NAAPE!</div>
-                </div>, 
+                </div>,
                 {
                     duration: 4000,
                     position: "top-center",
@@ -128,7 +128,7 @@ export default function RegisterPage() {
                     <div className="text-sm mt-1">
                         {error?.response?.data?.message ?? "An unexpected error occurred. Please try again."}
                     </div>
-                </div>, 
+                </div>,
                 {
                     duration: 5000,
                     position: "top-center",
@@ -397,11 +397,11 @@ export default function RegisterPage() {
                                 </NaapButton>
                                 <div className="text-center text-xs text-muted-foreground mt-2">
                                     By clicking Sign up, you agree to NAAPE's{" "}
-                                    <Link href="/terms" className="text-[#3970D8] hover:underline">
+                                    <Link href="/terms-of-service" className="text-[#3970D8] hover:underline">
                                         Terms of Service
                                     </Link>
                                     {" "}and{" "}
-                                    <Link href="/privacy" className="text-[#3970D8] hover:underline">
+                                    <Link href="/privacy-policy" className="text-[#3970D8] hover:underline">
                                         Privacy Policy
                                     </Link>
                                 </div>
@@ -456,36 +456,36 @@ export default function RegisterPage() {
                         {/* Testimonial Card */}
                         {/* Use members from useMembers */}
                         {members && members.length > 0 && (
-                          <motion.div
-                              className="absolute bottom-6 left-6 right-6 bg-white/95 rounded-lg p-4 shadow-lg flex flex-col gap-2 max-w-[364px] z-20"
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ duration: 0.7, delay: 0.7, ease: "easeOut" }}
-                          >
-                              <blockquote className="text-[14px] font-medium text-[#193853] italic opacity-90">
-                                &quot;{members[0].testimonial}&quot;
-                              </blockquote>
-                              <div className="flex items-center gap-2 mt-1">
-                                  <div className="h-8 w-8 rounded-full overflow-hidden bg-[#eeeeee] flex items-center justify-center">
-                                      <Image
-                                          src={members[0].avatarUrl}
-                                          alt="Member profile"
-                                          width={32}
-                                          height={32}
-                                          className="object-cover"
-                                          priority
-                                      />
-                                  </div>
-                                  <div className="flex flex-col">
-                                      <span className="font-semibold text-xs text-[#2852B4] leading-none">
-                                          {members[0].name}
-                                      </span>
-                                      <span className="text-xs text-[#5a6472] leading-none">
-                                          {members[0].role}
-                                      </span>
-                                  </div>
-                              </div>
-                          </motion.div>
+                            <motion.div
+                                className="absolute bottom-6 left-6 right-6 bg-white/95 rounded-lg p-4 shadow-lg flex flex-col gap-2 max-w-[364px] z-20"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.7, delay: 0.7, ease: "easeOut" }}
+                            >
+                                <blockquote className="text-[14px] font-medium text-[#193853] italic opacity-90">
+                                    &quot;{members[0].testimonial}&quot;
+                                </blockquote>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <div className="h-8 w-8 rounded-full overflow-hidden bg-[#eeeeee] flex items-center justify-center">
+                                        <Image
+                                            src={members[0].avatarUrl}
+                                            alt="Member profile"
+                                            width={32}
+                                            height={32}
+                                            className="object-cover"
+                                            priority
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="font-semibold text-xs text-[#2852B4] leading-none">
+                                            {members[0].name}
+                                        </span>
+                                        <span className="text-xs text-[#5a6472] leading-none">
+                                            {members[0].role}
+                                        </span>
+                                    </div>
+                                </div>
+                            </motion.div>
                         )}
                     </motion.div>
                 </motion.div>
