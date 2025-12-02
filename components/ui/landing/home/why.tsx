@@ -5,6 +5,7 @@ import { FaRegCalendarCheck, FaChalkboardTeacher } from "react-icons/fa";
 import { MdSecurity, MdTrendingUp } from "react-icons/md";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 const containerVariants = {
     hidden: { opacity: 0, y: 32 },
@@ -116,11 +117,14 @@ export default function WhyJoinSection() {
                     ))}
                 </motion.div>
                 <motion.div variants={fadeInUp as any}>
-                    <NaapButton
-                        className="bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white font-semibold px-7 py-3 text-base shadow w-fit transition mt-2"
-                    >
-                        Become A Member
-                    </NaapButton>
+
+                    <Link href="/register" >
+                        <NaapButton
+                            className="bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white font-semibold px-7 py-3 text-base shadow w-fit transition mt-2"
+                        >
+                            Become A Member
+                        </NaapButton>
+                    </Link>
                 </motion.div>
             </motion.div>
             <motion.div

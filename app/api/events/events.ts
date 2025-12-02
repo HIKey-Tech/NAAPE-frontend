@@ -1,7 +1,8 @@
+import api from "@/lib/axios";
 import axios from "axios";
 
 export const fetchEvents = async () => {
-    const res = await axios.get("/events");
+    const res = await api.get("/events");
     return res.data;
 };
 
@@ -27,7 +28,7 @@ export const createEventApi = async (data: FormData) => {
 };
 
 export const getSingleEvent = async (id: string) => {
-    const res = await axios.get(`/events/${id}`);
+    const res = await api.get(`/events/${id}`);
     return res.data;
 };
 
@@ -36,10 +37,15 @@ export const registerEvent = async ({ id }: { id: string }) => {
         throw new Error("Event ID is required to register.");
     }
     try {
-        const response = await axios.post(`/events/${id}/register`);
+        const response = await api.post(`/events/${id}/register`);
         return response.data;
     } catch (error: any) {
         const message = error?.response?.data?.message || error.message || "Failed to register for the event.";
         throw new Error(message);
     }
+};
+
+export const payForEvent = async (id: string) => {
+    const res = await api.post(`/events/${id}/pay`);
+    return res.data;
 };

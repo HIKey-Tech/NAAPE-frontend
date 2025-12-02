@@ -4,9 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { NewsCard } from "@/components/ui/custom/news.card";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-// Dummy Latest News Data (now with fields matching NewsCardProps from news.card.tsx)
+// The exact same dummy list, but use id field, and match the navigation path for /latest/[id]/page.tsx
 const newsList = [
     {
         imageUrl: "/home/news1.jpg",
@@ -15,7 +15,8 @@ const newsList = [
         publishedAt: "2024-05-05T10:00:00Z",
         authorName: "Samuel Ajayi",
         authorRole: "Member",
-        linkUrl: "/news/naape/tenants-of-safety-in-nigerian-aviation-industry",
+        // For navigation to dynamic detail page, use /latest/[id]
+        id: "tenants-of-safety-in-nigerian-aviation-industry",
         category: "Publication",
     },
     {
@@ -25,7 +26,7 @@ const newsList = [
         publishedAt: "2024-05-07T10:00:00Z",
         authorName: "NAAPE",
         authorRole: "Admin",
-        linkUrl: "/news/naape/meet-the-new-aviation-minister-a-vision-for-safer-skies",
+        id: "meet-the-new-aviation-minister-a-vision-for-safer-skies",
         category: "News",
     },
     {
@@ -35,7 +36,7 @@ const newsList = [
         publishedAt: "2024-05-11T10:00:00Z",
         authorName: "NAAPE",
         authorRole: "Admin",
-        linkUrl: "/news/naape/naape-quarterly-magazine-now-out",
+        id: "naape-quarterly-magazine-now-out",
         category: "Publication",
     },
     {
@@ -45,7 +46,7 @@ const newsList = [
         publishedAt: "2024-04-28T09:00:00Z",
         authorName: "Fatima Balogun",
         authorRole: "Member",
-        linkUrl: "/news/naape/aviation-safety-workshop-best-practices-highlighted",
+        id: "aviation-safety-workshop-best-practices-highlighted",
         category: "Publication",
     },
 ];
@@ -126,6 +127,7 @@ function SlideArrows({ current, total, onPrev, onNext }: { current: number; tota
 export default function LatestNews() {
     const [active, setActive] = useState(0);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const router = useRouter();
 
     // Clean up interval if component unmounts (prevent memory leaks)
     useEffect(() => {
@@ -166,6 +168,11 @@ export default function LatestNews() {
         }
     };
 
+    // Click handler to navigate to /latest/[id] on any NewsCard click
+    const handleNewsClick = (id: string) => {
+        router.push(`/latest/${id}`);
+    };
+
     return (
         <motion.section
             className="w-full max-w-full mx-auto min-h-full p-6 my-6"
@@ -194,7 +201,6 @@ export default function LatestNews() {
                     Stay up to date with the latest developments, insights, and publications from NAAPE and its partners.
                 </motion.p>
             </motion.div>
-
             {/* Slideshow on mobile, grid on sm+ */}
             <div>
                 {/* Mobile: show slideshow */}
@@ -208,9 +214,13 @@ export default function LatestNews() {
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -60 }}
                                 transition={{ type: "spring", stiffness: 55, damping: 16, duration: 0.34 }}
+                                // Make the whole card clickable for navigation
+                                onClick={() => handleNewsClick(newsList[active].id)}
+                                style={{ cursor: "pointer" }}
                             >
                                 <NewsCard
                                     {...newsList[active]}
+                                    linkUrl={`/latest/${newsList[active].id}`}
                                 />
                             </motion.div>
                         </AnimatePresence>
@@ -222,33 +232,34 @@ export default function LatestNews() {
                         onNext={handleNext}
                     />
                 </div>
-
                 {/* Grid on bigger screens */}
                 <motion.div
                     className="hidden sm:grid grid-cols-2 md:grid-cols-4 gap-4"
                     variants={staggerCards}
                 >
                     {newsList.map((news, index) => (
-                        <motion.div key={index} variants={cardVariants as any}>
-                            <NewsCard
-                                {...news}
-                            />
+                        <motion.div
+                            key={news.id}
+                            variants={cardVariants as any}
+                            onClick={() => handleNewsClick(news.id)}
+                            style={{ cursor: "pointer" }}
+                        >
+                            <NewsCard {...news} linkUrl={`/latest/${news.id}`} />
                         </motion.div>
                     ))}
                 </motion.div>
             </div>
-
             <motion.div
                 className="flex justify-center mt-10"
                 variants={buttonVariants as any}
             >
-                <Link href="/login" passHref >
+                <a href="/login">
                     <NaapButton
                         className="bg-primary hover:bg-primary/90 text-white font-semibold px-7 py-3 text-base shadow transition"
                     >
                         Submit Your Publication
                     </NaapButton>
-                </Link>
+                </a>
             </motion.div>
         </motion.section>
     );

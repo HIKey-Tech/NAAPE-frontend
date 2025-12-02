@@ -332,7 +332,7 @@ export default function Hero() {
                                 Join NAAPE
                             </NaapButton>
                         </Link>
-                        <Link href="/about" className="w-full sm:w-auto" aria-label="Learn More about NAAPE">
+                        <Link href="/about-us" className="w-full sm:w-auto" aria-label="Learn More about NAAPE">
                             <NaapButton
                                 className="border border-primary h-full text-primary hover:bg-primary/10 text-base font-semibold px-7 py-3 w-full sm:w-auto bg-transparent transition-colors"
                             >

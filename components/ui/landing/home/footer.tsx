@@ -94,7 +94,7 @@ export default function Footer() {
                         </a> */}
                     </div>
                     <Link
-                        href="/membership"
+                        href="/register"
                         className="inline-block mt-2 px-5 py-2 rounded-md bg-[#FFD600] text-primary font-semibold text-xs uppercase shadow hover:bg-yellow-300 transition-colors"
                     >
                         Become a Member

@@ -8,83 +8,83 @@ const photoCategories: Record<string, { src: string; alt: string }[]> = {
   events: [
     {
       src: "/gallery/1.jpeg",
-      alt: "Award ceremony with Nigerian flag",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/2.jpeg",
-      alt: "Attendees at seminar, someone writing",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/3.jpeg",
-      alt: "Attendees, woman in purple dress, mask",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/4.jpeg",
-      alt: "Black-and-white portrait of smiling girl",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/5.jpeg",
-      alt: "Black-and-white portrait of smiling girl",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/6.jpeg",
-      alt: "Black-and-white portrait of smiling girl",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/7.jpeg",
-      alt: "Black-and-white portrait of smiling girl",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/8.jpeg",
-      alt: "Black-and-white portrait of smiling girl",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/9.jpeg",
-      alt: "Black-and-white portrait of smiling girl",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/10.jpeg",
-      alt: "Black-and-white portrait of smiling girl",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/11.jpeg",
-      alt: "Black-and-white portrait of smiling girl",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/12.jpeg",
-      alt: "Black-and-white portrait of smiling girl",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/13.jpeg",
-      alt: "Black-and-white portrait of smiling girl",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/14.jpeg",
-      alt: "Black-and-white portrait of smiling girl",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/15.jpeg",
-      alt: "Black-and-white portrait of smiling girl",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/16.jpeg",
-      alt: "Black-and-white portrait of smiling girl",
+      alt: "NAAPE Gallery",
     },
   ],
   members: [
     {
       src: "/gallery/leader.jpeg",
-      alt: "NAAPE member group",
+      alt: "NAAPE Gallery",
     },
     {
       src: "/gallery/leader.jpeg",
-      alt: "Member portrait smiling",
+      alt: "NAAPE Gallery",
     },
   ],
   highlights: [
     {
       src: "/gallery/leader.jpeg",
-      alt: "Special highlight moment",
+      alt: "NAAPE Gallery",
     },
   ],
 };
@@ -104,25 +104,25 @@ const GALLERY_TABS: TabItem[] = [
       </svg>
     ),
   },
-  {
-    value: "members",
-    label: "Members",
-    icon: (
-      <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="8" r="4" />
-        <path d="M2 20c0-4 8-6 8-6s8 2 8 6" />
-      </svg>
-    ),
-  },
-  {
-    value: "highlights",
-    label: "Highlights",
-    icon: (
-      <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 2v20M2 12h20M5 5l14 14" />
-      </svg>
-    ),
-  },
+  // {
+  //   value: "members",
+  //   label: "Members",
+  //   icon: (
+  //     <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+  //       <circle cx="12" cy="8" r="4" />
+  //       <path d="M2 20c0-4 8-6 8-6s8 2 8 6" />
+  //     </svg>
+  //   ),
+  // },
+  // {
+  //   value: "highlights",
+  //   label: "Highlights",
+  //   icon: (
+  //     <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+  //       <path d="M12 2v20M2 12h20M5 5l14 14" />
+  //     </svg>
+  //   ),
+  // },
 ];
 
 // Single image card for gallery, improves reusability/clarity.
@@ -141,9 +141,9 @@ function PhotoCard({ photo }: { photo: { src: string; alt: string } }) {
         style={{ minHeight: 0, minWidth: 0 }}
         loading="lazy"
       />
-      <span className="absolute left-2 bottom-2 text-xs xs:text-sm sm:text-xs md:text-sm px-2 py-0.5 bg-white/70 rounded text-gray-700 font-medium shadow max-w-[90%] truncate pointer-events-none select-none">
+      {/* <span className="absolute left-2 bottom-2 text-xs xs:text-sm sm:text-xs md:text-sm px-2 py-0.5 bg-white/70 rounded text-gray-700 font-medium shadow max-w-[90%] truncate pointer-events-none select-none">
         {photo.alt}
-      </span>
+      </span> */}
       {/* Focus ring for accessibility */}
       <span className="pointer-events-none absolute inset-0 rounded-lg sm:rounded-xl ring-2 ring-offset-2 ring-blue-300 focus-within:ring-2 transition-all opacity-0 group-focus-within:opacity-100"></span>
     </div>
