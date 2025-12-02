@@ -19,34 +19,67 @@ import { NaapButton } from "@/components/ui/custom/button.naap";
 import DropImageDual from "@/components/member/component/drop.image";
 import { toast } from "sonner";
 
+
 // --- Validation Schema ---
+// Incorporate EventCardProps fields into Zod schema, defaulting optional fields
 const eventSchema = z.object({
-  title: z.string().min(2, "Title must be at least 2 characters.").max(80, "Title must be at most 80 characters."),
+  title: z
+    .string()
+    .min(2, "Title must be at least 2 characters.")
+    .max(80, "Title must be at most 80 characters."),
+
   date: z.string().min(1, "Date is required."),
-  location: z.string().min(2, "Location must be at least 2 characters.").max(60, "Location must be at most 60 characters."),
-  imageFile: z.any().refine(
-    (file) =>
-      !file ||
-      (file instanceof File &&
-        [undefined, "image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type) &&
-        file.size <= 8 * 1024 * 1024),
-    { message: "Only jpeg, png, webp, gif images up to 8MB are allowed." }
-  ),
+
+  location: z
+    .string()
+    .min(2, "Location must be at least 2 characters.")
+    .max(60, "Location must be at most 60 characters."),
+
+  // Accept File | null | undefined ONLY
+  imageFile: z
+    .instanceof(File)
+    .optional()
+    .or(z.null()),
+
   description: z
     .string()
-    .min(2, "Description must be at least 2 characters.")
-    .max(2000, "Description must be at most 2000 characters.")
+    .max(2000)
+    .optional()
     .or(z.literal("")),
+
+  // ALWAYS treat price as string for the form
+  price: z
+    .string()
+    .regex(/^\d*(\.\d{1,2})?$/, "Invalid amount")
+    .optional(),
+
+  // Always string
+  currency: z.string().max(8).optional(),
+
+  // Checkbox handled directly (boolean)
+  isPaid: z.boolean().default(false),
 });
 
 type EventFormValues = z.infer<typeof eventSchema>;
 
+
+
+/**
+ * Default values:
+ * Use the EventCardProps fields, set reasonable defaults for optional fields.
+ * price: empty string for free (will convert to 0 later)
+ * isPaid: false
+ * currency: 'NGN'
+ */
 const DEFAULT_VALUES: EventFormValues = {
   title: "",
   date: "",
   location: "",
-  imageFile: "",
+  imageFile: null,
   description: "",
+  price: "",
+  currency: "NGN",
+  isPaid: false,
 };
 
 const AnimatedPanel: React.FC<React.PropsWithChildren<{ className?: string }>> = ({
@@ -86,7 +119,7 @@ const CreateEvent: React.FC = () => {
 
   // Form
   const form = useForm<EventFormValues>({
-    resolver: zodResolver(eventSchema),
+    resolver: zodResolver(eventSchema) as any, // type workaround for isPaid type mismatch
     defaultValues: DEFAULT_VALUES,
     mode: "onTouched",
   });
@@ -107,19 +140,26 @@ const CreateEvent: React.FC = () => {
     [form]
   );
 
-  // Clear messages on field changes
-  // Removed setErrorMsg/setSuccessMsg message state, so nothing needed here
-
   // Handle submit
   const onSubmit = async (values: EventFormValues) => {
     const file = values.imageFile as File | null;
-
     try {
       const formData = new FormData();
       formData.append("title", values.title.trim());
       formData.append("date", values.date.trim());
       formData.append("location", values.location.trim());
-      formData.append("description", values.description.trim());
+      formData.append("description", values.description?.trim?.() ?? "");
+      // Map modern EventCardProps form fields
+      if (typeof values.price === "number") {
+        formData.append("price", values.price);
+      } else if (typeof values.price === "string" && values.price.trim() !== "") {
+        formData.append("price", values.price.trim());
+      } else {
+        formData.append("price", "0"); // free by default
+      }
+      formData.append("currency", values.currency?.trim() || "NGN");
+      formData.append("isPaid", values.isPaid ? "true" : "false");
+
       if (file instanceof File) formData.append("image", file);
 
       createEventMutation.mutate(formData, {
@@ -288,6 +328,86 @@ const CreateEvent: React.FC = () => {
                       )}
                     />
                   </div>
+                </div>
+
+                {/* PRICE & PAID SECTION */}
+                <div className="flex gap-4 flex-col md:flex-row">
+                  <div className="flex-1">
+                    <FormField
+                      control={form.control}
+                      name="price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            <span className="text-[15px] font-medium text-[#294e8c]">
+                              Price
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="number"
+                              min={0}
+                              step={1}
+                              inputMode="numeric"
+                              placeholder="0 = Free"
+                              disabled={uploading || !form.watch("isPaid")}
+                              className="text-[15px] px-4 py-2 rounded-md border border-[#DFE7FA] focus:border-[#4267E7] focus:ring-[#cdd8f7] bg-[#FBFCFF] transition"
+                            />
+                          </FormControl>
+                          <FormMessage className="text-xs mt-1" />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <FormField
+                      control={form.control}
+                      name="currency"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            <span className="text-[15px] font-medium text-[#294e8c]">
+                              Currency
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Currency (e.g. NGN, USD)"
+                              maxLength={8}
+                              disabled={uploading || !form.watch("isPaid")}
+                              className="text-[15px] px-4 py-2 rounded-md border border-[#DFE7FA] focus:border-[#4267E7] focus:ring-[#cdd8f7] bg-[#FBFCFF] transition"
+                            />
+                          </FormControl>
+                          <FormMessage className="text-xs mt-1" />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                {/* IS PAID CHECKBOX */}
+                <div className="flex items-center gap-2 mt-1">
+                  <FormField
+                    control={form.control}
+                    name="isPaid"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center gap-2">
+                        <input
+                          id="isPaid"
+                          type="checkbox"
+                          checked={field.value}
+                          onChange={(e) => field.onChange(e.target.checked)}
+                          disabled={uploading}
+                          className="w-4 h-4 border-[#DFE7FA] accent-[#4267E7] mr-2"
+                        />
+                        <FormLabel htmlFor="isPaid" className="mb-0 cursor-pointer text-[15px] text-[#294e8c]">
+                          Paid Event
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                  <span className="text-xs text-[#8CA1B6]">(Uncheck for free event. If checked, specify price and currency.)</span>
                 </div>
               </FormSection>
 

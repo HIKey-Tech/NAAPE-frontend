@@ -10,6 +10,7 @@ export default function JoinCommunitySection() {
         Join the community shaping Nigeria’s aviation industry.
       </h2>
       <div className="flex flex-row gap-3">
+        
         <NaapButton >
           <Link href="/membership">Become a member</Link>
         </NaapButton>

@@ -1,4 +1,5 @@
 import { 
+    payForEvent,
     createEventApi, 
     fetchEvents, 
     getSingleEvent,
@@ -38,6 +39,19 @@ export const useRegisterEvent = () => {
     return useMutation({
         mutationFn: registerEvent,
         // Optionally: refetch the events or event after registration
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["events"] });
+        },
+    });
+};
+
+
+
+// Pay for an event
+export const usePayForEvent = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: payForEvent,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["events"] });
         },

@@ -9,12 +9,12 @@ const slides = [
         caption: "From our latest aviation event — Lagos, 2024"
     },
     {
-        src: "/images/leader.png",
+        src: "/gallery/7.jpeg",
         alt: "NAAPE conference in session with attendees",
         caption: "Annual NAAPE Conference — Abuja, 2023"
     },
     {
-        src: "/images/event2.jpg",
+        src: "/gallery/16.jpeg",
         alt: "Group photo of NAAPE members",
         caption: "Celebrating Our Community — Members' Meetup"
     }

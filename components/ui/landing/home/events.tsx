@@ -17,7 +17,7 @@ const eventsList = [
         date: "October 31, 2025",
         time: "9:00AM WAT",
         venue: "Eko Hotel & Suites, Victoria Island, Lagos",
-        registerUrl: "#",
+        registerUrl: "/login",
     },
     {
         imageUrl: "/events/event1.jpg",
@@ -25,7 +25,7 @@ const eventsList = [
         date: "October 31, 2025",
         time: "9:00AM WAT",
         venue: "Eko Hotel & Suites, Victoria Island, Lagos",
-        registerUrl: "#",
+        registerUrl: "/login",
     },
     {
         imageUrl: "/events/event3.jpg",
@@ -33,7 +33,7 @@ const eventsList = [
         date: "October 31, 2025",
         time: "9:00AM WAT",
         venue: "Eko Hotel & Suites, Victoria Island, Lagos",
-        registerUrl: "#",
+        registerUrl: "/login",
     },
     {
         imageUrl: "/events/inspiring.jpg",
@@ -41,7 +41,7 @@ const eventsList = [
         date: "October 31, 2025",
         time: "9:00AM WAT",
         venue: "Eko Hotel & Suites, Victoria Island, Lagos",
-        registerUrl: "#",
+        registerUrl: "/login",
     },
 ];
 

@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { FaArrowRight } from "react-icons/fa";
 import { NaapButton } from "@/components/ui/custom/button.naap";
+import Link from "next/link";
 
 export default function AboutSection() {
     return (
@@ -22,7 +23,7 @@ export default function AboutSection() {
                 {/* Left: Card-like video preview */}
                 <div className="flex-shrink-0 flex-grow-0 w-full md:w-fit max-w-fit">
                     <div className="relative rounded-[18px] overflow-hidden shadow-2xl bg-[#232835] border border-[#E6EAF1] min-h-full">
-                       
+
                         <Image
                             src="/images/loginpic.jpg"
                             alt="Nigerian pilots in cockpit"
@@ -73,13 +74,16 @@ export default function AboutSection() {
                     <p className="text-[#3B3B46] text-[0.99rem] md:text-base font-normal leading-relaxed mb-2 md:mb-4 w-full">
                         Since 1985, the National Association of Aircraft Pilots and Engineers (NAAPE) has been the united voice of Nigeria’s pilots and engineers – our mission is to advance the aviation safety, professionalism, technical expertise in the Nigerian aviation industry through advocacy and the rights of those who keep the skies secure.
                     </p>
-                    <NaapButton
-                        className="bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 w-fit text-white font-semibold px-7 py-3 text-base shadow  transition flex items-center gap-2"
-                        icon={<FaArrowRight size={16} />}
-                        iconPosition="right"
-                    >
-                        Learn more
-                    </NaapButton>
+
+                    <Link href="/about-us" >
+                        <NaapButton
+                            className="bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 w-fit text-white font-semibold px-7 py-3 text-base shadow  transition flex items-center gap-2"
+                            icon={<FaArrowRight size={16} />}
+                            iconPosition="right"
+                        >
+                            Learn more
+                        </NaapButton>
+                    </Link>
                 </div>
             </div>
         </section>
