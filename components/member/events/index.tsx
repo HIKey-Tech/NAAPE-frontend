@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import EventCard from "../component/event.card";
 import { FilterHeader } from "../component/header";
 import { useEvents } from "@/hooks/useEvents";
-import { useAuth } from "@/context/authcontext";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { useRouter } from "next/navigation";
 import { parseJwt } from "@/proxy";

@@ -18,6 +18,8 @@ import Image from "next/image";
 import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/authcontext";
+import { toast } from "sonner";
+
 
 // UI IMPROVEMENTS: softer palette, modern neumorphic shadows, larger icons/buttons, improved hover/focus
 const PRIMARY_COLOR = "#17447b";
@@ -766,7 +768,19 @@ export function AppSidebar() {
 
     const handleSignOut = useCallback(() => {
         if (window.confirm("Are you sure you want to sign out?")) {
-            logout();
+            toast.promise(
+                (async () => {
+                    await logout();
+                })(),
+                {
+                    loading: "Signing out...",
+                    success: "Signed out successfully.",
+                    error: (err) =>
+                        err?.message
+                            ? `Failed to sign out: ${err.message}`
+                            : "An error occurred signing out.",
+                }
+            );
         }
     }, [logout]);
 
