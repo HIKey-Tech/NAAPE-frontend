@@ -7,6 +7,7 @@ import { useEvents } from "@/hooks/useEvents";
 import { useAuth } from "@/context/authcontext";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { useRouter } from "next/navigation";
+import { parseJwt } from "@/proxy";
 
 function getArrayFromEvents(events: any): any[] {
     if (Array.isArray(events)) return events;
@@ -16,19 +17,24 @@ function getArrayFromEvents(events: any): any[] {
 }
 
 // -- Hook: get user role --
-function useUserRole(): string | null {
-    const { user } = useAuth();
-    const [role, setRole] = useState<string | null>(null);
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            setRole(user?.role ?? null);
-        }
-    }, [user]);
-    return role;
-}
+// function useUserRole(): string | null {
+//     // const { user } = useAuth();
+//     return role;
+// }
 
 // Core Render
 export default function EventsComponent() {
+    const [user, setUser] = useState<any>(null);
+
+    const [role, setRole] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem("token");
+            setUser(token ? parseJwt(token) : null);
+        }
+    }, []);
+
     const [search, setSearch] = useState("");
     const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
     const [filterOpen, setFilterOpen] = useState(false);
@@ -41,9 +47,13 @@ export default function EventsComponent() {
         evt?.title?.toLowerCase().includes(search.toLowerCase())
     );
 
-    const role = useUserRole();
-    const isAdmin = role === "admin";
-    const isMember = role === "member";
+
+
+
+    // const role = useUserRole();
+    const isAdmin = user?.role === "admin" || "editor";
+    // Only needed for event navigation, not for showing create button
+    const isMember = user?.role === "member";
 
     const handleCreateEvent = useCallback(() => {
         if (typeof window !== "undefined") {
@@ -51,13 +61,8 @@ export default function EventsComponent() {
         }
     }, []);
 
-    // Because EventCard now handles registration/payment logic,
-    // navigate to the event detail page *on button click* (register),
-    // role-based. Display EventCard as per @event.card.tsx UI.
-
     // Helper: pass correct EventCardProps
     function eventCardProps(event: any) {
-        // Fallbacks for legacy/partial data:
         return {
             id: event.id,
             title: event.title ?? "Untitled",
@@ -68,12 +73,9 @@ export default function EventsComponent() {
             price: typeof event.price !== "undefined" ? event.price : (event.isPaid ? (event.price ?? 1000) : 0),
             currency: event.currency ?? "NGN",
             isPaid: (typeof event.isPaid === "boolean" ? event.isPaid : (event.price && event.price > 0)),
-            // Use consistent label everywhere
             registerLabel: "View Details",
             className: "cursor-pointer",
-            // Prop for disabling registration
             disabled: false,
-            // For highlighting user count, etc. (optional):
             registeredUsers: event.registeredUsers,
             createdBy: event.createdBy,
             payments: event.payments,
@@ -81,7 +83,7 @@ export default function EventsComponent() {
     }
 
     // Render
-    if (role === null) return null;
+    if (user?.role === null) return null;
 
     return (
         <div className="px-4 sm:px-0 py-4 bg-white w-full">
@@ -97,6 +99,7 @@ export default function EventsComponent() {
                 sortLabel="Newest"
             />
 
+            {/* Only admin can see the create event button */}
             {isAdmin && (
                 <div className="flex justify-end px-6 mt-1 mb-4">
                     <NaapButton
@@ -141,19 +144,16 @@ export default function EventsComponent() {
                         <EventCard
                             key={event.id ?? idx}
                             {...eventCardProps(event)}
-                            // Use EventCard's own register logic; override registerLabel to indicate "View & Register"
                             registerLabel={isAdmin ? "Manage" : "View & Register"}
-                            // Use a custom callback ONLY if you want to *override* EventCard's handler, otherwise do not supply onRegister:
                             {...((isAdmin || isMember)
                                 ? {
-                                      // Admin: navigate to admin event details
-                                      onClick: () => {
-                                          if (!event.id) return;
-                                          if (isAdmin) router.push(`/admin/events/${event.id}`);
-                                          else if (isMember) router.push(`/events/${event.id}`);
-                                          else router.push(`/events/${event.id}`);
-                                      },
-                                  }
+                                    onClick: () => {
+                                        if (!event.id) return;
+                                        if (isAdmin) router.push(`/admin/events/${event.id}`);
+                                        else if (isMember) router.push(`/events/${event.id}`);
+                                        else router.push(`/events/${event.id}`);
+                                    },
+                                }
                                 : {})}
                         />
                     ))

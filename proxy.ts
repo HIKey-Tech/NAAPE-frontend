@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // A utility to decode a JWT and extract the payload
-function parseJwt(token: string): any | null {
+export function parseJwt(token: string): any | null {
     if (!token) return null;
     try {
         const base64Url = token.split(".")[1];
