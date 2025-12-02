@@ -11,7 +11,7 @@ import {
 } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePublications } from "@/hooks/usePublications";
-import { useMembers } from "@/hooks/useMembers";
+import { useMembers, useMemberStats } from "@/hooks/useMembers";
 import { useAuth } from "@/context/authcontext";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -211,7 +211,7 @@ const DashboardCardSkeleton: React.FC = () => (
 );
 
 const DashboardCards: React.FC = () => {
-    const { data: stats, isPending, error } = useMembers();
+    const { data: stats, isPending, error } = useMemberStats();
 
     const cards: DashboardCardData[] = [
         {
