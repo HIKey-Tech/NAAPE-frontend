@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import EventCard from "../component/event.card";
 import { FilterHeader } from "../component/header";
 import { useEvents } from "@/hooks/useEvents";
 import { useAuth } from "@/context/authcontext";
 import { NaapButton } from "@/components/ui/custom/button.naap";
-import { useRouter } from "next/navigation"; // for event card navigation
+import { useRouter } from "next/navigation";
 
 function getArrayFromEvents(events: any): any[] {
     if (Array.isArray(events)) return events;
@@ -15,20 +15,19 @@ function getArrayFromEvents(events: any): any[] {
     return [];
 }
 
-// ---------- Hook: get user role ----------
+// -- Hook: get user role --
 function useUserRole(): string | null {
     const { user } = useAuth();
     const [role, setRole] = useState<string | null>(null);
-
     useEffect(() => {
         if (typeof window !== "undefined") {
             setRole(user?.role ?? null);
         }
     }, [user]);
-
     return role;
 }
 
+// Core Render
 export default function EventsComponent() {
     const [search, setSearch] = useState("");
     const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
@@ -37,6 +36,7 @@ export default function EventsComponent() {
 
     const { data: events, isPending: isLoading, isError } = useEvents();
     const eventsArr = getArrayFromEvents(events);
+
     const filteredEvents = eventsArr.filter((evt: any) =>
         evt?.title?.toLowerCase().includes(search.toLowerCase())
     );
@@ -45,14 +45,43 @@ export default function EventsComponent() {
     const isAdmin = role === "admin";
     const isMember = role === "member";
 
-    const handleCreateEvent = () => {
+    const handleCreateEvent = useCallback(() => {
         if (typeof window !== "undefined") {
             window.location.href = "/admin/events/new";
         }
-    };
+    }, []);
+
+    // Because EventCard now handles registration/payment logic,
+    // navigate to the event detail page *on button click* (register),
+    // role-based. Display EventCard as per @event.card.tsx UI.
+
+    // Helper: pass correct EventCardProps
+    function eventCardProps(event: any) {
+        // Fallbacks for legacy/partial data:
+        return {
+            id: event.id,
+            title: event.title ?? "Untitled",
+            date: event.date ?? new Date().toISOString(),
+            location: event.location ?? "Life Camp, Abuja",
+            imageUrl: event.imageUrl ?? "/images/plane.jpg",
+            description: event.description ?? "",
+            price: typeof event.price !== "undefined" ? event.price : (event.isPaid ? (event.price ?? 1000) : 0),
+            currency: event.currency ?? "NGN",
+            isPaid: (typeof event.isPaid === "boolean" ? event.isPaid : (event.price && event.price > 0)),
+            // Use consistent label everywhere
+            registerLabel: "View Details",
+            className: "cursor-pointer",
+            // Prop for disabling registration
+            disabled: false,
+            // For highlighting user count, etc. (optional):
+            registeredUsers: event.registeredUsers,
+            createdBy: event.createdBy,
+            payments: event.payments,
+        };
+    }
 
     // Render
-    if (role === null) return null; // optional: show loader instead
+    if (role === null) return null;
 
     return (
         <div className="px-4 sm:px-0 py-4 bg-white w-full">
@@ -111,27 +140,21 @@ export default function EventsComponent() {
                     filteredEvents.map((event: any, idx: number) => (
                         <EventCard
                             key={event.id ?? idx}
-                            id={event.id}
-                            title={event.title}
-                            date={event.date}
-                            location={event.location || "Life Camp, Abuja"}
-                            imageUrl={event.imageUrl || "/images/plane.jpg"}
-                            disabled={false}
-                            // Click card navigates to event details per role
-                            onRegister={() => {
-                                if (event.id) {
-                                    if (isAdmin) {
-                                        router.push(`/admin/events/${event.id}`);
-                                    } else if (isMember) {
-                                        router.push(`/events/${event.id}`);
-                                    } else {
-                                        // fallback: default to event details for unknown role
-                                        router.push(`/events/${event.id}`);
-                                    }
-                                }
-                            }}
-                            className="cursor-pointer"
-                            registerLabel="View Details"
+                            {...eventCardProps(event)}
+                            // Use EventCard's own register logic; override registerLabel to indicate "View & Register"
+                            registerLabel={isAdmin ? "Manage" : "View & Register"}
+                            // Use a custom callback ONLY if you want to *override* EventCard's handler, otherwise do not supply onRegister:
+                            {...((isAdmin || isMember)
+                                ? {
+                                      // Admin: navigate to admin event details
+                                      onClick: () => {
+                                          if (!event.id) return;
+                                          if (isAdmin) router.push(`/admin/events/${event.id}`);
+                                          else if (isMember) router.push(`/events/${event.id}`);
+                                          else router.push(`/events/${event.id}`);
+                                      },
+                                  }
+                                : {})}
                         />
                     ))
                 )}

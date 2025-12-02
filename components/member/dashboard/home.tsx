@@ -2,7 +2,6 @@
 import React, { useMemo } from "react";
 import DashboardCard from "../component/dashboardcard";
 import PublicationCard from "../component/publication.card";
-import EventCard from "../component/event.card";
 import CertCard from "../component/cert.card";
 import {
     MdAttachMoney,
@@ -10,14 +9,18 @@ import {
     MdAssignmentTurnedIn,
     MdWork,
 } from "react-icons/md";
-
 import { motion, AnimatePresence } from "framer-motion";
 import { usePublications } from "@/hooks/usePublications";
-import { useMembers } from "@/hooks/useMembers"; // <-- implement this for stats
+import { useMembers } from "@/hooks/useMembers";
 import { useAuth } from "@/context/authcontext";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Dashboard Card Data Types
+/**
+ * EventCard from @event.card.tsx (1-241) refactored to work here.
+ * Based on context, we introduce the EventCard in-place, supporting id, title, date, location, imageUrl,
+ * onRegister, registerLabel, isPaid, price, currency props.
+ */
+
 type DashboardCardData = {
     icon: React.ReactNode;
     value: number;
@@ -33,16 +36,23 @@ type CertificationData = {
     progress?: number;
 };
 
-type EventData = {
+// Event type as from @event.card.tsx
+type EventCardProps = {
+    id?: string;
     title: string;
     date: string;
     location: string;
     imageUrl: string;
-    onRegister: () => void;
+    onRegister?: () => void;
     registerLabel: string;
+    isPaid?: boolean;
+    price?: number;
+    currency?: string;
+    description?: string;
+    [key: string]: any;
 };
 
-// Demo Data for other sections (certifications & events)
+// Rewrite Event Data type for this dashboard
 const certificationsData: CertificationData[] = [
     {
         title: "Advanced CRM for Flight Crews",
@@ -68,7 +78,8 @@ const certificationsData: CertificationData[] = [
     },
 ];
 
-const eventsData: EventData[] = [
+// Used by the Event section (add isPaid, price, currency fields for demonstration)
+const eventsData: EventCardProps[] = [
     {
         title: "Annual Aviation Safety",
         date: "Nov 27, 2025",
@@ -76,34 +87,45 @@ const eventsData: EventData[] = [
         imageUrl: "/images/plane.jpg",
         onRegister: () => alert("Register for Aviation Safety Event!"),
         registerLabel: "Register",
+        isPaid: false,
+        price: 0,
+        currency: "NGN",
     },
     {
-        title: "Annual Aviation Safety",
-        date: "Nov 27, 2025",
-        location: "Abuja International Conference Center",
+        title: "Crew Resource Optimization",
+        date: "Jan 12, 2026",
+        location: "Lagos Expo Center",
         imageUrl: "/images/plane.jpg",
-        onRegister: () => alert("Register for Aviation Safety Event!"),
-        registerLabel: "Register",
+        onRegister: () => alert("Register for Crew Resource Event!"),
+        registerLabel: "Join",
+        isPaid: true,
+        price: 5000,
+        currency: "NGN",
     },
     {
-        title: "Annual Aviation Safety",
-        date: "Nov 27, 2025",
-        location: "Abuja International Conference Center",
+        title: "Safety Leadership Masterclass",
+        date: "Mar 22, 2026",
+        location: "Online Webinar",
         imageUrl: "/images/plane.jpg",
-        onRegister: () => alert("Register for Aviation Safety Event!"),
+        onRegister: () => alert("Register for Leadership Masterclass!"),
         registerLabel: "Register",
+        isPaid: false,
+        price: 0,
+        currency: "NGN",
     },
     {
-        title: "Annual Aviation Safety",
-        date: "Nov 27, 2025",
-        location: "Abuja International Conference Center",
+        title: "Women In Aviation",
+        date: "Jul 9, 2026",
+        location: "Port Harcourt Hub",
         imageUrl: "/images/plane.jpg",
-        onRegister: () => alert("Register for Aviation Safety Event!"),
-        registerLabel: "Register",
+        onRegister: () => alert("Register for Women In Aviation Event!"),
+        registerLabel: "Attend",
+        isPaid: true,
+        price: 2000,
+        currency: "NGN",
     },
 ];
 
-// Animation variants
 const staggerContainer = {
     hidden: {},
     show: {
@@ -121,7 +143,6 @@ const cardFadeSlide = {
     },
 };
 
-// Section Header Component
 type SectionHeaderProps = {
     title: string;
     linkLabel?: string;
@@ -169,7 +190,6 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
     </div>
 );
 
-// Horizontal Scroll Utility
 const HorizontalScrollContainer: React.FC<{
     children: React.ReactNode;
     className?: string;
@@ -182,9 +202,6 @@ const HorizontalScrollContainer: React.FC<{
     </div>
 );
 
-// Subcomponents for improved clarity and reusability
-
-// Skeleton loader for dashboard cards (for both mobile and desktop layout)
 const DashboardCardSkeleton: React.FC = () => (
     <div className="shrink-0 w-[83vw] max-w-xs min-w-[200px] rounded-xl border bg-white px-5 py-6 flex flex-col items-start justify-between space-y-3 shadow-sm">
         <Skeleton className="h-8 w-8 rounded" />
@@ -194,12 +211,8 @@ const DashboardCardSkeleton: React.FC = () => (
 );
 
 const DashboardCards: React.FC = () => {
-    // Get dashboard stats from useMembers
     const { data: stats, isPending, error } = useMembers();
 
-    console.log('stats error', error)
-
-    // Assemble cards based on stats
     const cards: DashboardCardData[] = [
         {
             icon: <MdAttachMoney className="text-[#4267E7] text-2xl" />,
@@ -232,10 +245,8 @@ const DashboardCards: React.FC = () => {
     }
 
     if (isPending) {
-        // Use shimmer skeletons
         return (
             <>
-                {/* Mobile: horizontal scroll shimmer */}
                 <div className="sm:hidden mb-8">
                     <HorizontalScrollContainer>
                         {[...Array(3)].map((_, idx) => (
@@ -243,7 +254,6 @@ const DashboardCards: React.FC = () => {
                         ))}
                     </HorizontalScrollContainer>
                 </div>
-                {/* Desktop: grid shimmer */}
                 <div className="hidden sm:grid grid-cols-2 md:grid-cols-4 w-full gap-5 mb-8">
                     {[...Array(4)].map((_, idx) => (
                         <DashboardCardSkeleton key={idx} />
@@ -255,7 +265,6 @@ const DashboardCards: React.FC = () => {
 
     return (
         <>
-            {/* Mobile: horizontal scroll */}
             <div className="sm:hidden mb-8">
                 <HorizontalScrollContainer>
                     <AnimatePresence>
@@ -282,7 +291,6 @@ const DashboardCards: React.FC = () => {
                     </AnimatePresence>
                 </HorizontalScrollContainer>
             </div>
-            {/* Desktop: grid */}
             <motion.div
                 className="hidden sm:grid grid-cols-2 md:grid-cols-4 w-full gap-5 mb-8"
                 variants={staggerContainer}
@@ -304,20 +312,17 @@ const DashboardCards: React.FC = () => {
     );
 };
 
-// Skeleton loader for publications
 const PublicationCardSkeleton: React.FC = () => (
     <div className="shrink-0 w-[87vw] max-w-sm min-w-[220px] bg-white rounded-xl border px-4 py-4 space-y-3 shadow-sm">
-        <Skeleton className="h-40 w-full rounded-lg" /> {/* Image skeleton */}
-        <Skeleton className="h-5 w-32 rounded" /> {/* Title skeleton */}
-        <Skeleton className="h-4 w-20 rounded" /> {/* Author/extra line */}
-        <Skeleton className="h-4 w-2/3 rounded" /> {/* Description line */}
+        <Skeleton className="h-40 w-full rounded-lg" />
+        <Skeleton className="h-5 w-32 rounded" />
+        <Skeleton className="h-4 w-20 rounded" />
+        <Skeleton className="h-4 w-2/3 rounded" />
     </div>
 );
 
 const PublicationsSection: React.FC = () => {
     const { data: publications, isPending: loading, error } = usePublications();
-
-    // Memoize for perf
     const pubList = useMemo(() => publications ?? [], [publications]);
 
     return (
@@ -325,7 +330,6 @@ const PublicationsSection: React.FC = () => {
             <SectionHeader title="Publications" href="/forum" linkLabel="Join The Conversation" />
             {loading ? (
                 <>
-                    {/* Mobile shimmer */}
                     <div className="sm:hidden">
                         <HorizontalScrollContainer>
                             {[...Array(2)].map((_, idx) => (
@@ -333,7 +337,6 @@ const PublicationsSection: React.FC = () => {
                             ))}
                         </HorizontalScrollContainer>
                     </div>
-                    {/* Desktop shimmer */}
                     <div className="hidden sm:grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                         {[...Array(4)].map((_, idx) => (
                             <PublicationCardSkeleton key={idx} />
@@ -350,7 +353,6 @@ const PublicationsSection: React.FC = () => {
                 </div>
             ) : (
                 <>
-                    {/* Mobile scroll */}
                     <div className="sm:hidden">
                         <HorizontalScrollContainer>
                             <AnimatePresence>
@@ -377,7 +379,6 @@ const PublicationsSection: React.FC = () => {
                             </AnimatePresence>
                         </HorizontalScrollContainer>
                     </div>
-                    {/* Desktop grid */}
                     <motion.div
                         className="hidden sm:grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4"
                         variants={staggerContainer}
@@ -404,7 +405,6 @@ const PublicationsSection: React.FC = () => {
 const CertificationsSection: React.FC = () => (
     <section className="mb-10">
         <SectionHeader title="Training & Certifications" />
-        {/* Mobile: horizontal scroll */}
         <div className="sm:hidden">
             <HorizontalScrollContainer>
                 <AnimatePresence>
@@ -431,7 +431,6 @@ const CertificationsSection: React.FC = () => (
                 </AnimatePresence>
             </HorizontalScrollContainer>
         </div>
-        {/* Desktop: grid */}
         <motion.div
             className="hidden sm:grid grid-cols-2 md:grid-cols-3 gap-4"
             variants={staggerContainer}
@@ -452,10 +451,84 @@ const CertificationsSection: React.FC = () => (
     </section>
 );
 
+/**
+ * EventCard component (adapted to work here from @event.card.tsx (1-241)).
+ */
+const EventCard: React.FC<EventCardProps> = ({
+    id,
+    title,
+    date,
+    location,
+    imageUrl,
+    onRegister,
+    registerLabel,
+    isPaid = false,
+    price = 0,
+    currency = "NGN",
+}) => {
+    return (
+        <div
+            className="flex flex-col bg-white border rounded-xl shadow-sm overflow-hidden min-h-[310px] group hover:shadow-md transition-shadow duration-150"
+            data-event-id={id}
+        >
+            <div className="relative w-full h-44 bg-gray-100">
+                <img
+                    src={imageUrl}
+                    alt={title}
+                    className="object-cover w-full h-full"
+                    loading="lazy"
+                    draggable={false}
+                />
+                {isPaid ? (
+                    <span className="absolute top-2 right-2 bg-[#4267E7] text-white rounded px-2 py-0.5 text-xs font-bold shadow-sm">
+                        {price > 0 ? (
+                            <>
+                                {currency} {price.toLocaleString()}
+                            </>
+                        ) : (
+                            "Paid"
+                        )}
+                    </span>
+                ) : (
+                    <span className="absolute top-2 right-2 bg-[#41B079] text-white rounded px-2 py-0.5 text-xs font-bold shadow-sm">Free</span>
+                )}
+            </div>
+            <div className="p-4 flex-1 flex flex-col">
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <span>
+                        <svg width="16" height="16" fill="none" className="inline align-middle">
+                            <circle cx="8" cy="8" r="8" fill="#4267E7" fillOpacity="0.09"/>
+                            <path d="M5.833 8.417L7.25 9.833l3-3" stroke="#4267E7" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </span>
+                    <span className="font-semibold">{date}</span>
+                </div>
+                <h3 className="text-base font-bold text-[#212B36] mt-1 mb-2 leading-snug line-clamp-2">{title}</h3>
+                <div className="flex items-center gap-1 text-xs text-[#748095] mb-3">
+                    <svg width="15" height="15" fill="none" className="inline align-middle mt-[-2px]">
+                        <circle cx="7.5" cy="7.5" r="7.5" fill="#F7C873" fillOpacity="0.16"/>
+                        <path d="M12 11.25V10.5A1.5 1.5 0 0010.5 9h-6A1.5 1.5 0 003 10.5v.75" stroke="#F4B645" strokeWidth="1" strokeLinecap="round"/>
+                        <circle cx="7.5" cy="6.25" r="2.25" stroke="#F4B645" strokeWidth="1"/>
+                    </svg>
+                    <span className="ml-0.5">{location}</span>
+                </div>
+                <div className="mt-auto flex">
+                    <button
+                        type="button"
+                        className="inline-flex items-center justify-center bg-[#4267E7] hover:bg-[#2143B7] text-white font-medium text-sm rounded-lg px-4 py-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#4267E7]"
+                        onClick={onRegister}
+                    >
+                        {registerLabel}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const EventsSection: React.FC = () => (
     <section>
         <SectionHeader title="Upcoming Events" />
-        {/* Mobile: horizontal scroll */}
         <div className="sm:hidden">
             <HorizontalScrollContainer>
                 <AnimatePresence>
@@ -468,21 +541,20 @@ const EventsSection: React.FC = () => (
                     >
                         {eventsData.map((ev, idx) => (
                             <motion.div
-                                key={idx}
+                                key={ev.id ?? idx}
                                 className="shrink-0 w-[87vw] max-w-sm"
                                 style={{ minWidth: "220px" }}
                                 variants={cardFadeSlide as any}
                                 whileHover={{ scale: 1.025 }}
                                 whileTap={{ scale: 0.97 }}
                             >
-                                <EventCard {...ev} />
+                                <EventCard {...ev} id={ev.id ?? `event-${idx}`} />
                             </motion.div>
                         ))}
                     </motion.div>
                 </AnimatePresence>
             </HorizontalScrollContainer>
         </div>
-        {/* Desktop: grid */}
         <motion.div
             className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-4"
             variants={staggerContainer}
@@ -491,12 +563,12 @@ const EventsSection: React.FC = () => (
         >
             {eventsData.map((ev, idx) => (
                 <motion.div
-                    key={idx}
+                    key={ev.id ?? idx}
                     variants={cardFadeSlide as any}
                     whileHover={{ scale: 1.025 }}
                     whileTap={{ scale: 0.97 }}
                 >
-                    <EventCard {...ev} />
+                    <EventCard {...ev} id={ev.id ?? `event-${idx}`} />
                 </motion.div>
             ))}
         </motion.div>
@@ -507,26 +579,27 @@ const EventsSection: React.FC = () => (
 const MemberDashboardHome: React.FC = () => {
     const { user } = useAuth();
     return (
-        <section className="w-full max-w-full px-2 sm:px-4 py-8">
-            {/* Welcome Header */}
-            <motion.div
-                className="mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.48, ease: [0.4, 0, 0.2, 1] }}
-            >
-                <div className="text-[16px] font-medium text-[#212B36]">
-                    Good to see you, {user?.name}!
-                </div>
-                <div className="text-[13px] text-[#919EAB] mt-0.5">
-                    Here’s what’s happening in your aviation network today.
-                </div>
-            </motion.div>
-            <DashboardCards />
-            <PublicationsSection />
-            <CertificationsSection />
-            <EventsSection />
-        </section>
+        <main className="flex-1 pb-8">
+            <section className="w-full max-w-full px-2 sm:px-4 py-8">
+                <motion.div
+                    className="mb-6"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.48, ease: [0.4, 0, 0.2, 1] }}
+                >
+                    <div className="text-[16px] font-medium text-[#212B36]">
+                        Good to see you, {user?.name}!
+                    </div>
+                    <div className="text-[13px] text-[#919EAB] mt-0.5">
+                        Here’s what’s happening in your aviation network today.
+                    </div>
+                </motion.div>
+                <DashboardCards />
+                <PublicationsSection />
+                <CertificationsSection />
+                <EventsSection />
+            </section>
+        </main>
     );
 };
 

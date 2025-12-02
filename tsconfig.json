@@ -37,7 +37,7 @@
     "**/*.mts",
     "app/(private)/(admin)/admin/profile",
     "app/(public)/about/organs-of-association",
-    "app/(public)/forgot-password"
+    "app/forgot-password"
   ],
   "exclude": [
     "node_modules"
