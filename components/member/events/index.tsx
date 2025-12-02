@@ -17,19 +17,24 @@ function getArrayFromEvents(events: any): any[] {
 }
 
 // -- Hook: get user role --
-function useUserRole(): string | null {
-    const { user } = useAuth();
-    const [role, setRole] = useState<string | null>(null);
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            setRole(user?.role ?? null);
-        }
-    }, [user]);
-    return role;
-}
+// function useUserRole(): string | null {
+//     // const { user } = useAuth();
+//     return role;
+// }
 
 // Core Render
 export default function EventsComponent() {
+    const [user, setUser] = useState<any>(null);
+
+    const [role, setRole] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem("token");
+            setUser(token ? parseJwt(token) : null);
+        }
+    }, []);
+
     const [search, setSearch] = useState("");
     const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
     const [filterOpen, setFilterOpen] = useState(false);
@@ -42,8 +47,7 @@ export default function EventsComponent() {
         evt?.title?.toLowerCase().includes(search.toLowerCase())
     );
 
-    const token = localStorage.getItem("token")
-    const user = token ? parseJwt(token) : null;
+
 
 
     // const role = useUserRole();
@@ -143,13 +147,13 @@ export default function EventsComponent() {
                             registerLabel={isAdmin ? "Manage" : "View & Register"}
                             {...((isAdmin || isMember)
                                 ? {
-                                      onClick: () => {
-                                          if (!event.id) return;
-                                          if (isAdmin) router.push(`/admin/events/${event.id}`);
-                                          else if (isMember) router.push(`/events/${event.id}`);
-                                          else router.push(`/events/${event.id}`);
-                                      },
-                                  }
+                                    onClick: () => {
+                                        if (!event.id) return;
+                                        if (isAdmin) router.push(`/admin/events/${event.id}`);
+                                        else if (isMember) router.push(`/events/${event.id}`);
+                                        else router.push(`/events/${event.id}`);
+                                    },
+                                }
                                 : {})}
                         />
                     ))
