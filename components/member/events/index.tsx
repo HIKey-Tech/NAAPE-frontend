@@ -16,23 +16,28 @@ function getArrayFromEvents(events: any): any[] {
     return [];
 }
 
-// -- Hook: get user role --
-// function useUserRole(): string | null {
-//     // const { user } = useAuth();
-//     return role;
-// }
-
-// Core Render
 export default function EventsComponent() {
     const [user, setUser] = useState<any>(null);
-
     const [role, setRole] = useState<string | null>(null);
 
     useEffect(() => {
-        if (typeof window !== "undefined") {
+        if (typeof window === "undefined") return;
+
+        const getUserFromToken = () => {
             const token = localStorage.getItem("token");
-            setUser(token ? parseJwt(token) : null);
-        }
+            if (!token) return null;
+            try {
+                const userObj = parseJwt(token);
+                return userObj;
+            } catch (e) {
+                console.error("Invalid token", e);
+                return null;
+            }
+        };
+
+        const userObj = getUserFromToken();
+        setUser(userObj);
+        setRole(userObj?.role ?? null);
     }, []);
 
     const [search, setSearch] = useState("");
@@ -47,11 +52,8 @@ export default function EventsComponent() {
         evt?.title?.toLowerCase().includes(search.toLowerCase())
     );
 
-
-
-
-    // const role = useUserRole();
-    const isAdmin = user?.role === "admin" || "editor";
+    // Only admins should see the create button
+    const isAdmin = user?.role === "admin";
     // Only needed for event navigation, not for showing create button
     const isMember = user?.role === "member";
 
@@ -61,7 +63,6 @@ export default function EventsComponent() {
         }
     }, []);
 
-    // Helper: pass correct EventCardProps
     function eventCardProps(event: any) {
         return {
             id: event.id,

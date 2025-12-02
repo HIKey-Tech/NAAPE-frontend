@@ -259,11 +259,11 @@ const organizePublicationTabsForMobile = (list: NavLink[]) => {
 const publicationsDropdownLinksMobile: NavLink[] = organizePublicationTabsForMobile(publicationsDropdownLinks);
 
 const navLinksSecondary: NavLink[] = [
-    {
-        label: "Settings",
-        icon: FaCog,
-        href: "/settings",
-    },
+    // {
+    //     label: "Settings",
+    //     icon: FaCog,
+    //     href: "/settings",
+    // },
 ];
 
 // Profile Card - enhanced: larger avatar, round, subtle shadow, status indicator

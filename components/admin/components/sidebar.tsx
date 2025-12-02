@@ -242,11 +242,11 @@ const publicationsDropdownLinksMobile: NavLink[] = organizePublicationTabsForMob
 ]);
 
 const navLinksSecondary: NavLink[] = [
-    {
-        label: "Settings",
-        icon: FaCog,
-        href: "/admin/settings"
-    }
+    // {
+    //     label: "Settings",
+    //     icon: FaCog,
+    //     href: "/admin/settings"
+    // }
 ];
 
 // UserAvatar now expects full user object (from context)
