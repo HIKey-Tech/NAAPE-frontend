@@ -80,25 +80,26 @@ const splitTitle = (title: string, maxLineLength = 30): [string, string] => {
 };
 
 const ANIMATION_CLASS = "publication-card-animate";
+// Make the animation subtle: less opacity/transformation, a little shorter duration, less scale/translate
 const ANIMATION_CSS = `
 .${ANIMATION_CLASS} {
-    opacity: 0;
-    transform: translateY(24px) scale(0.97);
+    opacity: 0.85;
+    transform: translateY(10px) scale(0.99);
     transition:
-        opacity 0.66s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0.54s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .${ANIMATION_CLASS}.visible {
     opacity: 1;
     transform: translateY(0) scale(1);
 }
 .${ANIMATION_CLASS}:hover {
-    transform: translateY(-6px) scale(1.045);
-    box-shadow: 0 6px 30px rgba(30,41,59,0.13), 0 2.5px 13px rgba(30,41,59,0.11);
+    transform: translateY(-2.5px) scale(1.02);
+    box-shadow: 0 3px 18px rgba(30,41,59,0.08), 0 1.5px 6px rgba(30,41,59,0.06);
     transition:
-        opacity 0.66s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0.20s cubic-bezier(.42,0,.58,1),
-        box-shadow 0.21s cubic-bezier(.42,0,.58,1);
+        opacity 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.14s cubic-bezier(.42,0,.58,1),
+        box-shadow 0.16s cubic-bezier(.42,0,.58,1);
 }
 `;
 
@@ -309,7 +310,7 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                     if (entry.isIntersecting) {
                         timer = setTimeout(() => {
                             card.classList.add("visible");
-                        }, 40 + Math.random() * 120);
+                        }, 28 + Math.random() * 60); // slightly faster/subtler
                     }
                 });
             })
