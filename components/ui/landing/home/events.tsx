@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const eventsList = [
     {
-        imageUrl: "/images/event1.jpg",
+        imageUrl: "/events/event2.jpg",
         title: "Annual Aviation Safety Summit",
         date: "October 31, 2025",
         time: "9:00AM WAT",
@@ -20,7 +20,7 @@ const eventsList = [
         registerUrl: "#",
     },
     {
-        imageUrl: "/images/event2.jpg",
+        imageUrl: "/events/event1.jpg",
         title: "Aviation Executives Roundtable",
         date: "October 31, 2025",
         time: "9:00AM WAT",
@@ -28,7 +28,7 @@ const eventsList = [
         registerUrl: "#",
     },
     {
-        imageUrl: "/images/event1.jpg",
+        imageUrl: "/events/event3.jpg",
         title: "Cabin Crew Innovations Workshop",
         date: "October 31, 2025",
         time: "9:00AM WAT",
@@ -36,7 +36,7 @@ const eventsList = [
         registerUrl: "#",
     },
     {
-        imageUrl: "/images/event2.jpg",
+        imageUrl: "/events/inspiring.jpg",
         title: "Digital Transformation in Aviation",
         date: "October 31, 2025",
         time: "9:00AM WAT",
@@ -247,7 +247,7 @@ export default function UpcomingEvents() {
                 className="flex justify-center mt-10"
                 variants={fadeUpVariants as any}
             >
-                <a href="/events">
+                <a href="/login">
                     <NaapButton
                         className="bg-primary hover:bg-primary/90 text-white font-semibold px-7 py-3 text-base shadow transition"
                     >

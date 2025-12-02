@@ -29,23 +29,21 @@ const heroSlides = [
 const publications = [
     {
         id: "safety-protocols",
-        imageUrl: "/images/event1.jpg",
+        imageUrl: "/publications/modern.jpg",
         title: "Safety Protocols in Modern Aviation",
         summary: "A deep dive into protocols ensuring flight safety in today's advanced aviation sector.",
-        authorName: "Jane Doe",
+        authorName: "Capt Grace Oluwatobi",
         authorRole: "Pilot",
-        authorAvatarUrl: '/images/leader.png',
         category: "Safety",
         publishedDate: "2024-03-21",
     },
     {
         id: "maintaining-avionics",
-        imageUrl: "/images/plane.jpg",
+        imageUrl: "/publications/fly.jpg",
         title: "Maintaining Avionics: A Modern Perspective",
         summary: "Best practices for avionics maintenance based on latest industry research.",
         authorName: "Engr. Ifeanyi Okeke",
         authorRole: "Avionics Engineer",
-        authorAvatarUrl: '/images/leader.png',
         category: "Avionics",
         publishedDate: "2023-12-17",
     },
@@ -80,7 +78,6 @@ export default function MemberPublicationsComponent() {
                             summary={pub.summary}
                             authorName={pub.authorName}
                             authorRole={pub.authorRole}
-                            authorAvatarUrl={pub.authorAvatarUrl}
                             // Route to the detail page by ID per dynamic route [id]
                             linkUrl={`/publication/members/${pub.id}`}
                             category={pub.category}

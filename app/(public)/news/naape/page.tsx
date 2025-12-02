@@ -71,7 +71,7 @@ const ALL_NEWS: NewsItem[] = [
         title: "NAAPE Celebrates Successful AGM",
         summary: "The annual general meeting brought together aviation professionals for collaboration and growth.",
         date: "2024-04-20",
-        image: "/images/news/naape/naape-banner.jpg",
+        image: "/news/meeting.jpg",
         tag: "Events",
         link: "/news/naape/agm-2024", // Use local route
     },
@@ -80,7 +80,7 @@ const ALL_NEWS: NewsItem[] = [
         title: "Aviation Safety Workshop Highlighted Industry Best Practices",
         summary: "Safety experts gathered at NAAPE HQ to discuss new standards and procedures.",
         date: "2024-02-18",
-        image: "/images/news/naape/safety-workshop.jpg",
+        image: "/news/safety.jpg",
         tag: "Events",
         link: "/news/naape/workshop-2024",
     },
@@ -89,7 +89,7 @@ const ALL_NEWS: NewsItem[] = [
         title: "Women in Aviation, Inspiring Change",
         summary: "NAAPE hosted an empowering session for women professionals in aviation.",
         date: "2024-03-10",
-        image: "/images/news/naape/women-in-aviation.jpg",
+        image: "/news/women.jpg",
         tag: "Initiatives",
         link: "/news/naape/wia-2024",
     },
@@ -131,9 +131,9 @@ function NewsList({ news }: { news: NewsItem[] }) {
                             imageUrl={item.image || ""}
                             title={item.title}
                             summary={item.summary}
-                            authorName="NAAPE"
+                            authorName="NAAPE Media Team"
                             authorRole={item.tag || undefined}
-                            authorAvatarUrl="/images/logos/naape.svg"
+                            authorAvatarUrl="/logo.png"
                             linkUrl={item.link || "#"} // for button fallback
                             category={item.tag}
                         />

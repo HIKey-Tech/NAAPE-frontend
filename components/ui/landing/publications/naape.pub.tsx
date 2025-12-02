@@ -1,24 +1,22 @@
 "use client";
 
-import React from "react";
 import CustomHeroSection from "../../custom/hero.section";
 import PublishedPublicationCard from "@/components/ui/custom/publication.card";
-import Link from "next/link";
 
 // Hero slides for NAAPE publications page
 const heroSlides = [
     {
-        src: "/images/plane.jpg",
+        src: "/logo.png",
         alt: "NAAPE Publishing Team",
         caption: "Official releases and research from NAAPE.",
     },
     {
-        src: "/images/event1.jpg",
+        src: "/logo.png",
         alt: "Aviation Industry Standards",
         caption: "Guidance, policy, and insights to power progress.",
     },
     {
-        src: "/images/loginpic.jpg",
+        src: "/images/event1.jpg",
         alt: "NAAPE meeting",
         caption: "Driving excellence in Nigeria's aviation sector.",
     },
@@ -28,34 +26,34 @@ const heroSlides = [
 const naapePublications = [
     {
         id: "annual-report-2023",
-        imageUrl: "/images/plane.jpg",
+        imageUrl: "/logo.png",
         title: "2023 NAAPE Annual Report",
         summary: "A comprehensive overview of NAAPE's activities, achievements, and industry impact throughout 2023.",
-        authorName: "NAAPE Secretariat",
-        authorRole: "Secretariat",
-        authorAvatarUrl: "/images/leader.png",
+        authorName: "NAAPE",
+        authorRole: "Admin",
+        authorAvatarUrl: "/logo.png",
         category: "Annual Report",
         publishedDate: "2024-04-10",
     },
     {
         id: "aviation-safety-guidance-2024",
-        imageUrl: "/images/handplane.jpg",
+        imageUrl: "/logo.png",
         title: "Updated Aviation Safety Guidance 2024",
         summary: "Official NAAPE recommendations for flight safety updated for evolving regulatory standards and technologies.",
-        authorName: "NAAPE Technical Committee",
-        authorRole: "Technical Committee",
-        authorAvatarUrl: "/images/leader.png",
+        authorName: "NAAPE",
+        authorRole: "Admin",
+        authorAvatarUrl: "/logo.png",
         category: "Guidance",
         publishedDate: "2024-02-14",
     },
     {
         id: "rpas-drones-nigerian-airspace",
-        imageUrl: "/images/leader.png",
+        imageUrl: "/images/handplane.jpg",
         title: "NAAPE Research: RPAS/Drones in Nigerian Airspace",
         summary: "Assessment of risks, opportunities, and regulatory considerations regarding unmanned aerial systems in Nigeria.",
-        authorName: "NAAPE Research Group",
-        authorRole: "Research",
-        authorAvatarUrl: "/images/plane.jpg",
+        authorName: "NAAPE",
+        authorRole: "Admin",
+        authorAvatarUrl: "/logo.jpg",
         category: "Research",
         publishedDate: "2023-09-07",
     },

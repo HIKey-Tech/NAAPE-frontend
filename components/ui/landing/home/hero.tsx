@@ -15,64 +15,65 @@ import { motion } from "framer-motion";
 import { LegacyStatCard } from "@/components/ui/custom/legacy.card";
 
 // --- Improved Typewriter Effect Hook ---
+// --- Ultra-Stable Typewriter Effect Hook ---
 function useTypewriter(
     text: string,
     options: {
-        speed?: number;
-        delay?: number;
-        smartDelayPunctuation?: boolean;
+        speed?: number; // time between characters (ms)
+        punctuationPause?: number; // extra pause after punctuation
         onDone?: () => void;
     } = {}
 ) {
+    const { speed = 28, punctuationPause = 320, onDone } = options;
+
     const [displayed, setDisplayed] = useState("");
     const [done, setDone] = useState(false);
-    const i = useRef(0);
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const { speed = 18, delay = 330, smartDelayPunctuation = true, onDone } = options;
-
-    const getDelay = (char: string, nextChar: string) => {
-        // Add a slightly longer pause at key punctuation
-        if (!smartDelayPunctuation) return speed;
-        if (char === "," || char === ";" || char === ":") return speed * 7;
-        if (char === "—" || char === "." || char === "!" || char === "?")
-            return speed * 12;
-        // Slight pause after spaces following punctuation, but don't double pause
-        if ((char === " " || char === "\u00a0") && [",", ";", ":", ".", "!", "?", "—"].includes(nextChar)) {
-            return 0;
-        }
-        return speed;
-    };
+    const frameRef = useRef(0);
+    const lastTimeRef = useRef(0);
+    const iRef = useRef(0);
 
     useEffect(() => {
         setDisplayed("");
         setDone(false);
-        i.current = 0;
+        iRef.current = 0;
+        frameRef.current = 0;
+        lastTimeRef.current = performance.now();
 
-        function typeNext() {
-            if (i.current < text.length) {
-                setDisplayed((t) => t + text.charAt(i.current));
-                let char = text.charAt(i.current);
-                let nextChar = text.charAt(i.current + 1);
-                i.current += 1;
-                const pause = getDelay(char, nextChar);
-                timeoutRef.current = setTimeout(typeNext, pause);
-            } else {
+        const loop = (now: number) => {
+            if (iRef.current >= text.length) {
                 setDone(true);
                 if (onDone) onDone();
+                return;
             }
-        }
-        // Start with a short initial delay
-        timeoutRef.current = setTimeout(typeNext, delay);
 
-        return () => {
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            const dt = now - lastTimeRef.current;
+
+            // Only advance character after enough time passes
+            if (dt >= speed) {
+                const char = text[iRef.current];
+
+                setDisplayed((prev) => prev + char);
+                iRef.current++;
+                lastTimeRef.current = now;
+
+                // Punctuation smart pause
+                if ([",", ".", "!", "?", ";", ":"].includes(char)) {
+                    lastTimeRef.current += punctuationPause;
+                }
+            }
+
+            frameRef.current = requestAnimationFrame(loop);
         };
-        // eslint-disable-next-line
-    }, [text, speed, delay, smartDelayPunctuation]);
+
+        frameRef.current = requestAnimationFrame(loop);
+
+        return () => cancelAnimationFrame(frameRef.current);
+    }, [text, speed, punctuationPause]);
 
     return { displayed, done };
 }
+
 
 // Animation variants
 const containerVariants = {
@@ -235,11 +236,11 @@ export default function Hero() {
     }, [showCursor]);
 
     const { displayed, done } = useTypewriter(heroTypewriteText, {
-        speed: 18,
-        delay: 340,
-        smartDelayPunctuation: true,
+        speed: 32,
+        punctuationPause: 260,
         onDone: () => setShowCursor(false),
     });
+
 
     // For accessibility: expose the full sentence after typing for screen readers
     const [srText, setSrText] = useState("");
