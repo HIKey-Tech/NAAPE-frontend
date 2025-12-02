@@ -50,7 +50,7 @@ export default function RightsAndResponsibilitiesPage() {
                         </ul>
                     </>
                 ]}
-                imageSrc="/images/rights.jpg"
+                imageSrc="/about/cockpit.jpg"
                 imageAlt="Illustration representing fairness and rights"
                 containerClassName="flex flex-col-reverse md:flex-row items-start md:items-center gap-12 w-full py-10 px-4 md:px-16 bg-white"
                 textClassName="flex-1 max-w-2xl"

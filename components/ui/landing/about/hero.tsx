@@ -80,8 +80,8 @@ export default function AboutHeroSection() {
           variants={imageVariants as any}
         >
           <Image
-            src="/images/plane.jpg"
-            alt="Airplane parked with control tower at sunset"
+            src="/logo.png"
+            alt="NAAPE Logo"
             width={650}
             height={650}
             className="object-cover w-full h-full md:h-80"

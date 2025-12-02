@@ -48,7 +48,7 @@ export default function Footer() {
                     <span className="uppercase tracking-wider font-bold text-[#FFD600] mb-4 block text-sm">Connect With Us</span>
                     <div className="flex gap-4 text-xl mb-3">
                         <a
-                            href="https://youtube.com"
+                            href="https://www.youtube.com/"
                             rel="noopener noreferrer"
                             target="_blank"
                             aria-label="YouTube"
@@ -57,7 +57,7 @@ export default function Footer() {
                             <FaYoutube />
                         </a>
                         <a
-                            href="https://facebook.com"
+                            href="https://www.facebook.com/NAAPEHQ/"
                             rel="noopener noreferrer"
                             target="_blank"
                             aria-label="Facebook"
@@ -66,7 +66,7 @@ export default function Footer() {
                             <FaFacebookF />
                         </a>
                         <a
-                            href="https://twitter.com"
+                            href="https://twitter.com/"
                             rel="noopener noreferrer"
                             target="_blank"
                             aria-label="Twitter"
@@ -74,7 +74,7 @@ export default function Footer() {
                         >
                             <FaTwitter />
                         </a>
-                        <a
+                        {/* <a
                             href="https://instagram.com"
                             rel="noopener noreferrer"
                             target="_blank"
@@ -91,7 +91,7 @@ export default function Footer() {
                             className="hover:text-[#FFD600] transition-colors"
                         >
                             <FaLinkedinIn />
-                        </a>
+                        </a> */}
                     </div>
                     <Link
                         href="/membership"

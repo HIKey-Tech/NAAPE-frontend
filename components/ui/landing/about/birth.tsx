@@ -101,7 +101,7 @@ export default function BirthSection() {
                     transition={{ type: "spring", stiffness: 210, damping: 18 }}
                 >
                     <Image
-                        src="/images/plane.jpg"
+                        src="/logo.png"
                         alt="Pilots in the cockpit of an airplane"
                         fill
                         style={{ objectFit: 'cover' }}

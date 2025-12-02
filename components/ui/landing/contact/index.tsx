@@ -223,10 +223,10 @@ export default function ContactSection() {
                                 <span className="font-semibold text-gray-800 text-base">Email</span>
                             </div>
                             <a
-                                href="mailto:national@naape.org"
+                                href="mailto:info@naape.org.ng"
                                 className="text-blue-700 text-sm underline break-all hover:text-blue-900 transition text-center md:text-left"
                             >
-                                national@naape.org
+                                info@naape.org.ng
                             </a>
                         </div>
                         <div className="w-full md:w-1/3 flex flex-col items-center md:items-start bg-white rounded-b-xl md:rounded-r-xl md:rounded-l-none shadow p-6 border-t md:border-t-0 md:border-l border-blue-100">
@@ -240,7 +240,7 @@ export default function ContactSection() {
                                 href="tel:+2348033042097"
                                 className="text-blue-700 text-sm underline hover:text-blue-900 transition text-center md:text-left"
                             >
-                                +234 (0) 803 304 2097
+                                +234 (0) 808 148 9071
                             </a>
                             <span className="mt-1 text-gray-500 text-xs text-center md:text-left">(Mon-Fri, 9am–5pm)</span>
                         </div>

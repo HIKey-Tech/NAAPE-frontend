@@ -7,45 +7,45 @@ import { motion } from "framer-motion";
 // Accessibility, responsiveness and easy maintainability improved
 const leaders = [
     {
-        name: "Capt. Danjuma Yakubu",
-        title: "President",
-        photoSrc: "/images/leader.png",
+        name: "Engr. Abednego Galadima",
+        title: "National President",
+        photoSrc: "/members/Abednego.jpg",
         socials: {
             linkedin: "https://www.linkedin.com/in/danjuma-yakubu",
             twitter: "https://twitter.com/danjumayakubu",
         },
-        contactLabel: "Contact Danjuma",
+        contactLabel: "Contact Engr. Abednego",
         contactHref: "mailto:danjuma.yakubu@naape.org",
     },
     {
-        name: "Engr. Susan Iheanacho",
-        title: "Vice President",
-        photoSrc: "/images/leader.png",
+        name: "Engr. Adebayo Oluyemi",
+        title: "Deputy National President",
+        photoSrc: "/members/Adebayo.jpg",
         socials: {
             linkedin: "https://www.linkedin.com/in/susan-iheanacho",
         },
-        contactLabel: "Contact Susan",
+        contactLabel: "Contact Engr. Adebayo",
         contactHref: "mailto:susan.iheanacho@naape.org",
     },
     {
-        name: "Capt. Wale Ajayi",
-        title: "General Secretary",
-        photoSrc: "/images/leader.png",
+        name: "Engr. Richard Allison",
+        title: "Vice President, Engineers",
+        photoSrc: "/members/richard.jpg",
         socials: {
             twitter: "https://twitter.com/waleajayi",
         },
-        contactLabel: "Contact Wale",
+        contactLabel: "Contact Engr. Richard",
         contactHref: "mailto:wale.ajayi@naape.org",
     },
     {
-        name: "Engr. Fatima Bello",
-        title: "Chief Safety Engineer",
-        photoSrc: "/images/leader.png",
+        name: "Capt. Yakubu Ducas",
+        title: "Vice President, Pilots",
+        photoSrc: "/members/yakubu.jpg",
         socials: {
             linkedin: "https://www.linkedin.com/in/fatima-bello",
             facebook: "https://facebook.com/fatimabello",
         },
-        contactLabel: "Contact Fatima",
+        contactLabel: "Contact Capt. Yakubu",
         contactHref: "mailto:fatima.bello@naape.org",
     },
 ];

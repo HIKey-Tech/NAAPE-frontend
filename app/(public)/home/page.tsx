@@ -42,7 +42,7 @@ function WhatsAppFloat() {
     const [ripple, setRipple] = useState(false);
 
     // Phone and message (can be easily customized)
-    const phone = "+2348139698820";
+    const phone = "+2349132508804";
     const message = "Hello! I need assistance.";
     const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 

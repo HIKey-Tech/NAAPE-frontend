@@ -76,7 +76,7 @@ export default function OriginSection() {
                     transition={{ type: "spring", stiffness: 210, damping: 18 }}
                 >
                     <Image
-                        src="/images/plane.jpg"
+                        src="/logo.png"
                         alt="NAAPE Origin"
                         fill
                         style={{ objectFit: 'cover' }}
