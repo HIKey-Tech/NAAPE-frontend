@@ -73,7 +73,15 @@ export default function LoginPage() {
 
             // setUser(res.data.user, res.data.token)
             router.push("/dashboard");
-            toast("Login Successful", { description: `Explore your dashboard` });
+            toast.success("🎉 Logged in! Welcome back.", {
+                description: (
+                    <p className="text-sm  text-green-700 font-medium">
+                        Successfully signed in!
+                    </p>
+                ),
+                duration: 3500,
+                position: "top-center",
+            });
         } catch (error: any) {
             // Prefer more specific error mapping for better feedback
             if (error?.response?.data?.message?.toLowerCase().includes("password")) {
