@@ -98,7 +98,7 @@ export default function MembershipHeroSection() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.39, duration: 0.55, type: "spring" }}
                     >
-                        <Link href="#register" passHref >
+                        <Link href="/register" passHref >
                             <NaapButton
                                 variant="primary"
                                 className="px-7 py-3 font-semibold text-base shadow-lg"
@@ -108,7 +108,7 @@ export default function MembershipHeroSection() {
                                 Become a Member
                             </NaapButton>
                         </Link>
-                        <Link href="#learn-more" passHref legacyBehavior>
+                        <Link href="/about-us" passHref >
                             <NaapButton
                                 variant="ghost"
                                 className="px-7 py-3 font-semibold text-base border-[#2852B4] text-[#2852B4]"
