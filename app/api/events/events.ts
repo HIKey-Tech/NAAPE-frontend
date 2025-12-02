@@ -45,7 +45,21 @@ export const registerEvent = async ({ id }: { id: string }) => {
     }
 };
 
+/**
+ * Pay for a specific event by event ID.
+ * Throws a descriptive error on failure.
+ * @param id - The event ID to pay for
+ * @returns Payment result data
+ */
 export const payForEvent = async (id: string) => {
-    const res = await api.post(`/events/${id}/pay`);
-    return res.data;
+    if (!id) {
+        throw new Error("Event ID is required to complete payment.");
+    }
+    try {
+        const response = await api.post(`/events/${id}/pay`);
+        return response.data;
+    } catch (error: any) {
+        const message = error?.response?.data?.message || error.message || "Failed to process event payment.";
+        throw new Error(message);
+    }
 };
