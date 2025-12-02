@@ -55,28 +55,27 @@ type EventCardProps = {
 // Rewrite Event Data type for this dashboard
 const certificationsData: CertificationData[] = [
     {
-        title: "Advanced CRM for Flight Crews",
-        startDate: "Nov 27, 2025",
+        title: "Human Factors in Aviation Safety",
+        startDate: "Oct 13, 2024",
         description:
-            "Enhance crew resource management, decision-making, and communication skills in high-stress situations.",
-        status: "ongoing",
-        progress: 75,
-    },
-    {
-        title: "Advanced CRM for Flight Crews",
-        startDate: "Nov 27, 2025",
-        description:
-            "Enhance crew resource management, decision-making, and communication skills in high-stress situations.",
-        status: "pending",
-    },
-    {
-        title: "Advanced CRM for Flight Crews",
-        startDate: "Nov 27, 2025",
-        description:
-            "Enhance crew resource management, decision-making, and communication skills in high-stress situations.",
+            "Understand human limitations and performance in aviation to minimize errors and improve operational safety.",
         status: "completed",
     },
-];
+    {
+        title: "Risk Assessment & Decision Making",
+        startDate: "Feb 2, 2025",
+        description:
+            "Master essential risk evaluation methods and real-time decision strategies for safe flight operations.",
+        status: "completed",
+    },
+    {
+        title: "Fatigue Management Strategies",
+        startDate: "May 19, 2025",
+        description:
+            "Learn how to recognize, mitigate, and manage fatigue to ensure enhanced crew alertness and well-being.",
+        status: "completed",
+    },
+]
 
 // Used by the Event section (add isPaid, price, currency fields for demonstration)
 const eventsData: EventCardProps[] = [
@@ -497,8 +496,8 @@ const EventCard: React.FC<EventCardProps> = ({
                 <div className="flex items-center gap-2 text-xs text-gray-500">
                     <span>
                         <svg width="16" height="16" fill="none" className="inline align-middle">
-                            <circle cx="8" cy="8" r="8" fill="#4267E7" fillOpacity="0.09"/>
-                            <path d="M5.833 8.417L7.25 9.833l3-3" stroke="#4267E7" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <circle cx="8" cy="8" r="8" fill="#4267E7" fillOpacity="0.09" />
+                            <path d="M5.833 8.417L7.25 9.833l3-3" stroke="#4267E7" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                     </span>
                     <span className="font-semibold">{date}</span>
@@ -506,9 +505,9 @@ const EventCard: React.FC<EventCardProps> = ({
                 <h3 className="text-base font-bold text-[#212B36] mt-1 mb-2 leading-snug line-clamp-2">{title}</h3>
                 <div className="flex items-center gap-1 text-xs text-[#748095] mb-3">
                     <svg width="15" height="15" fill="none" className="inline align-middle mt-[-2px]">
-                        <circle cx="7.5" cy="7.5" r="7.5" fill="#F7C873" fillOpacity="0.16"/>
-                        <path d="M12 11.25V10.5A1.5 1.5 0 0010.5 9h-6A1.5 1.5 0 003 10.5v.75" stroke="#F4B645" strokeWidth="1" strokeLinecap="round"/>
-                        <circle cx="7.5" cy="6.25" r="2.25" stroke="#F4B645" strokeWidth="1"/>
+                        <circle cx="7.5" cy="7.5" r="7.5" fill="#F7C873" fillOpacity="0.16" />
+                        <path d="M12 11.25V10.5A1.5 1.5 0 0010.5 9h-6A1.5 1.5 0 003 10.5v.75" stroke="#F4B645" strokeWidth="1" strokeLinecap="round" />
+                        <circle cx="7.5" cy="6.25" r="2.25" stroke="#F4B645" strokeWidth="1" />
                     </svg>
                     <span className="ml-0.5">{location}</span>
                 </div>
