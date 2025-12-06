@@ -160,6 +160,9 @@ const EventCard: React.FC<EventCardProps> = ({
         router.push(`/events/${id}`);
     };
 
+    // Determine cursor style for card: pointer if enabled, not-allowed if disabled
+    const isCardClickable = !!id && !disabled;
+
     return (
         <div
             ref={cardRef}
@@ -168,20 +171,22 @@ const EventCard: React.FC<EventCardProps> = ({
                 bg-white border border-[#E5EAF2] rounded-2xl shadow-sm
                 overflow-hidden flex flex-col items-stretch min-h-[246px]
                 transition-shadow hover:shadow-md duration-200
-                cursor-pointer
+                ${isCardClickable ? "cursor-pointer" : "cursor-not-allowed"}
                 ${className}
             `}
             style={{ boxShadow: "0 1px 8px rgba(34,47,67,0.08)" }}
-            tabIndex={0}
+            tabIndex={isCardClickable ? 0 : -1}
             role="button"
-            onClick={handleCardClick}
+            onClick={isCardClickable ? handleCardClick : undefined}
             onKeyDown={(e) => {
+                if (!isCardClickable) return;
                 if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     handleCardClick(e as any);
                 }
             }}
             aria-label={`View event details for ${title}`}
+            aria-disabled={!isCardClickable}
         >
             {/* Banner/Event Image */}
             <div className="relative w-full h-28 bg-[#F3F6FA] flex items-center justify-center overflow-hidden group">
@@ -247,7 +252,7 @@ const EventCard: React.FC<EventCardProps> = ({
                     type="button"
                     onClick={handleRegister}
                     disabled={disabled || !id || payForEventMutation.isPending}
-                    className={`mt-auto px-5 py-1.5 border border-[#D5E3F7] rounded-md text-[#4267E7] font-medium text-[15px] transition-colors hover:bg-[#F2F7FF] focus:outline-none focus:ring-2 focus:ring-[#B2D7EF] active:bg-[#E7F1FF] ${disabled || !id || payForEventMutation.isPending ? "opacity-60 cursor-not-allowed" : ""}`}
+                    className={`mt-auto px-5 py-1.5 border border-[#D5E3F7] rounded-md text-[#4267E7] font-medium text-[15px] transition-colors hover:bg-[#F2F7FF] focus:outline-none focus:ring-2 focus:ring-[#B2D7EF] active:bg-[#E7F1FF] ${disabled || !id || payForEventMutation.isPending ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
                     aria-label={`View details and register for ${title}`}
                     tabIndex={0}
                     onMouseDown={e => e.stopPropagation()}
