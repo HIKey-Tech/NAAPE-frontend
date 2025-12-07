@@ -14,7 +14,7 @@ import { usePublications } from "@/hooks/usePublications";
 import { useMemberStats } from "@/hooks/useMembers";
 import { useAuth } from "@/context/authcontext";
 import { Skeleton } from "@/components/ui/skeleton";
-import EventCard from "../component/event.card"; // Use the @event.card.tsx component
+import EventCard from "../component/event.card";
 
 // --- Types ---
 type DashboardCardData = {
@@ -71,7 +71,6 @@ const certificationsData: CertificationData[] = [
   },
 ];
 
-// Adapt event card dummy structure to fit EventCard's API if needed
 const eventsData: EventCardProps[] = [
   {
     title: "Annual Aviation Safety",
@@ -83,7 +82,7 @@ const eventsData: EventCardProps[] = [
     price: 0,
     currency: "NGN",
     id: "event-1",
-    registerLabel: ""
+    registerLabel: "",
   },
   {
     title: "Crew Resource Optimization",
@@ -95,7 +94,7 @@ const eventsData: EventCardProps[] = [
     price: 5000,
     currency: "NGN",
     id: "event-2",
-    registerLabel: ""
+    registerLabel: "",
   },
   {
     title: "Safety Leadership Masterclass",
@@ -107,7 +106,7 @@ const eventsData: EventCardProps[] = [
     price: 0,
     currency: "NGN",
     id: "event-3",
-    registerLabel: ""
+    registerLabel: "",
   },
   {
     title: "Women In Aviation",
@@ -119,7 +118,7 @@ const eventsData: EventCardProps[] = [
     price: 2000,
     currency: "NGN",
     id: "event-4",
-    registerLabel: ""
+    registerLabel: "",
   },
 ];
 
@@ -159,9 +158,9 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   onLinkClick,
   className = "",
 }) => (
-  <div className={`flex justify-between items-end mb-6 mt-7 ${className}`}>
+  <div className={`flex justify-between items-center mb-4 mt-7 px-4 sm:px-0 ${className}`}>
     <motion.h2
-      className="text-xl sm:text-2xl font-extrabold text-[#19223B] tracking-tight leading-tight drop-shadow-sm relative"
+      className="text-xl sm:text-2xl font-extrabold text-[#19223B] tracking-tight leading-tight relative"
       initial={{ x: -12, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ type: "spring", stiffness: 140 }}
@@ -169,7 +168,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
       {title}
       <motion.span
         layoutId={`${title}-underline`}
-        className="block h-0.5 mt-0.5 rounded bg-gradient-to-r from-[#4267E7] to-[#F4B645] w-12"
+        className="block h-0.5 mt-1 rounded bg-gradient-to-r from-[#4267E7] to-[#F4B645] w-12"
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
         transition={{ delay: 0.23, duration: 0.4, type: "tween" }}
@@ -180,7 +179,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
         <a
           href={href}
           onClick={onLinkClick}
-          className="text-[#4267E7] text-[14px] sm:text-[15px] font-semibold hover:underline focus:outline-none focus:text-[#2143B7] transition-colors"
+          className="text-[#4267E7] text-xs sm:text-sm font-semibold hover:underline focus:outline-none focus:text-[#2143B7] transition-colors px-1"
           tabIndex={0}
           aria-label={
             typeof linkLabel === "string"
@@ -194,7 +193,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
         <button
           type="button"
           onClick={onLinkClick}
-          className="text-[#4267E7] text-[14px] sm:text-[15px] font-semibold hover:underline focus:outline-none focus:text-[#2143B7] transition-colors bg-transparent"
+          className="text-[#4267E7] text-xs sm:text-sm font-semibold hover:underline focus:outline-none focus:text-[#2143B7] transition-colors bg-transparent px-1"
           tabIndex={0}
         >
           {linkLabel}
@@ -205,7 +204,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
 
 const SectionDivider: React.FC<{ className?: string }> = ({ className = "" }) => (
   <motion.hr
-    className={`border-t border-gray-100 my-6 sm:my-8 ${className}`}
+    className={`border-t border-gray-100 my-7 sm:my-10 ${className}`}
     initial={{ scaleX: 0 }}
     whileInView={{ scaleX: 1 }}
     viewport={{ once: true }}
@@ -220,7 +219,7 @@ const HorizontalScrollContainer: React.FC<{
 }> = ({ children, className = "" }) => (
   <div
     className={
-      `flex gap-5 overflow-x-auto scrollbar-thin scrollbar-thumb-[#d1d5db] scrollbar-track-transparent -mx-3 px-3 ${className}`
+      `flex gap-5 overflow-x-auto scrollbar-thin scrollbar-thumb-[#d1d5db] scrollbar-track-transparent -mx-2 px-4 ${className}`
     }
     style={{ WebkitOverflowScrolling: "touch" }}
   >
@@ -231,7 +230,7 @@ const HorizontalScrollContainer: React.FC<{
 // --- Skeletons ---
 const DashboardCardSkeleton: React.FC = () => (
   <motion.div
-    className="shrink-0 w-[92vw] max-w-[260px] min-w-[210px] rounded-2xl border bg-white px-6 py-8 flex flex-col items-start justify-between space-y-3 shadow-md mx-auto"
+    className="shrink-0 w-[92vw] max-w-[260px] min-w-[210px] rounded-2xl border bg-white px-6 py-8 flex flex-col items-start justify-between space-y-3 mx-auto"
     initial={{ scale: 0.96, opacity: 0.5 }}
     animate={{ scale: [0.96, 1.06, 0.99, 1], opacity: [0.5, 1] }}
     transition={{ repeat: Infinity, duration: 2, repeatType: "mirror" }}
@@ -244,7 +243,7 @@ const DashboardCardSkeleton: React.FC = () => (
 
 const PublicationCardSkeleton: React.FC = () => (
   <motion.div
-    className="shrink-0 w-[94vw] max-w-[320px] min-w-[230px] bg-white rounded-2xl border px-5 py-7 space-y-4 shadow-md mx-auto"
+    className="shrink-0 w-full max-w-full min-w-[230px] bg-white rounded-2xl border px-4 py-7 space-y-4 mx-auto"
     initial={{ scale: 0.96, opacity: 0.5 }}
     animate={{ scale: [0.96, 1.04, 0.99, 1], opacity: [0.5, 1] }}
     transition={{ repeat: Infinity, duration: 2.4, repeatType: "mirror" }}
@@ -262,25 +261,25 @@ const DashboardCards: React.FC = () => {
 
   const metrics: DashboardCardData[] = [
     {
-      icon: <MdLibraryBooks className="text-[#4267E7] text-3xl drop-shadow" />,
+      icon: <MdLibraryBooks className="text-[#4267E7] text-3xl" />,
       value: stats?.publicationCount ?? 0,
       label: "Publications Submitted",
       highlight: "Share Your Voice",
     },
     {
-      icon: <MdSchool className="text-[#41B079] text-3xl drop-shadow" />,
+      icon: <MdSchool className="text-[#41B079] text-3xl" />,
       value: stats?.trainingsEnrolled ?? 0,
       label: "Trainings Enrolled",
       highlight: "Keep Leveling Up!",
     },
     {
-      icon: <MdEventAvailable className="text-[#F4B645] text-3xl drop-shadow" />,
+      icon: <MdEventAvailable className="text-[#F4B645] text-3xl" />,
       value: stats?.eventsRegistered ?? 0,
       label: "Events Registered",
       highlight: "Stay In The Loop",
     },
     {
-      icon: <MdWork className="text-[#748095] text-3xl drop-shadow" />,
+      icon: <MdWork className="text-[#748095] text-3xl" />,
       value: stats?.jobMatches ?? 0,
       label: "Job Matches",
       highlight: "Open New Doors",
@@ -290,7 +289,7 @@ const DashboardCards: React.FC = () => {
   if (error) {
     return (
       <motion.div
-        className="w-full text-center text-red-500 font-semibold mb-10"
+        className="w-full text-center text-red-500 font-semibold mb-8"
         initial={{ y: -20, opacity: 0.5 }}
         animate={{ y: 0, opacity: 1 }}
       >
@@ -302,14 +301,14 @@ const DashboardCards: React.FC = () => {
   if (isPending) {
     return (
       <>
-        <div className="sm:hidden mb-8">
+        <div className="sm:hidden mb-6 pl-1 pr-2">
           <HorizontalScrollContainer>
             {[...Array(3)].map((_, idx) => (
               <DashboardCardSkeleton key={idx} />
             ))}
           </HorizontalScrollContainer>
         </div>
-        <div className="hidden sm:grid grid-cols-2 md:grid-cols-4 w-full gap-8 mb-8 justify-items-center">
+        <div className="hidden sm:grid grid-cols-2 md:grid-cols-4 w-full gap-7 mb-8 px-2 justify-items-center">
           {[...Array(4)].map((_, idx) => (
             <DashboardCardSkeleton key={idx} />
           ))}
@@ -320,7 +319,7 @@ const DashboardCards: React.FC = () => {
 
   return (
     <>
-      <div className="sm:hidden mb-8">
+      <div className="sm:hidden mb-6 pl-1 pr-2">
         <HorizontalScrollContainer>
           <AnimatePresence>
             <motion.div
@@ -335,7 +334,7 @@ const DashboardCards: React.FC = () => {
                   key={idx}
                   className="shrink-0 w-[92vw] max-w-[260px] min-w-[210px] mx-auto"
                   variants={CARD_BOUNCE as any}
-                  whileHover={{ scale: 1.054, boxShadow: "0 6px 20px #dbeafe" }}
+                  whileHover={{ scale: 1.054 }}
                   whileTap={{ scale: 0.987 }}
                   transition={{ type: "spring", bounce: 0.32 }}
                 >
@@ -345,7 +344,7 @@ const DashboardCards: React.FC = () => {
                     label={card.label}
                   />
                   <motion.div
-                    className="mt-2 text-xs font-medium text-[#4267E7] opacity-75 flex items-center gap-1"
+                    className="mt-3 text-xs font-medium text-[#4267E7] opacity-75 flex items-center gap-1 pl-2"
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: .27 + idx * 0.1, duration: 0.36 }}
@@ -360,7 +359,7 @@ const DashboardCards: React.FC = () => {
         </HorizontalScrollContainer>
       </div>
       <motion.div
-        className="hidden sm:grid grid-cols-2 md:grid-cols-4 w-full gap-8 mb-10 justify-items-center"
+        className="hidden sm:grid grid-cols-2 md:grid-cols-4 w-full gap-6 mb-9 px-2 justify-items-center"
         variants={STAGGER_CONTAINER}
         initial="hidden"
         animate="show"
@@ -369,10 +368,7 @@ const DashboardCards: React.FC = () => {
           <motion.div
             key={idx}
             variants={CARD_BOUNCE as any}
-            whileHover={{
-              scale: 1.045,
-              boxShadow: "0 8px 24px #dbeafe",
-            }}
+            whileHover={{ scale: 1.045 }}
             whileTap={{ scale: 0.984 }}
             className="w-full max-w-[260px] min-w-[210px] flex flex-col items-center"
             transition={{ type: "spring", bounce: 0.34 }}
@@ -383,7 +379,7 @@ const DashboardCards: React.FC = () => {
               label={card.label}
             />
             <motion.div
-              className="mt-2 text-xs font-medium text-[#4267E7] opacity-80"
+              className="mt-3 text-xs font-medium text-[#4267E7] opacity-80 text-center"
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: .285 + idx * 0.07, duration: 0.33 }}
@@ -404,13 +400,15 @@ const PublicationsSection: React.FC = () => {
   const pubList = useMemo(() => publications ?? [], [publications]);
 
   return (
-    <section className="mb-16">
+    <section className="mb-14">
       <SectionDivider />
-      <SectionHeader
-        title="Publications"
-        href="/forum"
-        linkLabel="Join The Conversation"
-      />
+      <div className="px-4 sm:px-0">
+        <SectionHeader
+          title="Publications"
+          href="/forum"
+          linkLabel="Join The Conversation"
+        />
+      </div>
       {loading ? (
         <>
           <div className="sm:hidden">
@@ -420,7 +418,7 @@ const PublicationsSection: React.FC = () => {
               ))}
             </HorizontalScrollContainer>
           </div>
-          <div className="hidden sm:grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-7 justify-items-center">
+          <div className="hidden sm:grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center px-2 w-full">
             {[...Array(4)].map((_, idx) => (
               <PublicationCardSkeleton key={idx} />
             ))}
@@ -428,7 +426,7 @@ const PublicationsSection: React.FC = () => {
         </>
       ) : error ? (
         <motion.div
-          className="py-8 text-lg text-center text-red-600 font-semibold"
+          className="py-7 text-base text-center text-red-600 font-semibold"
           initial={{ scale: 0.9, opacity: 0.5 }}
           animate={{ scale: 1, opacity: 1 }}
         >
@@ -436,7 +434,7 @@ const PublicationsSection: React.FC = () => {
         </motion.div>
       ) : pubList.length === 0 ? (
         <motion.div
-          className="py-8 text-lg text-center text-gray-400 font-semibold"
+          className="py-8 text-base text-center text-gray-400 font-semibold"
           initial={{ opacity: 0.25, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -444,11 +442,11 @@ const PublicationsSection: React.FC = () => {
         </motion.div>
       ) : (
         <>
-          <div className="sm:hidden">
+          <div className="sm:hidden w-full">
             <HorizontalScrollContainer>
               <AnimatePresence>
                 <motion.div
-                  className="flex gap-5"
+                  className="flex gap-5 w-full"
                   variants={STAGGER_CONTAINER}
                   initial="hidden"
                   animate="show"
@@ -457,18 +455,15 @@ const PublicationsSection: React.FC = () => {
                   {pubList.map((pub, idx) => (
                     <motion.div
                       key={pub._id ?? idx}
-                      className="shrink-0 w-[94vw] max-w-[320px] min-w-[230px] mx-auto"
+                      className="shrink-0 w-full max-w-full min-w-[230px] mx-auto flex flex-col"
                       variants={CARD_BOUNCE as any}
-                      whileHover={{
-                        scale: 1.03,
-                        boxShadow: "0 6px 22px #d1fae5",
-                      }}
+                      whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.985 }}
                       transition={{ type: "spring", bounce: 0.28 }}
                     >
-                      <PublicationCard publication={pub} />
+                      <PublicationCard publication={pub} className="w-full" />
                       <motion.div
-                        className="mt-2 text-xs italic text-[#41B079] flex gap-1 items-center"
+                        className="mt-3 text-xs italic text-[#41B079] flex gap-1 items-center pl-2"
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.18 + idx * 0.07, duration: 0.28 }}
@@ -483,7 +478,7 @@ const PublicationsSection: React.FC = () => {
             </HorizontalScrollContainer>
           </div>
           <motion.div
-            className="hidden sm:grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-7 justify-items-center"
+            className="hidden sm:grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center px-2 w-full"
             variants={STAGGER_CONTAINER}
             initial="hidden"
             animate="show"
@@ -492,17 +487,14 @@ const PublicationsSection: React.FC = () => {
               <motion.div
                 key={pub._id ?? idx}
                 variants={CARD_BOUNCE as any}
-                whileHover={{
-                  scale: 1.017,
-                  boxShadow: "0 7px 32px #dbeafe",
-                }}
+                whileHover={{ scale: 1.017 }}
                 whileTap={{ scale: 0.989 }}
-                className="w-full max-w-[320px] min-w-[230px] flex flex-col justify-center"
+                className="w-full max-w-full min-w-[230px] flex flex-col justify-center"
                 transition={{ type: "spring", bounce: 0.25 }}
               >
-                <PublicationCard publication={pub} />
+                <PublicationCard publication={pub} className="w-full" />
                 <motion.div
-                  className="mt-2 text-xs italic text-[#41B079] text-center"
+                  className="mt-3 text-xs italic text-[#41B079] text-center"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.16 + idx * 0.06, duration: 0.25 }}
@@ -520,9 +512,11 @@ const PublicationsSection: React.FC = () => {
 
 // --- Certifications Section ---
 const CertificationsSection: React.FC = () => (
-  <section className="mb-16">
+  <section className="mb-14">
     <SectionDivider />
-    <SectionHeader title="Training & Certifications" />
+    <div className="px-4 sm:px-0">
+      <SectionHeader title="Training & Certifications" />
+    </div>
     <div className="sm:hidden">
       <HorizontalScrollContainer>
         <AnimatePresence>
@@ -538,13 +532,13 @@ const CertificationsSection: React.FC = () => (
                 key={idx}
                 className="shrink-0 w-[94vw] max-w-[320px] min-w-[230px] mx-auto"
                 variants={CARD_BOUNCE as any}
-                whileHover={{ scale: 1.04, boxShadow: "0px 4px 20px #dbeafe" }}
+                whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.987 }}
                 transition={{ type: "spring", bounce: 0.30 }}
               >
                 <CertCard {...cert} />
                 <motion.div
-                  className="mt-2 text-xs font-medium text-[#41B079] flex items-center gap-1"
+                  className="mt-3 text-xs font-medium text-[#41B079] flex items-center gap-1 pl-1"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.14 + idx * .09, duration: .22 }}
@@ -559,7 +553,7 @@ const CertificationsSection: React.FC = () => (
       </HorizontalScrollContainer>
     </div>
     <motion.div
-      className="hidden sm:grid grid-cols-2 md:grid-cols-3 gap-7 justify-items-center"
+      className="hidden sm:grid grid-cols-2 md:grid-cols-3 gap-5 justify-items-center px-2"
       variants={STAGGER_CONTAINER}
       initial="hidden"
       animate="show"
@@ -568,14 +562,14 @@ const CertificationsSection: React.FC = () => (
         <motion.div
           key={idx}
           variants={CARD_BOUNCE as any}
-          whileHover={{ scale: 1.025, boxShadow: "0px 8px 32px #dbeafe" }}
+          whileHover={{ scale: 1.025 }}
           whileTap={{ scale: 0.988 }}
           className="w-full max-w-[320px] min-w-[230px] flex flex-col items-center"
           transition={{ type: "spring", bounce: 0.29 }}
         >
           <CertCard {...cert} />
           <motion.div
-            className="mt-2 text-xs font-medium text-[#41B079] text-center"
+            className="mt-3 text-xs font-medium text-[#41B079] text-center"
             initial={{ opacity: 0, y: 9 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.10 + idx * .08, duration: .19 }}
@@ -590,9 +584,11 @@ const CertificationsSection: React.FC = () => (
 
 // --- Events Section ---
 const EventsSection: React.FC = () => (
-  <section>
+  <section className="mb-2">
     <SectionDivider />
-    <SectionHeader title="Upcoming Events" />
+    <div className="px-4 sm:px-0">
+      <SectionHeader title="Upcoming Events" />
+    </div>
     <div className="sm:hidden">
       <HorizontalScrollContainer>
         <AnimatePresence>
@@ -608,7 +604,7 @@ const EventsSection: React.FC = () => (
                 key={ev.id ?? idx}
                 className="shrink-0 w-[94vw] max-w-[320px] min-w-[230px] mx-auto"
                 variants={CARD_BOUNCE as any}
-                whileHover={{ scale: 1.016, boxShadow: "0 8px 32px #dbeafe" }}
+                whileHover={{ scale: 1.016 }}
                 whileTap={{ scale: 0.985 }}
                 transition={{ type: "spring", bounce: 0.23 }}
               >
@@ -628,7 +624,7 @@ const EventsSection: React.FC = () => (
                   description={ev.description}
                 />
                 <motion.div
-                  className="mt-2 text-xs font-semibold text-[#F4B645] flex items-center gap-1"
+                  className="mt-3 text-xs font-semibold text-[#F4B645] flex items-center gap-1 pl-1"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.19 + idx * .08, duration: .18 }}
@@ -642,7 +638,7 @@ const EventsSection: React.FC = () => (
       </HorizontalScrollContainer>
     </div>
     <motion.div
-      className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-7 justify-items-center"
+      className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-5 justify-items-center px-2"
       variants={STAGGER_CONTAINER}
       initial="hidden"
       animate="show"
@@ -651,7 +647,7 @@ const EventsSection: React.FC = () => (
         <motion.div
           key={ev.id ?? idx}
           variants={CARD_BOUNCE as any}
-          whileHover={{ scale: 1.019, boxShadow: "0 12px 36px #dbeafe" }}
+          whileHover={{ scale: 1.019 }}
           whileTap={{ scale: 0.986 }}
           className="w-full max-w-[320px] min-w-[230px] flex flex-col items-center"
           transition={{ type: "spring", bounce: 0.23 }}
@@ -672,7 +668,7 @@ const EventsSection: React.FC = () => (
             description={ev.description}
           />
           <motion.div
-            className="mt-2 text-xs font-semibold text-[#F4B645] text-center flex items-center gap-1 justify-center"
+            className="mt-3 text-xs font-semibold text-[#F4B645] text-center flex items-center gap-1 justify-center"
             initial={{ opacity: 0, y: 11 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12 + idx * .06, duration: .14 }}
@@ -712,48 +708,13 @@ const MemberDashboardHome: React.FC = () => {
 
   return (
     <main className="flex-1 pb-10 bg-[#fafbfd]">
-      <section className="w-full max-w-7xl mx-auto px-2 sm:px-8 py-10">
-        <motion.div
-          className="mb-9"
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.36, 0, 0.66, -0.56] }}
-        >
-          <h1 className="text-2xl sm:text-3xl md:text-4xl text-[#19223B] font-extrabold tracking-tight leading-snug mb-2 flex items-center drop-shadow-sm">
-            <motion.span
-              key={user?.name}
-              initial={{ scale: 0.8, x: -20, opacity: 0.5 }}
-              animate={{ scale: 1, x: 0, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 130 }}
-              className="mr-2"
-              aria-label="aviation welcome emoji"
-              role="img"
-            >
-              {getRandomGreetingEmoji()}
-            </motion.span>
-            {user?.name ? (
-              <>
-                Welcome back,{" "}
-                <span className="text-[#4267E7]">{user.name}</span>!
-              </>
-            ) : (
-              <>
-                Welcome Aboard!
-              </>
-            )}
-          </h1>
-          <motion.p
-            className="text-[15px] sm:text-base text-[#6C7A91] font-medium"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.18, duration: 0.43}}
-          >
-            {getRandomWelcomePhrase()}
-          </motion.p>
-        </motion.div>
-
+      <section className="w-full max-w-7xl mx-auto px-2 sm:px-6 pt-9 pb-6">
         <DashboardCards />
+      </section>
+      <section className="w-full max-w-7xl mx-auto px-2 sm:px-6">
         <PublicationsSection />
+      </section>
+      <section className="w-full max-w-7xl mx-auto px-2 sm:px-6">
         <CertificationsSection />
         <EventsSection />
       </section>
