@@ -1,15 +1,16 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePayForEvent } from "@/hooks/useEvents";
 import { EventCardProps } from "@/app/api/events/type";
 
-// Helper: truncate long event titles for better card layout
+import { CalendarClock, MapPin, User2, Loader2, BadgeCheck } from "lucide-react";
+
 const truncate = (text: string, max = 40) =>
     text.length > max ? text.slice(0, max - 1) + "…" : text;
 
-// Animation (fade-in, scale-in) CSS for EventCard in JS (inject once)
 const EVENT_ANIM_CLASS = "event-card-anim";
-const EVENT_ANIM_CSS = `
+const MICRO_ANIMS_CSS = `
+/* Styles omitted for brevity, unchanged */
 .${EVENT_ANIM_CLASS} {
     opacity: 0;
     transform: translateY(28px) scale(0.97);
@@ -22,7 +23,8 @@ const EVENT_ANIM_CSS = `
     opacity: 1;
     transform: translateY(0) scale(1);
 }
-.${EVENT_ANIM_CLASS}:hover {
+.${EVENT_ANIM_CLASS}:hover,
+.${EVENT_ANIM_CLASS}.pressing {
     transform: translateY(-4px) scale(1.025);
     box-shadow: 0 4px 18px rgba(30,41,59,0.11), 0 1.5px 6px rgba(30,41,59,0.08);
     transition:
@@ -30,15 +32,48 @@ const EVENT_ANIM_CSS = `
         transform 0.17s cubic-bezier(.42,0,.58,1),
         box-shadow 0.19s cubic-bezier(.42,0,.58,1);
 }
+.${EVENT_ANIM_CLASS}.pressing {
+    transform: translateY(2px) scale(0.97);
+    box-shadow: 0 1px 7px rgba(30,41,59,0.08);
+    transition:
+        transform 0.08s cubic-bezier(0.44,0,0.75,1),
+        box-shadow 0.12s cubic-bezier(.42,0,.58,1);
+}
+@keyframes button-wave {
+    0% { transform: rotate(0deg); }
+    27% { transform: rotate(7deg); }
+    53% { transform: rotate(-10deg);}
+    80% { transform: rotate(4deg);}
+    100% { transform: rotate(0deg);}
+}
+.event-action-btn:hover .micro-wave,
+.event-action-btn:focus .micro-wave {
+    animation: button-wave 0.66s cubic-bezier(0.66,0,0.34,1.06) 1;
+}
+@keyframes paid-badge-ping {
+    0% { box-shadow: 0 0 0 0 #ffeacc70; }
+    80% { box-shadow: 0 0 0 8px #ffeacc01; }
+    100% { box-shadow: 0 0 0 0 #ffeacc01; }
+}
+.event-paid-badge.ping {
+    animation: paid-badge-ping 1.2s cubic-bezier(0.39,0,0.6,1) 1;
+}
+.event-image-wrap:hover img,
+.event-image-wrap:focus img {
+    transform: scale(1.045) rotate(-0.15deg);
+    transition: transform 0.36s cubic-bezier(0.32,0,0.8,1);
+}
+.event-image-wrap img {
+    transition: transform 0.29s cubic-bezier(0.7,0,0.2,1);
+}
 `;
-// Inject only once per app
 let styleInjected = false;
 function injectEventAnimCSS() {
     if (typeof window !== "undefined" && !styleInjected) {
         if (!document.getElementById("eventcard-anim-style")) {
             const s = document.createElement("style");
             s.id = "eventcard-anim-style";
-            s.textContent = EVENT_ANIM_CSS;
+            s.textContent = MICRO_ANIMS_CSS;
             document.head.appendChild(s);
             styleInjected = true;
         }
@@ -77,7 +112,7 @@ const EventCard: React.FC<EventCardProps> = ({
     isPaid,
     createdBy,
     registeredUsers,
-    payments,
+    payments, // this is the payments prop passed in, to display on UI
     createdAt,
     updatedAt,
     className = "",
@@ -85,9 +120,12 @@ const EventCard: React.FC<EventCardProps> = ({
     disabled = false,
 }) => {
     const cardRef = useRef<HTMLDivElement | null>(null);
+    const [pressing, setPressing] = useState(false);
+    const [badgePing, setBadgePing] = useState(false);
     const router = useRouter();
     const payForEventMutation = usePayForEvent();
 
+    // CSS and mount animations
     useEffect(() => {
         injectEventAnimCSS();
         const card = cardRef.current;
@@ -112,6 +150,7 @@ const EventCard: React.FC<EventCardProps> = ({
                             if (entry.isIntersecting) {
                                 timer = setTimeout(() => {
                                     card.classList.add("visible");
+                                    if (isPaid) setBadgePing(true);
                                 }, 40 + Math.random() * 110);
                             }
                         });
@@ -120,29 +159,45 @@ const EventCard: React.FC<EventCardProps> = ({
                 )
                 : null;
         if (observer) observer.observe(card);
-        else card.classList.add("visible");
+        else {
+            card.classList.add("visible");
+            if (isPaid) setBadgePing(true);
+        }
         return () => {
             if (observer) observer.disconnect();
             if (timer) clearTimeout(timer);
         };
     }, []);
 
-    // Pay handler
+    useEffect(() => {
+        if (!badgePing) return;
+        const timer = setTimeout(() => setBadgePing(false), 1250);
+        return () => clearTimeout(timer);
+    }, [badgePing]);
+
+    const handlePointerDown = (e: React.PointerEvent) => {
+        if (!isCardClickable) return;
+        setPressing(true);
+    };
+    const handlePointerUp = (e: React.PointerEvent) => {
+        setPressing(false);
+    };
+    const handlePointerLeave = (e: React.PointerEvent) => {
+        setPressing(false);
+    };
+
     const handleRegister = (e?: React.MouseEvent) => {
-        if (e) e.stopPropagation(); // Prevent card body navigation
+        if (e) e.stopPropagation();
         if (!id) return false;
         payForEventMutation.mutate(
             id,
             {
                 onSuccess: (result) => {
-                    // result is whatever payForEvent returns (see payForEvent in events.ts)
-                    // We'll coerce result to string, if it's a URL, to follow the request.
                     if (typeof result === "string") {
                         window.location.href = result;
                     } else if (result && typeof result.url === "string") {
                         window.location.href = result.url;
                     } else {
-                        // fallback, redirect to event page if no URL
                         window.location.href = `/events/${id}`;
                     }
                 },
@@ -151,30 +206,80 @@ const EventCard: React.FC<EventCardProps> = ({
         return true;
     };
 
-    // Navigation handler for card body click
     const handleCardClick = (e: React.MouseEvent) => {
-        // Prevent navigation for actual button clicks
-        // Could also check for e.target type or ref
-        // We'll handle with stopPropagation on the button
         if (!id) return;
         router.push(`/events/${id}`);
     };
 
-    // Determine cursor style for card: pointer if enabled, not-allowed if disabled
     const isCardClickable = !!id && !disabled;
 
+    const colors = {
+        primary: "text-[#232a3c]",
+        subtitle: "text-[#5161ab]",
+        muted: "text-[#8ba2cc]",
+        date: "text-[#888DA9]",
+        time: "text-[#B2B9C6]",
+        description: "text-[#868EAB]",
+        location: "text-[#99ACCC]",
+        tba: "text-[#c5c8cf]",
+        border: "border-[#E5EAF2]",
+        imageBg: "bg-[#F3F6FA]",
+        button: "text-[#2049a2] bg-[#f7f8fc] border-[#bfd6f5]",
+        buttonHover: "hover:bg-[#eff4fd]",
+        buttonActive: "active:bg-[#d7e5fb]",
+        buttonFocus: "focus:ring-[#bfd6f5]",
+        buttonShadow: "shadow-sm",
+        disabled: "opacity-60 cursor-not-allowed",
+        free: "text-[#25a244]",
+        metaLabel: "text-[#C9AA5B]",
+        paidPill: "bg-[#fff3dd] text-[#b18206] border-[#ffeaaf]",
+        regUser: "text-[#8ba2cc]",
+        creator: "text-[#b0b6c6]",
+        createdMeta: "text-[#C7D0DF]",
+    };
+
+    const fontSizes = {
+        title: "text-lg md:text-[20px]",
+        subtitle: "text-[13.5px]",
+        location: "text-[14.5px]",
+        description: "text-sm",
+        price: "text-[15px]",
+        registration: "text-xs",
+        meta: "text-[11px]",
+    };
+
+    const locationDisplay = location
+        ? <span className="truncate max-w-[70%]">{location}</span>
+        : <span className={`italic ${colors.tba}`}>TBA</span>;
+
+    const regCount = registeredUsers?.length || 0;
+    const regText = regCount === 0
+        ? "No registrations yet"
+        : `${regCount} registered`;
+
+    let creatorStr = "";
+    if (createdBy) {
+        if (typeof createdBy === "object" && "name" in createdBy) {
+            creatorStr = `by ${createdBy ?? "[Creator]"}`;
+        } else if (typeof createdBy === "string") {
+            creatorStr = `by ${createdBy.slice(0, 20)}${createdBy.length > 20 ? "…" : ""}`;
+        }
+    }
+
+    // ---- UI rendering ----
     return (
         <div
             ref={cardRef}
             className={`
                 ${EVENT_ANIM_CLASS}
-                bg-white border border-[#E5EAF2] rounded-2xl shadow-sm
-                overflow-hidden flex flex-col items-stretch min-h-[246px]
+                ${pressing ? "pressing" : ""}
+                bg-white ${colors.border} border rounded-2xl shadow-sm
+                overflow-hidden flex flex-col items-stretch min-h-[282px] max-h-[500px]
                 transition-shadow hover:shadow-md duration-200
                 ${isCardClickable ? "cursor-pointer" : "cursor-not-allowed"}
                 ${className}
             `}
-            style={{ boxShadow: "0 1px 8px rgba(34,47,67,0.08)" }}
+            style={{ boxShadow: "0 1px 8px rgba(34,47,67,0.09)" }}
             tabIndex={isCardClickable ? 0 : -1}
             role="button"
             onClick={isCardClickable ? handleCardClick : undefined}
@@ -187,86 +292,186 @@ const EventCard: React.FC<EventCardProps> = ({
             }}
             aria-label={`View event details for ${title}`}
             aria-disabled={!isCardClickable}
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerLeave}
         >
             {/* Banner/Event Image */}
-            <div className="relative w-full h-28 bg-[#F3F6FA] flex items-center justify-center overflow-hidden group">
+            <div
+                className={`relative w-full h-32 ${colors.imageBg} flex items-center justify-center overflow-hidden group event-image-wrap`}
+                tabIndex={-1}
+            >
                 {imageUrl ? (
                     <img
                         src={imageUrl}
                         alt={title}
-                        className="object-cover w-full h-full mx-auto my-3 transition-transform duration-400 group-hover:scale-105"
+                        className="object-cover w-full h-full mx-auto my-1.5 rounded-t-2xl select-none"
                         draggable={false}
                         loading="lazy"
-                        style={{ transition: "transform 0.33s cubic-bezier(.42,0,.58,1)" }}
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[#8ba2cc]">
+                    <div className="w-full h-full flex items-center justify-center text-[#C1C9DF] font-semibold text-lg">
                         No Image
                     </div>
                 )}
                 {isPaid && (
-                    <div className="absolute top-2 right-2 inline-flex items-center gap-1 px-3 py-1 bg-[#ffe8c6cc] rounded shadow font-semibold text-xs text-[#b18206] border border-[#ffeaaf] select-none z-10">
+                    <div
+                        className={`absolute top-3 right-3 inline-flex items-center gap-2 px-3 py-1 ${colors.paidPill} rounded-full shadow font-semibold text-xs border select-none z-10 event-paid-badge${badgePing ? " ping" : ""}`}
+                    >
+                        <BadgeCheck size={14} strokeWidth={2.3} className="mr-1" />
                         Paid Event
-                        <span className="inline-block align-middle ml-1" title="Paid event">
-                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M12.95 3.95l-6.34 6.34-3.18-3.18-1.06 1.06 4.24 4.24 7.4-7.4-1.06-1.06z" fill="#b18206" /></svg>
-                        </span>
                     </div>
                 )}
             </div>
             {/* Event Content */}
-            <div className="flex flex-col flex-1 px-5 py-4">
-                <div className="text-[18px] font-semibold text-[#222F43] leading-tight mb-1 line-clamp-2 break-words">
-                    {truncate(title)}
-                </div>
-                <div className="flex items-center text-[15px] text-[#748095] font-medium gap-2 mb-1">
+            <div className="flex flex-col flex-1 px-5 pt-4 pb-5 h-full">
+                {/* Date */}
+                <div className={`flex items-center gap-2 mb-1`}>
                     <span className="inline-block align-middle">
-                        <svg width="15" height="15" fill="none" viewBox="0 0 16 16"><path fill="#B7BDC8" d="M12.94 10.617A6.001 6.001 0 1 1 14 8a5.98 5.98 0 0 1-1.06 2.617zm-1.268 1.505A4.997 4.997 0 0 0 13 8c0-2.763-2.237-5-5-5S3 5.237 3 8s2.237 5 5 5c1.123 0 2.17-.368 3.002-.878l.021-.014a.016.016 0 0 1 .016 0c.096-.079.205-.162.315-.245l.318-.241zM8.75 4a.75.75 0 0 0-1.5 0v4a.75.75 0 0 0 .334.626l2.5 1.667a.75.75 0 1 0 .832-1.252l-2.166-1.444V4z" /></svg>
+                        <CalendarClock size={15} className="stroke-[#B7BDC8]" strokeWidth={2} />
                     </span>
-                    <span>{formatEventDate(date)}{" "}
-                        <span className="ml-1 text-[#b2b9c6]"> {formatEventTime(date)}</span>
+                    <span className={`${fontSizes.subtitle} ${colors.date} font-semibold`}>
+                        {formatEventDate(date)}
+                    </span>
+                    <span className={`text-xs ${colors.time} font-medium italic ml-1`}>
+                        {formatEventTime(date)}
                     </span>
                 </div>
-                <div className="text-[15px] text-[#96A6BF] font-normal line-clamp-2 leading-tight mb-1">
-                    <span className="inline-block align-middle mr-1">
-                        <svg width="16" height="16" fill="none" viewBox="0 0 16 16"><path fill="#B7BDC8" d="M8 2a4 4 0 0 0-4 4c0 2.157 2.267 5.184 3.284 6.41A1 1 0 0 0 8 13a1 1 0 0 0 .715-.59C9.733 11.185 12 8.158 12 6a4 4 0 0 0-4-4zm0 8.67C5.954 8.09 4 5.69 4 6a4 4 0 1 1 8 0c0 .31-1.954 2.09-4 4.67zm0-6.336a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm0 4.332a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" /></svg>
-                    </span>
-                    {location}
+                {/* Title */}
+                <div className={`${fontSizes.title} font-bold ${colors.primary} leading-snug mb-1.5 line-clamp-2 break-words`}>
+                    {truncate(title, 48)}
                 </div>
+                {/* Location */}
+                <div className={`flex items-center ${fontSizes.location} ${colors.location} font-medium gap-1.5 mb-2`}>
+                    <span className="inline-block align-middle">
+                        <MapPin size={15} className="stroke-[#B7BDC8]" strokeWidth={2} />
+                    </span>
+                    {locationDisplay}
+                </div>
+                {/* Description */}
                 {description && (
-                    <div className="text-[15px] text-[#797f8d] font-normal line-clamp-2 leading-snug mb-2">
+                    <div className={`${fontSizes.description} ${colors.description} font-normal leading-snug line-clamp-3 mb-2.5`} title={description}>
                         {description}
                     </div>
                 )}
-
-                {/* Price and Currency */}
-                <div className="flex items-center gap-2 mb-4">
-                    <span className="text-[15px] text-[#5161ab] font-semibold">
-                        {isPaid ? <>
-                            {currency === "NGN" ? "₦" : currency}{price > 0 ? price.toLocaleString() : "?"}
-                        </> : "Free"}
-                    </span>
+                <div className="flex items-center justify-between mt-auto gap-4">
+                    {/* Price/Free */}
+                    <div className="flex flex-col justify-center">
+                        <span className={`${fontSizes.price} font-bold ${isPaid && price > 0 ? colors.subtitle : colors.free}`}>
+                            {isPaid && price > 0 ? (
+                                <>
+                                    {currency === "NGN" ? "₦" : currency}{price?.toLocaleString?.() ?? "?"}
+                                </>
+                            ) : (
+                                "FREE"
+                            )}
+                        </span>
+                        <span className={`${fontSizes.registration} text-[#BCCBE5] font-medium mt-1`}>
+                            {isPaid && price > 0 ? "Ticket Price" : "Open Registration"}
+                        </span>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={handleRegister}
+                        disabled={disabled || !id || payForEventMutation.isPending}
+                        className={`
+                            flex items-center gap-2
+                            px-5 py-1.5 rounded-full border ${colors.button}
+                            font-semibold ${fontSizes.price}
+                            ${colors.buttonHover} ${colors.buttonActive}
+                            transition-all duration-150 event-action-btn
+                            ${colors.buttonShadow} ${colors.buttonFocus}
+                            focus:outline-none
+                            ${disabled || !id || payForEventMutation.isPending ? colors.disabled : "cursor-pointer"}
+                        `}
+                        aria-label={`View details and register for ${title}`}
+                        tabIndex={0}
+                        onMouseDown={e => e.stopPropagation()}
+                    >
+                        {payForEventMutation.isPending
+                            ? (
+                                <>
+                                    <Loader2 className="animate-spin shrink-0" size={17} strokeWidth={2.1} />
+                                    <span>Processing…</span>
+                                </>
+                            )
+                            : isPaid && price > 0
+                                ? (
+                                    <>
+                                        <BadgeCheck className="shrink-0 micro-wave" size={15} strokeWidth={2.2} />
+                                        <span>
+                                            {registerLabel}
+                                            <span className="ml-1 opacity-90 font-normal">
+                                                ({currency === "NGN" ? "₦" : currency}{price})
+                                            </span>
+                                        </span>
+                                    </>
+                                )
+                                : (
+                                    <>
+                                        <User2 className="shrink-0 micro-wave" size={15} strokeWidth={2.1} />
+                                        <span>{registerLabel}</span>
+                                    </>
+                                )
+                        }
+                    </button>
                 </div>
-
-                {/* Register Button */}
-                <button
-                    type="button"
-                    onClick={handleRegister}
-                    disabled={disabled || !id || payForEventMutation.isPending}
-                    className={`mt-auto px-5 py-1.5 border border-[#D5E3F7] rounded-md text-[#4267E7] font-medium text-[15px] transition-colors hover:bg-[#F2F7FF] focus:outline-none focus:ring-2 focus:ring-[#B2D7EF] active:bg-[#E7F1FF] ${disabled || !id || payForEventMutation.isPending ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-                    aria-label={`View details and register for ${title}`}
-                    tabIndex={0}
-                    onMouseDown={e => e.stopPropagation()}
-                >
-                
-                    {payForEventMutation.isPending ? "Processing..." : isPaid && price > 0 ? (registerLabel + ` (${currency === "NGN" ? "₦" : currency}${price})`) : registerLabel}
-                </button>
-
-                {/* Registered Users count */}
-                {registeredUsers && (
-                    <div className="mt-2 text-xs text-[#8aa1cc] font-normal">
-                        {registeredUsers.length === 0
-                            ? "No registrations yet"
-                            : `${registeredUsers.length} registered`}
+                {/* Registered Users */}
+                {(registeredUsers || createdBy) && (
+                    <div className="flex justify-between items-center mt-3">
+                        {registeredUsers && (
+                            <div className="flex items-center gap-1.5">
+                                <User2 size={13.3} strokeWidth={2} className="stroke-[#BDCAE1]" />
+                                <span className={`text-xs ${colors.regUser} font-medium`}>
+                                    {regText}
+                                </span>
+                            </div>
+                        )}
+                        {/* Created By, for extra detail */}
+                        {creatorStr && (
+                            <span className={`text-xs ${colors.creator} font-normal italic truncate max-w-[58%]`} title={creatorStr}>
+                                {creatorStr}
+                            </span>
+                        )}
+                    </div>
+                )}
+                {/* --- BEGIN UI for payments prop (lines 272-276) --- */}
+                {payments && Array.isArray(payments) && payments.length > 0 && (
+                    <div className="mt-2 mb-1.5">
+                        <div className="text-[11.5px] text-[#C9AA5B] font-semibold mb-1">Recent Payments</div>
+                        <ul className="max-h-[54px] overflow-auto pr-1">
+                            {payments.slice(0,3).map((payment: any, idx: number) => (
+                                <li key={payment.id ?? idx} className="flex items-center gap-2 text-xs text-[#8ba2cc]">
+                                    <span className="inline-block font-semibold">{payment.user?.name || payment.user?.email || "User"}</span>
+                                    <span className="opacity-60 ml-1">paid</span>
+                                    <span className="font-bold text-[#5161ab]">
+                                        {payment.currency === "NGN" ? "₦" : payment.currency}{payment.amount?.toLocaleString?.() ?? payment.amount ?? "?"}
+                                    </span>
+                                    <span className="ml-1 text-[#b0b6c6]">{payment.date ? formatEventDate(payment.date) : ""}</span>
+                                </li>
+                            ))}
+                            {payments.length > 3 && (
+                                <li className="text-xs italic text-[#C1C9DF] mt-1">
+                                    ...and {payments.length-3} more
+                                </li>
+                            )}
+                        </ul>
+                    </div>
+                )}
+                {/* --- END UI for payments prop --- */}
+                {/* Created/Updated at as a caption */}
+                {(createdAt || updatedAt) && (
+                    <div className={`mt-2 ${fontSizes.meta} ${colors.createdMeta} font-light flex items-center gap-4`}>
+                        {createdAt && (
+                            <span title={`Created: ${new Date(createdAt).toLocaleString()}`}>
+                                Created: {formatEventDate(createdAt)}
+                            </span>
+                        )}
+                        {updatedAt && (
+                            <span title={`Last updated: ${new Date(updatedAt).toLocaleString()}`}>
+                                Updated: {formatEventDate(updatedAt)}
+                            </span>
+                        )}
                     </div>
                 )}
             </div>

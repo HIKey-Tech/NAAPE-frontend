@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import {
     FaArrowRight,
@@ -14,7 +14,6 @@ import {
 import { motion } from "framer-motion";
 import { LegacyStatCard } from "@/components/ui/custom/legacy.card";
 
-// --- Improved Typewriter Effect Hook ---
 // --- Ultra-Stable Typewriter Effect Hook ---
 function useTypewriter(
     text: string,
@@ -73,7 +72,6 @@ function useTypewriter(
 
     return { displayed, done };
 }
-
 
 // Animation variants
 const containerVariants = {
@@ -241,7 +239,6 @@ export default function Hero() {
         onDone: () => setShowCursor(false),
     });
 
-
     // For accessibility: expose the full sentence after typing for screen readers
     const [srText, setSrText] = useState("");
     useEffect(() => {
@@ -275,19 +272,18 @@ export default function Hero() {
             >
                 {/* Left: Headline & CTA */}
                 <motion.div
-                    className="flex-1 text-center md:text-left flex flex-col items-center md:items-start gap-6 md:gap-8"
+                    className="flex-1 text-center md:text-left flex flex-col items-center md:items-start gap-4 md:gap-8"
                     variants={leftVariants as any}
                 >
                     <motion.h1
-                        className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#232835] dark:text-white leading-tight md:leading-[1.11]"
+                        className="text-[2.45rem] sm:text-4xl md:text-[2.8rem] lg:text-[3.3rem] font-extrabold tracking-tight text-[#232835] dark:text-white leading-tight md:leading-[1.08] mb-1"
                         variants={headingVariants as any}
                     >
-                        Empowering Nigeria&apos;s
-                        <br />
-                        <span className="text-primary">Aviators and Engineers</span>
+                        <span>The National Association of Aircraft Pilots &amp; Engineers</span>
                     </motion.h1>
+                    
                     <motion.p
-                        className="text-[#565C69] dark:text-[#B1B8C7] text-base md:text-lg max-w-lg md:max-w-xl min-h-[3.8em] md:min-h-[2.7em] font-normal whitespace-pre-line"
+                        className="text-[#3B4360] dark:text-[#BDC4D7] text-[1.13rem] md:text-lg max-w-lg md:max-w-xl min-h-[3.8em] md:min-h-[2.7em] font-medium tracking-[0.005em] whitespace-pre-line"
                         variants={paragraphVariants}
                         aria-live="polite"
                     >
@@ -311,21 +307,17 @@ export default function Hero() {
                                 )}
                             </span>
                         </span>
-                        {/*
-                            For accessibility:
-                            Display full sentence for screen readers, hidden visually until typewriter completes.
-                        */}
                         {done && (
                             <span className="sr-only">{srText}</span>
                         )}
                     </motion.p>
                     <motion.div
-                        className="flex flex-col sm:flex-row gap-3 md:gap-5 mt-2 md:mt-4 w-full max-w-sm md:max-w-full items-center md:items-start"
+                        className="flex flex-col sm:flex-row gap-3 md:gap-5 mt-2 md:mt-6 w-full max-w-sm md:max-w-full items-center md:items-start"
                         variants={ctaVariants as any}
                     >
                         <Link href="/register" className="w-full sm:w-auto" aria-label="Join NAAPE">
                             <NaapButton
-                                className="bg-primary hover:bg-primary/80 w-full h-full sm:w-auto text-white text-base font-semibold px-7 py-3 shadow transition-colors"
+                                className="bg-primary hover:bg-primary/90 w-full h-full sm:w-auto text-white text-base font-semibold px-7 py-3 transition-colors rounded-full"
                                 icon={<FaArrowRight size={18} />}
                                 iconPosition="right"
                             >
@@ -334,7 +326,7 @@ export default function Hero() {
                         </Link>
                         <Link href="/about-us" className="w-full sm:w-auto" aria-label="Learn More about NAAPE">
                             <NaapButton
-                                className="border border-primary h-full text-primary hover:bg-primary/10 text-base font-semibold px-7 py-3 w-full sm:w-auto bg-transparent transition-colors"
+                                className="border border-primary h-full text-primary hover:bg-primary/10 text-base font-semibold px-7 py-3 w-full sm:w-auto bg-transparent transition-colors rounded-full"
                             >
                                 Learn More
                             </NaapButton>
@@ -347,11 +339,9 @@ export default function Hero() {
                     className="flex-1 flex w-full justify-center items-center"
                     variants={rightVariants as any}
                 >
-                    {/* Increase size: make max-w-[550px] (was 420px), and aspect-square remains */}
-                    <div className="relative w-full flex items-center justify-center max-w-[550px] aspect-square">
+                    <div className="relative w-full flex items-center justify-center max-w-[550px] aspect-square pt-3 pb-3">
                         <motion.div
-                            // Optionally, increase grid gap for large images
-                            className="grid grid-cols-2 grid-rows-3 gap-4 w-full h-full rounded-2xl overflow-hidden"
+                            className="grid grid-cols-2 grid-rows-3 gap-5 w-full h-full rounded-2xl overflow-hidden"
                             initial={{ opacity: 0, y: 40 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.7, type: "spring", stiffness: 70, damping: 15 }}
@@ -367,9 +357,8 @@ export default function Hero() {
                                                 : idx === 2
                                                     ? "col-span-1 row-span-2"
                                                     : "col-span-1 row-span-1"}
-                                        relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 group
+                                        relative rounded-xl overflow-hidden transition-[transform,box-shadow] duration-300 group border border-gray-300 dark:border-[#232C4F]
                                     `}
-                                    // Increase the minHeight for larger display
                                     style={
                                         idx === 0 || idx === 2
                                             ? { minHeight: "190px", minWidth: "0" }
@@ -380,12 +369,11 @@ export default function Hero() {
                                         src={img.src}
                                         alt={img.alt}
                                         fill
-                                        className="object-cover object-center group-hover:scale-[1.045] transition-transform duration-300"
+                                        className="object-cover object-center group-hover:scale-[1.035] transition-transform duration-300"
                                         draggable={false}
                                         sizes="(max-width: 550px) 100vw, 550px"
                                     />
                                     <span className="absolute left-0 bottom-0 w-full h-16 bg-gradient-to-t from-[#213765ad] to-transparent pointer-events-none"></span>
-                                    {/* <span className="absolute left-1 bottom-2 text-xs xs:text-sm font-medium text-white drop-shadow">{img.alt}</span> */}
                                 </div>
                             ))}
                         </motion.div>
@@ -394,7 +382,7 @@ export default function Hero() {
             </motion.div>
             {/* Stats Row (moved up for better mobile experience) */}
             <motion.div
-                className="w-full flex flex-col sm:flex-row gap-4 md:gap-6 justify-center md:justify-between mt-6"
+                className="w-full flex flex-col sm:flex-row gap-4 md:gap-6 justify-center md:justify-between mt-8"
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
@@ -403,13 +391,18 @@ export default function Hero() {
                     <motion.div
                         key={idx}
                         variants={leftVariants as any}
-                        whileHover={{ scale: 1.04, boxShadow: "0 8px 32px #2852B41a" }}
+                        whileHover={{ scale: 1.04 }}
+                        className="flex-1"
                     >
                         <LegacyStatCard
                             icon={icon}
                             value={value}
-                            label={label}
-                            className="flex-1 bg-white min-w-[150px] h-auto max-w-xs"
+                            label={
+                                <span className="text-[1.03rem] md:text-base text-[#5E6792] dark:text-[#C1C8DC] font-semibold">
+                                    {label}
+                                </span>
+                            }
+                            className="flex-1 bg-white min-w-[150px] h-auto max-w-xs rounded-xl border border-gray-200 dark:border-[#252c45] px-6 py-6 flex flex-col items-center"
                         />
                     </motion.div>
                 ))}

@@ -38,7 +38,6 @@ function useCountUp(targetValue: string, duration = 1300) {
             const valueNow = Math.round(target * progress * (decimals ? 10 : 1)) / (decimals ? 10 : 1);
 
             if (progress < 1) {
-                // Format the value as string, e.g. 1,200 or 39.5, etc
                 let formatted = valueNow.toLocaleString(undefined, {
                     minimumFractionDigits: decimals,
                     maximumFractionDigits: decimals,
@@ -55,7 +54,7 @@ function useCountUp(targetValue: string, duration = 1300) {
                 minimumFractionDigits: (target % 1 !== 0 || suffix.trim() === "%") ? 1 : 0,
                 maximumFractionDigits: (target % 1 !== 0 || suffix.trim() === "%") ? 1 : 0,
             }) +
-                suffix
+            suffix
         );
         startTime.current = 0;
         rafRef.current = requestAnimationFrame(animate);
@@ -78,32 +77,56 @@ export function LegacyStatCard({
 }: LegacyStatCardProps) {
     const countedValue = useCountUp(value);
 
+    // Enhanced: Improved hierarchy, bolder value, prominent icon, and more visual separation/structure.
     return (
-        <Card className={`w-full bg-white max-w-full h-auto border-[#D3D7DF] shadow-none ${className}`}>
-            <CardContent className="px-8 flex items-center gap-7">
-                <div className="w-12 h-12 flex rounded items-center p-2 justify-center bg-[#F0F2F6]">
-                    {icon ? (
-                        icon
-                    ) : (
-                        <svg
-                            width="28"
-                            height="28"
-                            viewBox="0 0 24 24"
-                            stroke="#A5A7B0"
-                            fill="none"
-                            strokeWidth="1.5"
-                        >
-                            <circle cx="12" cy="12" r="10" stroke="#A5A7B0" strokeWidth="1.5" />
-                            <circle cx="12" cy="10.5" r="2" fill="#A5A7B0" />
-                            <rect x="9.5" y="14" width="5" height="1.2" rx=".6" fill="#A5A7B0" />
-                        </svg>
-                    )}
-                </div>
-                <div className="flex justify-start text-start flex-col">
-                    <div className="text-[2rem] leading-9 font-bold text-[#232835] mb-0">
-                        {countedValue}
+        <Card
+            className={`w-full bg-white max-w-full h-auto border-[#D3D7DF] shadow-none ${className}`}
+            style={{ borderRadius: "1.1rem", borderWidth: 1, borderStyle: "solid" }}
+        >
+            <CardContent className="px-7 py-6 flex items-center gap-6">
+                {/* Icon Section */}
+                <div className="flex flex-col items-center justify-center">
+                    <div
+                        className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-[#ECF0FA] to-[#FCFBFF]"
+                        style={{ boxShadow: "0 2px 9px 0 rgba(54,83,164,0.10)" }}
+                    >
+                        {icon ? (
+                            React.cloneElement(icon as React.ReactElement, {
+                            })
+                        ) : (
+                            <svg
+                                width="34"
+                                height="34"
+                                viewBox="0 0 24 24"
+                                stroke="#A5A7B0"
+                                fill="none"
+                                strokeWidth="1.5"
+                                className="drop-shadow-sm"
+                            >
+                                <circle cx="12" cy="12" r="10" stroke="#A5A7B0" strokeWidth="1.5" />
+                                <circle cx="12" cy="10.5" r="2" fill="#A5A7B0" />
+                                <rect x="9.5" y="14" width="5" height="1.2" rx=".6" fill="#A5A7B0" />
+                            </svg>
+                        )}
                     </div>
-                    <div className="text-[#4B4B55] text-base font-medium">{label}</div>
+                </div>
+                {/* Text Section */}
+                <div className="flex flex-col flex-1 min-w-0 justify-center text-start space-y-0.5">
+                    <div className="flex items-baseline gap-x-2 flex-wrap max-w-[28rem]">
+                        <span className="text-[2.4rem] leading-[2.7rem] font-extrabold text-[#192040] drop-shadow-sm tracking-tight">
+                            {countedValue}
+                        </span>
+                    </div>
+                    <span
+                        className="block text-[1.10rem] leading-[1.45rem] font-semibold text-[#51609C] mt-1 tracking-normal max-w-[22rem] overflow-hidden text-ellipsis"
+                        style={{
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            display: "-webkit-box",
+                        } as React.CSSProperties}
+                    >
+                        {label}
+                    </span>
                 </div>
             </CardContent>
         </Card>

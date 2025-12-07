@@ -14,7 +14,7 @@ const baseURL = process.env.NEXT_PUBLIC_BASE_URL! || "http://localhost:5000"
 
 
 const api = axios.create({
-    baseURL: `${baseURL}/api/v1`,
+    baseURL: `${baseURL}/api`,
     headers: {
         "Content-Type": "application/json",
     },
