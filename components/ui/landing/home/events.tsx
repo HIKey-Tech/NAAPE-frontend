@@ -244,13 +244,12 @@ export default function UpcomingEvents() {
                 ))}
             </motion.div>
             <motion.div
-                className="flex justify-center mt-10"
+                className="flex pointer-cursor justify-center mt-10"
                 variants={fadeUpVariants as any}
             >
                 <a href="/login">
                     <NaapButton
-                        className="bg-primary hover:bg-primary/90 text-white font-semibold px-7 py-3 text-base shadow transition"
-                    >
+                        className="bg-[color:var(--primary)] pointer-cursor hover:bg-[color:var(--primary)]/90 text-white font-semibold px-8 py-3.5 text-[1.08rem] w-fit rounded-full transition mt-4"                    >
                         View All Events
                     </NaapButton>
                 </a>

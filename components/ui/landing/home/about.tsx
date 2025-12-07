@@ -19,11 +19,10 @@ export default function AboutSection() {
                 }}
             ></div>
 
-            <div className="relative z-10 flex flex-col md:flex-row justify-center items-center  gap-10 w-full max-w-full p-6">
+            <div className="relative z-10 flex flex-col md:flex-row justify-center items-center gap-12 w-full max-w-full p-6">
                 {/* Left: Card-like video preview */}
                 <div className="flex-shrink-0 flex-grow-0 w-full md:w-fit max-w-fit">
-                    <div className="relative rounded-[18px] overflow-hidden shadow-2xl bg-[#232835] border border-[#E6EAF1] min-h-full">
-
+                    <div className="relative rounded-[18px] overflow-hidden bg-[#232835] border border-[#E6EAF1] min-h-full">
                         <Image
                             src="/images/loginpic.jpg"
                             alt="Nigerian pilots in cockpit"
@@ -39,8 +38,7 @@ export default function AboutSection() {
                         <button
                             aria-label="Play Video"
                             tabIndex={0}
-                            className="transition-transform duration-200 hover:scale-105 focus:scale-100 active:scale-95 absolute left-1/2 top-[calc(50%+16px)] -translate-x-1/2 -translate-y-1/2 z-20 bg-black/45 hover:bg-black/60 rounded-full p-4 flex items-center justify-center shadow-2xl focus:outline-none border-4 border-white/30"
-                            style={{ boxShadow: "0 4px 30px 0 rgba(30,45,80,0.22)" }}
+                            className="transition-transform duration-200 hover:scale-105 focus:scale-100 active:scale-95 absolute left-1/2 top-[calc(50%+16px)] -translate-x-1/2 -translate-y-1/2 z-20 bg-black/45 hover:bg-black/60 rounded-full p-4 flex items-center justify-center focus:outline-none border-4 border-white/30"
                         >
                             <svg width="54" height="54" viewBox="0 0 54 54" fill="none" aria-hidden="true">
                                 <circle
@@ -63,21 +61,26 @@ export default function AboutSection() {
                 </div>
 
                 {/* Right: Content */}
-                <div className=" flex flex-col justify-center gap-5 w-full">
-                    <span className="text-[#CA9414] font-bold text-xs md:text-sm tracking-widest uppercase mb-1 md:mb-0">
+                <div className="flex flex-col justify-center gap-3 md:gap-5 w-full max-w-xl">
+                    <span className="text-[#CA9414] font-bold text-xs md:text-sm tracking-wider uppercase mb-1 md:mb-0 letter-spacing[.11em]">
                         ABOUT NAAPE
                     </span>
-                    <h2 className="text-[#232835] text-[1.6rem] md:text-[2rem] font-extrabold leading-tight mb-1 md:mb-2">
-                        Advancing Aviation Excellence<br className="hidden md:block" />
-                        and Safety in Nigeria
+                    <h2 className=" text-[2.15rem] md:text-[2.4rem] font-extrabold leading-tight mb-1 md:mb-2 tracking-tight">
+                        <span className="block mb-0.5">
+                            Advancing <span className="">Aviation Excellence</span>
+                        </span>
+                        <span className="block  text-[1.34rem] md:text-[1.5rem] font-bold tracking-wide">
+                            and Safety in Nigeria
+                        </span>
                     </h2>
-                    <p className="text-[#3B3B46] text-[0.99rem] md:text-base font-normal leading-relaxed mb-2 md:mb-4 w-full">
-                        Since 1985, the National Association of Aircraft Pilots and Engineers (NAAPE) has been the united voice of Nigeria’s pilots and engineers – our mission is to advance the aviation safety, professionalism, technical expertise in the Nigerian aviation industry through advocacy and the rights of those who keep the skies secure.
+                    <hr className="w-12 border-t-2 border-[#CA9414] mb-2 md:mb-2 mt-[4px] md:mt-[6px] rounded-lg" />
+                    <p className=" text-[1.07rem] md:text-lg font-medium leading-relaxed mb-2 md:mb-4 w-full max-w-prose">
+                        Since 1985, the <span className="font-bold">National Association of Aircraft Pilots and Engineers (NAAPE)</span> has been the united voice of Nigeria’s pilots and engineers—<span className=" font-semibold">our mission is to advance aviation safety, professionalism, and technical expertise</span> in the Nigerian aviation industry through advocacy and safeguarding the rights of those who keep our skies secure.
                     </p>
 
-                    <Link href="/about-us" >
+                    <Link href="/about-us">
                         <NaapButton
-                            className="bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 w-fit text-white font-semibold px-7 py-3 text-base shadow  transition flex items-center gap-2"
+                            className="bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 w-fit text-white font-semibold px-7 py-3 text-base transition flex items-center gap-2 rounded-full shadow-none border-0"
                             icon={<FaArrowRight size={16} />}
                             iconPosition="right"
                         >
@@ -89,3 +92,4 @@ export default function AboutSection() {
         </section>
     );
 }
+

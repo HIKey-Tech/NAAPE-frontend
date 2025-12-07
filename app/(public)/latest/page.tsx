@@ -255,8 +255,7 @@ export default function LatestNews() {
             >
                 <a href="/login">
                     <NaapButton
-                        className="bg-primary hover:bg-primary/90 text-white font-semibold px-7 py-3 text-base shadow transition"
-                    >
+                        className="bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white font-semibold px-8 py-3.5 text-[1.08rem] w-fit rounded-full transition mt-4"                    >
                         Submit Your Publication
                     </NaapButton>
                 </a>

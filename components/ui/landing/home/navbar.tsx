@@ -14,10 +14,7 @@ import { Menu, X, ChevronDown, ChevronUp, LogOut, User2 } from "lucide-react";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { useAuth } from "@/context/authcontext";
 
-// NOTE: From @globals.css, suppose the primary colour is set as a CSS custom property:
-// :root { --primary: #2852B4; }
-// We will now replace all previous hard-coded #2852B4, #2347A0, #2473ea, #3970D8, #5671c0 usages that semantically mean "primary" or a "primary shade" with "var(--primary)" or --tw-prose-primary (if Tailwind is mapped).
-// Neutral nuances (#E6EAF1, #F3F6FC, etc) will remain unless the prompt specifies otherwise.
+// Navbar for NAAPE with improved visual consistency
 
 export default function TopNavbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -52,137 +49,147 @@ export default function TopNavbar() {
 
     function getInitials(name?: string) {
         if (!name) return "U";
-        const names = name.split(" ");
-        const initials = names[0][0] + (names[1]?.[0] ?? '');
+        const names = name.trim().split(" ");
+        const initials = names[0]?.[0] ?? '' + (names[1]?.[0] ?? '');
         return initials.toUpperCase();
     }
 
+    // Consistent menu link styling for both desktop and mobile
+    const baseMenuLink =
+        "px-5 py-2.5 rounded-xl font-bold transition focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] border-b-2 border-transparent uppercase tracking-wide text-[16.5px] hover:bg-[color:var(--primary)]/[.08] hover:border-[color:var(--primary)] hover:text-[color:var(--primary)]";
+    const activeMenuLink =
+        "text-[color:var(--primary)] bg-[color:var(--primary)]/14 font-black border-b-[3.5px] border-[color:var(--primary)]";
+
     return (
-        <nav className="w-full sticky top-0 left-0 z-30 bg-white border-b border-[#E6EAF1] shadow-sm px-6 py-2 flex items-center justify-between relative">
-            {/* Logo */}
-            <div className="flex items-center gap-3 flex-shrink-0">
-                <Link href="/" className="flex items-center" aria-label="Go to homepage">
+        <nav className="w-full sticky top-0 left-0 z-40 bg-white border-b-2 border-[color:var(--primary)] px-6 xl:px-10 py-3 flex items-center justify-between relative">
+            {/* Branded Logo */}
+            <div className="flex flex-row items-center gap-4 flex-shrink-0 min-w-0">
+                <Link
+                    href="/"
+                    className="flex items-center group min-w-0"
+                    aria-label="Go to NAAPE homepage"
+                >
                     <Image
                         src="/logo.png"
                         alt="NAAPE Logo"
-                        width={52}
-                        height={52}
-                        className="object-contain h-14 w-14 bg-white rounded"
+                        width={53}
+                        height={53}
+                        className="object-contain h-[48px] w-[48px] sm:h-[53px] sm:w-[53px] bg-white rounded-lg border-[2.5px] border-[color:var(--primary)] shadow-sm"
                         priority
                     />
-                    <span className="ml-2 text-[17px] font-semibold text-[#232835] hidden sm:inline whitespace-nowrap">
+                    <span className="ml-3 text-[24px] sm:text-[25px] font-extrabold tracking-tight text-[color:var(--primary)] uppercase hidden sm:inline whitespace-nowrap leading-none group-hover:underline decoration-4 underline-offset-[8px] decoration-[color:var(--primary)] transition-all">
                         NAAPE
                     </span>
                 </Link>
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center justify-center w-full gap-2 xl:gap-5 text-[#0A1331] font-medium text-[15px]">
+            <div className="hidden md:flex items-center justify-center w-full gap-6 xl:gap-10 text-[#1A2752] font-semibold text-[16.5px] uppercase tracking-wide">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button
                             variant="ghost"
-                            className={`px-2 font-medium flex items-center gap-1 hover:text-[color:var(--primary)] ${active.startsWith("/about") ? "text-[color:var(--primary)] font-semibold" : ""}`}
+                            className={`${baseMenuLink} flex items-center gap-1 shadow-none ${
+                                active.startsWith("/about") ? activeMenuLink : ""
+                            }`}
                             tabIndex={0}
                         >
                             About
-                            <ChevronDown size={16} />
+                            <ChevronDown size={18} />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuItem asChild>
-                            <Link href="/about/about-us">About Us</Link>
+                            <Link href="/about/about-us" className="font-bold text-[color:var(--primary)]/90 text-[16.5px]">About Us</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link href="/about/nac-members">NAC Members</Link>
+                            <Link href="/about/nac-members" className="font-semibold text-[16.5px]">NAC Members</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link href="/about/organs-of-association">Organs of Association</Link>
+                            <Link href="/about/organs-of-association" className="font-semibold text-[16.5px]">Organs of Association</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link href="/about/rights-and-responsibilites">Rights and Responsibilites</Link>
+                            <Link href="/about/rights-and-responsibilites" className="font-semibold text-[16.5px]">Rights &amp; Responsibilities</Link>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
                 <Link
                     href="/membership"
-                    className={`hover:text-[color:var(--primary)] transition px-2 py-1 ${active === '/membership' ? 'text-[color:var(--primary)] font-semibold' : ''}`}
+                    className={`${baseMenuLink} ${active === "/membership" ? activeMenuLink : ""}`}
                 >
                     Membership
                 </Link>
-
-                {/* News as Dropdown */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button
                             variant="ghost"
-                            className={`px-2 font-medium flex items-center gap-1 hover:text-[color:var(--primary)] ${active.startsWith("/news") ? "text-[color:var(--primary)] font-semibold" : ""}`}
+                            className={`${baseMenuLink} flex items-center gap-1 ${
+                                active.startsWith("/news") ? activeMenuLink : ""
+                            }`}
                             tabIndex={0}
                         >
                             News
-                            <ChevronDown size={16} />
+                            <ChevronDown size={18} />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                        {/* <DropdownMenuItem asChild>
-                            <Link href="/news/industry">Industry News</Link>
-                        </DropdownMenuItem> */}
                         <DropdownMenuItem asChild>
-                            <Link href="/news/naape">NAAPE News</Link>
+                            <Link href="/news/naape" className="font-bold text-[color:var(--primary)]/90 text-[16.5px]">NAAPE News</Link>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-
-                {/* Publications as Dropdown */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button
                             variant="ghost"
-                            className={`px-2 font-medium flex items-center gap-1 hover:text-[color:var(--primary)] ${active.startsWith("/publications") ? "text-[color:var(--primary)] font-semibold" : ""}`}
+                            className={`${baseMenuLink} flex items-center gap-1 ${
+                                active.startsWith("/publications") ? activeMenuLink : ""
+                            }`}
                             tabIndex={0}
                         >
                             Publications
-                            <ChevronDown size={16} />
+                            <ChevronDown size={18} />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuItem asChild>
-                            <Link href="/publication/members">From Members</Link>
+                            <Link href="/publication/members" className="font-semibold text-[16.5px]">From Members</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link href="/publication/naape">From NAAPE</Link>
+                            <Link href="/publication/naape" className="font-semibold text-[16.5px]">From NAAPE</Link>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-
                 <Link
                     href="/gallery"
-                    className={`hover:text-[color:var(--primary)] transition px-2 py-1 ${active === '/gallery' ? 'text-[color:var(--primary)] font-semibold' : ''}`}
+                    className={`${baseMenuLink} ${active === "/gallery" ? activeMenuLink : ""}`}
                 >
                     Gallery
                 </Link>
                 <Link
                     href="/contact"
-                    className={`hover:text-[color:var(--primary)] transition px-2 py-1 ${active === '/contact' ? 'text-[color:var(--primary)] font-semibold' : ''}`}
+                    className={`${baseMenuLink} ${active === "/contact" ? activeMenuLink : ""}`}
                 >
                     Contact
                 </Link>
             </div>
 
             {/* Desktop Auth/User Section */}
-            <div className="hidden md:flex items-center gap-2 ml-6">
+            <div className="hidden md:flex items-center gap-4 ml-6 xl:ml-10">
                 {!isAuthenticated ? (
                     <>
                         <Link href="/login">
                             <NaapButton
-                                className="border-[#E3E6ED] bg-white border h-full text-[color:var(--primary)] hover:bg-[#F5F7FA] text-[15px] font-semibold min-w-[96px]"
+                                className="py-2 px-5 border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[16.5px] font-extrabold min-w-[120px] tracking-wide uppercase"
+                                style={{ letterSpacing: "0.04em" }}
                             >
                                 Log In
                             </NaapButton>
                         </Link>
                         <Link href="/register">
                             <NaapButton
-                                className="bg-[color:var(--primary)] !rounded hover:bg-[color:var(--primary)]/90 text-white text-[15px] font-semibold min-w-[150px]"
+                                className="py-2 px-5 bg-[color:var(--primary)] !rounded-xl hover:bg-[color:var(--primary)]/90 text-white text-[16.5px] font-extrabold min-w-[180px] border-2 border-[color:var(--primary)] uppercase tracking-wide"
+                                style={{ letterSpacing: "0.05em" }}
                             >
                                 Become a member
                             </NaapButton>
@@ -192,29 +199,31 @@ export default function TopNavbar() {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <button
-                                className="flex items-center gap-2 px-3 py-1 rounded-lg border border-[#E6EAF1] bg-white shadow-sm hover:bg-[#F5F7FA] transition min-w-[42px] focus:outline-none"
+                                className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white border-2 border-[color:var(--primary)] font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] min-w-[50px] transition"
                                 aria-label="Open account menu"
                                 type="button"
                             >
-                                <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-[color:var(--primary)] text-white font-bold text-base uppercase">
+                                <span className="inline-flex items-center justify-center h-11 w-11 rounded-full bg-[color:var(--primary)] text-white font-extrabold text-lg uppercase border-4 border-white">
                                     {getInitials(user?.name)}
                                 </span>
-                                <span className="text-[15px] text-[color:var(--primary)] font-medium max-w-[110px] truncate hidden sm:inline">{user?.name}</span>
-                                <ChevronDown size={18} className="text-[color:var(--primary)]" />
+                                <span className="text-[17px] text-[color:var(--primary)] font-black max-w-[148px] truncate hidden sm:inline tracking-wide uppercase">
+                                    {user?.name}
+                                </span>
+                                <ChevronDown size={22} className="text-[color:var(--primary)]" />
                             </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="min-w-[190px]">
+                        <DropdownMenuContent align="end" className="min-w-[210px] mt-2 rounded-xl !overflow-hidden border-2 border-[color:var(--primary)]/[.22] bg-white">
                             <DropdownMenuItem asChild>
-                                <Link href="/dashboard">
-                                    <User2 className="w-4 h-4 mr-2" />
+                                <Link href="/dashboard" className="font-bold text-[16.5px] flex items-center gap-2 py-2 hover:bg-[color:var(--primary)]/16 hover:text-[color:var(--primary)] transition-colors">
+                                    <User2 className="w-4 h-4" />
                                     Dashboard
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={logout}
-                                className="!text-red-600 cursor-pointer"
+                                className="!text-red-600 cursor-pointer font-bold text-[16.5px] flex items-center gap-2 py-2 hover:bg-red-50 transition-all"
                             >
-                                <LogOut className="w-4 h-4 mr-2" />
+                                <LogOut className="w-4 h-4" />
                                 Log Out
                             </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -224,13 +233,13 @@ export default function TopNavbar() {
 
             {/* Hamburger menu for mobile */}
             <button
-                className="md:hidden p-2 ml-3 flex items-center justify-center rounded transition-colors hover:bg-[#F3F6FC]"
+                className="md:hidden p-2.5 ml-2 flex items-center justify-center rounded-xl border-2 border-[color:var(--primary)] bg-white focus-visible:ring-2 focus-visible:ring-[color:var(--primary)]"
                 aria-label="Open main menu"
                 aria-expanded={mobileOpen}
                 aria-controls="mobile-nav"
                 onClick={() => setMobileOpen((prev) => !prev)}
             >
-                {mobileOpen ? <X size={30} /> : <Menu size={28} />}
+                {mobileOpen ? <X size={28} className="text-[color:var(--primary)]" /> : <Menu size={26} className="text-[color:var(--primary)]" />}
             </button>
 
             {/* Mobile Navigation Drawer */}
@@ -240,52 +249,47 @@ export default function TopNavbar() {
                     role="dialog"
                     aria-modal="true"
                     id="mobile-nav"
-                    className="absolute left-0 top-[100%] w-full z-40 bg-white border-t border-[#E6EAF1] shadow-md flex flex-col px-3.5 py-2 gap-1 md:hidden animate-slideDown"
+                    className="absolute left-0 top-[100%] w-full z-50 bg-white border-t-2 border-[color:var(--primary)] flex flex-col px-4 py-4 gap-2 md:hidden animate-slideDown rounded-b-2xl"
                 >
-                    <Link
-                        href="/about"
-                        className="py-2 hover:text-[color:var(--primary)] transition font-medium"
-                        onClick={() => setMobileOpen(false)}
-                        tabIndex={0}
-                    >
-                        About
-                    </Link>
-                    <Link
-                        href="/membership"
-                        className="py-2 hover:text-[color:var(--primary)] transition font-medium"
-                        onClick={() => setMobileOpen(false)}
-                        tabIndex={0}
-                    >
-                        Membership
-                    </Link>
-
+                    <div className="mb-2 font-black text-[color:var(--primary)] text-xl text-center uppercase tracking-widest">
+                        Welcome to NAAPE
+                        <div className="text-xs mt-0.5 font-semibold tracking-normal text-[#3654B2]/60">United. Safe. Professional. Proud.</div>
+                    </div>
+                    {[
+                        { href: "/about", label: "About" },
+                        { href: "/membership", label: "Membership" },
+                        { href: "/gallery", label: "Gallery" },
+                        { href: "/contact", label: "Contact" },
+                    ].map(item => (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className="py-3 px-2.5 text-[17px] rounded-xl font-black hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 transition uppercase tracking-wider"
+                            onClick={() => setMobileOpen(false)}
+                            tabIndex={0}
+                        >
+                            {item.label}
+                        </Link>
+                    ))}
                     {/* News Dropdown - mobile */}
                     <button
-                        className="flex items-center w-full py-2 font-medium hover:text-[color:var(--primary)] transition"
+                        className="flex items-center justify-between w-full py-3 px-2.5 text-[17px] rounded-xl font-black hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 transition uppercase tracking-wider"
                         aria-expanded={serveOpen}
                         aria-controls="mobile-news-menu"
                         onClick={() => setServeOpen((open) => !open)}
                         type="button"
                     >
-                        News
-                        <span className="ml-1">{serveOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}</span>
+                        <span>News</span>
+                        <span>{serveOpen ? <ChevronUp size={19} /> : <ChevronDown size={19} />}</span>
                     </button>
                     {serveOpen && (
                         <div
                             id="mobile-news-menu"
-                            className="flex flex-col bg-white border-l border-[#E6EAF1] ml-5 pl-2 py-1"
+                            className="flex flex-col ml-5 pl-3 py-1 border-l-4 border-[color:var(--primary)]/40"
                         >
-                            {/* <Link
-                                href="/news/industry"
-                                className="py-2 text-sm hover:text-[color:var(--primary)] transition"
-                                onClick={() => { setMobileOpen(false); setServeOpen(false); }}
-                                tabIndex={0}
-                            >
-                                Industry News
-                            </Link> */}
                             <Link
                                 href="/news/naape"
-                                className="py-2 text-sm hover:text-[color:var(--primary)] transition"
+                                className="py-2 text-base rounded font-bold hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 uppercase transition"
                                 onClick={() => { setMobileOpen(false); setServeOpen(false); }}
                                 tabIndex={0}
                             >
@@ -296,23 +300,23 @@ export default function TopNavbar() {
 
                     {/* Publications Dropdown - mobile */}
                     <button
-                        className="flex items-center w-full py-2 font-medium hover:text-[color:var(--primary)] transition"
+                        className="flex items-center justify-between w-full py-3 px-2.5 text-[17px] rounded-xl font-black hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 transition uppercase tracking-wider"
                         aria-expanded={publicationsOpen}
                         aria-controls="mobile-publications-menu"
                         onClick={() => setPublicationsOpen((open) => !open)}
                         type="button"
                     >
-                        Publications
-                        <span className="ml-1">{publicationsOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}</span>
+                        <span>Publications</span>
+                        <span>{publicationsOpen ? <ChevronUp size={19} /> : <ChevronDown size={19} />}</span>
                     </button>
                     {publicationsOpen && (
                         <div
                             id="mobile-publications-menu"
-                            className="flex flex-col bg-white border-l border-[#E6EAF1] ml-5 pl-2 py-1"
+                            className="flex flex-col ml-5 pl-3 py-1 border-l-4 border-[color:var(--primary)]/40"
                         >
                             <Link
                                 href="/publication/members"
-                                className="py-2 text-sm hover:text-[color:var(--primary)] transition"
+                                className="py-2 text-base rounded font-bold hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 uppercase transition"
                                 onClick={() => { setMobileOpen(false); setPublicationsOpen(false); }}
                                 tabIndex={0}
                             >
@@ -320,7 +324,7 @@ export default function TopNavbar() {
                             </Link>
                             <Link
                                 href="/publication/naape"
-                                className="py-2 text-sm hover:text-[color:var(--primary)] transition"
+                                className="py-2 text-base rounded font-bold hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 uppercase transition"
                                 onClick={() => { setMobileOpen(false); setPublicationsOpen(false); }}
                                 tabIndex={0}
                             >
@@ -329,35 +333,18 @@ export default function TopNavbar() {
                         </div>
                     )}
 
-                    <Link
-                        href="/gallery"
-                        className="py-2 hover:text-[color:var(--primary)] transition font-medium"
-                        onClick={() => setMobileOpen(false)}
-                        tabIndex={0}
-                    >
-                        Gallery
-                    </Link>
-                    <Link
-                        href="/contact"
-                        className="py-2 hover:text-[color:var(--primary)] transition font-medium"
-                        onClick={() => setMobileOpen(false)}
-                        tabIndex={0}
-                    >
-                        Contact
-                    </Link>
-
-                    <div className="flex flex-col gap-2 mt-2">
+                    <div className="flex flex-col gap-2 mt-4">
                         {!isAuthenticated ? (
                             <>
                                 <Link href="/login" onClick={() => setMobileOpen(false)}>
                                     <NaapButton
-                                        className="w-full border-[#E3E6ED] bg-white text-[color:var(--primary)] hover:bg-[#F5F7FA] text-[15px] font-semibold"
+                                        className="w-full border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[16.5px] font-extrabold uppercase py-2"
                                     >
                                         Log In
                                     </NaapButton>
                                 </Link>
                                 <Link href="/register" onClick={() => setMobileOpen(false)}>
-                                    <NaapButton className="w-full bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white text-[15px] font-semibold">
+                                    <NaapButton className="w-full bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white text-[16.5px] font-extrabold border-2 border-[color:var(--primary)] uppercase py-2">
                                         Become a member
                                     </NaapButton>
                                 </Link>
@@ -366,29 +353,31 @@ export default function TopNavbar() {
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <button
-                                        className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[#E6EAF1] bg-white shadow-sm hover:bg-[#F5F7FA] transition w-full"
+                                        className="flex items-center gap-3 px-3 py-3 rounded-2xl bg-white border-2 border-[color:var(--primary)] font-bold w-full uppercase transition"
                                         aria-label="Open account menu"
                                         type="button"
                                     >
-                                        <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-[color:var(--primary)] text-white font-bold text-base uppercase">
+                                        <span className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-[color:var(--primary)] text-white font-extrabold text-base uppercase border-4 border-white">
                                             {getInitials(user?.name)}
                                         </span>
-                                        <span className="text-[15px] text-[color:var(--primary)] font-medium truncate">{user?.name}</span>
-                                        <ChevronDown size={18} className="text-[color:var(--primary)]" />
+                                        <span className="text-[16.5px] text-[color:var(--primary)] font-black truncate tracking-wide">
+                                            {user?.name}
+                                        </span>
+                                        <ChevronDown size={21} className="text-[color:var(--primary)]" />
                                     </button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="start" sideOffset={6} className="min-w-[180px]">
+                                <DropdownMenuContent align="start" sideOffset={7} className="min-w-[165px] mt-2 rounded-xl border-2 border-[color:var(--primary)]/[.22] !overflow-hidden bg-white">
                                     <DropdownMenuItem asChild>
-                                        <Link href="/dashboard">
-                                            <User2 className="w-4 h-4 mr-2" />
+                                        <Link href="/dashboard" className="font-bold text-[16px] flex items-center gap-2 py-2 hover:bg-[color:var(--primary)]/12 hover:text-[color:var(--primary)] transition-colors uppercase">
+                                            <User2 className="w-4 h-4" />
                                             Dashboard
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
                                         onClick={() => { logout(); setMobileOpen(false); }}
-                                        className="!text-red-600 cursor-pointer"
+                                        className="!text-red-600 cursor-pointer font-bold text-[16px] flex items-center gap-2 py-2 hover:bg-red-50 transition-all uppercase"
                                     >
-                                        <LogOut className="w-4 h-4 mr-2" />
+                                        <LogOut className="w-4 h-4" />
                                         Log Out
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
