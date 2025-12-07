@@ -3,15 +3,27 @@
 import {
     FaHome,
     FaSearch,
+    FaBookOpen,
+    FaPlus,
+    FaUserGraduate,
+    FaRegCalendarCheck,
+    FaBriefcase,
+    FaRegComments,
+    FaSignOutAlt,
+    FaUserFriends,
+    FaMoneyBillAlt,
+    FaRegIdBadge,
+    FaNewspaper
+} from "react-icons/fa";
+import {
+    FaUsers,
+    FaMoneyCheckAlt,
+    FaIdBadge,
+    FaCalendarAlt,
+    FaComments,
     FaBook,
     FaPlusSquare,
-    FaChalkboardTeacher,
-    FaCalendarAlt,
-    FaBriefcase,
-    FaComments,
-    FaCog,
-    FaSignOutAlt,
-    FaUsers
+    FaChalkboardTeacher
 } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
@@ -19,15 +31,20 @@ import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/authcontext";
 
-// Use CSS vars for primary and secondary color from globals.css
-const PRIMARY_COLOR = "oklch(0.32 0.13 266.81)";
-const PRIMARY_COLOR_VAR = "var(--color-primary)";
-const PRIMARY_COLOR_TEXT = "text-primary";
-const PRIMARY_COLOR_TEXT_VAR = "var(--color-primary)";
-const PRIMARY_COLOR_BG_VAR = "var(--color-primary)";
-const PRIMARY_COLOR_BG = "bg-primary"; // tailwind support
+// Improved and more detailed hierarchy: Group/category definitions ===================
 
+type NavLink = {
+    label: string;
+    icon: React.ElementType;
+    href?: string;
+    group?: string; // e.g. "Content", "User Management"
+    description?: string;
+    subcategory?: string; // for category-specific grouping
+};
+
+// --- Visual Contrast & Hierarchy: CSS ---
 const iconAnimationStyles = `
+/* ... same as before ... */
 @keyframes icon-bounce {
   0%, 100% { transform: translateY(0);}
   15% { transform: translateY(-4px);}
@@ -60,7 +77,7 @@ const iconAnimationStyles = `
   animation: icon-bounce 0.7s;
   color: var(--color-primary) !important;
 }
-/* Mobile Bottom Nav bar */
+/* Remove all shadow/background gradient for clear flat look */
 @media (max-width: 639px) {
   .mobile-bottom-nav {
     display: flex;
@@ -68,10 +85,9 @@ const iconAnimationStyles = `
     bottom: 0; left: 0; right: 0;
     height: 58px;
     z-index: 50;
-    background: #FAFCFE;
-    border-top: 1px solid #E6EFFA;
-    box-shadow: 0 0 6px 0 rgba(44,69,112,0.01), 0 -1px 0 0 #E6EFFA;
-    margin-top: 24px; /* Added: top margin 24 on mobile */
+    background: #f7f9fb;
+    border-top: 2px solid #d9e7f5;
+    margin-top: 24px;
   }
   .mobile-bottom-nav ul {
     flex: 1 1 0;
@@ -84,8 +100,8 @@ const iconAnimationStyles = `
     flex: 1 1 0;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    font-size: 11px; color: #203040;
-    gap: 2px;
+    font-size: 11px; color: #17223b;
+    gap: 4px;
     text-align: center;
     font-weight: 500;
     min-width: 0; min-height: 0;
@@ -94,21 +110,23 @@ const iconAnimationStyles = `
     background: transparent;
     border: none;
     outline: none;
-    transition: background 0.15s;
+    transition: background 0.13s;
     cursor: pointer;
+    letter-spacing: 0.01em;
   }
   .bottomnav-item .animated-bottomnav-icon {
     width: 22px;
     height: 22px;
     display: block;
     margin: 0 auto 1px auto;
-    color: #8CA1B6;
+    color: #8E9BB5;
     transition: color 0.2s;
   }
   .bottomnav-item-active {
-    background: #E6F7FF;
+    background: #def0fc;
     color: var(--color-primary);
-    font-weight: 600;
+    font-weight: 700;
+    border-left: 3px solid var(--color-primary);
   }
   .bottomnav-item-active .animated-bottomnav-icon {
     color: var(--color-primary) !important;
@@ -117,72 +135,97 @@ const iconAnimationStyles = `
     position: absolute;
     bottom: 62px;
     left: 8px; right: 8px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 6px 36px 0 rgba(23,40,120,0.10), 0 1.5px 0 0 #E6EFFA;
-    border: 1px solid #E6EFFA;
+    background: #fff;
+    border-radius: 7px;
+    border: 2px solid #c4d4e9;
     z-index: 51;
-    padding: 3px 0;
-    animation: dropdown-fadein 0.21s cubic-bezier(0.42,0,0.58,1);
+    padding: 5px 0 2px 0;
+    animation: dropdown-fadein 0.18s cubic-bezier(0.42,0,0.58,1);
   }
   @keyframes dropdown-fadein {
-    0% { transform: translateY(16px); opacity: 0;}
+    0% { transform: translateY(12px); opacity: 0;}
     100% { transform: translateY(0); opacity: 1;}
   }
   .bottomnav-label {
-    font-size: 11px;
-    line-height: 1;
+    font-size: 11.3px;
+    font-weight: 500;
+    line-height: 1.06;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     margin-bottom: 0;
     margin-top: 0;
+    color: #1a2440;
     transition: color 0.2s;
   }
   .sidebar-container,
-  .mobile-topbar {
-    display: none !important;
-  }
+  .mobile-topbar { display: none !important; }
 }
-/* Hide bottom nav on desktop */
 @media (min-width: 640px) {
   .mobile-bottom-nav { display: none !important; }
 }
 `;
 
-// Improved Auth types - rely on context (not hardcoded)
-type NavLink = {
-    label: string;
-    icon: React.ElementType;
-    href?: string;
-    group?: string; // For grouping
-    description?: string;
-};
+// --- Navigation structure grouped for deeper visual hierarchy ------------
 
-// Main navigation links, excludes 'Create Publication'
-const navLinksMain: NavLink[] = [
+// Section: Dashboard & Home
+const homeLinks: NavLink[] = [
     {
         label: "Overview",
         icon: FaHome,
-        href: "/admin/dashboard"
+        href: "/admin/dashboard",
+        group: "Dashboard",
+        description: "Admin Home & Stats"
     },
+];
+
+// Section: User Management
+const userManagementLinks: NavLink[] = [
     {
         label: "Members",
         icon: FaUsers,
-        href: "/admin/members"
+        href: "/admin/members",
+        group: "User Management",
+        description: "View and manage members"
     },
+    {
+        label: "Payment History",
+        icon: FaMoneyCheckAlt,
+        href: "/admin/members/payment-history",
+        group: "User Management",
+        description: "Payments & transactions"
+    },
+    {
+        label: "Member Status",
+        icon: FaIdBadge,
+        href: "/admin/members/status",
+        group: "User Management",
+        description: "Membership status overview"
+    },
+];
+
+// Section: Content Management
+const contentLinks: NavLink[] = [
+    // Events & Forum NOW come after Member Status
     {
         label: "Events",
         icon: FaCalendarAlt,
-        href: "/admin/events"
+        href: "/admin/events",
+        group: "Content",
+        subcategory: "Activities",
+        description: "All association events"
     },
     {
         label: "Forum",
         icon: FaComments,
-        href: "/admin/forum"
-    }
+        href: "/admin/forum",
+        group: "Content",
+        subcategory: "Community",
+        description: "Discussion board"
+    },
 ];
 
+// Section: Publications & News
 const publicationsDropdownLinks: NavLink[] = [
     {
         label: "All Publications",
@@ -206,50 +249,40 @@ const publicationsDropdownLinks: NavLink[] = [
         description: "Add a new publication"
     },
 ];
+
 const newsDropdownLinks: NavLink[] = [
     {
         label: "All News",
         icon: FaSearch,
         href: "/admin/news",
         group: "News",
-        description: "All News"
+        description: "All news"
     },
-
     {
         label: "Create News",
         icon: FaPlusSquare,
         href: "/admin/news/new",
-        group: "Publications",
+        group: "News",
         description: "Create news"
     },
 ];
 
-const organizePublicationTabsForMobile = (list: NavLink[]) => {
-    return [
-        ...list.filter(l => l.group === "Publications"),
-        ...list.filter(l => l.group === "News"),
-    ];
-};
-// const newsTabsForMobile = (list: NavLink[]) => {
-//     return [
-//         ...list.filter(l => l.group === "News"),
-//     ];
-// };
-
+// Combine tabs for mobile bottom nav
+const organizePublicationTabsForMobile = (list: NavLink[]) => [
+    ...list.filter(l => l.group === "Publications"),
+    ...list.filter(l => l.group === "News"),
+];
 const publicationsDropdownLinksMobile: NavLink[] = organizePublicationTabsForMobile([
     ...publicationsDropdownLinks,
     ...newsDropdownLinks
 ]);
 
+// Section: System/Utility/Secondary (Settings removed)
 const navLinksSecondary: NavLink[] = [
-    // {
-    //     label: "Settings",
-    //     icon: FaCog,
-    //     href: "/admin/settings"
-    // }
+    // Add more utility links as needed...
 ];
 
-// UserAvatar now expects full user object (from context)
+// PROFILE/USER
 function UserAvatar({ user }: { user: { name?: string, email?: string, avatarUrl?: string } }) {
     return (
         <div className="flex items-center gap-3 px-3 py-3">
@@ -258,21 +291,19 @@ function UserAvatar({ user }: { user: { name?: string, email?: string, avatarUrl
                 alt={user.name || "User"}
                 width={32}
                 height={32}
-                className="w-8 h-8 rounded-full border border-[#D9E7F5] object-cover"
+                className="w-8 h-8 rounded-full border-2 border-[#bbc9dc] object-cover"
+                style={{ background: "#eaf0f7" }}
                 priority
             />
             <div className="flex flex-col min-w-0 leading-tight">
-                <span className="text-sm font-semibold text-[#16355D] truncate">
-                    {user.name ?? "-"}
-                </span>
-                <span className="text-xs text-[#96A6BF] truncate">
-                    {user.email ?? ""}
-                </span>
+                <span className="text-[14px] font-semibold text-[#16355D] truncate">{user.name ?? "-"}</span>
+                <span className="text-xs text-[#8094bb] truncate">{user.email ?? ""}</span>
             </div>
         </div>
     );
 }
 
+// NAV ITEM (unchanged)
 type NavItemProps = {
     icon: React.ElementType;
     label: string;
@@ -283,6 +314,7 @@ type NavItemProps = {
     ariaExpanded?: boolean;
     asButton?: boolean;
     hideLabelOnMobile?: boolean;
+    description?: string;
 };
 
 function NavItem({
@@ -294,16 +326,18 @@ function NavItem({
     children,
     ariaExpanded,
     asButton = false,
-    hideLabelOnMobile = false
+    hideLabelOnMobile = false,
+    description
 }: NavItemProps) {
-    // Use Tailwind primary color for ring and active by mapping to class or inline style
     const labelClass = hideLabelOnMobile ? "hidden sm:inline" : "inline";
     const baseClass =
-        "sidebar-navitem flex items-center w-full px-5 py-2.5 rounded-lg text-sm font-medium gap-3 mb-0.5 transition-colors whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-primary";
-    const activeClass = "sidebar-navitem-active bg-[#D8F3FF] text-primary"; // (Background matches UI, text uses primary via CSS var)
-    const hoverInactive = "hover:bg-[#F5F7FA] text-[#203040]";
+        "sidebar-navitem flex items-center w-full px-5 py-2.5 rounded-lg text-[15px] font-medium gap-3 mb-0.5 transition-colors whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-primary";
+    const activeClass =
+        "sidebar-navitem-active text-primary bg-[#e5effa] border-l-4 border-primary font-bold";
+    const hoverInactive =
+        "hover:bg-[#edf3fa] text-[#1a2332]";
     const iconActive = "animated-sidebar-icon text-primary";
-    const iconInactive = "animated-sidebar-icon text-[#8CA1B6]";
+    const iconInactive = "animated-sidebar-icon text-[#96a3b9]";
 
     if (asButton) {
         return (
@@ -315,10 +349,13 @@ function NavItem({
                     aria-haspopup={children ? "menu" : undefined}
                     aria-expanded={ariaExpanded}
                     onClick={onClick}
-                    style={active ? { color: "var(--color-primary)" } : undefined}
+                    style={active ? { color: "var(--color-primary)", fontWeight: 700 } : undefined}
                 >
                     <Icon className={`w-5 h-5 flex-shrink-0 ${active ? iconActive : iconInactive}`} style={active ? { color: "var(--color-primary)" } : undefined} />
                     <span className={`flex-1 text-left ${labelClass}`}>{label}</span>
+                    {description && (
+                        <span className="ml-auto text-xs text-[#a4adc3] font-normal">{description}</span>
+                    )}
                     {children ? (
                         <svg
                             className={`ml-auto h-3 w-3 transition-transform ${ariaExpanded ? "rotate-90" : ""}`}
@@ -341,6 +378,9 @@ function NavItem({
         <>
             <Icon className={`w-5 h-5 flex-shrink-0 ${active ? iconActive : iconInactive}`} style={active ? { color: "var(--color-primary)" } : undefined} />
             <span className={labelClass}>{label}</span>
+            {description && (
+                <span className="ml-auto text-xs text-[#a4adc3] font-normal">{description}</span>
+            )}
         </>
     );
 
@@ -352,7 +392,7 @@ function NavItem({
                     aria-current={active ? "page" : undefined}
                     className={`${baseClass} ${active ? activeClass : hoverInactive}`}
                     tabIndex={0}
-                    style={active ? { color: "var(--color-primary)" } : undefined}
+                    style={active ? { color: "var(--color-primary)", fontWeight: 700 } : undefined}
                 >
                     {content}
                 </Link>
@@ -366,7 +406,7 @@ function NavItem({
                 className={`${baseClass} ${hoverInactive} ${active ? activeClass : ""}`}
                 onClick={onClick}
                 tabIndex={0}
-                style={active ? { color: "var(--color-primary)" } : undefined}
+                style={active ? { color: "var(--color-primary)", fontWeight: 700 } : undefined}
             >
                 {content}
             </button>
@@ -384,9 +424,7 @@ function PublicationsDropdown({ pathname }: { pathname: string | null }) {
         (link) => pathname === link.href || (link.href && pathname?.startsWith(link.href))
     );
 
-    useEffect(() => {
-        setOpen(false);
-    }, [pathname]);
+    useEffect(() => { setOpen(false); }, [pathname]);
 
     const handleBlur = (e: React.FocusEvent<HTMLButtonElement | HTMLUListElement>) => {
         if (
@@ -399,7 +437,6 @@ function PublicationsDropdown({ pathname }: { pathname: string | null }) {
     };
 
     const labelClass = "hidden sm:inline";
-
     const publicationTabs = [
         ...publicationsDropdownLinks.filter(l => l.group === "Publications" && l.label !== "Create Publication"),
         ...publicationsDropdownLinks.filter(l => l.label === "Create Publication"),
@@ -417,10 +454,11 @@ function PublicationsDropdown({ pathname }: { pathname: string | null }) {
             <ul
                 ref={dropdownRef}
                 onBlur={handleBlur}
-                className={`${open ? "block" : "hidden"} absolute left-0 right-0 top-full z-40 bg-white border border-[#E6EFFA] rounded shadow mt-1 ml-3 mr-3 py-1 sm:min-w-[198px] max-w-xs`}
+                className={`${open ? "block" : "hidden"} absolute left-0 right-0 top-full z-40 bg-[#f5f8fa] border-2 border-[#b8d2f0] rounded mt-1 ml-3 mr-3 py-1 sm:min-w-[208px] max-w-xs`}
                 tabIndex={-1}
                 role="menu"
                 aria-label="News & Publications submenu"
+                style={{ boxShadow: "none" }}
             >
                 {publicationTabs.map((sublink, idx) => {
                     const isActive = pathname === sublink.href;
@@ -428,23 +466,22 @@ function PublicationsDropdown({ pathname }: { pathname: string | null }) {
                     return (
                         <li key={sublink.label} className={`dropdown-navitem${isActive ? " dropdown-active" : ""}`}>
                             {isCreate && (
-                                <div className="border-t border-[#E6EFFA] my-1" />
+                                <div className="border-t border-[#e5edfa] my-1" />
                             )}
                             <Link
                                 href={sublink.href ?? "#"}
-                                className={`flex items-center gap-3 px-4 py-2 rounded text-sm font-medium transition-colors hover:bg-[#F5F7FA] ${isActive ? "font-semibold bg-[#D8F3FF] text-primary" : "text-[#203040]"
+                                className={`flex items-center gap-3 px-4 py-2 rounded text-[15px] font-medium transition-colors hover:bg-[#eaf3fd] ${isActive ? "font-bold bg-[#def0fc] text-primary border-l-4 border-primary" : "text-[#243050]"
                                     }`}
                                 role="menuitem"
                                 tabIndex={0}
-                                // CLOSE dropdown panel on nav
                                 onClick={() => setOpen(false)}
                                 style={isActive ? { color: "var(--color-primary)" } : undefined}
                             >
-                                <sublink.icon className={`w-4 h-4 flex-shrink-0 animated-dropdown-icon${isActive ? " text-primary" : " text-[#8CA1B6]"}`
+                                <sublink.icon className={`w-4 h-4 flex-shrink-0 animated-dropdown-icon${isActive ? " text-primary" : " text-[#7d8daa]"}`
                                 } style={isActive ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
                                 <span className={labelClass}>{sublink.label}</span>
                                 {sublink.description && (
-                                    <span className="ml-auto text-xs text-[#8CA1B6] hidden sm:inline">{sublink.description}</span>
+                                    <span className="ml-auto text-xs text-[#9ca9c7] hidden sm:inline">{sublink.description}</span>
                                 )}
                             </Link>
                         </li>
@@ -455,19 +492,15 @@ function PublicationsDropdown({ pathname }: { pathname: string | null }) {
     );
 }
 
-// News Dropdown for Sidebar (desktop)
 function NewsDropdown({ pathname }: { pathname: string | null }) {
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef<HTMLUListElement>(null);
 
-    // Determine if any child tab is active
     const isChildActive = newsDropdownLinks.some(
         (link) => pathname === link.href || (link.href && pathname?.startsWith(link.href))
     );
 
-    useEffect(() => {
-        setOpen(false);
-    }, [pathname]);
+    useEffect(() => { setOpen(false); }, [pathname]);
 
     const handleBlur = (e: React.FocusEvent<HTMLButtonElement | HTMLUListElement>) => {
         if (
@@ -480,7 +513,6 @@ function NewsDropdown({ pathname }: { pathname: string | null }) {
     };
 
     const labelClass = "hidden sm:inline";
-
     const newsTabs = [
         ...newsDropdownLinks.filter(l => l.group === "News" && l.label !== "Create News"),
         ...newsDropdownLinks.filter(l => l.label === "Create News"),
@@ -498,10 +530,11 @@ function NewsDropdown({ pathname }: { pathname: string | null }) {
             <ul
                 ref={dropdownRef}
                 onBlur={handleBlur}
-                className={`${open ? "block" : "hidden"} absolute left-0 right-0 top-full z-40 bg-white border border-[#E6EFFA] rounded shadow mt-1 ml-3 mr-3 py-1 sm:min-w-[198px] max-w-xs`}
+                className={`${open ? "block" : "hidden"} absolute left-0 right-0 top-full z-40 bg-[#f5f8fa] border-2 border-[#b8d2f0] rounded mt-1 ml-3 mr-3 py-1 sm:min-w-[208px] max-w-xs`}
                 tabIndex={-1}
                 role="menu"
                 aria-label="News"
+                style={{ boxShadow: "none" }}
             >
                 {newsTabs.map((sublink, idx) => {
                     const isActive = pathname === sublink.href;
@@ -509,23 +542,22 @@ function NewsDropdown({ pathname }: { pathname: string | null }) {
                     return (
                         <li key={sublink.label} className={`dropdown-navitem${isActive ? " dropdown-active" : ""}`}>
                             {isCreate && (
-                                <div className="border-t border-[#E6EFFA] my-1" />
+                                <div className="border-t border-[#e5edfa] my-1" />
                             )}
                             <Link
                                 href={sublink.href ?? "#"}
-                                className={`flex items-center gap-3 px-4 py-2 rounded text-sm font-medium transition-colors hover:bg-[#F5F7FA] ${isActive ? "font-semibold bg-[#D8F3FF] text-primary" : "text-[#203040]"
+                                className={`flex items-center gap-3 px-4 py-2 rounded text-[15px] font-medium transition-colors hover:bg-[#eaf3fd] ${isActive ? "font-bold bg-[#def0fc] text-primary border-l-4 border-primary" : "text-[#243050]"
                                     }`}
                                 role="menuitem"
                                 tabIndex={0}
-                                // CLOSE dropdown panel on nav
                                 onClick={() => setOpen(false)}
                                 style={isActive ? { color: "var(--color-primary)" } : undefined}
                             >
-                                <sublink.icon className={`w-4 h-4 flex-shrink-0 animated-dropdown-icon${isActive ? " text-primary" : " text-[#8CA1B6]"}`
+                                <sublink.icon className={`w-4 h-4 flex-shrink-0 animated-dropdown-icon${isActive ? " text-primary" : " text-[#7d8daa]"}`
                                 } style={isActive ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
                                 <span className={labelClass}>{sublink.label}</span>
                                 {sublink.description && (
-                                    <span className="ml-auto text-xs text-[#8CA1B6] hidden sm:inline">{sublink.description}</span>
+                                    <span className="ml-auto text-xs text-[#9ca9c7] hidden sm:inline">{sublink.description}</span>
                                 )}
                             </Link>
                         </li>
@@ -536,7 +568,7 @@ function NewsDropdown({ pathname }: { pathname: string | null }) {
     );
 }
 
-// Mobile BottomNav Dropdown (bottom sheet style)
+// BottomNavDropdown: mobile dropdown
 function BottomNavDropdown({
     open,
     onClose,
@@ -573,10 +605,8 @@ function BottomNavDropdown({
         return () => window.removeEventListener("keydown", keyHandler);
     }, [open, onClose]);
 
-    // Also close dropdown if route (activeHref) changes
     useEffect(() => {
         onClose();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeHref]);
 
     if (!open) return null;
@@ -590,7 +620,10 @@ function BottomNavDropdown({
             aria-label="News & Publications submenu"
             style={{
                 minWidth: '180px',
-                maxWidth: '90vw'
+                maxWidth: '90vw',
+                background: "#f7fafe",
+                boxShadow: "none",
+                border: "2px solid #c4d4e9",
             }}
         >
             {nonCreateTabs.map(link => {
@@ -600,36 +633,36 @@ function BottomNavDropdown({
                         key={link.label}
                         href={link.href ?? "#"}
                         onClick={onClose}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium transition-colors hover:bg-[#F5F7FA] ${isActive ? "font-semibold bg-[#D8F3FF] text-primary" : "text-[#203040]"}`}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium transition-colors hover:bg-[#eaf3fd] ${isActive ? "font-bold bg-[#def0fc] text-primary border-l-4 border-primary" : "text-[#1e2535]"}`}
                         tabIndex={0}
                         style={isActive ? { color: "var(--color-primary)" } : undefined}
                     >
-                        <link.icon className={`w-5 h-5 mr-2 animated-dropdown-icon${isActive ? " text-primary" : " text-[#8CA1B6]"}`
+                        <link.icon className={`w-5 h-5 mr-2 animated-dropdown-icon${isActive ? " text-primary" : " text-[#7d8daa]"}`
                         } style={isActive ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
                         <span className="bottomnav-label">{link.label}</span>
                         {link.description && (
-                            <span className="ml-auto text-xs text-[#8CA1B6] hidden sm:inline">{link.description}</span>
+                            <span className="ml-auto text-xs text-[#97aac9] hidden sm:inline">{link.description}</span>
                         )}
                     </Link>
                 );
             })}
             {createTab && (
                 <>
-                    <div className="border-t border-[#E6EFFA] my-1" />
+                    <div className="border-t border-[#e5edfa] my-1" />
                     <Link
                         key={createTab.label}
                         href={createTab.href ?? "#"}
                         onClick={onClose}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium transition-colors hover:bg-[#F5F7FA] ${activeHref === createTab.href ? "font-semibold bg-[#D8F3FF] text-primary" : "text-[#203040]"
+                        className={`flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium transition-colors hover:bg-[#eaf3fd] ${activeHref === createTab.href ? "font-bold bg-[#def0fc] text-primary border-l-4 border-primary" : "text-[#1e2535]"
                             }`}
                         tabIndex={0}
                         style={activeHref === createTab.href ? { color: "var(--color-primary)" } : undefined}
                     >
-                        <createTab.icon className={`w-5 h-5 mr-2 animated-dropdown-icon${activeHref === createTab.href ? " text-primary" : " text-[#8CA1B6]"}`
+                        <createTab.icon className={`w-5 h-5 mr-2 animated-dropdown-icon${activeHref === createTab.href ? " text-primary" : " text-[#7d8daa]"}`
                         } style={activeHref === createTab.href ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
                         <span className="bottomnav-label">{createTab.label}</span>
                         {createTab.description && (
-                            <span className="ml-auto text-xs text-[#8CA1B6] hidden sm:inline">{createTab.description}</span>
+                            <span className="ml-auto text-xs text-[#97aac9] hidden sm:inline">{createTab.description}</span>
                         )}
                     </Link>
                 </>
@@ -638,6 +671,7 @@ function BottomNavDropdown({
     );
 }
 
+// Sidebar container (unchanged)
 function SidebarContainer({
     SidebarContent
 }: { SidebarContent: React.ReactNode }) {
@@ -650,6 +684,7 @@ function SidebarContainer({
     );
 }
 
+// Mobile Bottom Nav: Grouped/categorized for mobile
 function MobileBottomNavBar({
     pathname,
     onSignOut
@@ -659,7 +694,7 @@ function MobileBottomNavBar({
 }) {
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
-    // Only these tabs on mobile: Home, Publications (dropdown with create), Events, Forum, Training
+    // Mobile order: show high priority sections first, group as admins expect
     const bottomTabs = [
         {
             key: "home",
@@ -681,6 +716,24 @@ function MobileBottomNavBar({
             href: "/admin/news"
         },
         {
+            key: "members",
+            icon: FaUsers,
+            label: "Members",
+            href: "/admin/members"
+        },
+        {
+            key: "payment-history",
+            icon: FaMoneyCheckAlt,
+            label: "Payment History",
+            href: "/admin/members/payment-history"
+        },
+        {
+            key: "member-status",
+            icon: FaIdBadge,
+            label: "Member Status",
+            href: "/admin/members/status"
+        },
+        {
             key: "events",
             icon: FaCalendarAlt,
             label: "Events",
@@ -691,20 +744,19 @@ function MobileBottomNavBar({
             icon: FaComments,
             label: "Forum",
             href: "/admin/forum"
-        }
+        },
     ];
 
     const isPubActive = publicationsDropdownLinksMobile.some(l =>
         l.href && (pathname === l.href || pathname?.startsWith(l.href))
     );
-    // const isNewsActive = newsDropdownLinksMobile.some(l =>
-    //     l.href && (pathname === l.href || pathname?.startsWith(l.href))
-    // );
 
-    const visibleTabKeys = ["home", "publications", "news", "events", "forum", "training"];
+    // Only display needed tabs, no settings
+    const visibleTabKeys = [
+        "home", "publications", "news", "members", "payment-history", "member-status", "events", "forum"
+    ];
     const filteredTabs = bottomTabs.filter(tab => visibleTabKeys.includes(tab.key));
 
-    // Always render all navitems; we do not hide any when dropdown is open
     useEffect(() => {
         setDropdownOpen(false);
     }, [pathname]);
@@ -731,10 +783,10 @@ function MobileBottomNavBar({
                                         onClick={() => setDropdownOpen((v) => !v)}
                                         tabIndex={0}
                                         style={{
-                                            boxShadow: dropdownOpen ? "0 4px 24px 0 rgba(44,69,112,0.09)" : undefined,
                                             position: "relative",
                                             zIndex: dropdownOpen ? 100 : undefined,
-                                            color: isPubActive ? "var(--color-primary)" : undefined
+                                            color: isPubActive ? "var(--color-primary)" : undefined,
+                                            fontWeight: isPubActive ? 700 : undefined
                                         }}
                                     >
                                         <tab.iconDropdown className={`animated-bottomnav-icon`} style={isPubActive ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
@@ -759,7 +811,7 @@ function MobileBottomNavBar({
                                     tabIndex={0}
                                     aria-label={tab.label}
                                     onClick={() => setDropdownOpen(false)}
-                                    style={isActive ? { color: "var(--color-primary)" } : undefined}
+                                    style={{ color: isActive ? "var(--color-primary)" : undefined, fontWeight: isActive ? 700 : undefined }}
                                 >
                                     <tab.icon className="animated-bottomnav-icon" style={isActive ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
                                     <span className="bottomnav-label">{tab.label}</span>
@@ -773,22 +825,18 @@ function MobileBottomNavBar({
     );
 }
 
+// Improved Sidebar with detailed/polished hierarchy and categorization
 export function AdminSidebar() {
     const pathname = usePathname();
-    const { user, loading, logout, isAuthenticated } = useAuth();
+    const { user, loading, logout } = useAuth();
 
-    // Improved authentication: block access unless user is authenticated (safe fallback UI)
     if (loading) {
         return (
-            <>
-                <div className="flex items-center justify-center h-screen bg-white text-primary text-lg font-bold" style={{ color: "var(--color-primary)" }}>
-                    Loading user...
-                </div>
-            </>
+            <div className="flex items-center justify-center h-screen bg-[#FAFCFE] text-primary text-lg font-bold" style={{ color: "var(--color-primary)" }}>
+                Loading user...
+            </div>
         );
     }
-
-
 
     const handleSignOut = useCallback(() => {
         if (typeof window !== "undefined" && window.confirm("Are you sure you want to sign out?")) {
@@ -796,53 +844,90 @@ export function AdminSidebar() {
         }
     }, [logout]);
 
-    const navItemsMain = useMemo(() =>
-        navLinksMain.map((link, idx) => {
-            const isActive = link.href
-                ? pathname === link.href ||
-                (idx !== 0 && pathname?.startsWith(link.href))
-                : false;
+    // Helper rendering for group labels
+    function GroupLabel({ label }: { label: string }) {
+        return (
+            <div className="mt-1.5 mb-1 px-7 uppercase text-[11px] tracking-wider font-semibold text-[#8694b3] pb-1">
+                {label}
+            </div>
+        );
+    }
+
+    // Dashboard/Home group
+    const navSectionDashboard = useMemo(() =>
+        homeLinks.map(link => {
+            const isActive = link.href ? pathname === link.href : false;
             return (
                 <NavItem
                     key={link.label}
                     icon={link.icon}
                     label={link.label}
                     href={link.href}
+                    description={link.description}
                     active={isActive}
                 />
             );
-        }),
-        [pathname]
-    );
+        }), [pathname]);
 
-    const navItemsSecondary = useMemo(() =>
-        navLinksSecondary.map((link) => {
-            const isActive = link.href
-                ? pathname === link.href
-                : false;
+    // User Management group
+    const navSectionUserManagement = useMemo(() =>
+        userManagementLinks.map(link => {
+            const isActive = link.href ? pathname === link.href : false;
             return (
                 <NavItem
                     key={link.label}
                     icon={link.icon}
                     label={link.label}
                     href={link.href}
+                    description={link.description}
                     active={isActive}
                 />
             );
-        }),
-        [pathname]
-    );
+        }), [pathname]);
 
-    // Sidebar content for desktop only
+    // Content section (Forum, Events, etc)
+    const navSectionContent = useMemo(() =>
+        contentLinks.map(link => {
+            const isActive = link.href ? pathname === link.href : false;
+            return (
+                <NavItem
+                    key={link.label}
+                    icon={link.icon}
+                    label={link.label}
+                    href={link.href}
+                    description={link.description}
+                    active={isActive}
+                />
+            );
+        }), [pathname]);
+
+    // Publications/News: Use dropdowns (above defined)
+    // System (secondary/utility)
+    const navSectionUtility = useMemo(() =>
+        navLinksSecondary.map(link => {
+            const isActive = link.href ? pathname === link.href : false;
+            return (
+                <NavItem
+                    key={link.label}
+                    icon={link.icon}
+                    label={link.label}
+                    href={link.href}
+                    description={link.description}
+                    active={isActive}
+                />
+            );
+        }), [pathname]);
+
+    // Main structure
     const SidebarContent = (
         <>
             <style>{iconAnimationStyles}</style>
             <nav
                 className={`
-                  w-[76px] sm:w-[228px]
-                  min-w-0 sm:min-w-[228px]
+                  w-[76px] sm:w-[248px]
+                  min-w-0 sm:min-w-[248px]
                   max-w-fit border-none
-                  bg-[#FAFCFE]
+                  bg-[#f7f9fb]
                   h-screen flex flex-col justify-between shadow-none z-50
                   sidebar-mobile
                   sm:sticky sm:top-0
@@ -851,8 +936,8 @@ export function AdminSidebar() {
                 aria-label="Sidebar Navigation"
                 role="navigation"
             >
-                {/* Logo and collapse/mobile close button */}
-                <header className="flex flex-col border-b border-[#E6EFFA] pb-2">
+                {/* TOP: Logo, org name, or branded section */}
+                <header className="flex flex-col border-b-2 border-[#c2d8ed] pb-2 backdrop-blur-sm">
                     <div className="flex justify-between items-center px-4 pt-3 pb-2">
                         <div className="flex items-center gap-2 min-w-0">
                             <Link href="/" aria-label="Home" className="block shrink-0 focus:outline-none focus:ring-2 focus:ring-primary">
@@ -865,39 +950,44 @@ export function AdminSidebar() {
                                     priority
                                 />
                             </Link>
-                            <span className="hidden sm:inline-block ml-2 text-xs font-semibold text-[#16355D] leading-tight truncate max-w-[114px]">
+                            <span className="hidden sm:inline-block ml-2 text-xs font-semibold text-[#16355D] leading-tight truncate max-w-[120px] tracking-wide" style={{ textTransform: "uppercase", color: "#14203c" }}>
                                 NAAPE, Nigeria association of aircraft pilots & engineers
                             </span>
                         </div>
-                        {/* Desktop: collapse/expand sidebar button placeholder (disabled for now) */}
-                        <button
-                            type="button"
-                            aria-label="Collapse sidebar (not yet implemented)"
-                            className="ml-1 sm:flex hidden items-center justify-center rounded-md hover:bg-[#E5F0FB] transition-colors p-[5px] focus:outline-none focus:ring-2 focus:ring-primary"
-                            tabIndex={0}
-                            style={{ border: "1px solid #D7E2ED" }}
-                            disabled
-                        >
-                            <svg width="18" height="18" viewBox="0 0 24 24" className="text-[#768EA6]" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                <rect x="3" y="3" width="18" height="18" rx="3" stroke="#AEBFD3" strokeWidth="1.5" fill="#fff" />
-                                <path d="M13.5 9l-3 3 3 3" stroke="#768EA6" strokeWidth="2" />
-                            </svg>
-                        </button>
                     </div>
                 </header>
-                {/* Navigation */}
-                <ul className="flex-1 w-full flex flex-col py-2 px-0 overflow-y-auto">
-                    {/* Home */}
-                    {navItemsMain[0]}
-                    {/* Improved Publications and News Dropdown with close on nav */}
-                    <PublicationsDropdown pathname={pathname} />
-                    <NewsDropdown pathname={pathname} />
-                    {/* rest; do NOT render standalone Create Publication navitem */}
-                    {navItemsMain.slice(1)}
+                {/* NAVIGATION SECTIONS */}
+                <ul className="flex-1 w-full flex flex-col pt-3 px-0 pb-2 overflow-y-auto divide-y divide-[#e7eef5]">
+                    {/* Dashboard */}
+                    <li className="py-0">
+                        <GroupLabel label="Dashboard" />
+                        <ul className="flex flex-col">
+                            {navSectionDashboard}
+                        </ul>
+                    </li>
+                    {/* User Management */}
+                    <li className="py-0">
+                        <GroupLabel label="User Management" />
+                        <ul className="flex flex-col">
+                            {navSectionUserManagement}
+                        </ul>
+                    </li>
+                    {/* Content Management */}
+                    <li className="py-0">
+                        <GroupLabel label="Content" />
+                        <ul className="flex flex-col">
+                            {/* Publications/news dropdowns placed first for visibility */}
+                            <PublicationsDropdown pathname={pathname} />
+                            <NewsDropdown pathname={pathname} />
+                            {navSectionContent}
+                        </ul>
+                    </li>
                 </ul>
-                <div className="border-t border-[#E6EFFA] bg-transparent">
+                {/* SECONDARY/UTILITY */}
+                <div className="border-t-2 border-[#c2d8ed] bg-transparent mt-1">
                     <ul className="flex flex-col py-2 px-0">
-                        {navItemsSecondary}
+                        <GroupLabel label="System & Account" />
+                        {navSectionUtility}
                         <NavItem
                             icon={FaSignOutAlt}
                             label="Sign Out"
@@ -906,14 +996,13 @@ export function AdminSidebar() {
                         />
                     </ul>
                 </div>
-                {/* User Profile Footer */}
-                <footer className="w-full border-t border-[#E6EFFA] bg-[#F6FAFF]">
+                {/* User profile: visually separated, more contrast */}
+                <footer className="w-full border-t-2 border-[#c2d8ed] bg-[#f0f5fc] mt-2">
                     <div className="flex items-center gap-3 px-4 py-3">
-                        {/* Show avatar always, details on sm+ */}
                         <UserAvatar user={user ?? {}} />
                         <div className="hidden sm:flex flex-col min-w-0">
-                            <span className="text-sm font-semibold text-[#16355D] truncate">{user?.name || "Loading..."}</span>
-                            <span className="text-xs text-[#768EA6] truncate">{user?.email}</span>
+                            <span className="text-[15px] font-bold text-[#16355D] truncate">{user?.name || "Loading..."}</span>
+                            <span className="text-xs text-[#7f97b5] truncate">{user?.email}</span>
                         </div>
                     </div>
                 </footer>
@@ -923,7 +1012,6 @@ export function AdminSidebar() {
 
     return (
         <>
-            <style>{iconAnimationStyles}</style>
             {/* Desktop sidebar */}
             <SidebarContainer SidebarContent={SidebarContent} />
             {/* Mobile Bottom Nav */}

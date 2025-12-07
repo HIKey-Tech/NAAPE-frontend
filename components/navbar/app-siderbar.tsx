@@ -23,125 +23,135 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/authcontext";
 import { toast } from "sonner";
 
-// Enhanced Contrast/Alignment Colors and Style Variables
-const PRIMARY_COLOR = "#17447b";
-const PRIMARY_COLOR_LIGHT_BG = "#eaf3fb";
-const SIDEBAR_CARD_BG = "#fff";
-const SIDEBAR_SHADOW = "0 2px 32px 0 rgba(44,70,115,0.07), 0 1px 4px 0 rgba(10,30,60,0.09)";
-const TEXT_COLOR = "#1a2337"; // increased contrast
-const ICON_INACTIVE = "#889ec2"; // sharper than #afbdd1
-const ICON_ACTIVE_BG = "rgba(23,68,123,0.11)";
-const ICON_BORDER = "#c7d6ea";
-const SECTION_LABEL_BG = "#e6ecf5";
-const PROFILE_NAME = "#113163"; // bolder by a shade
-const PROFILE_EMAIL = "#7082a1"; // bolder by a shade
+// Improved Contrast/Visual Hierarchy Theme
+const PRIMARY_COLOR = "#12306a";
+const SIDEBAR_CARD_BG = "#ffffff";
+// ---- Remove shadow ----
+const SIDEBAR_SHADOW = "none";
+const TEXT_COLOR = "#122244";
+const ICON_INACTIVE = "#60749a";
+const ICON_ACTIVE_BG = "rgba(18,48,106,0.13)";
+const ICON_BORDER = "#98b2ce";
+const SECTION_LABEL_BG = "#e1eafd";
+const PROFILE_NAME = "#072048";
+const PROFILE_EMAIL = "#4b5a76";
 const RADIUS = "18px";
-const SIDEBAR_SECTION_LABEL = "#394d65";
-const ACTIVE_BAR = "#154aa2";
-const SIDEBAR_SECTION_BG = "#eaf2fa";
+const SIDEBAR_SECTION_LABEL = "#214879";
+const ACTIVE_BAR = "#1c5be5";
+const SIDEBAR_SECTION_BG = "#e7f0ff";
+const PRIMARY_COLOR_LIGHT_BG = "#dbeaff";
 
 const iconAnimationStyles = `
 @keyframes icon-bounce {
   0%,100% { transform: translateY(0);}
-  15% { transform: translateY(-5px);}
+  15% { transform: translateY(-7px);}
   30% { transform: translateY(3px);}
   45% { transform: translateY(-2px);}
   60% { transform: translateY(1.5px);}
   75% { transform: translateY(-1px);}
 }
 .animated-sidebar-icon, .animated-bottomnav-icon, .animated-dropdown-icon {
-  transition: color 0.22s, background 0.17s;
+  transition: color 0.16s, background 0.14s;
 }
-.sidebar-navitem:hover,
+.sidebar-navitem,
 .sidebar-navitem:focus {
+  background: transparent;
+}
+.sidebar-navitem:hover, .sidebar-navitem:focus-visible {
   background: ${PRIMARY_COLOR_LIGHT_BG};
 }
 .sidebar-navitem:hover .animated-sidebar-icon,
 .sidebar-navitem:focus .animated-sidebar-icon,
 .bottomnav-item:hover .animated-bottomnav-icon,
 .bottomnav-item:focus .animated-bottomnav-icon {
-  animation: icon-bounce 0.45s;
+  animation: icon-bounce 0.4s;
   color: ${PRIMARY_COLOR} !important;
   background: ${ICON_ACTIVE_BG};
 }
+/* ---- Remove navitem box-shadow ---- */
 .sidebar-navitem-active, .bottomnav-item-active {
-  background: ${PRIMARY_COLOR_LIGHT_BG};
-  font-weight: 700;
+  background: linear-gradient(90deg, ${PRIMARY_COLOR_LIGHT_BG} 90%, #fafdff 100%);
+  font-weight: 810;
   color: ${PRIMARY_COLOR} !important;
   position: relative;
-  box-shadow: 0px 2.5px 12px 0 rgba(65,79,119,0.08); /* subtle highlight */
+  /* box-shadow removed for consistency and flat look */
 }
 .sidebar-navitem-active::before {
   content: "";
   position: absolute;
-  left: 0.18rem; top: 0.6rem; bottom: 0.6rem;
+  left: 0.18rem; top: 0.7rem; bottom: 0.73rem;
   width: 5px;
   background: ${ACTIVE_BAR};
-  border-radius: 8px;
+  border-radius: 9px;
+  box-shadow: 0 1px 4px 0 rgba(28,91,229,0.03);
 }
 .sidebar-navitem-active .animated-sidebar-icon,
 .bottomnav-item-active .animated-bottomnav-icon {
-  animation: icon-bounce 0.7s;
+  animation: icon-bounce 0.64s;
   color: ${PRIMARY_COLOR} !important;
+  background: ${ICON_ACTIVE_BG};
 }
 .dropdown-navitem:hover,
 .dropdown-navitem:focus {
-  background: #f0f5fb;
+  background: #e8f2ff !important;
 }
 .dropdown-navitem:hover .animated-dropdown-icon,
 .dropdown-navitem:focus .animated-dropdown-icon {
-  animation: icon-bounce 0.5s;
+  animation: icon-bounce 0.36s;
   color: ${PRIMARY_COLOR} !important;
 }
 .dropdown-active .animated-dropdown-icon {
-  animation: icon-bounce 0.7s;
+  animation: icon-bounce 0.64s;
   color: ${PRIMARY_COLOR} !important;
 }
 .sidebar-section-label {
   color: ${SIDEBAR_SECTION_LABEL};
   font-size: 13.5px;
-  font-weight: 730;
-  letter-spacing: 0.07em;
-  padding-left: 1.6rem;
-  padding-top: 0.49rem;
-  padding-bottom: 0.17rem;
+  font-weight: 900;
+  letter-spacing: 0.095em;
+  padding-left: 1.4rem;
+  padding-top: 0.32rem;
+  padding-bottom: 0.11rem;
   text-transform: uppercase;
   background: ${SECTION_LABEL_BG};
   border-radius: 13px 13px 0 0;
-  margin-bottom: 0.26rem;
-  margin-top: 0.79rem;
+  margin-bottom: 0.17rem;
+  margin-top: 1.04rem;
   overflow: visible;
-  border-left: 4px solid ${ACTIVE_BAR};
-  text-shadow: 0 1px 0 #fff, 0 0.5px 0 #e5eefd;
+  border-left: 4.8px solid ${ACTIVE_BAR};
+  text-shadow: 0 1px 0 #fff, 0 1.1px 0 #e4edff;
+  /* Remove shadow from label */
 }
 .sidebar-section-spacer {
-  margin: 9px 0 4px 0;
+  margin: 10px 0 6px 0;
   height: 0;
-  border-bottom: 1.7px solid ${ICON_BORDER};
-  width: 90%;
+  border-bottom: 2.3px solid ${ICON_BORDER};
+  width: 89%;
   margin-left: auto; margin-right: auto;
 }
+/* Remove sidebar-card box-shadow for flat look */
 .sidebar-card {
   background: ${SIDEBAR_CARD_BG};
   border-radius: ${RADIUS};
-  border: 1.9px solid ${ICON_BORDER};
-  box-shadow: ${SIDEBAR_SHADOW};
+  border: 2.2px solid ${ICON_BORDER};
+  box-shadow: none;
 }
 .sidebar-card > *:first-child { border-top-left-radius: ${RADIUS}; border-top-right-radius: ${RADIUS}; }
 .sidebar-card > *:last-child { border-bottom-left-radius: ${RADIUS}; border-bottom-right-radius: ${RADIUS}; }
-::-webkit-scrollbar-thumb { background: #e1eaf2; border-radius: 6px;}
+::-webkit-scrollbar-thumb { background: #cbd8f2; border-radius: 6px; border:1px solid #b3c5e2;}
 ::-webkit-scrollbar { width: 8px; background: transparent;}
 @media (max-width: 639px) {
   .mobile-bottom-nav {
     display: flex;
     position: fixed;
     bottom: 0; left: 0; right: 0;
-    height: 60px;
+    height: 62px;
     z-index: 51;
-    background: linear-gradient(90deg, #fafdff 0, #e8eef7 100%);
-    border-top: 1.5px solid ${ICON_BORDER};
-    margin-top: 28px;
-    box-shadow: 0px -4px 15px 0 rgba(17,30,65,0.06);
+    background: linear-gradient(90deg, #fafdff 0, #dbeaff 100%);
+    border-top: 2.3px solid ${ICON_BORDER};
+    margin-top: 30px;
+    /* flatter, remove boxShadow */
+    box-shadow: none;
   }
   .mobile-bottom-nav ul {
     flex: 1 1 0;
@@ -154,64 +164,67 @@ const iconAnimationStyles = `
     flex: 1 1 0;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    font-size: 13px;
+    font-size: 13.5px;
     color: ${TEXT_COLOR};
-    gap: 6px;
+    gap: 6.5px;
     text-align: center;
-    transition: background 0.18s;
+    transition: background 0.14s;
     min-width: 0; min-height: 0;
-    height: 60px;
-    font-weight: 500;
+    height: 62px;
+    font-weight: 600;
     border-radius: 18px 18px 0 0;
-    margin: 0 0.5px;
+    margin: 0 1px;
     cursor: pointer;
     border: none;
     outline: none;
   }
   .bottomnav-item .animated-bottomnav-icon {
-    width: 27px;
-    height: 27px;
+    width: 28px;
+    height: 28px;
     display: block;
-    margin: 0 auto 1.5px auto;
+    margin: 0 auto 2px auto;
     color: ${ICON_INACTIVE};
-    transition: color 0.17s, background 0.14s;
+    transition: color 0.13s, background 0.13s;
     background: none;
     border-radius: 50%;
   }
   .bottomnav-item-active {
-    background: linear-gradient(92deg, #eaf3fb 0, #e7eafc 100%);
+    background: linear-gradient(92deg, #dbeaff 0, #c4ddfd 100%);
     color: ${PRIMARY_COLOR};
-    font-weight: 700;
-    box-shadow: 0px -1.5px 7px 0 rgba(22,40,70,0.09);
+    font-weight: 810;
+    /* Remove box-shadow */
+    box-shadow: none;
+    border-top: 2px solid ${ACTIVE_BAR};
   }
   .bottomnav-item-active .animated-bottomnav-icon {
     color: ${PRIMARY_COLOR} !important;
     background: ${ICON_ACTIVE_BG};
-    border-radius: 9px;
+    border-radius: 12px;
   }
   .bottomnav-dropdown-panel {
     position: absolute;
     left: 7px; right: 7px;
-    bottom: 61px;
+    bottom: 63px;
     background: #fafdff;
     border-radius: 14px;
-    border: 1.8px solid ${ICON_BORDER};
+    border: 2px solid ${ICON_BORDER};
     z-index: 52;
     padding: 8px 0;
-    animation: dropdown-fadein 0.18s cubic-bezier(0.42,0,0.58,1);
-    box-shadow: 0px 10px 32px 0 rgba(42,80,140,0.08);
+    animation: dropdown-fadein 0.14s cubic-bezier(0.42,0,0.58,1);
+    /* Remove drop shadow for panel as well */
+    box-shadow: none;
     backdrop-filter: blur(2px);
   }
   @keyframes dropdown-fadein {
-    0% { transform: translateY(22px); opacity: 0;}
+    0% { transform: translateY(24px); opacity: 0;}
     100% { transform: translateY(0); opacity: 1;}
   }
   .bottomnav-label {
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 13.4px;
+    font-weight: 810;
     color: ${PRIMARY_COLOR};
-    letter-spacing: 0.04em;
-    text-shadow: 0 1px 1.2px #fafdff;
+    letter-spacing: 0.045em;
+    text-shadow: none;
   }
   .sidebar-container,
   .mobile-topbar {
@@ -339,36 +352,42 @@ function getUserInitials(user: User) {
 function SidebarProfileCard({ user }: { user: User }) {
   if (!user || (!user.name && !user.email)) return null;
   return (
-    <div className="flex items-center gap-4 px-5 py-3 min-w-0" style={{ paddingTop: 22, paddingBottom: 22 }}>
+    <div className="flex items-center gap-4 px-6 py-2 min-w-0 bg-[#f5f8ff] border-t-[2px] border-[#cbdbef]" style={{
+      borderRadius: `0 0 ${RADIUS} ${RADIUS}`,
+      paddingTop: 19,
+      paddingBottom: 19,
+      /* Remove boxShadow for flat look */
+      boxShadow: "none"
+    }}>
       <div className="relative flex-shrink-0">
         {user.avatarUrl ? (
           <Image
             src={user.avatarUrl}
             alt={user.name || user.email || "User Avatar"}
-            width={48}
-            height={48}
-            className="rounded-full border-2 border-[#c8def7] object-cover select-none"
+            width={52}
+            height={52}
+            className="rounded-full border-2 border-[#b8cce6] object-cover select-none"
             style={{
-              width: 48,
-              height: 48,
-              background: "#e3eef9",
-              boxShadow: "0px 2px 12px #e9f2fc"
+              width: 52,
+              height: 52,
+              background: "#e2eefd",
+              boxShadow: "none"
             }}
           />
         ) : (
           <div
-            className="flex items-center justify-center rounded-full border-2 border-[#c8def7] object-cover select-none"
+            className="flex items-center justify-center rounded-full border-2 border-[#b8cce6] object-cover select-none"
             style={{
-              width: 48,
-              height: 48,
-              background: "#e3eef9",
+              width: 52,
+              height: 52,
+              background: "#e3f1fd",
               fontSize: 22,
               fontWeight: 800,
-              color: "#17447b",
+              color: PRIMARY_COLOR,
               textTransform: "uppercase",
               letterSpacing: "0.04em",
               userSelect: "none",
-              boxShadow: "0px 2px 13px #ddeafb"
+              boxShadow: "none"
             }}
             aria-label={user.name || user.email}
           >
@@ -378,20 +397,28 @@ function SidebarProfileCard({ user }: { user: User }) {
         <span
           style={{
             position: "absolute",
-            right: -1.5,
-            bottom: -2,
-            width: 14,
-            height: 14,
+            right: -4,
+            bottom: -6,
+            width: 16,
+            height: 16,
             borderRadius: "50%",
-            background: "#10c554",
-            border: "2.6px solid #fafdff",
-            boxShadow: "0 1px 3px 0 #c9e3d6"
+            background: "#25e36a",
+            border: "3px solid #fafdff",
+            boxShadow: "none"
           }}
           aria-label="online"
         />
       </div>
-      <div className="flex flex-col min-w-0" style={{ lineHeight: "1.15", alignItems: "flex-start" }}>
-        <span className="truncate text-[15.7px] font-bold" style={{ color: PROFILE_NAME, letterSpacing: ".015em" }}>
+      <div className="flex flex-col min-w-0" style={{
+        lineHeight: "1.12",
+        alignItems: "flex-start"
+      }}>
+        <span className="truncate text-[16.6px] font-bold" style={{
+          color: PROFILE_NAME,
+          letterSpacing: ".03em",
+          fontWeight: 900,
+          textShadow: "none"
+        }}>
           {user.name ?? user.email ?? "User"}
         </span>
         {user.email && (
@@ -404,7 +431,7 @@ function SidebarProfileCard({ user }: { user: User }) {
   );
 }
 
-// NavItem - robust for all combinations, label and accessibility edge cases
+// NavItem with improved alignment and no shadow
 type NavItemProps = {
   icon: React.ElementType;
   label: string;
@@ -438,16 +465,17 @@ function NavItem({
     ? "hidden sm:inline"
     : "inline";
   const baseClass =
-    `sidebar-navitem group relative flex items-center w-full px-6 py-2.5 rounded-lg text-base gap-4 font-semibold transition-all duration-100 whitespace-nowrap focus:outline-none focus:ring-2 border-l-4 border-transparent`;
+    `sidebar-navitem group relative flex items-center w-full px-5 py-2.5 rounded-xl text-base gap-3 font-semibold transition-all duration-100 whitespace-nowrap focus:outline-none focus:ring-2 border-l-[5px] border-transparent`;
   const focusRing = `focus:ring-[${PRIMARY_COLOR}]`;
-  const activeClass = `sidebar-navitem-active bg-[${PRIMARY_COLOR_LIGHT_BG}] text-[${PRIMARY_COLOR}] border-l-4 border-[${ACTIVE_BAR}]`;
-  const hoverInactive = `hover:bg-[#f2f7fa] text-[${TEXT_COLOR}] transition-all duration-100`;
-  const iconActive = `animated-sidebar-icon text-[${PRIMARY_COLOR}] scale-110 bg-[${ICON_ACTIVE_BG}] rounded-[9px]`;
-  const iconInactive = `animated-sidebar-icon text-[${ICON_INACTIVE}]`;
+  const activeClass = `sidebar-navitem-active bg-[${PRIMARY_COLOR_LIGHT_BG}] text-[${PRIMARY_COLOR}] border-l-[5px] border-[${ACTIVE_BAR}]`;
+  const hoverInactive = `hover:bg-[#e1ecff] text-[${TEXT_COLOR}] transition-all duration-100`;
+  const iconActive = `animated-sidebar-icon text-[${PRIMARY_COLOR}] bg-[${ICON_ACTIVE_BG}] rounded-[13px] w-7 h-7`;
+  const iconInactive = `animated-sidebar-icon text-[${ICON_INACTIVE}] w-7 h-7`;
   const buttonRippleStyle = {};
 
   const tabIndexVal = disabled ? -1 : tabIndex;
 
+  // Proper alignment: space between icon and label, smaller left margin, remove excessive gap
   if (asButton) {
     return (
       <li className="relative">
@@ -462,8 +490,14 @@ function NavItem({
           aria-disabled={disabled}
           style={buttonRippleStyle}
         >
-          <Icon className={`w-6 h-6 flex-shrink-0 ${active ? iconActive : iconInactive}`} />
-          <span className={`flex-1 ml-1 text-left ${labelClass}`} style={{ fontWeight: active ? 730 : 510, fontSize: 15.3, letterSpacing: ".012em" }}>
+          <Icon className={`${active ? iconActive : iconInactive} flex-shrink-0`} />
+          <span className={`flex-1 ml-2 text-left ${labelClass}`} style={{
+            fontWeight: active ? 900 : 510,
+            fontSize: 17,
+            letterSpacing: ".016em",
+            color: active ? PRIMARY_COLOR : TEXT_COLOR,
+            paddingLeft: "0px"
+          }}>
             {label}
           </span>
           {children ? (
@@ -471,9 +505,10 @@ function NavItem({
               className={`ml-auto h-3.5 w-3.5 transition-transform ${ariaExpanded ? "rotate-90" : ""}`}
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.2"
               viewBox="0 0 20 20"
               aria-hidden="true"
+              style={{ color: ICON_INACTIVE }}
             >
               <polyline points="6 8 10 12 14 8" />
             </svg>
@@ -487,24 +522,30 @@ function NavItem({
   const safeLabel = label || "Navigation Item";
   const content = (
     <div className="flex flex-col flex-1 min-w-0 items-start">
-      <div className="flex items-center min-w-0 gap-2">
-        <Icon className={`w-6 h-6 flex-shrink-0 ${active ? iconActive : iconInactive}`} />
+      <div className="flex items-center min-w-0 gap-3">
+        <Icon className={`${active ? iconActive : iconInactive} flex-shrink-0`} />
         <span
           className={`${labelClass} tracking-wide whitespace-nowrap truncate`}
-          style={{ fontWeight: active ? 720 : 510, fontSize: 15.3, letterSpacing: ".012em" }}
+          style={{
+            fontWeight: active ? 900 : 510,
+            fontSize: 17,
+            letterSpacing: ".016em",
+            color: active ? PRIMARY_COLOR : TEXT_COLOR,
+            paddingLeft: "0px"
+          }}
         >
           {safeLabel}
         </span>
       </div>
       {description && (
         <span
-          className="text-xs mt-0.5 pl-[31px] pr-1 break-words hidden sm:block text-left"
+          className="text-xs mt-1.5 pl-[33px] pr-2 break-words hidden sm:block text-left"
           style={{
-            color: ICON_INACTIVE,
-            lineHeight: 1.23,
-            fontWeight: 420,
+            color: iconInactive.includes(primaryColorClass()) ? PRIMARY_COLOR : ICON_INACTIVE,
+            lineHeight: 1.27,
+            fontWeight: 500,
             whiteSpace: "normal",
-            paddingTop: 1
+            opacity: 0.98,
           }}
         >
           {description}
@@ -512,6 +553,10 @@ function NavItem({
       )}
     </div>
   );
+
+  function primaryColorClass() {
+    return PRIMARY_COLOR.replace("#", "");
+  }
 
   if (href) {
     const linkHref = href || "#";
@@ -599,30 +644,33 @@ function PublicationsDropdown({ pathname }: { pathname: string | null }) {
       <ul
         ref={dropdownRef}
         onBlur={handleBlur}
-        className={`${open ? "block" : "hidden"} absolute left-0 right-0 top-full z-50 bg-[#fafdff] border border-[${ICON_BORDER}] rounded-xl mt-2 py-2 sm:min-w-[235px] max-w-xs transition-all duration-100 shadow-xl`}
+        className={`${open ? "block" : "hidden"} absolute left-0 right-0 top-full z-50 bg-[#fcfcff] border border-[${ICON_BORDER}] rounded-xl mt-2 py-2 sm:min-w-[250px] max-w-xs transition-all duration-100`}
         tabIndex={-1}
         role="menu"
         aria-label="News & Publications submenu"
         style={{
-          borderRadius: "14px",
-          minWidth: 210,
-          background: "#fafdff",
-          boxShadow: "0 12px 36px 0 rgba(12,50,110,0.13), 0 2px 8px 0 rgba(22,40,77,0.06)"
+          borderRadius: "15px",
+          minWidth: 224,
+          background: "#fcfcff",
+          /* Remove dropdown shadow */
+          boxShadow: "none"
         }}
       >
-        <li className="px-5 py-1 mb-1">
+        <li className="px-6 py-1 mb-1 pb-2">
           <span
             style={{
-              fontSize: 13.4,
-              fontWeight: 800,
-              color: SIDEBAR_SECTION_LABEL,
+              fontSize: 13.66,
+              fontWeight: 900,
+              color: PRIMARY_COLOR,
               textTransform: "uppercase",
-              letterSpacing: ".06em",
-              borderLeft: `3.5px solid ${ACTIVE_BAR}`,
-              paddingLeft: 6,
+              letterSpacing: ".085em",
+              borderLeft: `4.5px solid ${ACTIVE_BAR}`,
+              paddingLeft: 8,
               background: `${SECTION_LABEL_BG}`,
-              borderRadius: "7px",
-              display: "inline-block"
+              borderRadius: "8px",
+              display: "inline-block",
+              /* Remove label shadow */
+              boxShadow: "none"
             }}
             className="sidebar-section-label"
           >
@@ -643,21 +691,27 @@ function PublicationsDropdown({ pathname }: { pathname: string | null }) {
             <li
               key={sublink.label}
               className={`dropdown-navitem${isActive ? " dropdown-active" : ""} group`}
-              style={{ marginTop: isCreate ? 4 : 0 }}
+              style={{ marginTop: isCreate ? 10 : 0 }}
             >
               {isCreate && (
                 <div
                   className="border-t border-[${ICON_BORDER}] my-2"
                   role="separator"
                   aria-hidden="true"
-                  style={{ width: "85%", marginLeft: "auto", marginRight: "auto", borderBottomStyle: "dashed" }}
+                  style={{
+                    width: "90%",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    borderBottomStyle: "dashed",
+                    opacity: 0.9,
+                  }}
                 />
               )}
               <Link
                 href={sublink.href ?? "#"}
                 className={`
-                  flex flex-col items-start gap-0 px-5 py-2.5 rounded-lg text-[15.3px] font-semibold
-                  transition-all duration-100 hover:bg-[#f0f7fb]
+                  flex flex-col items-start gap-0 px-6 py-3 rounded-lg text-[16px] font-semibold
+                  transition-all duration-150 hover:bg-[#eaf1fe]
                   ${isActive
                     ? `text-[${PRIMARY_COLOR}] font-extrabold bg-[${PRIMARY_COLOR_LIGHT_BG}]`
                     : `text-[${TEXT_COLOR}]`
@@ -667,27 +721,29 @@ function PublicationsDropdown({ pathname }: { pathname: string | null }) {
                 tabIndex={0}
                 aria-current={isActive ? "page" : undefined}
                 style={{
-                  fontWeight: isActive ? 800 : 520,
-                  borderLeft: isActive ? `3px solid ${ACTIVE_BAR}` : "3px solid transparent",
+                  fontWeight: isActive ? 910 : 500,
+                  borderLeft: isActive ? `4px solid ${ACTIVE_BAR}` : "4px solid transparent",
                   width: "100%",
-                  alignItems: "flex-start"
+                  alignItems: "flex-start",
+                  /* Remove menuitem shadow */
+                  boxShadow: "none"
                 }}
                 onClick={() => setOpen(false)}
               >
-                <div className="flex items-center w-full min-w-0 gap-2">
+                <div className="flex items-center w-full min-w-0 gap-3">
                   {React.createElement(
                     subIcon,
                     {
-                      className: `w-5 h-5 flex-shrink-0 animated-dropdown-icon ${isActive ? `text-[${PRIMARY_COLOR}] bg-[${ICON_ACTIVE_BG}] rounded-md` : `text-[${ICON_INACTIVE}]`} group-hover:text-[${PRIMARY_COLOR}]`,
+                      className: `w-6 h-6 flex-shrink-0 animated-dropdown-icon ${isActive ? `text-[${PRIMARY_COLOR}] bg-[${ICON_ACTIVE_BG}] rounded-lg` : `text-[${ICON_INACTIVE}]`} group-hover:text-[${PRIMARY_COLOR}]`,
                       "aria-hidden": "true"
                     }
                   )}
-                  <span className="ml-1 text-[15.3px] font-semibold truncate" style={{ letterSpacing: ".009em" }}>{sublink.label}</span>
+                  <span className="ml-1 text-[16px] font-extrabold truncate" style={{ letterSpacing: ".013em" }}>{sublink.label}</span>
                 </div>
                 {sublink.description && (
                   <span
-                    className="text-xs mt-0.5 pl-[30px] pr-0 hidden sm:block text-left w-full break-words"
-                    style={{ color: ICON_INACTIVE, lineHeight: 1.21, fontWeight: 400, whiteSpace: "normal" }}
+                    className="text-xs mt-1.5 pl-[34px] pr-0 hidden sm:block text-left w-full break-words"
+                    style={{ color: ICON_INACTIVE, lineHeight: 1.21, fontWeight: 500, whiteSpace: "normal" }}
                   >
                     {sublink.description}
                   </span>
@@ -751,13 +807,14 @@ function BottomNavDropdown({
         tabIndex={-1}
         aria-label="News & Publications submenu"
         style={{
-          minWidth: '205px',
-          maxWidth: '95vw',
-          borderRadius: "14px",
-          boxShadow: "0 6px 38px 0 rgba(28,42,65,.14)"
+          minWidth: '215px',
+          maxWidth: '96vw',
+          borderRadius: "15px",
+          /* Remove dropdown panel shadow */
+          boxShadow: "none"
         }}
       >
-        <div className="px-5 py-3 text-sm text-gray-500 font-semibold">No items.</div>
+        <div className="px-6 py-3 text-[15px] text-gray-500 font-semibold">No items.</div>
       </div>
     );
 
@@ -771,10 +828,11 @@ function BottomNavDropdown({
       tabIndex={-1}
       aria-label="News & Publications submenu"
       style={{
-        minWidth: '205px',
-        maxWidth: '95vw',
-        borderRadius: "14px",
-        boxShadow: "0 6px 34px 0 rgba(26,42,86,.14)"
+        minWidth: '215px',
+        maxWidth: '96vw',
+        borderRadius: "15px",
+        /* Remove dropdown panel shadow */
+        boxShadow: "none"
       }}
     >
       {nonCreateTabs.map(link => {
@@ -787,7 +845,7 @@ function BottomNavDropdown({
             href={link.href ?? "#"}
             onClick={onClose}
             className={
-              `flex flex-col items-start gap-0 px-5 py-3 rounded-lg text-[15.2px] font-semibold transition-all duration-90 hover:bg-[#f7fafe] 
+              `flex flex-col items-start gap-0 px-6 py-3 rounded-lg text-[15.7px] font-semibold transition-all duration-110 hover:bg-[#eaf1fe]
               ${isActive
                 ? `text-[${PRIMARY_COLOR}] font-extrabold bg-[${PRIMARY_COLOR_LIGHT_BG}]`
                 : `text-[${TEXT_COLOR}]`
@@ -796,20 +854,20 @@ function BottomNavDropdown({
             tabIndex={0}
             aria-current={isActive ? "page" : undefined}
             style={{
-              fontWeight: isActive ? 800 : 520,
-              borderLeft: isActive ? `3px solid ${ACTIVE_BAR}` : "3px solid transparent",
+              fontWeight: isActive ? 900 : 520,
+              borderLeft: isActive ? `4px solid ${ACTIVE_BAR}` : "4px solid transparent",
               width: "100%",
               alignItems: "flex-start"
             }}
           >
-            <div className="flex items-center w-full min-w-0 gap-2">
-              <Icon className={`w-6 h-6 mr-2 animated-dropdown-icon ${isActive ? `text-[${PRIMARY_COLOR}] bg-[${ICON_ACTIVE_BG}] rounded-md` : `text-[${ICON_INACTIVE}]`} hover:text-[${PRIMARY_COLOR}]`} aria-hidden="true" />
-              <span className="bottomnav-label truncate" style={{ letterSpacing: ".009em" }}>{link.label}</span>
+            <div className="flex items-center w-full min-w-0 gap-3">
+              <Icon className={`w-6 h-6 mr-2 animated-dropdown-icon ${isActive ? `text-[${PRIMARY_COLOR}] bg-[${ICON_ACTIVE_BG}] rounded-lg` : `text-[${ICON_INACTIVE}]`} hover:text-[${PRIMARY_COLOR}]`} aria-hidden="true" />
+              <span className="bottomnav-label truncate" style={{ letterSpacing: ".011em", fontWeight: 900 }}>{link.label}</span>
             </div>
             {link.description && (
               <span
-                className="text-xs text-left mt-0.5 pl-[30px] pr-0 hidden sm:block w-full break-words"
-                style={{ color: ICON_INACTIVE, lineHeight: 1.21, fontWeight: 400, whiteSpace: "normal" }}
+                className="text-xs text-left mt-1.5 pl-[34px] pr-0 hidden sm:block w-full break-words"
+                style={{ color: ICON_INACTIVE, lineHeight: 1.21, fontWeight: 500, whiteSpace: "normal" }}
               >
                 {link.description}
               </span>
@@ -819,13 +877,13 @@ function BottomNavDropdown({
       })}
       {createTab && (
         <>
-          <div className="border-t" style={{ borderColor: ICON_BORDER, margin: '0.55rem 0', width: "88%", marginLeft: "auto", marginRight: "auto" }} />
+          <div className="border-t" style={{ borderColor: ICON_BORDER, margin: '0.75rem 0', width: "92%", marginLeft: "auto", marginRight: "auto", opacity: 0.9 }} />
           <Link
             key={createTab.label}
             href={createTab.href ?? "#"}
             onClick={onClose}
             className={
-              `flex flex-col items-start gap-0 px-5 py-3 rounded-lg text-[15.2px] font-semibold transition-all duration-90 hover:bg-[#f7fafe] 
+              `flex flex-col items-start gap-0 px-6 py-3 rounded-lg text-[15.7px] font-semibold transition-all duration-110 hover:bg-[#eaf1fe]
               ${activeHref === createTab.href
                 ? `text-[${PRIMARY_COLOR}] font-extrabold bg-[${PRIMARY_COLOR_LIGHT_BG}]`
                 : `text-[${TEXT_COLOR}]`
@@ -834,24 +892,24 @@ function BottomNavDropdown({
             tabIndex={0}
             aria-current={activeHref === createTab.href ? "page" : undefined}
             style={{
-              fontWeight: activeHref === createTab.href ? 800 : 520,
-              borderLeft: activeHref === createTab.href ? `3px solid ${ACTIVE_BAR}` : "3px solid transparent",
+              fontWeight: activeHref === createTab.href ? 900 : 520,
+              borderLeft: activeHref === createTab.href ? `4px solid ${ACTIVE_BAR}` : "4px solid transparent",
               width: "100%",
               alignItems: "flex-start"
             }}
           >
-            <div className="flex items-center w-full min-w-0 gap-2">
+            <div className="flex items-center w-full min-w-0 gap-3">
               {createTab.icon ? (
-                <createTab.icon className={`w-6 h-6 mr-2 animated-dropdown-icon ${activeHref === createTab.href ? `text-[${PRIMARY_COLOR}] bg-[${ICON_ACTIVE_BG}] rounded-md` : `text-[${ICON_INACTIVE}]`}`} aria-hidden="true" />
+                <createTab.icon className={`w-6 h-6 mr-2 animated-dropdown-icon ${activeHref === createTab.href ? `text-[${PRIMARY_COLOR}] bg-[${ICON_ACTIVE_BG}] rounded-lg` : `text-[${ICON_INACTIVE}]`}`} aria-hidden="true" />
               ) : (
-                <FaPlusSquare className={`w-6 h-6 mr-2 animated-dropdown-icon ${activeHref === createTab.href ? `text-[${PRIMARY_COLOR}] bg-[${ICON_ACTIVE_BG}] rounded-md` : `text-[${ICON_INACTIVE}]`}`} aria-hidden="true" />
+                <FaPlusSquare className={`w-6 h-6 mr-2 animated-dropdown-icon ${activeHref === createTab.href ? `text-[${PRIMARY_COLOR}] bg-[${ICON_ACTIVE_BG}] rounded-lg` : `text-[${ICON_INACTIVE}]`}`} aria-hidden="true" />
               )}
-              <span className="bottomnav-label truncate" style={{ letterSpacing: ".009em" }}>{createTab.label}</span>
+              <span className="bottomnav-label truncate" style={{ letterSpacing: ".011em", fontWeight: 900 }}>{createTab.label}</span>
             </div>
             {createTab.description && (
               <span
-                className="text-xs text-left mt-0.5 pl-[30px] pr-0 hidden sm:block w-full break-words"
-                style={{ color: ICON_INACTIVE, lineHeight: 1.21, fontWeight: 400, whiteSpace: "normal" }}
+                className="text-xs text-left mt-1.5 pl-[34px] pr-0 hidden sm:block w-full break-words"
+                style={{ color: ICON_INACTIVE, lineHeight: 1.21, fontWeight: 500, whiteSpace: "normal" }}
               >
                 {createTab.description}
               </span>
@@ -867,7 +925,7 @@ function SidebarContainer({
   SidebarContent
 }: { SidebarContent: React.ReactNode }) {
   return (
-    <div className="hidden sm:block sidebar-container sticky bg-gradient-to-b from-[#fafdff] to-[#e8eef7] pt-2 h-full min-h-0 ">
+    <div className="hidden sm:block sidebar-container sticky bg-gradient-to-b from-[#fafdff] to-[#dbeaff] pt-2 h-full min-h-0 ">
       <aside className="sticky top-0 h-screen">{SidebarContent}</aside>
     </div>
   );
@@ -968,7 +1026,11 @@ function MobileBottomNavBar({
     <div ref={navRef}>
       <nav
         className="mobile-bottom-nav sticky"
-        style={{ marginTop: 28 }}
+        style={{
+          marginTop: 32,
+          /* Remove box-shadow for flat look */
+          boxShadow: "none"
+        }}
         role="navigation"
         aria-label="Mobile bottom navigation"
       >
@@ -988,9 +1050,11 @@ function MobileBottomNavBar({
                     tabIndex={0}
                     style={{
                       zIndex: dropdownOpen ? 100 : undefined,
-                      fontWeight: isPubActive ? 700 : 510,
+                      fontWeight: isPubActive ? 900 : 610,
                       color: isPubActive ? PRIMARY_COLOR : TEXT_COLOR,
-                      letterSpacing: ".02em"
+                      letterSpacing: ".025em",
+                      /* Remove shadow from icon label */
+                      textShadow: "none"
                     }}
                   >
                     {tab.iconDropdown ? (
@@ -1024,9 +1088,10 @@ function MobileBottomNavBar({
                   aria-label={tab.label}
                   onClick={() => setDropdownOpen(false)}
                   style={{
-                    fontWeight: isActive ? 700 : 510,
+                    fontWeight: isActive ? 900 : 600,
                     color: isActive ? PRIMARY_COLOR : TEXT_COLOR,
-                    letterSpacing: ".02em"
+                    letterSpacing: ".025em",
+                    textShadow: "none"
                   }}
                 >
                   <TabIcon className="animated-bottomnav-icon" aria-hidden="true" />
@@ -1041,6 +1106,7 @@ function MobileBottomNavBar({
   );
 }
 
+// Main Improved Sidebar Component
 export function AppSidebar() {
   const pathname = usePathname();
   const { logout, user } = useAuth();
@@ -1111,26 +1177,31 @@ export function AppSidebar() {
       <nav
         className={`
           sidebar-card
-          w-[90px] sticky sm:w-[270px] max-w-[270px]
-          min-w-0 sm:min-w-[215px]
+          w-[95px] sticky sm:w-[280px] max-w-[285px]
+          min-w-0 sm:min-w-[225px]
           border-none h-screen
           flex flex-col justify-between z-50
-          px-1.5 pb-2 pt-0
+          px-2.5 pb-3 pt-1.5
           sidebar-mobile sm:sticky sm:top-0 sidebar-container
         `}
         aria-label="Sidebar Navigation"
         role="navigation"
         style={{
-          background: "linear-gradient(172deg,#fafdff 74%,#e8eef7 100%)",
-          borderRadius: 0,  // removed rounded border here!!
-          border: `1.8px solid ${ICON_BORDER}`,
+          background: "linear-gradient(178deg,#fafdff 70%,#dbeaff 100%)",
+          borderRadius: 0,
+          border: `2.2px solid ${ICON_BORDER}`,
           minHeight: "99vh",
           minWidth: 0,
-          boxShadow: SIDEBAR_SHADOW
+          // Remove sidebar nav shadow
+          boxShadow: "none"
         }}
       >
-        {/* Logo & Brand area */}
-        <header className="flex flex-col py-2 px-3" style={{ borderBottom: `1.8px solid ${ICON_BORDER}` }}>
+        {/* Logo & Brand Area */}
+        <header className="flex flex-col py-3 px-4 bg-white rounded-t-[18px] border-b-[2px] border-[#cbdbef]" style={{
+          position: "sticky",
+          zIndex: 2,
+          boxShadow: "none"
+        }}>
           <div className="flex justify-between items-center gap-2 w-full">
             <div className="flex items-center gap-3 min-w-full">
               <Link
@@ -1139,16 +1210,16 @@ export function AppSidebar() {
                 className="block bg-white shrink-0 focus:outline-none focus:ring-2 focus:ring-[#2259ae] rounded-lg"
                 tabIndex={0}
                 style={{
-                  border: `2px solid #e2ebf8`, // higher contrast
-                  boxShadow: "0 1.5px 10px #e7f1fc"
+                  border: `2.5px solid #cadcf3`,
+                  boxShadow: "none"
                 }}
               >
                 <div
                   style={{
                     background: ``,
-                    borderRadius: "12px",
+                    borderRadius: "13px",
                     border: "none",
-                    padding: 4,
+                    padding: 5,
                     alignItems: "center",
                     display: "flex"
                   }}
@@ -1156,25 +1227,28 @@ export function AppSidebar() {
                   <Image
                     src="/logo.png"
                     alt="Logo"
-                    width={63}
-                    height={41}
-                    className="h-9 w-auto object-contain"
+                    width={68}
+                    height={44}
+                    className="h-11 w-auto object-contain"
                     priority
                   />
                 </div>
               </Link>
               <div className="min-w-full flex items-center">
                 <span
-                  className="hidden sm:inline-block ml-2 text-[13.5px] font-extrabold leading-tight truncate max-w-[176px]"
+                  className="hidden sm:inline-block ml-2 text-[14.2px] font-black leading-tight truncate max-w-[184px]"
                   style={{
-                    color: PROFILE_NAME,
-                    letterSpacing: ".022em",
-                    fontWeight: 800,
+                    color: PRIMARY_COLOR,
+                    letterSpacing: ".03em",
                     textTransform: "uppercase",
-                    textShadow: "0 1px 1.2px #fafdff"
+                    textShadow: "none"
                   }}
                 >
-                  NAAPE,<br/> Nigeria association<br />of aircraft pilots <br/> & engineers
+                  NAAPE,<br />
+                  <span style={{ color: SIDEBAR_SECTION_LABEL, fontWeight: 600 }}>Nigeria association</span><br />
+                  <span style={{ letterSpacing: ".05em", fontSize: 13.2, color: PROFILE_NAME, fontWeight: 800 }}>
+                    of aircraft pilots<br /> & engineers
+                  </span>
                 </span>
               </div>
             </div>
@@ -1182,42 +1256,40 @@ export function AppSidebar() {
             <button
               type="button"
               aria-label="Collapse sidebar (not yet implemented)"
-              className="ml-1 sm:flex hidden items-center justify-center rounded-md transition-colors p-[5px] focus:outline-none focus:ring-2"
+              className="ml-1 sm:flex hidden items-center justify-center rounded-md transition-colors p-[6px] focus:outline-none focus:ring-2"
               tabIndex={-1}
               disabled={true}
               style={{
-                border: "1.5px solid #d7e2ed",
+                border: "1.7px solid #b2c6e0",
                 background: "none",
                 color: ICON_INACTIVE,
-                opacity: 0.55,
+                opacity: 0.45,
                 cursor: "not-allowed"
               }}
               aria-disabled="true"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" className="text-[#768EA6]" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <rect x="3" y="3" width="18" height="18" rx="3" stroke="#AEBFD3" strokeWidth="1.5" fill="#fff" />
-                <path d="M13.5 9l-3 3 3 3" stroke="#768EA6" strokeWidth="2" />
+              <svg width="22" height="22" viewBox="0 0 24 24" className="text-[#60749a]" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="3.5" stroke="#AEBFD3" strokeWidth="1.5" fill="#fff" />
+                <path d="M13.5 9l-3 3 3 3" stroke="#60749a" strokeWidth="2" />
               </svg>
             </button>
           </div>
         </header>
         {/* Navigation */}
-        <ul className="flex-1 w-full flex flex-col py-[20px] px-0 gap-0.5 overflow-y-auto" style={{ minHeight: 0 }}>
+        <ul className="flex-1 w-full flex flex-col py-[18px] px-0 gap-0.5 overflow-y-auto" style={{ minHeight: 0 }}>
           <SectionLabel>MAIN</SectionLabel>
-          {/* Home tab always */}
           {Array.isArray(navItemsMain) && navItemsMain.length > 0 ? navItemsMain[0] : null}
-          {/* News & Publications dropdown */}
           <PublicationsDropdown pathname={pathname} />
           <SectionSpacer />
           <SectionLabel>ACTIVITIES</SectionLabel>
           {Array.isArray(navItemsMain) && navItemsMain.length > 1 && navItemsMain.slice(1)}
         </ul>
         <div style={{
-          background: "linear-gradient(90deg,#fafdff 0,#e8eef7 100%)",
-          borderTop: `1.9px solid ${ICON_BORDER}`,
+          background: "linear-gradient(90deg,#fafdff 0,#eaf3ff 100%)",
+          borderTop: `2.2px solid ${ICON_BORDER}`,
           marginTop: "2px"
         }}>
-          <ul className="flex flex-col py-2 px-0">
+          <ul className="flex flex-col py-2 px-0 pb-1.5">
             <SectionLabel>Account</SectionLabel>
             {Array.isArray(navItemsSecondary) && navItemsSecondary}
             <NavItem
@@ -1234,11 +1306,9 @@ export function AppSidebar() {
         {/* User Profile Footer */}
         <footer className="w-full"
           style={{
-            borderTop: `1.8px solid ${ICON_BORDER}`,
-            background: "#fafdff",
+            background: "#f5f8ff",
             borderBottomLeftRadius: RADIUS,
-            borderBottomRightRadius: RADIUS,
-            marginTop: 13
+            borderBottomRightRadius: RADIUS
           }}
         >
           <SidebarProfileCard user={user ?? {}} />

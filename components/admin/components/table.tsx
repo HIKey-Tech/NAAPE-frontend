@@ -8,21 +8,24 @@ export interface PublicationTableProps {
     renderAction?: (publication: IPublication) => React.ReactNode;
 }
 
-const STATUS_LABELS: Record<IPublication["status"], { label: string; className: string; dotColor: string }> = {
+const STATUS_LABELS: Record<IPublication["status"], { label: string; className: string; dotColor: string; borderClass: string }> = {
     pending: {
         label: "Pending",
-        className: "text-yellow-700 bg-yellow-100",
-        dotColor: "#F59E42",
+        className: "text-yellow-800 bg-yellow-50",
+        dotColor: "#CA8A04",
+        borderClass: "border-yellow-200"
     },
     approved: {
         label: "Approved",
-        className: "text-green-700 bg-green-100",
-        dotColor: "#22C55E",
+        className: "text-green-800 bg-green-50",
+        dotColor: "#16A34A",
+        borderClass: "border-green-200"
     },
     rejected: {
         label: "Rejected",
-        className: "text-red-700 bg-red-100",
-        dotColor: "#EF4444",
+        className: "text-red-800 bg-red-50",
+        dotColor: "#B91C1C",
+        borderClass: "border-red-200"
     },
 };
 
@@ -30,21 +33,24 @@ const STATUS_LABELS: Record<IPublication["status"], { label: string; className: 
 function formatDate(dateString?: string) {
     if (!dateString) return "";
     const dateObj = new Date(dateString);
-    if (isNaN(dateObj.getTime())) return dateString; // fallback if can't parse
+    if (isNaN(dateObj.getTime())) return dateString;
+    // More readable for detailed ruling
     return dateObj.toLocaleDateString(undefined, {
+        weekday: "short",
         year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
+        month: "short",
+        day: "numeric",
     });
 }
 
-// Utility: Render initials for avatar fallback
 const getInitials = (name: string) =>
     name ? name.trim().split(" ").map(word => word[0]).join("").substring(0, 2).toUpperCase() : "";
 
-// Avatar fallback if needed, could extend to use initials/colors/etc.
 const AuthorAvatar: React.FC<{ name: string; email?: string; image?: string }> = ({ name }) => (
-    <span className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 overflow-hidden text-md text-gray-400 font-bold select-none">
+    <span
+        className="w-10 h-10 rounded-full bg-gray-50 border-2 border-gray-300 flex items-center justify-center text-[15px] font-bold text-gray-500 select-none"
+        aria-label={getInitials(name)}
+    >
         {getInitials(name)}
     </span>
 );
@@ -56,7 +62,6 @@ export const PublicationTable: React.FC<PublicationTableProps> = ({
     const approveMutation = useApprovePublication();
     const rejectMutation = useRejectPublication();
 
-    // Memo handlers to avoid re-creating each render
     const handleAccept = React.useCallback(
         (publication: IPublication) => {
             approveMutation.mutate(publication._id, {
@@ -84,65 +89,109 @@ export const PublicationTable: React.FC<PublicationTableProps> = ({
     );
 
     return (
-        <div className="overflow-x-auto w-full rounded-lg shadow border border-gray-100 bg-white">
-            <table className="min-w-full divide-y divide-gray-200 text-[15px]">
-                <thead className="bg-gray-50">
+        <div className="overflow-x-auto w-full rounded border border-gray-300 bg-white">
+            <table className="min-w-full table-fixed text-[15px] border-separate border-spacing-0">
+                <thead>
                     <tr>
-                        <th className="px-4 py-3 font-semibold text-left text-gray-700 w-[200px]">
-                            Author
-                            <span aria-label="Sorted by" className="inline-block ml-1 text-xs text-gray-400 align-middle">
-                                ▼
+                        <th
+                            className="px-5 py-4 font-bold text-left bg-slate-100 text-slate-800 border-b-2 border-gray-300 tracking-wide text-[16px] w-[210px]"
+                            scope="col"
+                        >
+                            <span className="flex items-center gap-2">
+                                Author
+                                <span aria-label="Sorted by" className="ml-0.5 text-xs text-slate-500">▼</span>
                             </span>
                         </th>
-                        <th className="px-4 py-3 font-semibold text-left text-gray-700">Title</th>
-                        <th className="px-4 py-3 font-semibold text-left text-gray-700">Submitted</th>
-                        <th className="px-4 py-3 font-semibold text-left text-gray-700">Status</th>
-                        <th className="px-4 py-3 font-semibold text-left text-gray-700 w-32">Action</th>
+                        <th
+                            className="px-5 py-4 font-bold text-left bg-slate-100 text-slate-800 border-b-2 border-gray-300 tracking-wide text-[16px]"
+                            scope="col"
+                        >
+                            Title
+                        </th>
+                        <th
+                            className="px-5 py-4 font-bold text-left bg-slate-100 text-slate-800 border-b-2 border-gray-300 tracking-wide text-[16px]"
+                            scope="col"
+                        >
+                            Submitted
+                        </th>
+                        <th
+                            className="px-5 py-4 font-bold text-left bg-slate-100 text-slate-800 border-b-2 border-gray-300 tracking-wide text-[16px]"
+                            scope="col"
+                        >
+                            Status
+                        </th>
+                        <th
+                            className="px-5 py-4 font-bold text-left bg-slate-100 text-slate-800 border-b-2 border-gray-300 tracking-wide text-[16px] w-36"
+                            scope="col"
+                        >
+                            Action
+                        </th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody>
                     {publications.length === 0 ? (
                         <tr>
-                            <td colSpan={5} className="text-center py-12 text-gray-400 text-base font-semibold">
+                            <td colSpan={5} className="text-center py-14 text-gray-400 text-base font-semibold border-b border-gray-200">
                                 No publications found.
                             </td>
                         </tr>
                     ) : (
-                        publications.map((pub) => {
+                        publications.map((pub, i) => {
                             const { author, title, createdAt, status, _id } = pub;
                             const info = STATUS_LABELS[status] || STATUS_LABELS.pending;
                             return (
-                                <tr key={_id} className="hover:bg-gray-50 transition-colors group">
+                                <tr
+                                    key={_id}
+                                    className={`group${
+                                        i % 2 === 1 ? " bg-slate-50" : ""
+                                    } border-b last:border-b-0 border-gray-200`}
+                                >
                                     {/* Author */}
-                                    <td className="px-4 py-3 flex items-center gap-3 min-w-[170px]">
-                                        <AuthorAvatar name={author.name} email={author.email} />
-                                        <div className="min-w-0">
-                                            <div
-                                                className="font-medium text-gray-900 leading-5 truncate max-w-[120px]"
-                                                title={author.name}
-                                            >
-                                                {author.name}
+                                    <td className="px-5 py-4 min-w-[170px] align-top border-r border-gray-200">
+                                        <div className="flex items-center gap-3">
+                                            <AuthorAvatar name={author.name} email={author.email} />
+                                            <div className="min-w-0 leading-snug">
+                                                <div
+                                                    className="font-semibold text-gray-900 max-w-[120px] truncate"
+                                                    title={author.name}
+                                                >
+                                                    {author.name}
+                                                </div>
+                                                <div className="text-xs text-blue-900 bg-blue-50 inline-block px-2 py-0.5 rounded-full border border-blue-200 font-medium mt-1">
+                                                    {author.role}
+                                                </div>
                                             </div>
-                                            <div className="text-xs text-gray-500 truncate">{author.role}</div>
                                         </div>
                                     </td>
                                     {/* Title */}
-                                    <td className="px-4 py-3 text-gray-900 whitespace-nowrap max-w-[280px] truncate" title={title}>
-                                        {title}
+                                    <td
+                                        className="px-5 py-4 text-gray-800 whitespace-nowrap align-top border-r border-gray-200 max-w-[320px]"
+                                        title={title}
+                                    >
+                                        <div className="font-medium truncate">{title}</div>
                                     </td>
                                     {/* Submitted */}
-                                    <td className="px-4 py-3 text-gray-700 whitespace-nowrap" title={createdAt}>
-                                        {formatDate(createdAt)}
+                                    <td
+                                        className="px-5 py-4 align-top text-slate-700 border-r border-gray-200 whitespace-nowrap"
+                                        title={createdAt}
+                                    >
+                                        <span className="inline-block font-mono text-[14px] text-slate-700 leading-none tracking-tight">
+                                            {formatDate(createdAt)}
+                                        </span>
                                     </td>
                                     {/* Status */}
-                                    <td className="px-4 py-3 whitespace-nowrap">
-                                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded font-medium ${info.className}`}>
+                                    <td className="px-5 py-4 align-top border-r border-gray-200">
+                                        <span
+                                            className={`inline-flex items-center gap-2 px-2.5 py-1 rounded border text-sm font-medium tracking-wide ${info.className} ${info.borderClass}`}
+                                            style={{ borderWidth: "1.5px" }}
+                                        >
                                             <span
-                                                className="inline-block w-[0.85em] h-[0.85em] rounded-full mr-1"
+                                                className="inline-block w-[0.85em] h-[0.85em] rounded-full"
                                                 style={{
                                                     background: info.dotColor,
-                                                    minWidth: "0.8em",
-                                                    minHeight: "0.8em"
+                                                    minWidth: "0.88em",
+                                                    minHeight: "0.88em",
+                                                    border: "1.5px solid #E5E7EB",
                                                 }}
                                                 aria-hidden="true"
                                             />
@@ -150,13 +199,13 @@ export const PublicationTable: React.FC<PublicationTableProps> = ({
                                         </span>
                                     </td>
                                     {/* Action */}
-                                    <td className="px-4 py-3 text-right whitespace-nowrap flex gap-2 justify-end items-center">
+                                    <td className="px-5 py-4 align-top flex gap-3 justify-end items-center bg-white border-none">
                                         {renderAction ? (
                                             renderAction(pub)
                                         ) : status === "pending" ? (
                                             <>
                                                 <button
-                                                    className="bg-green-100 text-green-700 hover:bg-green-200 transition-colors font-medium px-3 py-1 rounded text-[13px] focus:outline-none"
+                                                    className="px-4 py-1 font-semibold text-[13px] bg-green-50 border border-green-400 text-green-900 rounded focus:outline-none focus:ring-2 focus:ring-green-200 hover:bg-green-100 transition"
                                                     title="Accept"
                                                     type="button"
                                                     onClick={() => handleAccept(pub)}
@@ -165,7 +214,7 @@ export const PublicationTable: React.FC<PublicationTableProps> = ({
                                                     {approveMutation.isPending ? "Accepting..." : "Accept"}
                                                 </button>
                                                 <button
-                                                    className="bg-red-100 text-red-700 hover:bg-red-200 transition-colors font-medium px-3 py-1 rounded text-[13px] focus:outline-none"
+                                                    className="px-4 py-1 font-semibold text-[13px] bg-red-50 border border-red-400 text-red-900 rounded focus:outline-none focus:ring-2 focus:ring-red-200 hover:bg-red-100 transition"
                                                     title="Reject"
                                                     type="button"
                                                     onClick={() => handleReject(pub)}
@@ -184,6 +233,7 @@ export const PublicationTable: React.FC<PublicationTableProps> = ({
                     )}
                 </tbody>
             </table>
+            <div className="border-t border-gray-300" />
         </div>
     );
 };

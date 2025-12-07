@@ -1,7 +1,9 @@
 import React, { useRef, useState } from "react";
 import type { IPublication } from "@/app/api/publication/types";
 import { useComments, useAddComment } from "@/hooks/useComment";
+import { useRouter } from "next/navigation";
 
+// Status configuration
 const STATUS_CONFIG = {
     pending: {
         label: "Pending",
@@ -50,13 +52,13 @@ type PublicationCardProps = {
     onDelete?: (id: string) => void;
 };
 
-// Simple Comments Block
+// Comments block
 const PublicationComments: React.FC<{ publicationId: string, cardWidth?: string | number, cardHeight?: string | number }> = ({ publicationId, cardWidth, cardHeight }) => {
     const [input, setInput] = useState("");
     const { data: commentsRaw = [], isPending, error, refetch } = useComments(publicationId);
     const addComment = useAddComment();
 
-    // Ensure comments is always an array
+    // Always array
     const comments: any[] = Array.isArray(commentsRaw)
         ? commentsRaw
         : (commentsRaw && typeof commentsRaw === "object" && commentsRaw !== null)
@@ -80,7 +82,6 @@ const PublicationComments: React.FC<{ publicationId: string, cardWidth?: string 
 
     return (
         <div className="border-t border-gray-200 pt-6 mt-6 px-4 sm:px-6">
-            
             <h4 className="font-semibold mb-2 text-gray-800">Comments</h4>
             <form onSubmit={handleAddComment} className="flex mb-3 gap-2">
                 <input
@@ -112,7 +113,6 @@ const PublicationComments: React.FC<{ publicationId: string, cardWidth?: string 
             )}
             <ul className="space-y-2 mt-2">
                 {comments.map((comment: any, idx: number) => {
-                    // Simple logic for display
                     const content =
                         comment.content ?? comment.text ?? comment.message ?? comment.body ?? "";
                     let author = "Unknown";
@@ -137,21 +137,36 @@ const PublicationComments: React.FC<{ publicationId: string, cardWidth?: string 
     );
 };
 
-// Shared pill size, padding and minimum width for both category and status
+// Pill base classes
 const pillBaseClasses = [
     "inline-flex items-center justify-center",
     "rounded-full",
     "font-bold uppercase tracking-wide",
     "text-sm sm:text-base",
-    "min-w-[140px]", // Equal minimum width
-    "min-h-[44px]", // Equal minimum height
-    "px-6",         // Equal horizontal padding
-    "py-2.5",       // Equal vertical padding
+    "min-w-[140px]",
+    "min-h-[44px]",
+    "px-6",
+    "py-2.5",
     "border",
     "whitespace-nowrap",
     "select-none"
 ].join(" ");
 
+const CATEGORY_COLOR_MAP: Record<string, { bg: string; text: string; icon: React.ReactNode }> = {
+    science: { bg: "bg-[#DEEFFB]", text: "text-[#246BAE]", icon: <span className="mr-1.5">🔬</span> },
+    art: { bg: "bg-[#FFE3F7]", text: "text-[#C43A93]", icon: <span className="mr-1.5">🎨</span> },
+    technology: { bg: "bg-[#E5F6EC]", text: "text-[#219150]", icon: <span className="mr-1.5">💻</span> },
+    history: { bg: "bg-[#FEF4E9]", text: "text-[#B5691B]", icon: <span className="mr-1.5">🏛️</span> },
+    default: { bg: "bg-[#EDF2FE]", text: "text-[#4073C8]", icon: <span className="mr-1.5">📚</span> },
+};
+
+function getCategoryStyle(categoryVal?: string | null) {
+    if (!categoryVal) return CATEGORY_COLOR_MAP.default;
+    const key = String(categoryVal).toLowerCase();
+    return CATEGORY_COLOR_MAP[key] || CATEGORY_COLOR_MAP.default;
+}
+
+// Used in both list and detail! (Use consistent push URL /publication/[id])
 const PublicationCard: React.FC<PublicationCardProps> = ({
     publication,
     className = "",
@@ -162,8 +177,7 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
 }) => {
     const cardRef = useRef<HTMLDivElement | null>(null);
     const [showComments, setShowComments] = useState(false);
-
-    // Track card dimensions
+    const router = useRouter();
     const [cardDims, setCardDims] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
     React.useEffect(() => {
@@ -176,8 +190,8 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
             }
         }
         updateDims();
-        window.addEventListener('resize', updateDims);
-        return () => window.removeEventListener('resize', updateDims);
+        window.addEventListener("resize", updateDims);
+        return () => window.removeEventListener("resize", updateDims);
     }, []);
 
     if (!publication) {
@@ -204,12 +218,17 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
         category
     } = publication;
 
-    const statusValue: PublicationStatus =
-        status === "approved"
-            ? "approved"
-            : status === "pending"
-                ? "pending"
-                : "rejected";
+    // Always resolve to "approved", "pending" or "rejected"
+    let statusValue: PublicationStatus;
+    if (status === "approved") {
+        statusValue = "approved";
+    } else if (status === "pending") {
+        statusValue = "pending";
+    } else if (status === "rejected") {
+        statusValue = "rejected";
+    } else {
+        statusValue = "pending";
+    }
     const statusInfo = STATUS_CONFIG[statusValue] || STATUS_CONFIG["pending"];
 
     function getAuthorString(author: any) {
@@ -228,6 +247,7 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
         return "";
     }
 
+    // Counting comments for pill
     const { data: commentsForCount = [] } = useComments(_id);
     const commentCount =
         Array.isArray(commentsForCount)
@@ -236,21 +256,26 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                 ? Object.values(commentsForCount).length
                 : 0;
 
-    const CATEGORY_COLOR_MAP: Record<string, { bg: string; text: string; icon: React.ReactNode }> = {
-        science: { bg: "bg-[#DEEFFB]", text: "text-[#246BAE]", icon: <span className="mr-1.5">🔬</span> },
-        art: { bg: "bg-[#FFE3F7]", text: "text-[#C43A93]", icon: <span className="mr-1.5">🎨</span> },
-        technology: { bg: "bg-[#E5F6EC]", text: "text-[#219150]", icon: <span className="mr-1.5">💻</span> },
-        history: { bg: "bg-[#FEF4E9]", text: "text-[#B5691B]", icon: <span className="mr-1.5">🏛️</span> },
-        default: { bg: "bg-[#EDF2FE]", text: "text-[#4073C8]", icon: <span className="mr-1.5">📚</span> },
-    };
-
-    function getCategoryStyle(categoryVal?: string | null) {
-        if (!categoryVal) return CATEGORY_COLOR_MAP.default;
-        const key = String(categoryVal).toLowerCase();
-        return CATEGORY_COLOR_MAP[key] || CATEGORY_COLOR_MAP.default;
+    // This push must match the [id] route used in @publication.detail.tsx
+    // For list and card click: /publication/[id] (not /publications/)
+    function handleCardClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+        // Only navigate on outside card click, not on button et al.
+        const tag = (e.target as HTMLElement).tagName.toLowerCase();
+        if (
+            tag === "button" ||
+            tag === "input" ||
+            tag === "textarea" ||
+            tag === "a" ||
+            (e.target as HTMLElement).closest("[data-stop-propagation]")
+        ) {
+            return;
+        }
+        if (_id) {
+            // IMPORTANT: To match [id] param route in @publication.detail.tsx
+            router.push(`/publication/${_id}`);
+        }
     }
 
-    // Ensures padding and content never overflow: add px-4 sm:px-6 everywhere
     return (
         <div
             ref={cardRef}
@@ -258,19 +283,31 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                 "flex flex-col items-stretch justify-stretch",
                 "w-full",
                 className,
+                "cursor-pointer",
+                "group/publicationcard"
             ].join(" ")}
             style={{
-                position: 'relative',
-                width: '100%',
-                maxWidth: '640px',
-                aspectRatio: '1 / 1',
-                minWidth: '320px',
-                minHeight: '320px',
-                maxHeight: '640px',
-                margin: '0 auto',
+                position: "relative",
+                width: "100%",
+                maxWidth: "640px",
+                aspectRatio: "1 / 1",
+                minWidth: "320px",
+                minHeight: "320px",
+                maxHeight: "640px",
+                margin: "0 auto",
+            }}
+            onClick={handleCardClick}
+            tabIndex={0}
+            role="button"
+            aria-label={title ? `Go to publication: ${title}` : "Go to publication"}
+            onKeyDown={e => {
+                if (e.key === "Enter" || e.key === " ") {
+                    // "as any" to satisfy handler
+                    handleCardClick(e as any);
+                }
             }}
         >
-            {/* Show dimensions at top left corner overlay (always visible) */}
+            {/* Card Size overlay */}
             <div
                 style={{
                     position: "absolute",
@@ -301,7 +338,7 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                     flexDirection: "column"
                 }}
             >
-                {/* Top: Emphasized header */}
+                {/* Top image header */}
                 <div
                     className="relative w-full bg-blue-50 overflow-hidden flex flex-shrink-0 border-b-2 border-blue-100"
                     style={{
@@ -325,31 +362,31 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                             height: "100%",
                         }}
                     />
-                    {/* Pills row for both category and status */}
-                    <div className="absolute top-7 left-0 w-full flex justify-between items-center px-7 z-10 pointer-events-none" style={{gap: '8px'}}>
+                    {/* Pills */}
+                    <div className="absolute top-7 left-0 w-full flex justify-between items-center px-7 z-10 pointer-events-none" style={{ gap: '8px' }}>
                         {/* Category Pill */}
                         <div className="flex-1 flex min-w-0">
-                        {category && (
-                            <span
-                                className={[
-                                    pillBaseClasses,
-                                    getCategoryStyle(category).bg,
-                                    getCategoryStyle(category).text,
-                                    "border-blue-200",
-                                    "backdrop-blur-md",
-                                ].join(" ")}
-                                title={`Category: ${category}`}
-                                style={{
-                                    textOverflow: "ellipsis",
-                                    overflow: "hidden",
-                                    letterSpacing: "0.1em",
-                                    pointerEvents: "auto"
-                                }}
-                            >
-                                {getCategoryStyle(category).icon}
-                                <span className="truncate block">{String(category)}</span>
-                            </span>
-                        )}
+                            {category && (
+                                <span
+                                    className={[
+                                        pillBaseClasses,
+                                        getCategoryStyle(category).bg,
+                                        getCategoryStyle(category).text,
+                                        "border-blue-200",
+                                        "backdrop-blur-md",
+                                    ].join(" ")}
+                                    title={`Category: ${category}`}
+                                    style={{
+                                        textOverflow: "ellipsis",
+                                        overflow: "hidden",
+                                        letterSpacing: "0.1em",
+                                        pointerEvents: "auto"
+                                    }}
+                                >
+                                    {getCategoryStyle(category).icon}
+                                    <span className="truncate block">{String(category)}</span>
+                                </span>
+                            )}
                         </div>
                         {/* Status Pill */}
                         <div className="flex-1 flex min-w-0 justify-end">
@@ -378,7 +415,7 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                         <h2 className="text-2xl sm:text-3xl font-black text-[#184072] tracking-tighter w-full truncate whitespace-nowrap">
                             {title}
                         </h2>
-                        {/* Publication meta */}
+                        {/* Meta */}
                         <div className="flex flex-wrap items-center gap-4 mt-2 ml-0.5 text-[#7890B0] text-[15px] font-semibold tracking-wide">
                             <span className="flex items-center gap-2 bg-blue-50 rounded-xl px-3 py-1.5">
                                 <svg className="w-5 h-5 text-blue-400 mr-1" viewBox="0 0 20 20" fill="none">
@@ -386,7 +423,7 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                                     <path d="M6 12.5V8.5c0-2 1-3 4-3s4 1 4 3v4c0 2-1 3-4 3s-4-1-4-3z" stroke="#3666AE" strokeWidth="1.2" />
                                     <circle cx="10" cy="12" r="1" fill="#3666AE" />
                                 </svg>
-                                <span>{getAuthorString(author) || "Unknown"}</span>
+                                <span>{getAuthorString(author?.name) || "Unknown"}</span>
                             </span>
                             <span className="text-gray-200 text-[20px] select-none font-bold">&middot;</span>
                             <span className="rounded-xl bg-blue-50 px-3 py-1.5">
@@ -400,24 +437,23 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                             </span>
                         </div>
                     </header>
-
                     {content && (
                         <section
                             className="text-base sm:text-lg text-[#294469] leading-relaxed font-semibold line-clamp-4 overflow-hidden break-words bg-white rounded-xl p-5 border border-[#E8F1FF] transition w-full"
                             title={content}
-                            style={{wordBreak: 'break-word'}}
+                            style={{ wordBreak: "break-word" }}
                         >
                             {content}
                         </section>
                     )}
-
-                    {/* Action buttons (admin): highly visually isolated */}
+                    {/* Admin action buttons */}
                     {isAdmin && statusValue === "pending" && (
                         <div className="mt-2 flex gap-4 justify-end border-t border-blue-100 pt-4 w-full">
                             <button
                                 className="bg-green-100 hover:bg-green-200 text-green-900 px-6 py-2.5 rounded-xl font-bold text-base flex items-center gap-2 transition focus:outline-none ring-2 ring-green-200/50 border border-green-200"
                                 type="button"
                                 onClick={onAccept}
+                                data-stop-propagation
                             >
                                 <svg width="20" height="20" fill="none" className="mr-1" viewBox="0 0 20 20">
                                     <path d="M4 10l4 4 8-8" stroke="#27AE60" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -428,6 +464,7 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                                 className="bg-red-100 hover:bg-red-200 text-red-900 px-6 py-2.5 rounded-xl font-bold text-base flex items-center gap-2 transition focus:outline-none ring-2 ring-red-200/50 border border-red-200"
                                 type="button"
                                 onClick={onReject}
+                                data-stop-propagation
                             >
                                 <svg width="20" height="20" fill="none" className="mr-1" viewBox="0 0 20 20">
                                     <path d="M6 6l8 8M14 6l-8 8" stroke="#D33A2C" strokeWidth="2" strokeLinecap="round" />
@@ -436,15 +473,18 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                             </button>
                         </div>
                     )}
-
                     {/* Comments Toggle */}
                     <div className="mt-3 flex justify-end w-full">
                         <button
                             className={`flex items-center gap-3 py-2.5 px-6 rounded-xl text-base font-bold text-blue-800 bg-blue-50 hover:bg-blue-100 transition-all focus:outline-none ${
                                 showComments ? "ring-2 ring-blue-400 bg-blue-100" : ""
                             }`}
-                            onClick={() => setShowComments((v) => !v)}
+                            onClick={e => {
+                                e.stopPropagation();
+                                setShowComments((v) => !v);
+                            }}
                             type="button"
+                            data-stop-propagation
                             aria-expanded={showComments}
                             aria-controls={`pubcard-comments-${_id}`}
                             style={{ minWidth: 140, justifyContent: "center", alignItems: "center" }}
@@ -458,7 +498,6 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                             </span>
                         </button>
                     </div>
-
                     {/* Comments section */}
                     {showComments && (
                         <div className="pt-4 w-full" id={`pubcard-comments-${_id}`}>

@@ -23,6 +23,18 @@ function getInitials(name: string | undefined) {
     return parts.length ? parts.join("") : "U";
 }
 
+/** Human readable role name */
+function getRoleLabel(role: string | undefined): string {
+    if (!role) return "Loading";
+    // Add more mappings as needed
+    const normalized = role.trim().toLowerCase();
+    if (normalized === "admin") return "Administrator";
+    if (normalized === "user") return "User";
+    if (normalized === "manager") return "Manager";
+    // fallback to original with first letter uppercase
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+}
+
 /** Avatar without shadow, visually centered */
 function UserAvatar({
     src,
@@ -86,9 +98,15 @@ function ReminderBanner() {
 export default function TopNavbar() {
     const checkUser = useAuth();
     const router = useRouter();
+    // Ensure role is always correct and up-to-date based on checkUser context
+    const role =
+        checkUser.user?.role && checkUser.user?.role !== "Loading"
+            ? getRoleLabel(checkUser.user?.role)
+            : "Loading";
     const user = {
         name: checkUser.user?.name || "Loading",
-        role: checkUser.user?.role || "Loading",
+        rawRole: checkUser.user?.role || "Loading",
+        role, // role is a readable label
         // avatarUrl: checkUser.user?.avatarUrl || "",
     };
 
@@ -106,6 +124,19 @@ export default function TopNavbar() {
 
     // Initials logic
     const initials = getInitials(user.name);
+
+    // Helper function for profile button routing (admin check based on rawRole)
+    function handleProfileClick() {
+        setShowUserDropdown(false);
+        if (
+            typeof user.rawRole === "string" &&
+            user.rawRole.trim().toLowerCase() === "admin"
+        ) {
+            router.push("/admin/profile");
+        } else {
+            router.push("/profile");
+        }
+    }
 
     return (
         <>
@@ -331,10 +362,7 @@ export default function TopNavbar() {
                                         className="w-full flex items-center gap-2 text-left px-5 py-2 text-[15px] text-[#123165] hover:bg-[#eaf2fb] focus:bg-[#eaf2fb] transition font-bold"
                                         tabIndex={0}
                                         role="menuitem"
-                                        onClick={() => {
-                                            setShowUserDropdown(false);
-                                            router.push("/profile");
-                                        }}
+                                        onClick={handleProfileClick}
                                     >
                                         <svg width="16" height="16" fill="none" viewBox="0 0 20 20" className="text-[#316bd3]">
                                             <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-6 8a6 6 0 0112 0H4z" stroke="#316bd3" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />

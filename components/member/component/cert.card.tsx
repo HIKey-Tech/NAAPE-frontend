@@ -71,6 +71,38 @@ function truncate(text: string, max = 140): string {
     return text.length > max ? text.slice(0, max - 1).trimEnd() + "…" : text;
 }
 
+// Helper to robustly extract year from a variety of date string formats
+function extractYear(dateString: string): number | null {
+    if (!dateString || typeof dateString !== "string") return null;
+    // Try ISO, YYYY-MM-DD, or Date.toString()
+    const yearMatch = dateString.match(/([1-3][0-9]{3})/);
+    if (yearMatch && yearMatch[1]) {
+        const yearInt = parseInt(yearMatch[1], 10);
+        if (yearInt >= 1900 && yearInt <= 2100) return yearInt;
+    }
+    // Try Date parse fallback
+    const d = new Date(dateString);
+    if (!isNaN(d.getTime())) {
+        const year = d.getFullYear();
+        if (year >= 1900 && year <= 2100) return year;
+    }
+    return null;
+}
+
+function getEffectiveStatus(
+    cardStatus: "ongoing" | "completed" | "pending",
+    startDate: string
+): "ongoing" | "completed" | "pending" {
+    // If the year of the startDate has passed (strictly less than current year), force "completed"
+    const year = extractYear(startDate);
+    const nowYear = new Date().getFullYear();
+    if (year && year < nowYear) {
+        return "completed";
+    }
+    // Else if startDate year is this year or missing or invalid, trust input status
+    return cardStatus;
+}
+
 // CSS constants for entry animation and hover effect
 const CARD_ANIMATION_CLASS = "cert-card-anim";
 const CARD_ANIMATION_CSS = `
@@ -144,7 +176,9 @@ const CertCard: React.FC<CertCardProps> = ({
     progress,
     className = "",
 }) => {
-    const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
+    // Determine real status depending on startDate year
+    const effectiveStatus = getEffectiveStatus(status, startDate);
+    const cfg = STATUS_CONFIG[effectiveStatus] || STATUS_CONFIG.pending;
     const cardRef = useRef<HTMLDivElement | null>(null);
     const [visible, setVisible] = React.useState(false);
 
@@ -229,7 +263,7 @@ const CertCard: React.FC<CertCardProps> = ({
                     style={{ minWidth: 125, letterSpacing: "0.01em", alignSelf: "flex-start" }}
                     title={
                         cfg.label +
-                        (status === "ongoing" && progress !== undefined
+                        (effectiveStatus === "ongoing" && progress !== undefined
                             ? ` - Progress: ${progress}%`
                             : "")
                     }
@@ -252,7 +286,7 @@ const CertCard: React.FC<CertCardProps> = ({
                         {cfg.icon}
                     </motion.span>
                     <span>{cfg.label}</span>
-                    {status === "ongoing" && typeof progress === "number" && (
+                    {effectiveStatus === "ongoing" && typeof progress === "number" && (
                         <motion.span 
                             className="ml-2 text-[#7E8AA5] font-semibold tabular-nums"
                             animate={{ scale: [1,1.13,1], color: ["#7E8AA5", cfg.iconColor, "#7E8AA5"] }}
