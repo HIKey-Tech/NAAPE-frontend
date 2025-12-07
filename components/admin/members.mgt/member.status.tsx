@@ -11,6 +11,7 @@ const microAnimations = `
   0% {
     opacity: 0;
     transform: translateY(16px) scale(0.98);
+    
   }
   80% {
     opacity: 1;
