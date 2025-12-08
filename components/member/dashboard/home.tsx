@@ -158,9 +158,9 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   onLinkClick,
   className = "",
 }) => (
-  <div className={`flex justify-between items-center mb-4 mt-7 px-4 sm:px-0 ${className}`}>
+  <div className={`flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 mt-4 sm:mt-7 px-2 sm:px-0 gap-2 ${className}`}>
     <motion.h2
-      className="text-xl sm:text-2xl font-extrabold text-[#19223B] tracking-tight leading-tight relative"
+      className="text-lg sm:text-2xl font-extrabold text-[#19223B] tracking-tight leading-tight relative"
       initial={{ x: -12, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ type: "spring", stiffness: 140 }}
@@ -168,7 +168,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
       {title}
       <motion.span
         layoutId={`${title}-underline`}
-        className="block h-0.5 mt-1 rounded bg-gradient-to-r from-[#4267E7] to-[#F4B645] w-12"
+        className="block h-0.5 mt-1 rounded bg-gradient-to-r from-[#4267E7] to-[#F4B645] w-10 sm:w-12"
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
         transition={{ delay: 0.23, duration: 0.4, type: "tween" }}
@@ -204,7 +204,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
 
 const SectionDivider: React.FC<{ className?: string }> = ({ className = "" }) => (
   <motion.hr
-    className={`border-t border-gray-100 my-7 sm:my-10 ${className}`}
+    className={`border-t border-gray-100 my-5 sm:my-10 ${className}`}
     initial={{ scaleX: 0 }}
     whileInView={{ scaleX: 1 }}
     viewport={{ once: true }}
@@ -219,7 +219,7 @@ const HorizontalScrollContainer: React.FC<{
 }> = ({ children, className = "" }) => (
   <div
     className={
-      `flex gap-5 overflow-x-auto scrollbar-thin scrollbar-thumb-[#d1d5db] scrollbar-track-transparent -mx-2 px-4 ${className}`
+      `flex gap-4 sm:gap-5 overflow-x-auto scrollbar-thin scrollbar-thumb-[#d1d5db] scrollbar-track-transparent -mx-1 px-2 ${className}`
     }
     style={{ WebkitOverflowScrolling: "touch" }}
   >
@@ -230,27 +230,27 @@ const HorizontalScrollContainer: React.FC<{
 // --- Skeletons ---
 const DashboardCardSkeleton: React.FC = () => (
   <motion.div
-    className="shrink-0 w-[92vw] max-w-[260px] min-w-[210px] rounded-2xl border bg-white px-6 py-8 flex flex-col items-start justify-between space-y-3 mx-auto"
+    className="shrink-0 w-[86vw] max-w-[230px] min-w-[170px] rounded-2xl border bg-white px-5 py-7 flex flex-col items-start justify-between space-y-3 mx-auto"
     initial={{ scale: 0.96, opacity: 0.5 }}
     animate={{ scale: [0.96, 1.06, 0.99, 1], opacity: [0.5, 1] }}
     transition={{ repeat: Infinity, duration: 2, repeatType: "mirror" }}
   >
     <Skeleton className="h-10 w-10 rounded" />
-    <Skeleton className="h-8 w-32 rounded" />
-    <Skeleton className="h-5 w-36 rounded" />
+    <Skeleton className="h-7 w-24 rounded" />
+    <Skeleton className="h-4 w-28 rounded" />
   </motion.div>
 );
 
 const PublicationCardSkeleton: React.FC = () => (
   <motion.div
-    className="shrink-0 w-full max-w-full min-w-[230px] bg-white rounded-2xl border px-4 py-7 space-y-4 mx-auto"
+    className="shrink-0 w-full max-w-full min-w-[180px] sm:min-w-[230px] bg-white rounded-2xl border px-3 py-6 sm:px-4 sm:py-7 space-y-4 mx-auto"
     initial={{ scale: 0.96, opacity: 0.5 }}
     animate={{ scale: [0.96, 1.04, 0.99, 1], opacity: [0.5, 1] }}
     transition={{ repeat: Infinity, duration: 2.4, repeatType: "mirror" }}
   >
-    <Skeleton className="h-40 w-full rounded-lg" />
-    <Skeleton className="h-5 w-32 rounded" />
-    <Skeleton className="h-4 w-20 rounded" />
+    <Skeleton className="h-36 w-full rounded-lg" />
+    <Skeleton className="h-5 w-24 sm:w-32 rounded" />
+    <Skeleton className="h-4 w-16 sm:w-20 rounded" />
     <Skeleton className="h-4 w-2/3 rounded" />
   </motion.div>
 );
@@ -258,7 +258,6 @@ const PublicationCardSkeleton: React.FC = () => (
 // --- Dashboard Cards Section ---
 const DashboardCards: React.FC = () => {
   const { data: stats, isPending, error } = useMemberStats();
-
   const metrics: DashboardCardData[] = [
     {
       icon: <MdLibraryBooks className="text-[#4267E7] text-3xl" />,
@@ -301,7 +300,7 @@ const DashboardCards: React.FC = () => {
   if (isPending) {
     return (
       <>
-        <div className="sm:hidden mb-6 pl-1 pr-2">
+        <div className="sm:hidden mb-5 pl-1 pr-1">
           <HorizontalScrollContainer>
             {[...Array(3)].map((_, idx) => (
               <DashboardCardSkeleton key={idx} />
@@ -319,11 +318,11 @@ const DashboardCards: React.FC = () => {
 
   return (
     <>
-      <div className="sm:hidden mb-6 pl-1 pr-2">
+      <div className="sm:hidden mb-4 pl-1 pr-1">
         <HorizontalScrollContainer>
           <AnimatePresence>
             <motion.div
-              className="flex gap-5"
+              className="flex gap-3"
               variants={STAGGER_CONTAINER}
               initial="hidden"
               animate="show"
@@ -332,9 +331,9 @@ const DashboardCards: React.FC = () => {
               {metrics.map((card, idx) => (
                 <motion.div
                   key={idx}
-                  className="shrink-0 w-[92vw] max-w-[260px] min-w-[210px] mx-auto"
+                  className="shrink-0 w-[86vw] max-w-[230px] min-w-[170px] mx-auto"
                   variants={CARD_BOUNCE as any}
-                  whileHover={{ scale: 1.054 }}
+                  whileHover={{ scale: 1.035 }}
                   whileTap={{ scale: 0.987 }}
                   transition={{ type: "spring", bounce: 0.32 }}
                 >
@@ -344,7 +343,7 @@ const DashboardCards: React.FC = () => {
                     label={card.label}
                   />
                   <motion.div
-                    className="mt-3 text-xs font-medium text-[#4267E7] opacity-75 flex items-center gap-1 pl-2"
+                    className="mt-2 text-xs font-medium text-[#4267E7] opacity-75 flex items-center gap-1 pl-1"
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: .27 + idx * 0.1, duration: 0.36 }}
@@ -400,9 +399,9 @@ const PublicationsSection: React.FC = () => {
   const pubList = useMemo(() => publications ?? [], [publications]);
 
   return (
-    <section className="mb-14">
+    <section className="mb-12 sm:mb-14">
       <SectionDivider />
-      <div className="px-4 sm:px-0">
+      <div className="px-2 sm:px-0">
         <SectionHeader
           title="Publications"
           href="/forum"
@@ -411,7 +410,7 @@ const PublicationsSection: React.FC = () => {
       </div>
       {loading ? (
         <>
-          <div className="sm:hidden">
+          <div className="sm:hidden mt-2">
             <HorizontalScrollContainer>
               {[...Array(2)].map((_, idx) => (
                 <PublicationCardSkeleton key={idx} />
@@ -426,7 +425,7 @@ const PublicationsSection: React.FC = () => {
         </>
       ) : error ? (
         <motion.div
-          className="py-7 text-base text-center text-red-600 font-semibold"
+          className="py-6 text-base text-center text-red-600 font-semibold"
           initial={{ scale: 0.9, opacity: 0.5 }}
           animate={{ scale: 1, opacity: 1 }}
         >
@@ -434,7 +433,7 @@ const PublicationsSection: React.FC = () => {
         </motion.div>
       ) : pubList.length === 0 ? (
         <motion.div
-          className="py-8 text-base text-center text-gray-400 font-semibold"
+          className="py-6 text-base text-center text-gray-400 font-semibold"
           initial={{ opacity: 0.25, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -442,11 +441,11 @@ const PublicationsSection: React.FC = () => {
         </motion.div>
       ) : (
         <>
-          <div className="sm:hidden w-full">
+          <div className="sm:hidden w-full mt-1">
             <HorizontalScrollContainer>
               <AnimatePresence>
                 <motion.div
-                  className="flex gap-5 w-full"
+                  className="flex gap-4 w-full"
                   variants={STAGGER_CONTAINER}
                   initial="hidden"
                   animate="show"
@@ -455,15 +454,15 @@ const PublicationsSection: React.FC = () => {
                   {pubList.map((pub, idx) => (
                     <motion.div
                       key={pub._id ?? idx}
-                      className="shrink-0 w-full max-w-full min-w-[230px] mx-auto flex flex-col"
+                      className="shrink-0 w-full max-w-full min-w-[180px] sm:min-w-[230px] mx-auto flex flex-col"
                       variants={CARD_BOUNCE as any}
-                      whileHover={{ scale: 1.03 }}
+                      whileHover={{ scale: 1.025 }}
                       whileTap={{ scale: 0.985 }}
                       transition={{ type: "spring", bounce: 0.28 }}
                     >
                       <PublicationCard publication={pub} className="w-full" />
                       <motion.div
-                        className="mt-3 text-xs italic text-[#41B079] flex gap-1 items-center pl-2"
+                        className="mt-2 text-xs italic text-[#41B079] flex gap-1 items-center pl-1"
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.18 + idx * 0.07, duration: 0.28 }}
@@ -512,16 +511,16 @@ const PublicationsSection: React.FC = () => {
 
 // --- Certifications Section ---
 const CertificationsSection: React.FC = () => (
-  <section className="mb-14">
+  <section className="mb-12 sm:mb-14">
     <SectionDivider />
-    <div className="px-4 sm:px-0">
+    <div className="px-2 sm:px-0">
       <SectionHeader title="Training & Certifications" />
     </div>
-    <div className="sm:hidden">
+    <div className="sm:hidden mt-1">
       <HorizontalScrollContainer>
         <AnimatePresence>
           <motion.div
-            className="flex gap-5"
+            className="flex gap-4"
             variants={STAGGER_CONTAINER}
             initial="hidden"
             animate="show"
@@ -530,15 +529,15 @@ const CertificationsSection: React.FC = () => (
             {certificationsData.map((cert, idx) => (
               <motion.div
                 key={idx}
-                className="shrink-0 w-[94vw] max-w-[320px] min-w-[230px] mx-auto"
+                className="shrink-0 w-[90vw] max-w-[275px] min-w-[180px] mx-auto"
                 variants={CARD_BOUNCE as any}
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.987 }}
+                whileHover={{ scale: 1.027 }}
+                whileTap={{ scale: 0.985 }}
                 transition={{ type: "spring", bounce: 0.30 }}
               >
                 <CertCard {...cert} />
                 <motion.div
-                  className="mt-3 text-xs font-medium text-[#41B079] flex items-center gap-1 pl-1"
+                  className="mt-2 text-xs font-medium text-[#41B079] flex items-center gap-1 pl-1"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.14 + idx * .09, duration: .22 }}
@@ -584,16 +583,16 @@ const CertificationsSection: React.FC = () => (
 
 // --- Events Section ---
 const EventsSection: React.FC = () => (
-  <section className="mb-2">
+  <section className="mb-4 sm:mb-2">
     <SectionDivider />
-    <div className="px-4 sm:px-0">
+    <div className="px-2 sm:px-0">
       <SectionHeader title="Upcoming Events" />
     </div>
-    <div className="sm:hidden">
+    <div className="sm:hidden mt-1">
       <HorizontalScrollContainer>
         <AnimatePresence>
           <motion.div
-            className="flex gap-5"
+            className="flex gap-4"
             variants={STAGGER_CONTAINER}
             initial="hidden"
             animate="show"
@@ -602,7 +601,7 @@ const EventsSection: React.FC = () => (
             {eventsData.map((ev, idx) => (
               <motion.div
                 key={ev.id ?? idx}
-                className="shrink-0 w-[94vw] max-w-[320px] min-w-[230px] mx-auto"
+                className="shrink-0 w-[90vw] max-w-[275px] min-w-[180px] mx-auto"
                 variants={CARD_BOUNCE as any}
                 whileHover={{ scale: 1.016 }}
                 whileTap={{ scale: 0.985 }}
@@ -624,7 +623,7 @@ const EventsSection: React.FC = () => (
                   description={ev.description}
                 />
                 <motion.div
-                  className="mt-3 text-xs font-semibold text-[#F4B645] flex items-center gap-1 pl-1"
+                  className="mt-2 text-xs font-semibold text-[#F4B645] flex items-center gap-1 pl-1"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.19 + idx * .08, duration: .18 }}
@@ -707,14 +706,14 @@ const MemberDashboardHome: React.FC = () => {
   const { user } = useAuth();
 
   return (
-    <main className="flex-1 pb-10 bg-[#fafbfd]">
-      <section className="w-full max-w-7xl mx-auto px-2 sm:px-6 pt-9 pb-6">
+    <main className="flex-1 pb-6 sm:pb-10 bg-[#fafbfd]">
+      <section className="w-full max-w-7xl mx-auto px-1 sm:px-6 pt-6 sm:pt-9 pb-3 sm:pb-6">
         <DashboardCards />
       </section>
-      <section className="w-full max-w-7xl mx-auto px-2 sm:px-6">
+      <section className="w-full max-w-7xl mx-auto px-1 sm:px-6">
         <PublicationsSection />
       </section>
-      <section className="w-full max-w-7xl mx-auto px-2 sm:px-6">
+      <section className="w-full max-w-7xl mx-auto px-1 sm:px-6">
         <CertificationsSection />
         <EventsSection />
       </section>
