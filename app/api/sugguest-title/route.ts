@@ -11,12 +11,24 @@ export async function POST(req: Request) {
   "${text}"
   `;
 
-  const completion = await client.responses.create({
-    model: "gpt-4.1-mini",
-    input: prompt,
+  const completion = await client.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
   });
 
-  const result = completion.output_text;
+  const result = completion.choices[0]?.message?.content || "";
 
-  return new Response(JSON.stringify({ titles: result.split("\n") }));
+  // Parse the result - split by newlines and filter out empty strings
+  const titles = result
+    .split("\n")
+    .map((title) => title.trim())
+    .filter((title) => title.length > 0)
+    .slice(0, 5); // Ensure we only return up to 5 titles
+
+  return new Response(JSON.stringify({ titles }));
 }
