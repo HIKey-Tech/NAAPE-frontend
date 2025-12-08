@@ -264,7 +264,7 @@ const navLinksMain: NavLink[] = [
   {
     label: "Events",
     icon: FaCalendarAlt,
-    href: "/events",
+    href: "/member/events",
   },
   {
     label: "Forum",
