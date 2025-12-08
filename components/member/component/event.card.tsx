@@ -6,6 +6,7 @@ import { usePayForEvent } from "@/hooks/useEvents";
 import { EventCardProps } from "@/app/api/events/type";
 
 import { CalendarClock, MapPin, User2, Loader2, BadgeCheck } from "lucide-react";
+import { useAuth } from "@/context/authcontext";
 
 const truncate = (text: string, max = 40) =>
     text.length > max ? text.slice(0, max - 1) + "…" : text;
@@ -188,16 +189,24 @@ const EventCard: React.FC<EventCardProps> = ({
         setPressing(false);
     };
 
-    // Updated handleRegister to not pass onSuccess in the mutation variables,
-    // but instead supply onSuccess as the second argument to mutate().
     const handleRegister = (e?: React.MouseEvent) => {
+        const { user } = useAuth()
+        
         if (e) e.stopPropagation();
         if (!id) return false;
+
+        // Validate user is authenticated and has required fields
+        if (!user || !user.name || !user.email) {
+            // Redirect to login if not authenticated
+            router.push("/login?redirect=/events/" + id);
+            return false;
+        }
+
         payForEventMutation.mutate(
             {
                 eventId: id,
-                name: "",
-                email: ""
+                name: user.name,
+                email: user.email
             },
             {
                 onSuccess: (result: any) => {
@@ -468,7 +477,7 @@ const EventCard: React.FC<EventCardProps> = ({
                 )}
                 {/* --- END UI for payments prop --- */}
                 {/* Created/Updated at as a caption */}
-                {(createdAt || updatedAt) && (
+                {/* {(createdAt || updatedAt) && (
                     <div className={`mt-2 ${fontSizes.meta} ${colors.createdMeta} font-light flex items-center gap-4`}>
                         {createdAt && (
                             <span title={`Created: ${new Date(createdAt).toLocaleString()}`}>
@@ -481,7 +490,7 @@ const EventCard: React.FC<EventCardProps> = ({
                             </span>
                         )}
                     </div>
-                )}
+                )} */}
             </div>
         </div>
     );

@@ -2,6 +2,7 @@
 import { useSingleEvent, usePayForEvent } from "@/hooks/useEvents";
 import { useParams, useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
+import { useAuth } from "@/context/authcontext";
 
 // Animation and formatting logic inspired by EventCard
 const EVENT_ANIM_CLASS = "event-card-anim";
@@ -81,6 +82,7 @@ export default function AdminEventDetailsPage() {
     const { data: event, isLoading, isError } = useSingleEvent(id);
     const payForEventMutation = usePayForEvent();
     const [showImageError, setShowImageError] = useState(false);
+    const { user } = useAuth();
 
     // Animation: fade-in on mount, like EventCard
     const cardRef = useRef<HTMLDivElement | null>(null);
@@ -160,11 +162,19 @@ export default function AdminEventDetailsPage() {
     const handleRegister = (e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
         if (!id) return false;
+        
+        // Validate user is authenticated and has required fields
+        if (!user || !user.name || !user.email) {
+            // Redirect to login if not authenticated
+            router.push("/login?redirect=/events/" + id);
+            return false;
+        }
+        
         payForEventMutation.mutate(
             {
                 eventId: id,
-                name: "",
-                email: ""
+                name: user.name,
+                email: user.email
             },
             {
                 onSuccess: (result: any) => {

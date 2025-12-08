@@ -981,8 +981,8 @@ export function AppSidebar() {
       <style>{iconAnimationStyles}</style>
       {/* Desktop: Sidebar and nav */}
       <SidebarContainer SidebarContent={SidebarContent} />
-      {/* MOBILE: Hamburger topbar */}
-      <MobileTopBar onHamburger={() => setMobileNavOpen(true)} user={user ?? undefined} />
+z      {/* MOBILE: Hamburger topbar */}
+      {/* <MobileTopBar onHamburger={() => setMobileNavOpen(true)} user={user ?? undefined} /> */}
       {/* MOBILE: Hamburger Sidenav Overlay */}
       <MobileSidenav
         open={mobileNavOpen}
