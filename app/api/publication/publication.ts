@@ -44,7 +44,7 @@ export async function createPublication(data: FormData) {
     // const BASE_URL = "http://localhost:5000/api"
 
     try {
-        const response = await axios.post(`${BASE_URL}/publications`, data, {
+        const response = await axios.post(`${BASE_URL}/v1/publications`, data, {
             headers: {
                 "Content-Type": "multipart/form-data",
                 Authorization: `Bearer ${token}`,
