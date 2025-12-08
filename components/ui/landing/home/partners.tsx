@@ -1,32 +1,34 @@
 "use client"
 
-import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
+import { useRef } from "react";
+// Example chosen icons from react-icons (adjust as needed for your actual use-cases/partners)
+import { FaRegGem, FaSearch, FaRocket, FaPalette, FaAdjust, FaWater } from "react-icons/fa";
 
 const partners = [
   {
     name: "SHELLS",
-    logo: "/images/partners/shells.svg",
+    icon: FaRegGem,
   },
   {
     name: "SmartFinder",
-    logo: "/images/partners/smartfinder.svg",
+    icon: FaSearch,
   },
   {
     name: "Zoomer",
-    logo: "/images/partners/zoomer.svg",
+    icon: FaRocket,
   },
   {
     name: "ArtVenue",
-    logo: "/images/partners/artvenue.svg",
+    icon: FaPalette,
   },
   {
     name: "kontrastr",
-    logo: "/images/partners/kontrastr.svg",
+    icon: FaAdjust,
   },
   {
     name: "WAVESMARATHON",
-    logo: "/images/partners/wavesmarathon.svg",
+    icon: FaWater,
   },
 ];
 
@@ -44,6 +46,17 @@ const containerVariants = {
 const partnerVariants = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 60, damping: 12 } },
+};
+
+// Additional: micro animation for icon (wiggle/bounce/scale) on hover
+const iconMicroAnim = {
+  rest: { rotate: 0, scale: 1, transition: { type: "spring", stiffness: 300, damping: 15 } },
+  hover: { 
+    scale: 1.14,
+    rotate: [0, -10, 10, -5, 5, 0], 
+    transition: { duration: 0.4, type: "spring" }
+  },
+  tap: { scale: 0.93, rotate: 0 }
 };
 
 export default function PartnersSection() {
@@ -83,27 +96,37 @@ export default function PartnersSection() {
         className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-x-6 gap-y-6 items-center justify-center"
         variants={containerVariants}
       >
-        {partners.map((partner, idx) => (
-          <motion.div
-            key={partner.name}
-            className="flex flex-col items-center"
-            variants={partnerVariants as any}
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 70 }}
-          >
-            <div className="mb-1">
-              <Image
-                src={partner.logo}
-                alt={partner.name}
-                width={60}
-                height={40}
-                className="object-contain grayscale hover:grayscale-0 transition"
-              />
-            </div>
-            <span className="text-xs text-muted-foreground font-medium">{partner.name}</span>
-          </motion.div>
-        ))}
+        {partners.map((partner) => {
+          const IconComp = partner.icon;
+          return (
+            <motion.div
+              key={partner.name}
+              className="flex flex-col items-center"
+              variants={partnerVariants as any}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 70 }}
+            >
+              <motion.div
+                className="mb-1"
+                variants={undefined}
+                initial="rest"
+                whileHover="hover"
+                whileTap="tap"
+                animate="rest"
+              >
+                <motion.div variants={iconMicroAnim as any}>
+                  <IconComp
+                    size={48}
+                    className="text-primary/80 grayscale hover:grayscale-0 transition"
+                    aria-label={partner.name}
+                  />
+                </motion.div>
+              </motion.div>
+              <span className="text-xs text-muted-foreground font-medium">{partner.name}</span>
+            </motion.div>
+          );
+        })}
       </motion.div>
     </motion.section>
   );
