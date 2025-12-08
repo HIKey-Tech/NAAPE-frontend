@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 const containerVariants = {
     hidden: {},
     show: {
         transition: {
-            staggerChildren: 0.19,
-            delayChildren: 0.09,
+            staggerChildren: 0.18,
+            delayChildren: 0.07,
         },
     },
 };
@@ -20,93 +21,170 @@ const textBlockVariants = {
         x: 0,
         transition: {
             type: "spring",
-            stiffness: 70,
+            stiffness: 65,
             damping: 18,
-            duration: 0.53,
+            duration: 0.52,
         },
     },
 };
 
 const fadeUpVariants = {
-    hidden: { opacity: 0, y: 26 },
+    hidden: { opacity: 0, y: 22 },
     show: {
         opacity: 1,
         y: 0,
         transition: {
             type: "spring",
-            stiffness: 60,
-            damping: 17,
-            duration: 0.5,
+            stiffness: 58,
+            damping: 16,
+            duration: 0.46,
         },
     },
 };
 
 const imageVariants = {
-    hidden: { opacity: 0, scale: 0.96, x: 34 },
+    hidden: { opacity: 0, scale: 0.97, x: 34 },
     show: {
         opacity: 1,
         scale: 1,
         x: 0,
         transition: {
             type: "spring",
-            stiffness: 65,
-            damping: 16,
-            duration: 0.52,
+            stiffness: 58,
+            damping: 19,
+            duration: 0.48,
         },
     },
 };
 
 export default function OriginSection() {
+    // For micro-animations (hover/tap): state not required, using framer-motion props directly
+
     return (
         <motion.section
-            className="flex flex-col md:flex-row items-start md:items-center gap-12 w-full py-16 px-4 md:px-16 bg-white"
+            className="relative flex flex-col md:flex-row justify-center items-stretch md:items-center gap-14 w-full py-20 px-4 md:px-16 bg-[#F8F5F0] border-t border-[#E0DBC9]"
             variants={containerVariants}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.34 }}
         >
-            {/* Image Content */}
+            {/* Backdrop Motif: Faded Era Symbol */}
+            <motion.span
+                aria-hidden="true"
+                className="pointer-events-none select-none absolute left-[9%] top-6 opacity-10 text-[8rem] md:text-[11rem] rotate-[-6deg] hidden md:block"
+                style={{
+                    fontFamily: 'serif',
+                    letterSpacing: '-0.07em',
+                    color: "#a08860",
+                    lineHeight: 1,
+                    userSelect: "none",
+                }}
+                whileHover={{ scale: 1.04, rotate: -5 }} // slight hover scale and rotate for motif micro animation
+                transition={{ type: "spring", stiffness: 80, damping: 16 }}
+            >
+                1984
+            </motion.span>
+
+            {/* Image Content w/ border, no shadow, gentle motif, ambiguous */}
             <motion.div
-                className="flex-1 flex justify-center items-center max-w-xl md:max-w-full mb-8 md:mb-0"
+                className="flex-1 flex justify-center items-center max-w-xl md:max-w-none mb-10 md:mb-0 relative"
                 variants={imageVariants as any}
+                whileHover={{ scale: 1.025, boxShadow: "0 6px 32px 0 #dbcbaa44" }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 160, damping: 15 }}
             >
                 <motion.div
-                    className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-gray-100"
-                    whileHover={{ scale: 1.03, boxShadow: "0 10px 32px 0 rgba(36,80,180,0.13)" }}
-                    transition={{ type: "spring", stiffness: 210, damping: 18 }}
+                    className={`
+                        relative w-full max-w-md aspect-[4/3] rounded-xl overflow-hidden
+                        border-2 border-[#daccad] bg-[#efe9de] flex items-center justify-center
+                    `}
+                    whileHover={{ boxShadow: "0 4px 24px #ecdcb844" }}
+                    transition={{ duration: 0.25 }}
                 >
-                    <Image
-                        src="/logo.png"
-                        alt="NAAPE Origin"
-                        fill
-                        style={{ objectFit: 'cover' }}
-                        className="rounded-2xl transition-transform duration-300 hover:scale-105"
-                        priority
+                    {/* Ambiguous layered effect */}
+                    <motion.div
+                        className="absolute inset-0 rounded-xl border-2 border-[#bfa477] opacity-30 pointer-events-none"
+                        aria-hidden="true"
+                        whileHover={{ opacity: 0.43, scale: 1.04 }}
+                        transition={{ duration: 0.28 }}
                     />
+                    <motion.div
+                        className="absolute inset-0 z-10 pointer-events-none"
+                        initial={{ opacity: 0 }}
+                        whileHover={{ opacity: 0.14 }}
+                        transition={{ duration: 0.33 }}
+                        aria-hidden="true"
+                        style={{
+                            background: "radial-gradient(circle at 65% 50%, #f3eed17c 18%, transparent 80%)"
+                        }}
+                    />
+                    <motion.div
+                        className="relative w-full h-full"
+                        whileHover={{ scale: 1.025, rotate: 0.2 }}
+                        whileTap={{ scale: 0.99 }}
+                        transition={{ type: "spring", stiffness: 150, damping: 14 }}
+                    >
+                        <Image
+                            src="/logo.png"
+                            alt="NAAPE Origin"
+                            fill
+                            style={{ objectFit: "cover", mixBlendMode: "luminosity" }}
+                            className="rounded-xl scale-100 saturate-70"
+                            priority
+                        />
+                    </motion.div>
                 </motion.div>
             </motion.div>
-            {/* Text Content */}
+            
+            {/* Text Content: creamy bg, storytelling style, strong contrast */}
             <motion.div
-                className="flex-1 max-w-2xl"
+                className="flex-1 max-w-2xl px-0 md:px-4 py-0 flex flex-col justify-center"
                 variants={textBlockVariants as any}
             >
                 <motion.h2
-                    className="text-3xl md:text-4xl font-extrabold text-neutral-800 mb-5 leading-tight"
+                    className="text-2xl md:text-4xl font-black text-[#26200d] mb-6 uppercase tracking-tight leading-tight"
                     variants={fadeUpVariants as any}
+                    whileHover={{ letterSpacing: "0.02em", color: "#574318" }}
+                    transition={{ type: "spring", stiffness: 100, damping: 13 }}
                 >
-                    Our Origins <span className="font-normal">(1984–1985)</span>
+                    <motion.span
+                        className="border-b-4 border-[#daccad] pb-1 inline-block"
+                        whileHover={{ borderColor: "#bfa477", scale: 1.04 }}
+                        transition={{ duration: 0.22 }}
+                    >
+                        Our Origins
+                    </motion.span>
+                    <motion.span
+                        className="text-lg font-light text-[#bfa477] ml-3 align-top"
+                        whileHover={{ color: "#a08860" }}
+                        transition={{ duration: 0.17 }}
+                    >
+                        (1984–1985)
+                    </motion.span>
                 </motion.h2>
                 <motion.div
-                    className="text-neutral-700 text-base md:text-lg leading-relaxed space-y-4"
+                    className="text-[#3d2b14] text-base md:text-lg font-medium leading-relaxed space-y-5 bg-[#fcf8f3] border border-[#efe9de] rounded-xl px-6 py-5"
                     variants={fadeUpVariants as any}
-                    transition={{ delay: 0.11 }}
+                    transition={{ delay: 0.12 }}
+                    whileHover={{ backgroundColor: "#f4eee3", borderColor: "#dac6a9" }}
                 >
-                    <p>
-                        Subsequently, NAAPE successfully held its maiden delegates Conference on 17th to 18th May, 1984 at the Nigeria Airways Sports Club, C.I.A., Ikeja, Lagos (now demolished). The Conference elected the first National Executive Council (NEC) – now National Administrative Council (NAC) – with Capt. Ade Olubadewo, who worked with Aero Contractors, as the first National President of NAAPE.
-                    </p>
-                    <p>
-                        The NEC then appointed Comrade Michael Ekujumi as the first General Secretary (then called Professional Secretary) in June, 1984. Thereafter, the NEC set the machinery in motion for the registration of the Association as a trade union which was accomplished in August, 1985.
-                    </p>
+                    <motion.p
+                        whileHover={{ x: 2, color: "#7a5c31" }}
+                        transition={{ duration: 0.2, type: "spring", stiffness: 70 }}
+                    >
+                        <motion.span
+                            className="font-semibold text-[#866b38]"
+                            whileHover={{ color: "#a88651" }}
+                            transition={{ duration: 0.16 }}
+                        >Subsequently,</motion.span>{" "}
+                        NAAPE held its maiden delegates Conference (May 17–18, 1984) at the Nigeria Airways Sports Club, C.I.A., Ikeja, Lagos (now demolished). The Conference elected the first National Executive Council (NEC) – now National Administrative Council (NAC) – with Capt. Ade Olubadewo (Aero Contractors) as first National President of NAAPE.
+                    </motion.p>
+                    <motion.p
+                        whileHover={{ x: -2, color: "#866b38" }}
+                        transition={{ duration: 0.2, type: "spring", stiffness: 70 }}
+                    >
+                        The NEC appointed Comrade Michael Ekujumi as first General Secretary (then Professional Secretary) in June 1984; soon after, the process began to register the Association as a trade union—accomplished in August 1985.
+                    </motion.p>
                 </motion.div>
             </motion.div>
         </motion.section>

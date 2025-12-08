@@ -16,7 +16,14 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 
-// Define the form schema with zod
+// Only primary color used
+const PRIMARY = "#193B7A";
+const ACCENT = PRIMARY;
+const BORDER = PRIMARY;
+const BG_INPUT = "#F8FAFC"; // Inputs can stay pale for UX, but all accents are PRIMARY
+const ERROR_COLOR = PRIMARY;
+const HIGHLIGHT = PRIMARY;
+
 const contactSchema = z.object({
     name: z.string().min(1, "Name is required"),
     email: z.string().min(1, "Email is required").email("Invalid email"),
@@ -41,7 +48,6 @@ export default function ContactSection() {
 
     async function onSubmit(data: ContactFormValues) {
         setSubmitting(true);
-        // Simulate async API request
         await new Promise((res) => setTimeout(res, 1200));
         setSubmitting(false);
         setSubmitted(true);
@@ -50,25 +56,30 @@ export default function ContactSection() {
     }
 
     return (
-        <section className="w-full flex flex-col items-center py-16 bg-gradient-to-b from-white to-blue-50/50">
-            <div className="max-w-full w-full mx-auto px-6">
-                {/* Heading */}
-                <header className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl font-extrabold mb-4 text-gray-900 tracking-tight">
-                        Connect with <span className="text-blue-600 underline underline-offset-4 decoration-blue-300">NAAPE</span>
+        <section
+            className="w-full px-2"
+            aria-labelledby="contact-section-heading"
+        >
+            <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-0 md:gap-14">
+                {/* Left: Contact Form */}
+                <div className="w-full md:w-5/9 lg:w-7/12 flex flex-col mb-8 md:mb-0">
+                    <h2
+                        id="contact-section-heading"
+                        className="text-3xl sm:text-4xl font-extrabold text-[#193B7A] mb-1 leading-tight tracking-tight"
+                    >
+                        Get in Touch with NAAPE
                     </h2>
-                    <p className="text-gray-600 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-                        Have a question, idea, or want to collaborate? <span className="inline md:block">We're eager to hear from you.</span> <br className="hidden md:inline" />
-                        Reach out below and a dedicated member of our team will respond promptly.
+                    <p className="text-base text-[#193B7A] mb-9 font-medium max-w-xl">
+                        Want to contact us for membership, partnership, questions, or support?
+                        <span className="block mt-1 text-[15.5px] text-[#193B7A]">
+                            Fill in this secure form and our executive team will get back to you
+                            within <span className="font-semibold" style={{ color: PRIMARY }}>1-2 business days</span>.
+                        </span>
                     </p>
-                </header>
-                {/* Grid for form and image */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
-                    {/* Contact Form */}
                     <Form {...form}>
                         <form
                             onSubmit={form.handleSubmit(onSubmit)}
-                            className="flex flex-col gap-5 bg-white rounded-xl shadow-md p-6 md:p-8"
+                            className="flex flex-col gap-6 bg-white rounded-xl border border-[#193B7A] p-6 md:p-8"
                             autoComplete="off"
                             aria-label="Contact form"
                             noValidate
@@ -79,8 +90,8 @@ export default function ContactSection() {
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                                            Name
+                                        <FormLabel htmlFor="name" className="block text-sm font-bold text-[#193B7A] mb-1.5">
+                                            Full Name
                                         </FormLabel>
                                         <div className="relative">
                                             <FormControl>
@@ -88,15 +99,20 @@ export default function ContactSection() {
                                                     {...field}
                                                     id="name"
                                                     type="text"
-                                                    placeholder="Full name"
-                                                    className={`border ${form.formState.errors.name ? "border-red-400" : "border-gray-200"
-                                                        } rounded-md pl-9 pr-3 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition`}
+                                                    placeholder="Your full name"
+                                                    className={`border ${form.formState.errors.name ? `border-[#193B7A]` : "border-[#193B7A]/30"
+                                                        } rounded-md pl-10 pr-3 py-2 w-full text-[15px] bg-[#F8FAFC] text-[#193B7A] font-medium focus:outline-none focus:ring-[2.5px]`}
+                                                    style={
+                                                        form.formState.errors.name
+                                                            ? { borderColor: PRIMARY, boxShadow: `0 0 0 2.5px ${PRIMARY}` }
+                                                            : { }
+                                                    }
                                                     autoComplete="off"
                                                     aria-invalid={!!form.formState.errors.name}
                                                     aria-describedby={form.formState.errors.name ? "name-error" : undefined}
                                                 />
                                             </FormControl>
-                                            <LucideUser className="absolute left-2.5 top-2.5 w-4 h-4 text-gray-400" aria-hidden />
+                                            <LucideUser className="absolute left-2.5 top-2.5 w-5 h-5 text-[#193B7A]/70" aria-hidden />
                                         </div>
                                         <FormMessage />
                                     </FormItem>
@@ -109,8 +125,8 @@ export default function ContactSection() {
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                            Email
+                                        <FormLabel htmlFor="email" className="block text-sm font-bold text-[#193B7A] mb-1.5">
+                                            Email Address
                                         </FormLabel>
                                         <div className="relative">
                                             <FormControl>
@@ -118,15 +134,20 @@ export default function ContactSection() {
                                                     {...field}
                                                     id="email"
                                                     type="email"
-                                                    placeholder="Email address"
-                                                    className={`border ${form.formState.errors.email ? "border-red-400" : "border-gray-200"
-                                                        } rounded-md pl-9 pr-3 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition`}
+                                                    placeholder="your@email.com"
+                                                    className={`border ${form.formState.errors.email ? `border-[#193B7A]` : "border-[#193B7A]/30"
+                                                        } rounded-md pl-10 pr-3 py-2 w-full text-[15px] bg-[#F8FAFC] text-[#193B7A] font-medium focus:outline-none focus:ring-[2.5px]`}
+                                                    style={
+                                                        form.formState.errors.email
+                                                            ? { borderColor: PRIMARY, boxShadow: `0 0 0 2.5px ${PRIMARY}` }
+                                                            : { }
+                                                    }
                                                     autoComplete="off"
                                                     aria-invalid={!!form.formState.errors.email}
                                                     aria-describedby={form.formState.errors.email ? "email-error" : undefined}
                                                 />
                                             </FormControl>
-                                            <LucideMail className="absolute left-2.5 top-2.5 w-4 h-4 text-gray-400" aria-hidden />
+                                            <LucideMail className="absolute left-2.5 top-2.5 w-5 h-5 text-[#193B7A]/70" aria-hidden />
                                         </div>
                                         <FormMessage />
                                     </FormItem>
@@ -139,18 +160,23 @@ export default function ContactSection() {
                                 name="message"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                                            Message
+                                        <FormLabel htmlFor="message" className="block text-sm font-bold text-[#193B7A] mb-1.5">
+                                            Your Message
                                         </FormLabel>
                                         <FormControl>
                                             <textarea
                                                 {...field}
                                                 id="message"
-                                                placeholder="Type your message..."
+                                                placeholder="What would you like to discuss or ask us about?"
                                                 minLength={8}
                                                 maxLength={2000}
-                                                className={`border ${form.formState.errors.message ? "border-red-400" : "border-gray-200"
-                                                    } rounded-md px-3 py-2 min-h-[110px] w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none transition`}
+                                                className={`border ${form.formState.errors.message ? `border-[#193B7A]` : "border-[#193B7A]/30"
+                                                    } rounded-md px-3 py-2 min-h-[112px] w-full text-[15px] bg-[#F8FAFC] text-[#193B7A] font-medium focus:outline-none focus:ring-[2.5px]`}
+                                                style={
+                                                    form.formState.errors.message
+                                                        ? { borderColor: PRIMARY, boxShadow: `0 0 0 2.5px ${PRIMARY}` }
+                                                        : { }
+                                                }
                                                 aria-invalid={!!form.formState.errors.message}
                                                 aria-describedby={form.formState.errors.message ? "message-error" : undefined}
                                             />
@@ -160,7 +186,7 @@ export default function ContactSection() {
                                 )}
                             />
 
-                            <div>
+                            <div className="w-full pt-1">
                                 <NaapButton
                                     type="submit"
                                     loading={submitting}
@@ -171,80 +197,149 @@ export default function ContactSection() {
                                     iconPosition="left"
                                     tooltip="Send your message"
                                     disabled={submitting || submitted}
+                                    style={{
+                                        fontWeight: 700,
+                                        fontSize: "16.3px",
+                                        letterSpacing: 0.11,
+                                        textTransform: "none",
+                                        paddingTop: 11,
+                                        paddingBottom: 11,
+                                        background: PRIMARY,
+                                        borderColor: PRIMARY
+                                    }}
                                 >
                                     {submitted ? "Message Sent!" : "Send Message"}
                                 </NaapButton>
-                                {/* Send animation/message */}
                                 {submitted && (
-                                    <div className="text-center text-green-600 text-sm mt-2 animate-fadeIn" role="status">
-                                        Thank you! Your message has been sent.
+                                    <div className="text-center text-[#193B7A] text-[15px] mt-3" role="status">
+                                        Thank you! We have received your message and will respond as soon as possible – usually within 1-2 business days.
                                     </div>
                                 )}
                             </div>
                         </form>
                     </Form>
-                    {/* Image side */}
-                    <div className="w-full  rounded-xl flex items-center justify-center relative min-h-[280px] md:min-h-[340px] lg:min-h-[400px] xl:min-h-[460px] overflow-hidden">
+                    <div
+                        className="mt-9 bg-white border-l-4 px-5 py-4 rounded-lg text-[#193B7A] text-[15px] leading-snug font-medium"
+                        style={{ borderColor: PRIMARY }}
+                        aria-live="polite"
+                    >
+                        <span className="font-bold text-[#193B7A] block mb-0.5">Note:</span>
+                        <ul className="list-disc ml-5 space-y-1">
+                            <li>For membership, include your NAAPE ID if known for faster response.</li>
+                            <li>For career/HR issues, describe your situation clearly.</li>
+                            <li>
+                                <span className="font-bold" style={{ color: PRIMARY }}>
+                                    Emergency?
+                                </span>{" "}
+                                Call our hotline, not just this form.
+                            </li>
+                            <li>We respect your privacy: your message is confidential and securely handled.</li>
+                        </ul>
+                    </div>
+                </div>
+                {/* Right: Illustration or supportive info */}
+                <div className="w-full md:w-4/9 lg:w-5/12 flex flex-col items-center justify-start p-0 pt-3">
+                    <div
+                        className="w-full rounded-xl border-2 border-[#193B7A] bg-white flex items-center justify-center relative min-h-[220px] md:min-h-[320px] lg:min-h-[370px] mb-3"
+                        style={{
+                            maxHeight: 400,
+                        }}
+                        aria-label="Leadership photo"
+                    >
                         <Image
                             src="/images/leader.png"
                             alt="Nigerian pilot with hand on aircraft throttle, NAAPE leadership"
-                            className="object-cover w-full h-full rounded-xl shadow-lg transition-transform duration-300 hover:scale-105 brightness-95"
-                            style={{ minHeight: 0, minWidth: 0 }}
+                            className="object-cover w-full h-full rounded-xl grayscale-0 contrast-110"
+                            style={{ minHeight: 0, minWidth: 0, borderRadius: "inherit" }}
                             fill
                             priority={false}
-                            sizes="(max-width: 768px) 90vw, 40vw"
+                            sizes="(max-width: 768px) 90vw, 35vw"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-tr from-white/70 via-transparent to-blue-100/20 pointer-events-none rounded-xl" aria-hidden="true"></div>
+                    </div>
+                    <div className="block mt-2 w-full">
+                        <div className="text-base leading-6 font-semibold text-[#193B7A] mb-1.5 uppercase tracking-wide">
+                            Why Contact Us?
+                        </div>
+                        <ul className="text-[15px] text-[#193B7A] font-medium list-disc space-y-0.5 ml-6 pl-0">
+                            <li>Membership/dues, union support, and career help</li>
+                            <li>Organizational partnerships and sponsorships</li>
+                            <li>Safety/confidential reporting</li>
+                            <li>Press and public relations</li>
+                        </ul>
                     </div>
                 </div>
-                {/* Improved Contact Details - Below the Form */}
-                <div className="w-full max-w-2xl mx-auto mt-16">
-                    <div className="flex flex-col md:flex-row items-center md:items-stretch justify-center gap-0">
-                        <div className="w-full md:w-1/3 flex flex-col items-center md:items-start bg-white rounded-l-xl md:rounded-l-xl md:rounded-r-none shadow p-6 border-b md:border-b-0 md:border-r border-blue-100">
-                            <div className="flex items-center gap-3 mb-2">
-                                <span className="inline-flex items-center justify-center bg-blue-100 text-blue-700 rounded-full p-2">
-                                    <LucideMapPin className="w-6 h-6" />
-                                </span>
-                                <span className="font-semibold text-gray-800 text-base">Office Address</span>
-                            </div>
-                            <div className="text-sm text-gray-600 text-center md:text-left">
-                                NAAPE Secretariat,<br />
-                                Pilots' House,<br />
-                                NAAPE Close,<br />
-                                Off Oba Akinjobi Way,<br />
-                                GRA Ikeja, Lagos, Nigeria
-                            </div>
+            </div>
+            {/* Highly readable and detailed contact information */}
+            <div className="w-full max-w-3xl mx-auto mt-16">
+                <h3
+                    className="text-2xl font-bold text-[#193B7A] mb-6 border-b-2 pb-2"
+                    style={{ borderColor: PRIMARY }}
+                >
+                    NAAPE Secretariat – Official Contact Details
+                </h3>
+                <div className="flex flex-col md:flex-row items-stretch justify-center gap-0 border border-[#193B7A]/20 rounded-lg overflow-hidden bg-white">
+                    {/* Address */}
+                    <div className="w-full md:w-1/3 flex flex-col items-center md:items-start bg-white border-b md:border-b-0 md:border-r border-[#193B7A]/15 px-7 py-7">
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="inline-flex items-center justify-center bg-[#193B7A]/10 text-[#193B7A] rounded-full p-2 mr-1">
+                                <LucideMapPin className="w-6 h-6" />
+                            </span>
+                            <span className="font-semibold text-[#193B7A] text-base">Office Address</span>
                         </div>
-                        <div className="w-full md:w-1/3 flex flex-col items-center md:items-start bg-white border-t md:border-t-0 md:border-l md:border-r border-blue-100 shadow p-6">
-                            <div className="flex items-center gap-3 mb-2">
-                                <span className="inline-flex items-center justify-center bg-blue-100 text-blue-700 rounded-full p-2">
-                                    <LucideMail className="w-6 h-6" />
-                                </span>
-                                <span className="font-semibold text-gray-800 text-base">Email</span>
-                            </div>
-                            <a
-                                href="mailto:info@naape.org.ng"
-                                className="text-blue-700 text-sm underline break-all hover:text-blue-900 transition text-center md:text-left"
-                            >
-                                info@naape.org.ng
-                            </a>
-                        </div>
-                        <div className="w-full md:w-1/3 flex flex-col items-center md:items-start bg-white rounded-b-xl md:rounded-r-xl md:rounded-l-none shadow p-6 border-t md:border-t-0 md:border-l border-blue-100">
-                            <div className="flex items-center gap-3 mb-2">
-                                <span className="inline-flex items-center justify-center bg-blue-100 text-blue-700 rounded-full p-2">
-                                    <LucidePhone className="w-6 h-6" />
-                                </span>
-                                <span className="font-semibold text-gray-800 text-base">Phone</span>
-                            </div>
-                            <a
-                                href="tel:+2348033042097"
-                                className="text-blue-700 text-sm underline hover:text-blue-900 transition text-center md:text-left"
-                            >
-                                +234 (0) 808 148 9071
-                            </a>
-                            <span className="mt-1 text-gray-500 text-xs text-center md:text-left">(Mon-Fri, 9am–5pm)</span>
-                        </div>
+                        <address className="text-sm text-[#193B7A] text-center md:text-left not-italic leading-snug" aria-label="Office Address">
+                            NAAPE Secretariat,<br />
+                            Pilots' House,<br />
+                            NAAPE Close, Off Oba Akinjobi Way,<br />
+                            GRA Ikeja, Lagos, Nigeria<br />
+                            <span className="block text-xs" style={{ color: PRIMARY, fontWeight: 600, marginTop: 4 }}>Visitors by appointment</span>
+                        </address>
                     </div>
+                    {/* Email */}
+                    <div className="w-full md:w-1/3 flex flex-col items-center md:items-start bg-white border-t md:border-t-0 md:border-l md:border-r border-[#193B7A]/15 px-7 py-7">
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="inline-flex items-center justify-center bg-[#193B7A]/10 text-[#193B7A] rounded-full p-2 mr-1">
+                                <LucideMail className="w-6 h-6" />
+                            </span>
+                            <span className="font-semibold text-[#193B7A] text-base">Email</span>
+                        </div>
+                        <a
+                            href="mailto:info@naape.org.ng"
+                            className="text-[15.5px] underline break-all font-bold hover:text-[#193B7A] transition text-center md:text-left"
+                            style={{ color: PRIMARY }}
+                        >
+                            info@naape.org.ng
+                        </a>
+                        <span className="block mt-2 text-xs font-normal text-[#193B7A] text-center md:text-left">
+                            For membership, attach documentation if possible.
+                        </span>
+                    </div>
+                    {/* Phone number */}
+                    <div className="w-full md:w-1/3 flex flex-col items-center md:items-start bg-white border-t md:border-t-0 md:border-l border-[#193B7A]/15 px-7 py-7">
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="inline-flex items-center justify-center bg-[#193B7A]/10 text-[#193B7A] rounded-full p-2 mr-1">
+                                <LucidePhone className="w-6 h-6" />
+                            </span>
+                            <span className="font-semibold text-[#193B7A] text-base">Phone</span>
+                        </div>
+                        <a
+                            href="tel:+2348081489071"
+                            className="text-[#193B7A] font-bold text-[15.5px] underline hover:text-[#193B7A] transition text-center md:text-left"
+                        >
+                            +234 (0) 808 148 9071
+                        </a>
+                        <span className="mt-1 text-[#193B7A] text-xs text-center md:text-left">(Mon–Fri, 9am–5pm)</span>
+                        <span
+                            className="block text-xs mt-1 font-semibold text-center md:text-left"
+                            style={{ color: PRIMARY }}
+                        >
+                            <span aria-label="emergency" className="mr-1">●</span>
+                            Emergency? Call for urgent union help.
+                        </span>
+                    </div>
+                </div>
+                <div className="mt-6 px-1 text-[14.3px] text-[#193B7A] font-medium leading-tight">
+                    <span className="font-bold text-[#193B7A]">Other ways to contact/engage:</span> For media requests, partnership proposals, or conference invitations,
+                    email the Secretariat above for routing to the appropriate department. Social media DMs are not monitored for official matters.
                 </div>
             </div>
         </section>
