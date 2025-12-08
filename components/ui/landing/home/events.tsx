@@ -61,7 +61,7 @@ const eventsListRaw = [
         description: "Explore the latest trends in cabin crew training and technology.",
         price: 0,
         currency: "NGN",
-        isPaid: false,
+        isPaid: true,
         createdBy: { name: "Naap", email: "info@naap.org" },
         registeredUsers: 55,
         createdAt: "2025-09-05T08:30:00+01:00",
