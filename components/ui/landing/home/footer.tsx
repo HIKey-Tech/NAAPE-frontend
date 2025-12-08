@@ -7,52 +7,56 @@ export default function Footer() {
     return (
         <footer className="bg-primary text-white text-sm w-full mt-auto pt-12 pb-4 px-4 md:px-16 transition-all">
             {/* Top Section */}
-            <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-16 mb-8 relative">
-                <div className="flex flex-row items-center gap-4 mb-6 md:mb-0">
+            <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-10 md:gap-20 mb-10 relative">
+
+                {/* Brand + Title */}
+                <div className="flex flex-row items-center gap-5 mb-7 md:mb-0">
                     <Image
                         src="/logo.png"
                         alt="NAAPE Logo"
                         height={56}
                         width={56}
                         priority
-                        className="h-14 w-14 bg-white rounded-lg shadow-md object-contain"
+                        className="h-14 w-14 bg-white rounded-lg object-contain border-2 border-[#FFD600]"
                     />
-                    <span className="text-base font-semibold leading-tight text-white">
-                        The National Association of<br className="hidden md:inline" />
-                        Aircraft Pilots and Engineers
+                    <span className="text-lg font-bold leading-tight text-white tracking-wide">
+                        <span className="block">The National Association of</span>
+                        <span className="block">Aircraft Pilots and Engineers</span>
                     </span>
                 </div>
+
                 {/* Quick Links */}
-                <div>
-                    <span className="uppercase tracking-wider font-bold text-[#FFD600] mb-4 block text-sm">Quick Links</span>
-                    <ul className="flex flex-col gap-2 text-[15px]">
+                <nav aria-label="Footer Quick Links">
+                    <span className="uppercase tracking-widest font-extrabold text-[#FFD600] mb-4 block text-base">Quick Links</span>
+                    <ul className="flex flex-col gap-2 text-base font-medium">
                         <li>
-                            <Link href="/" className="hover:text-[#FFD600] transition-colors">Home</Link>
+                            <Link href="/" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">Home</Link>
                         </li>
                         <li>
-                            <Link href="/about" className="hover:text-[#FFD600] transition-colors">About Us</Link>
+                            <Link href="/about" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">About Us</Link>
                         </li>
                         <li>
-                            <Link href="/news/naape" className="hover:text-[#FFD600] transition-colors">News</Link>
+                            <Link href="/news/naape" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">News</Link>
                         </li>
                         <li>
-                            <Link href="/publications/naape" className="hover:text-[#FFD600] transition-colors">Publications</Link>
+                            <Link href="/publications/naape" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">Publications</Link>
                         </li>
                         <li>
-                            <Link href="/events" className="hover:text-[#FFD600] transition-colors">Events</Link>
+                            <Link href="/events" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">Events</Link>
                         </li>
                     </ul>
-                </div>
-                {/* Contact & Socials */}
+                </nav>
+
+                {/* Connect / Socials */}
                 <div>
-                    <span className="uppercase tracking-wider font-bold text-[#FFD600] mb-4 block text-sm">Connect With Us</span>
-                    <div className="flex gap-4 text-xl mb-3">
+                    <span className="uppercase tracking-widest font-extrabold text-[#FFD600] mb-4 block text-base">Connect With Us</span>
+                    <div className="flex gap-5 text-2xl mb-4">
                         <a
                             href="https://www.youtube.com/"
                             rel="noopener noreferrer"
                             target="_blank"
                             aria-label="YouTube"
-                            className="hover:text-[#FFD600] transition-colors"
+                            className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors"
                         >
                             <FaYoutube />
                         </a>
@@ -61,7 +65,7 @@ export default function Footer() {
                             rel="noopener noreferrer"
                             target="_blank"
                             aria-label="Facebook"
-                            className="hover:text-[#FFD600] transition-colors"
+                            className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors"
                         >
                             <FaFacebookF />
                         </a>
@@ -70,11 +74,12 @@ export default function Footer() {
                             rel="noopener noreferrer"
                             target="_blank"
                             aria-label="Twitter"
-                            className="hover:text-[#FFD600] transition-colors"
+                            className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors"
                         >
                             <FaTwitter />
                         </a>
-                        {/* <a
+                        {/*
+                        <a
                             href="https://instagram.com"
                             rel="noopener noreferrer"
                             target="_blank"
@@ -91,26 +96,27 @@ export default function Footer() {
                             className="hover:text-[#FFD600] transition-colors"
                         >
                             <FaLinkedinIn />
-                        </a> */}
+                        </a>
+                        */}
                     </div>
                     <Link
                         href="/register"
-                        className="inline-block mt-2 px-5 py-2 rounded-md bg-[#FFD600] text-primary font-semibold text-xs uppercase shadow hover:bg-yellow-300 transition-colors"
+                        className="inline-block mt-2 px-6 py-2 rounded-md bg-[#FFD600] text-primary font-bold text-xs uppercase tracking-wider hover:bg-[#ffe066] focus:bg-[#ffe066] transition-colors outline-none"
                     >
                         Become a Member
                     </Link>
                 </div>
             </div>
 
-            <hr className="border-[#7EA8EF] mb-4" />
+            <hr className="border-t-2 border-[#FFD600] opacity-70 mb-4" />
 
             {/* Bottom */}
-            <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between text-xs tracking-tight text-[#B9CBEC] gap-2">
+            <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2 text-xs md:text-sm font-medium tracking-tight text-[#DCE9FB]">
                 <div className="text-center w-full md:w-auto">
-                    &copy; {new Date().getFullYear()} NAAPE. All rights reserved.
+                    &copy; {new Date().getFullYear()} <span className="font-semibold text-white">NAAPE</span>. All rights reserved.
                 </div>
                 <div className="w-full md:w-auto text-center">
-                    Made with <span className="text-[#FFD600]">&hearts;</span> for the Nigerian aviation community.
+                    Made with <span className="text-[#FFD600] font-bold" aria-hidden="true">&hearts;</span> for the Nigerian aviation community.
                 </div>
             </div>
         </footer>

@@ -186,13 +186,19 @@ const EventCard: React.FC<EventCardProps> = ({
         setPressing(false);
     };
 
+    // Updated handleRegister to not pass onSuccess in the mutation variables,
+    // but instead supply onSuccess as the second argument to mutate().
     const handleRegister = (e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
         if (!id) return false;
         payForEventMutation.mutate(
-            id,
             {
-                onSuccess: (result) => {
+                eventId: id,
+                name: "",
+                email: ""
+            },
+            {
+                onSuccess: (result: any) => {
                     if (typeof result === "string") {
                         window.location.href = result;
                     } else if (result && typeof result.url === "string") {
@@ -200,7 +206,7 @@ const EventCard: React.FC<EventCardProps> = ({
                     } else {
                         window.location.href = `/events/${id}`;
                     }
-                },
+                }
             }
         );
         return true;

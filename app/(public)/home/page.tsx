@@ -17,6 +17,7 @@ import LatestNews from "../latest/page";
 // Add mission section import
 import MissionSection from "@/components/ui/landing/about/mission";
 import WhatsAppFloat from "@/components/ui/custom/whatsapp";
+import EventsPage from "../events/page";
 
 // Updated SECTIONS to insert "mission" before "why"
 const SECTIONS = [
@@ -182,7 +183,7 @@ function PlaneTrail() {
                     case "mission": Comp = MissionSection; break; // Insert MissionSection
                     case "why": Comp = WhyJoinSection; break;
                     case "latest": Comp = LatestNews; break;
-                    case "events": Comp = UpcomingEvents; break;
+                    case "events": Comp = EventsPage; break;
                     case "partners": Comp = PartnersSection; break;
                     case "testimonial": Comp = TestimonialsSection; break;
                     case "faq": Comp = FAQSection; break;
