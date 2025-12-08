@@ -2,6 +2,7 @@
 import { useSingleEvent, usePayForEvent } from "@/hooks/useEvents";
 import { useParams, useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
+import { useAuth } from "@/context/authcontext";
 
 // Animation and formatting logic inspired by EventCard
 const EVENT_ANIM_CLASS = "event-card-anim";
@@ -81,6 +82,7 @@ export default function AdminEventDetailsPage() {
     const { data: event, isLoading, isError } = useSingleEvent(id);
     const payForEventMutation = usePayForEvent();
     const [showImageError, setShowImageError] = useState(false);
+    const { user } = useAuth();
 
     // Animation: fade-in on mount, like EventCard
     const cardRef = useRef<HTMLDivElement | null>(null);
@@ -159,11 +161,19 @@ export default function AdminEventDetailsPage() {
     // Pay/Registration handler logic
     function handleRegister() {
         if (!id || payForEventMutation.isPending) return;
+
+        // Validate user is authenticated and has required fields
+        if (!user || !user.name || !user.email) {
+            // This shouldn't happen in a private route, but handle gracefully
+            router.push("/login");
+            return;
+        }
+
         payForEventMutation.mutate(
             {
                 eventId: id,
-                name: "",
-                email: ""
+                name: user.name,
+                email: user.email
             },
             {
                 onSuccess: (result: any) => {
@@ -233,7 +243,7 @@ export default function AdminEventDetailsPage() {
                 <div className="flex items-center text-[#748095] mt-1">
                     <span className="inline-block align-middle mr-2">
                         <svg width="17" height="17" fill="none" viewBox="0 0 16 16">
-                            <path fill="#B7BDC8" d="M8 2a4 4 0 0 0-4 4c0 2.157 2.267 5.184 3.284 6.41A1 1 0 0 0 8 13a1 1 0 0 0 .715-.59C9.733 11.185 12 8.158 12 6a4 4 0 0 0-4-4zm0 8.67C5.954 8.09 4 5.69 4 6a4 4 0 1 1 8 0c0 .31-1.954 2.09-4 4.67zm0-6.336a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm0 4.332a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                            <path fill="#B7BDC8" d="M8 2a4 4 0 0 0-4 4c0 2.157 2.267 5.184 3.284 6.41A1 1 0 0 0 8 13a1 1 0 0 0 .715-.59C9.733 11.185 12 8.158 12 6a4 4 0 0 0-4-4zm0 8.67C5.954 8.09 4 5.69 4 6a4 4 0 1 1 8 0c0 .31-1.954 2.09-4 4.67zm0-6.336a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm0 4.332a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" />
                         </svg>
                     </span>
                     <span className="font-medium">{event.location || "—"}</span>
