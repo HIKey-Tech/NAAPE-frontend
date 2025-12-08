@@ -3,7 +3,9 @@ import {
     createEventApi, 
     fetchEvents, 
     getSingleEvent,
-    registerEvent
+    registerEvent,
+    verifyPayment,
+    getStatus
 } from "@/app/api/events/events";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -57,3 +59,24 @@ export const usePayForEvent = () => {
         },
     });
 };
+
+
+// Verify payment for an event (mutation)
+export const useVerifyPayment = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: verifyPayment,
+        onSuccess: () => {
+            // You may invalidate or refetch related event/payment data here
+            queryClient.invalidateQueries({ queryKey: ["events"] });
+        },
+    });
+};
+
+// Get payment status for an event and email (query)
+export const useGetStatus = (eventId?: string, email?: string) =>
+    useQuery({
+        queryKey: ["event-payment-status", eventId, email],
+        queryFn: () => getStatus(eventId as string, email as string),
+        enabled: !!eventId && !!email,
+    });

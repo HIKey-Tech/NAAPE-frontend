@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePayForEvent } from "@/hooks/useEvents";
@@ -186,21 +188,27 @@ const EventCard: React.FC<EventCardProps> = ({
         setPressing(false);
     };
 
+    // Updated handleRegister to not pass onSuccess in the mutation variables,
+    // but instead supply onSuccess as the second argument to mutate().
     const handleRegister = (e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
         if (!id) return false;
         payForEventMutation.mutate(
-            id,
             {
-                onSuccess: (result) => {
+                eventId: id,
+                name: "",
+                email: ""
+            },
+            {
+                onSuccess: (result: any) => {
                     if (typeof result === "string") {
                         window.location.href = result;
                     } else if (result && typeof result.url === "string") {
                         window.location.href = result.url;
                     } else {
-                        window.location.href = `/events/${id}`;
+                        window.location.href = `/events/${id}/payment-complete`;
                     }
-                },
+                }
             }
         );
         return true;
@@ -440,7 +448,7 @@ const EventCard: React.FC<EventCardProps> = ({
                     <div className="mt-2 mb-1.5">
                         <div className="text-[11.5px] text-[#C9AA5B] font-semibold mb-1">Recent Payments</div>
                         <ul className="max-h-[54px] overflow-auto pr-1">
-                            {payments.slice(0,3).map((payment: any, idx: number) => (
+                            {payments.slice(0, 3).map((payment: any, idx: number) => (
                                 <li key={payment.id ?? idx} className="flex items-center gap-2 text-xs text-[#8ba2cc]">
                                     <span className="inline-block font-semibold">{payment.user?.name || payment.user?.email || "User"}</span>
                                     <span className="opacity-60 ml-1">paid</span>
@@ -452,7 +460,7 @@ const EventCard: React.FC<EventCardProps> = ({
                             ))}
                             {payments.length > 3 && (
                                 <li className="text-xs italic text-[#C1C9DF] mt-1">
-                                    ...and {payments.length-3} more
+                                    ...and {payments.length - 3} more
                                 </li>
                             )}
                         </ul>

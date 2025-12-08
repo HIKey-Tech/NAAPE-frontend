@@ -160,7 +160,11 @@ export default function AdminEventDetailsPage() {
     function handleRegister() {
         if (!id || payForEventMutation.isPending) return;
         payForEventMutation.mutate(
-            id,
+            {
+                eventId: id,
+                name: "",
+                email: ""
+            },
             {
                 onSuccess: (result: any) => {
                     // Chart payment/registration path, like EventCard

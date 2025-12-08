@@ -157,24 +157,29 @@ export default function AdminEventDetailsPage() {
             : <span className="font-semibold text-[#5fad7f]">Free</span>;
 
     // Pay/Registration handler logic
-    function handleRegister() {
-        if (!id || payForEventMutation.isPending) return;
+    const handleRegister = (e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
+        if (!id) return false;
         payForEventMutation.mutate(
-            id,
+            {
+                eventId: id,
+                name: "",
+                email: ""
+            },
             {
                 onSuccess: (result: any) => {
-                    // Chart payment/registration path, like EventCard
                     if (typeof result === "string") {
                         window.location.href = result;
                     } else if (result && typeof result.url === "string") {
                         window.location.href = result.url;
                     } else {
-                        window.location.href = `/admin/events/${id}/payment-complete`;
+                        window.location.href = `/events/${id}/payment-complete`;
                     }
-                },
+                }
             }
         );
-    }
+        return true;
+    };
 
     return (
         <div
@@ -229,7 +234,7 @@ export default function AdminEventDetailsPage() {
                 <div className="flex items-center text-[#748095] mt-1">
                     <span className="inline-block align-middle mr-2">
                         <svg width="17" height="17" fill="none" viewBox="0 0 16 16">
-                            <path fill="#B7BDC8" d="M8 2a4 4 0 0 0-4 4c0 2.157 2.267 5.184 3.284 6.41A1 1 0 0 0 8 13a1 1 0 0 0 .715-.59C9.733 11.185 12 8.158 12 6a4 4 0 0 0-4-4zm0 8.67C5.954 8.09 4 5.69 4 6a4 4 0 1 1 8 0c0 .31-1.954 2.09-4 4.67zm0-6.336a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm0 4.332a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                            <path fill="#B7BDC8" d="M8 2a4 4 0 0 0-4 4c0 2.157 2.267 5.184 3.284 6.41A1 1 0 0 0 8 13a1 1 0 0 0 .715-.59C9.733 11.185 12 8.158 12 6a4 4 0 0 0-4-4zm0 8.67C5.954 8.09 4 5.69 4 6a4 4 0 1 1 8 0c0 .31-1.954 2.09-4 4.67zm0-6.336a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm0 4.332a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" />
                         </svg>
                     </span>
                     <span className="font-medium">{event.location || "—"}</span>
