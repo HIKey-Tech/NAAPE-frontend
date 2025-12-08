@@ -81,9 +81,9 @@ const PublicationComments: React.FC<{ publicationId: string, cardWidth?: string 
     };
 
     return (
-        <div className="border-t border-gray-200 pt-6 mt-6 px-4 sm:px-6">
+        <div className="border-t border-gray-200 pt-6 mt-6 px-2 sm:px-4 lg:px-6 transition-all">
             <h4 className="font-semibold mb-2 text-gray-800">Comments</h4>
-            <form onSubmit={handleAddComment} className="flex mb-3 gap-2">
+            <form onSubmit={handleAddComment} className="flex flex-col sm:flex-row mb-3 gap-2">
                 <input
                     type="text"
                     value={input}
@@ -137,16 +137,16 @@ const PublicationComments: React.FC<{ publicationId: string, cardWidth?: string 
     );
 };
 
-// Pill base classes
+// Pill base classes (responsive min-width/px on pills)
 const pillBaseClasses = [
     "inline-flex items-center justify-center",
     "rounded-full",
     "font-bold uppercase tracking-wide",
-    "text-sm sm:text-base",
-    "min-w-[140px]",
-    "min-h-[44px]",
-    "px-6",
-    "py-2.5",
+    "text-xs sm:text-sm md:text-base",
+    "min-w-[100px] sm:min-w-[140px]",
+    "min-h-[36px] sm:min-h-[44px]",
+    "px-3 sm:px-6",
+    "py-2 sm:py-2.5",
     "border",
     "whitespace-nowrap",
     "select-none"
@@ -257,9 +257,7 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                 : 0;
 
     // This push must match the [id] route used in @publication.detail.tsx
-    // For list and card click: /publication/[id] (not /publications/)
     function handleCardClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-        // Only navigate on outside card click, not on button et al.
         const tag = (e.target as HTMLElement).tagName.toLowerCase();
         if (
             tag === "button" ||
@@ -271,11 +269,12 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
             return;
         }
         if (_id) {
-            // IMPORTANT: To match [id] param route in @publication.detail.tsx
-            router.push(`/publication/${_id}`);
+            router.push(`/publications/${_id}`);
         }
     }
 
+    // Responsive: Use Tailwind classes for width/min-width/min-height.
+    // Drop the aspectRatio at lower breakpoints, and allow card to go full width on mobile.
     return (
         <div
             ref={cardRef}
@@ -284,17 +283,13 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                 "w-full",
                 className,
                 "cursor-pointer",
-                "group/publicationcard"
+                "group/publicationcard",
+                "max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-[640px]",
+                "mx-auto"
             ].join(" ")}
             style={{
                 position: "relative",
-                width: "100%",
-                maxWidth: "640px",
-                aspectRatio: "1 / 1",
-                minWidth: "320px",
-                minHeight: "320px",
-                maxHeight: "640px",
-                margin: "0 auto",
+                minWidth: "0",
             }}
             onClick={handleCardClick}
             tabIndex={0}
@@ -302,12 +297,11 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
             aria-label={title ? `Go to publication: ${title}` : "Go to publication"}
             onKeyDown={e => {
                 if (e.key === "Enter" || e.key === " ") {
-                    // "as any" to satisfy handler
                     handleCardClick(e as any);
                 }
             }}
         >
-            {/* Card Size overlay */}
+            {/* Card Size overlay (hide on small screens, show on md+) */}
             <div
                 style={{
                     position: "absolute",
@@ -320,8 +314,9 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                     fontSize: "12px",
                     color: "#446199",
                     boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                    display: "none",
                 }}
-                className="select-none"
+                className="select-none md:block"
                 aria-label="Card dimensions"
             >
                 {`Width: ${cardDims.width || "-"}px, Height: ${cardDims.height || "-"}px`}
@@ -330,12 +325,14 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                 className={[
                     "bg-white",
                     "border border-blue-200 rounded-[2rem] w-full h-full overflow-hidden flex flex-col group",
+                    // responsive
                 ].join(" ")}
                 style={{
                     width: "100%",
                     height: "100%",
                     display: "flex",
-                    flexDirection: "column"
+                    flexDirection: "column",
+                    minHeight: "320px",
                 }}
             >
                 {/* Top image header */}
@@ -363,7 +360,7 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                         }}
                     />
                     {/* Pills */}
-                    <div className="absolute top-7 left-0 w-full flex justify-between items-center px-7 z-10 pointer-events-none" style={{ gap: '8px' }}>
+                    <div className="absolute top-3 sm:top-5 md:top-7 left-0 w-full flex flex-col xs:flex-row justify-between items-start xs:items-center px-3 sm:px-5 md:px-7 z-10 pointer-events-none gap-2 xs:gap-2 md:gap-3">
                         {/* Category Pill */}
                         <div className="flex-1 flex min-w-0">
                             {category && (
@@ -389,7 +386,7 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                             )}
                         </div>
                         {/* Status Pill */}
-                        <div className="flex-1 flex min-w-0 justify-end">
+                        <div className="flex-1 flex min-w-0 justify-end mt-2 xs:mt-0">
                             <span
                                 className={[
                                     pillBaseClasses,
@@ -409,24 +406,24 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                     </div>
                 </div>
                 {/* Main Content */}
-                <div className="flex flex-col gap-6 flex-1 overflow-auto relative z-10 px-4 sm:px-6 pb-4 sm:pb-6">
+                <div className="flex flex-col gap-5 sm:gap-6 flex-1 overflow-auto relative z-10 px-2 sm:px-4 md:px-6 pb-4 sm:pb-6">
                     {/* Title */}
-                    <header className="flex flex-col gap-2 w-full pt-5">
-                        <h2 className="text-2xl sm:text-3xl font-black text-[#184072] tracking-tighter w-full truncate whitespace-nowrap">
+                    <header className="flex flex-col gap-1 sm:gap-2 w-full pt-3 sm:pt-5">
+                        <h2 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-black text-[#184072] tracking-tighter w-full truncate whitespace-nowrap">
                             {title}
                         </h2>
                         {/* Meta */}
-                        <div className="flex flex-wrap items-center gap-4 mt-2 ml-0.5 text-[#7890B0] text-[15px] font-semibold tracking-wide">
-                            <span className="flex items-center gap-2 bg-blue-50 rounded-xl px-3 py-1.5">
-                                <svg className="w-5 h-5 text-blue-400 mr-1" viewBox="0 0 20 20" fill="none">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-1 sm:mt-2 ml-0.5 text-[#7890B0] text-xs sm:text-[15px] font-semibold tracking-wide">
+                            <span className="flex items-center gap-1.5 sm:gap-2 bg-blue-50 rounded-xl px-2 sm:px-3 py-1.5">
+                                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 mr-1" viewBox="0 0 20 20" fill="none">
                                     <circle cx="10" cy="10" r="9" fill="#E5EAF2" />
                                     <path d="M6 12.5V8.5c0-2 1-3 4-3s4 1 4 3v4c0 2-1 3-4 3s-4-1-4-3z" stroke="#3666AE" strokeWidth="1.2" />
                                     <circle cx="10" cy="12" r="1" fill="#3666AE" />
                                 </svg>
                                 <span>{getAuthorString(author?.name) || "Unknown"}</span>
                             </span>
-                            <span className="text-gray-200 text-[20px] select-none font-bold">&middot;</span>
-                            <span className="rounded-xl bg-blue-50 px-3 py-1.5">
+                            <span className="text-gray-200 text-lg sm:text-[20px] select-none font-bold">&middot;</span>
+                            <span className="rounded-xl bg-blue-50 px-2 sm:px-3 py-1.5">
                                 {createdAt
                                     ? new Date(createdAt).toLocaleDateString(undefined, {
                                         year: "numeric",
@@ -439,7 +436,7 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                     </header>
                     {content && (
                         <section
-                            className="text-base sm:text-lg text-[#294469] leading-relaxed font-semibold line-clamp-4 overflow-hidden break-words bg-white rounded-xl p-5 border border-[#E8F1FF] transition w-full"
+                            className="text-sm xs:text-base sm:text-lg text-[#294469] leading-relaxed font-semibold line-clamp-4 overflow-hidden break-words bg-white rounded-xl p-3 sm:p-4 md:p-5 border border-[#E8F1FF] transition w-full"
                             title={content}
                             style={{ wordBreak: "break-word" }}
                         >
@@ -448,9 +445,9 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                     )}
                     {/* Admin action buttons */}
                     {isAdmin && statusValue === "pending" && (
-                        <div className="mt-2 flex gap-4 justify-end border-t border-blue-100 pt-4 w-full">
+                        <div className="mt-2 flex flex-col xs:flex-row gap-3 xs:gap-4 justify-end border-t border-blue-100 pt-4 w-full">
                             <button
-                                className="bg-green-100 hover:bg-green-200 text-green-900 px-6 py-2.5 rounded-xl font-bold text-base flex items-center gap-2 transition focus:outline-none ring-2 ring-green-200/50 border border-green-200"
+                                className="bg-green-100 hover:bg-green-200 text-green-900 px-4 sm:px-6 py-2 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2 transition focus:outline-none ring-2 ring-green-200/50 border border-green-200"
                                 type="button"
                                 onClick={onAccept}
                                 data-stop-propagation
@@ -461,7 +458,7 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                                 Accept
                             </button>
                             <button
-                                className="bg-red-100 hover:bg-red-200 text-red-900 px-6 py-2.5 rounded-xl font-bold text-base flex items-center gap-2 transition focus:outline-none ring-2 ring-red-200/50 border border-red-200"
+                                className="bg-red-100 hover:bg-red-200 text-red-900 px-4 sm:px-6 py-2 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2 transition focus:outline-none ring-2 ring-red-200/50 border border-red-200"
                                 type="button"
                                 onClick={onReject}
                                 data-stop-propagation
@@ -474,9 +471,9 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                         </div>
                     )}
                     {/* Comments Toggle */}
-                    <div className="mt-3 flex justify-end w-full">
+                    <div className="mt-2 sm:mt-3 flex justify-end w-full">
                         <button
-                            className={`flex items-center gap-3 py-2.5 px-6 rounded-xl text-base font-bold text-blue-800 bg-blue-50 hover:bg-blue-100 transition-all focus:outline-none ${
+                            className={`flex items-center gap-2 sm:gap-3 py-2 px-4 sm:py-2.5 sm:px-6 rounded-xl text-sm sm:text-base font-bold text-blue-800 bg-blue-50 hover:bg-blue-100 transition-all focus:outline-none ${
                                 showComments ? "ring-2 ring-blue-400 bg-blue-100" : ""
                             }`}
                             onClick={e => {
@@ -487,20 +484,20 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
                             data-stop-propagation
                             aria-expanded={showComments}
                             aria-controls={`pubcard-comments-${_id}`}
-                            style={{ minWidth: 140, justifyContent: "center", alignItems: "center" }}
+                            style={{ minWidth: 110, justifyContent: "center", alignItems: "center" }}
                         >
                             <svg viewBox="0 0 20 20" fill="none" width="20" height="20" className="inline-block align-middle" aria-hidden="true">
                                 <path d="M6.7 15.91c-2.98 0-5.33-2.02-5.33-4.5s2.35-4.5 5.33-4.5c.45 0 .89.04 1.32.13.71-1.35 2.3-2.27 4.11-2.27 2.12 0 3.85 1.25 3.85 2.79 0 .08-.01.16-.02.24.72.61 1.15 1.39 1.15 2.24 0 1.85-1.98 3.36-4.43 3.36a5.92 5.92 0 01-1.4-.15c-.38 1.04-1.65 1.81-3.19 1.81Z" stroke="#2268E5" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                             {showComments ? "Hide comments" : "Show comments"}
-                            <span className="ml-2 inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-900 font-bold text-sm">
+                            <span className="ml-2 inline-flex items-center px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-blue-100 text-blue-900 font-bold text-xs sm:text-sm">
                                 {typeof commentCount === "number" ? commentCount : <span className="opacity-40">&ndash;</span>}
                             </span>
                         </button>
                     </div>
                     {/* Comments section */}
                     {showComments && (
-                        <div className="pt-4 w-full" id={`pubcard-comments-${_id}`}>
+                        <div className="pt-2 sm:pt-4 w-full" id={`pubcard-comments-${_id}`}>
                             <PublicationComments
                                 publicationId={_id ?? "na"}
                                 cardWidth={cardDims.width}

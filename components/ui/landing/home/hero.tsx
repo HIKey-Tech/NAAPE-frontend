@@ -281,7 +281,7 @@ export default function Hero() {
                     >
                         <span>The National Association of Aircraft Pilots &amp; Engineers</span>
                     </motion.h1>
-                    
+
                     <motion.p
                         className="text-[#3B4360] dark:text-[#BDC4D7] text-[1.13rem] md:text-lg max-w-lg md:max-w-xl min-h-[3.8em] md:min-h-[2.7em] font-medium tracking-[0.005em] whitespace-pre-line"
                         variants={paragraphVariants}
@@ -315,7 +315,7 @@ export default function Hero() {
                         className="flex flex-col sm:flex-row gap-3 md:gap-5 mt-2 md:mt-6 w-full max-w-sm md:max-w-full items-center md:items-start"
                         variants={ctaVariants as any}
                     >
-                        <Link href="/register" className="w-full sm:w-auto" aria-label="Join NAAPE">
+                        <Link href="/membership" className="w-full sm:w-auto" aria-label="Join NAAPE">
                             <NaapButton
                                 className="bg-primary hover:bg-primary/90 w-full h-full sm:w-auto text-white text-base font-semibold px-7 py-3 transition-colors rounded-full"
                                 icon={<FaArrowRight size={18} />}
