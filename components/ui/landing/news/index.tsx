@@ -97,47 +97,52 @@ export default function NewsHeroSection({
 
     return (
         <section
-            className={`w-full ${minHeightClass} bg-gradient-to-b from-[#f8fafc] to-white flex flex-col items-center pt-16 pb-12 px-4 md:px-8 ${className}`}
+            className={`w-full ${minHeightClass} flex flex-col items-center pt-16 pb-12 px-4 md:px-8 ${className} bg-white`} // Remove gradient, set solid bg
         >
-            <div className="max-w-4xl w-full flex flex-col items-center text-center gap-5 mb-2">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#1a2236] leading-tight mb-2 drop-shadow-md">
-                    {heading}
+            <div className="max-w-4xl w-full flex flex-col items-center text-center gap-4 mb-2">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-[#0C224D] leading-tight mb-1 tracking-tight" style={{ letterSpacing: "-.025em" }}>
+                    <span className="inline-block border-b-4 border-[#357AA8] pb-[0.18em] px-3 bg-[#F3F7FA] rounded-md shadow-none">{heading}</span>
                 </h1>
                 {subheading && (
-                    <p className="text-[#42425a] text-lg md:text-xl font-medium max-w-3xl mx-auto">{subheading}</p>
+                    <p className="text-[#357AA8] text-lg md:text-xl font-semibold max-w-2xl mx-auto mt-1">{subheading}</p>
                 )}
                 {children}
             </div>
-            <div className="w-full flex justify-center">
+            <div className="w-full flex justify-center mt-4">
                 <div
-                    className="relative rounded-2xl h-72 md:h-96 overflow-hidden shadow-2xl w-full max-w-3xl border border-gray-200 bg-white group"
+                    className="relative rounded-2xl h-72 md:h-96 overflow-hidden w-full max-w-3xl border-2 border-[#357AA8] bg-[#F9FAFB] group transition-all duration-200"
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                     aria-roledescription="carousel"
+                    style={{
+                        boxShadow: 'none'
+                    }}
                 >
-                    {/* Arrow navigation (improved accessibility) */}
+                    {/* Arrow navigation, high contrast, no shadow */}
                     {showArrows && hasMultipleSlides && (
                         <>
                             <button
                                 aria-label="Previous slide"
-                                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/70 hover:bg-white/90 rounded-full p-2 shadow transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-[#E9F3FC] hover:bg-[#BFDFFA] border-2 border-[#357AA8] text-[#357AA8] rounded-full p-2 transition-colors focus:outline-none focus:ring-2 focus:ring-[#357AA8]/70"
                                 onClick={goPrev}
                                 tabIndex={0}
                                 style={{ visibility: total < 2 ? "hidden" : undefined }}
                             >
-                                <svg width="22" height="22" viewBox="0 0 22 22" className="text-[#357AA8]" fill="none">
-                                    <path d="M13.5 16L9.5 11L13.5 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                    <circle cx="11" cy="11" r="10" stroke="#357AA8" strokeWidth="1" fill="none"/>
+                                    <path d="M13.5 16L9.5 11L13.5 6" stroke="#357AA8" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
                             </button>
                             <button
                                 aria-label="Next slide"
-                                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/70 hover:bg-white/90 rounded-full p-2 shadow transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-[#E9F3FC] hover:bg-[#BFDFFA] border-2 border-[#357AA8] text-[#357AA8] rounded-full p-2 transition-colors focus:outline-none focus:ring-2 focus:ring-[#357AA8]/70"
                                 onClick={goNext}
                                 tabIndex={0}
                                 style={{ visibility: total < 2 ? "hidden" : undefined }}
                             >
-                                <svg width="22" height="22" viewBox="0 0 22 22" className="text-[#357AA8]" fill="none">
-                                    <path d="M8.5 6L12.5 11L8.5 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                    <circle cx="11" cy="11" r="10" stroke="#357AA8" strokeWidth="1" fill="none"/>
+                                    <path d="M8.5 6L12.5 11L8.5 16" stroke="#357AA8" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
                             </button>
                         </>
@@ -178,15 +183,15 @@ export default function NewsHeroSection({
                                 />
                                 {(slides[current].caption || slides[current].headline || slides[current].excerpt) && (
                                     <motion.div
-                                        className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 via-black/40 to-transparent p-4"
+                                        className="absolute bottom-0 left-0 w-full flex flex-col items-start p-5 bg-white/75 md:bg-white/85 border-t-4 border-[#357AA8] min-h-[6.2rem]"
                                         initial={{ opacity: 0, y: 40 }}
                                         animate={{ opacity: 1, y: 0, transition: { delay: 0.13, duration: 0.5 } }}
                                         exit={{ opacity: 0, y: 40, transition: { duration: 0.28 } }}
                                     >
                                         {slides[current].headline && (
-                                            <span className="block text-white text-xl md:text-2xl font-bold drop-shadow-lg mb-2">
+                                            <span className="block text-[#0C224D] text-xl md:text-2xl font-black mb-1 leading-snug transition-colors">
                                                 {slides[current].link ? (
-                                                    <a href={slides[current].link} className="hover:underline" target="_blank" rel="noopener noreferrer">
+                                                    <a href={slides[current].link} className="hover:underline rounded underline-offset-4" target="_blank" rel="noopener noreferrer">
                                                         {slides[current].headline}
                                                     </a>
                                                 ) : (
@@ -195,12 +200,10 @@ export default function NewsHeroSection({
                                             </span>
                                         )}
                                         {slides[current].excerpt && (
-                                            <span className="block text-white text-sm md:text-base font-medium drop-shadow bubble">
-                                                {slides[current].excerpt}
-                                            </span>
+                                            <span className="block text-[#357AA8] text-base md:text-lg font-semibold mt-1">{slides[current].excerpt}</span>
                                         )}
                                         {slides[current].caption && (
-                                            <span className="block text-gray-300 text-xs mt-2">{slides[current].caption}</span>
+                                            <span className="block text-[#7A8CA9] text-xs mt-2 font-medium">{slides[current].caption}</span>
                                         )}
                                     </motion.div>
                                 )}
@@ -209,16 +212,16 @@ export default function NewsHeroSection({
                     )}
                     {/* Slide indicators */}
                     {hasMultipleSlides && (
-                        <div className="absolute bottom-4 right-4 flex gap-2 z-20" aria-label="Slide indicators">
+                        <div className="absolute bottom-4 left-6 flex gap-2 z-20" aria-label="Slide indicators">
                             {slides.map((_, idx) => (
                                 <button
                                     key={idx}
                                     aria-label={`Go to slide ${idx + 1}`}
                                     aria-current={idx === current}
-                                    className={`w-2.5 h-2.5 rounded-full ring-1 ring-white transition-all duration-300
+                                    className={`w-3.5 h-3.5 rounded-full border-2 border-[#357AA8] transition-all duration-300 focus:ring-2 focus:ring-[#357AA8]/60 outline-none
                                         ${idx === current
-                                            ? "scale-110 bg-[#357AA8] shadow-lg"
-                                            : "bg-white/60 hover:bg-[#357AA8]/70"}
+                                            ? "scale-125 bg-[#357AA8]"
+                                            : "bg-white hover:bg-[#BFDFFA]/70"}
                                     `}
                                     onClick={() => setCurrent(idx)}
                                     tabIndex={0}

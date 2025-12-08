@@ -272,7 +272,7 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
         }
         if (_id) {
             // IMPORTANT: To match [id] param route in @publication.detail.tsx
-            router.push(`/publication/${_id}`);
+            router.push(`/publications/${_id}`);
         }
     }
 

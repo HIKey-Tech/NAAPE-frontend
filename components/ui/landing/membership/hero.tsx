@@ -122,7 +122,7 @@ export default function MembershipHeroSection() {
 
     return (
         <section
-            className="relative w-full min-h-screen flex flex-col-reverse md:flex-row items-center justify-center bg-[#f7fafc] overflow-hidden px-4 py-8 md:py-20 md:px-0"
+            className="relative w-full min-h-screen flex flex-col-reverse md:flex-row items-center justify-center bg-[#f7fafc] overflow-hidden px-2 sm:px-4 py-6 sm:py-8 md:py-20 md:px-0"
             style={{
                 borderTop: `5px solid ${PRIMARY_COLOR}`,
             }}
@@ -138,17 +138,17 @@ export default function MembershipHeroSection() {
 
             {/* Content */}
             <motion.div
-                className="relative z-10 flex flex-col md:flex-row items-center gap-14 w-full max-w-6xl mx-auto px-2 md:px-8"
+                className="relative z-10 flex flex-col md:flex-row items-center gap-10 sm:gap-12 md:gap-14 w-full max-w-6xl mx-auto px-1 sm:px-3 md:px-8"
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
             >
                 <motion.div
-                    className="flex flex-1 flex-col items-center md:items-start text-center md:text-left gap-7"
+                    className="flex flex-1 flex-col items-center md:items-start text-center md:text-left gap-5 sm:gap-7 w-full"
                     variants={leftVariants as any}
                 >
                     <motion.h1
-                        className="text-4xl md:text-6xl font-black leading-tight mb-1"
+                        className="text-2xl xs:text-3xl sm:text-4xl md:text-6xl font-black leading-tight mb-1"
                         style={{ color: PRIMARY_COLOR }}
                         initial={{ opacity: 0, y: 32 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -176,7 +176,7 @@ export default function MembershipHeroSection() {
                         </motion.span>
                     </motion.h1>
                     <motion.p
-                        className="text-lg md:text-2xl font-medium max-w-2xl mx-auto md:mx-0 leading-relaxed"
+                        className="text-base sm:text-lg md:text-2xl font-medium max-w-[95vw] sm:max-w-2xl mx-auto md:mx-0 leading-relaxed"
                         style={{ color: "#22294C" }}
                         initial={{ opacity: 0, y: 28 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -223,7 +223,7 @@ export default function MembershipHeroSection() {
                         </span>
                     </motion.p>
                     <motion.div
-                        className="flex gap-5 mt-4 w-full justify-center md:justify-start"
+                        className="flex flex-col sm:flex-row gap-3 sm:gap-5 mt-4 w-full justify-center md:justify-start"
                         initial={{ opacity: 0, y: 18 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.39, duration: 0.55, type: "spring" }}
@@ -232,7 +232,7 @@ export default function MembershipHeroSection() {
                             <motion.div {...pulseHover} transition={{ type: "spring", stiffness: 400, damping: 13 }}>
                                 <NaapButton
                                     variant="primary"
-                                    className="px-8 py-3 font-bold text-lg rounded-full border-0 transition-colors"
+                                    className="w-full sm:w-auto px-6 sm:px-8 py-3 font-bold text-base sm:text-lg rounded-full border-0 transition-colors"
                                     style={{
                                         background: PRIMARY_COLOR,
                                         color: PRIMARY_COLOR_FOREGROUND,
@@ -249,7 +249,7 @@ export default function MembershipHeroSection() {
                             <motion.div {...pulseHover} transition={{ type: "spring", stiffness: 400, damping: 13 }}>
                                 <NaapButton
                                     variant="ghost"
-                                    className="px-7 py-3 font-bold text-lg rounded-full border-2 transition-colors"
+                                    className="w-full sm:w-auto px-6 sm:px-7 py-3 font-bold text-base sm:text-lg rounded-full border-2 transition-colors"
                                     style={{
                                         borderColor: "#2196f3",
                                         color: "#2196f3",
@@ -261,8 +261,8 @@ export default function MembershipHeroSection() {
                             </motion.div>
                         </Link>
                     </motion.div>
-                    <div className="w-full flex flex-col items-center md:items-start mt-7 gap-1">
-                        <div className="text-sm tracking-wide" style={{ color: "#3b495d" }}>
+                    <div className="w-full flex flex-col items-center md:items-start mt-7 gap-1 max-w-full">
+                        <div className="text-xs xs:text-sm tracking-wide text-center md:text-left" style={{ color: "#3b495d" }}>
                             <span className="font-semibold" style={{ color: PRIMARY_COLOR }}>
                                 Already a member?
                             </span>{" "}
@@ -283,7 +283,7 @@ export default function MembershipHeroSection() {
                             </Link>
                         </div>
                         <motion.div
-                            className="text-xs"
+                            className="text-xs text-center md:text-left max-w-[95vw]"
                             style={{ color: "#7b818a" }}
                             initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -294,7 +294,7 @@ export default function MembershipHeroSection() {
                     </div>
                 </motion.div>
                 <motion.div
-                    className="flex-1 w-full md:w-[380px] max-w-[400px] relative rounded-2xl overflow-hidden border-4 bg-white"
+                    className="flex-1 w-full xs:w-[92vw] sm:w-[400px] md:w-[380px] max-w-[97vw] sm:max-w-[420px] md:max-w-[400px] relative rounded-xl sm:rounded-2xl overflow-hidden border-2 sm:border-4 bg-white mt-8 md:mt-0"
                     style={{ borderColor: PRIMARY_COLOR }}
                     variants={rightVariants as any}
                 >
@@ -322,7 +322,7 @@ export default function MembershipHeroSection() {
                                 alt="Nigerian pilots and engineers group"
                                 width={600}
                                 height={600}
-                                className="object-cover w-full h-72 md:h-[340px] transition-transform"
+                                className="object-cover w-full h-44 xs:h-56 sm:h-72 md:h-[340px] transition-transform"
                                 priority
                             />
                         </motion.div>
@@ -330,13 +330,13 @@ export default function MembershipHeroSection() {
                     {/* Community circle overlay */}
                     <motion.div
                         aria-hidden
-                        className="absolute -bottom-10 left-1/2 -translate-x-1/2 z-10 h-16 w-44 rounded-full bg-[#e3eaf3] opacity-85 blur-lg"
+                        className="absolute -bottom-8 sm:-bottom-10 left-1/2 -translate-x-1/2 z-10 h-10 sm:h-16 w-36 sm:w-44 rounded-full bg-[#e3eaf3] opacity-85 blur-lg"
                         variants={circlePulseVariants as any}
                         initial="initial"
                         animate="animate"
                     ></motion.div>
                     {/* Community photo group */}
-                    <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex flex-row items-center gap-1 z-20">
+                    <div className="absolute -bottom-6 sm:-bottom-8 left-1/2 -translate-x-1/2 flex flex-row items-center gap-1 z-20">
                         {/* Example community avatars */}
                         {avatarSources.map((avatar, i) => (
                             <motion.div
@@ -351,15 +351,15 @@ export default function MembershipHeroSection() {
                             >
                                 <Image
                                     src={avatar.src}
-                                    width={36}
-                                    height={36}
+                                    width={30}
+                                    height={30}
                                     alt={avatar.alt}
-                                    className="rounded-full border-2 border-white object-cover"
+                                    className="rounded-full border-2 border-white object-cover xs:w-9 xs:h-9 sm:w-9 sm:h-9"
                                 />
                             </motion.div>
                         ))}
                         <motion.span
-                            className="rounded-full text-xs font-bold w-8 h-8 flex items-center justify-center border-2 border-white"
+                            className="rounded-full text-xs font-bold w-7 h-7 xs:w-8 xs:h-8 flex items-center justify-center border-2 border-white"
                             style={{ background: "#2196f3", color: "#fff" }}
                             variants={circleCountVariants as any}
                             initial="initial"
