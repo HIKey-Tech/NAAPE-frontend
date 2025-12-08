@@ -246,9 +246,9 @@ export default function Hero() {
         else setSrText("");
     }, [done]);
 
-    // Optionally, visually split the sentence if needed for emphasis
+    // This wrapper ensures full viewport height and vertical/horizontal centering (minus safe paddings)
     return (
-        <section className="relative w-full h-full min-h-full flex flex-col md:flex-col items-center justify-center bg-gradient-to-br from-[#F5F7FA] to-[#e5ecfa] dark:from-[#232835] dark:to-[#2f3650] overflow-hidden px-4 py-8 ">
+        <section className="relative w-full min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#F5F7FA] to-[#e5ecfa] dark:from-[#232835] dark:to-[#2f3650] overflow-hidden px-4 py-4 md:py-10">
             {/* Decorative aviation-themed background */}
             <div
                 aria-hidden
@@ -264,149 +264,169 @@ export default function Hero() {
                 />
             </div>
 
-            <motion.div
-                className="relative z-10 flex px-2 sm:px-6 flex-col md:flex-row items-center w-full gap-4 md:gap-8 max-w-full mx-auto"
-                variants={containerVariants}
-                initial="hidden"
-                animate="show"
-            >
-                {/* Left: Headline & CTA */}
+            <main className="relative z-10 flex flex-1 flex-col justify-center items-center w-full max-w-7xl mx-auto h-full min-h-[60vh] py-6">
                 <motion.div
-                    className="flex-1 text-center md:text-left flex flex-col items-center md:items-start gap-4 md:gap-8"
-                    variants={leftVariants as any}
+                    className="
+                        flex flex-col md:flex-row items-center justify-center
+                        w-full gap-7 md:gap-12
+                        max-w-7xl mx-auto
+                        px-0 sm:px-4
+                    "
+                    style={{ minHeight: "none" }}
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="show"
                 >
-                    <motion.h1
-                        className="text-[2.45rem] sm:text-4xl md:text-[2.8rem] lg:text-[3.3rem] font-extrabold tracking-tight text-[#232835] dark:text-white leading-tight md:leading-[1.08] mb-1"
-                        variants={headingVariants as any}
-                    >
-                        <span>The National Association of Aircraft Pilots &amp; Engineers</span>
-                    </motion.h1>
-
-                    <motion.p
-                        className="text-[#3B4360] dark:text-[#BDC4D7] text-[1.13rem] md:text-lg max-w-lg md:max-w-xl min-h-[3.8em] md:min-h-[2.7em] font-medium tracking-[0.005em] whitespace-pre-line"
-                        variants={paragraphVariants}
-                        aria-live="polite"
-                    >
-                        <span aria-hidden="true">
-                            {displayed}
-                            <span className="inline-block align-baseline w-4" aria-hidden>
-                                {!done && showCursor && (
-                                    <span
-                                        className="ml-0.5 animate-blink font-mono text-[#232835] dark:text-white"
-                                        style={{
-                                            fontWeight: "bold",
-                                            letterSpacing: "0.01em",
-                                            opacity: 0.70,
-                                            fontSize: "1.04em",
-                                            position: "relative",
-                                            top: "1px",
-                                        }}
-                                    >
-                                        |
-                                    </span>
-                                )}
-                            </span>
-                        </span>
-                        {done && (
-                            <span className="sr-only">{srText}</span>
-                        )}
-                    </motion.p>
+                    {/* Left: Headline & CTA */}
                     <motion.div
-                        className="flex flex-col sm:flex-row gap-3 md:gap-5 mt-2 md:mt-6 w-full max-w-sm md:max-w-full items-center md:items-start"
-                        variants={ctaVariants as any}
-                    >
-                        <Link href="/membership" className="w-full sm:w-auto" aria-label="Join NAAPE">
-                            <NaapButton
-                                className="bg-primary hover:bg-primary/90 w-full h-full sm:w-auto text-white text-base font-semibold px-7 py-3 transition-colors rounded-full"
-                                icon={<FaArrowRight size={18} />}
-                                iconPosition="right"
-                            >
-                                Join NAAPE
-                            </NaapButton>
-                        </Link>
-                        <Link href="/about-us" className="w-full sm:w-auto" aria-label="Learn More about NAAPE">
-                            <NaapButton
-                                className="border border-primary h-full text-primary hover:bg-primary/10 text-base font-semibold px-7 py-3 w-full sm:w-auto bg-transparent transition-colors rounded-full"
-                            >
-                                Learn More
-                            </NaapButton>
-                        </Link>
-                    </motion.div>
-                </motion.div>
-
-                {/* Right: Modern Image Gallery */}
-                <motion.div
-                    className="flex-1 flex w-full justify-center items-center"
-                    variants={rightVariants as any}
-                >
-                    <div className="relative w-full flex items-center justify-center max-w-[550px] aspect-square pt-3 pb-3">
-                        <motion.div
-                            className="grid grid-cols-2 grid-rows-3 gap-5 w-full h-full rounded-2xl overflow-hidden"
-                            initial={{ opacity: 0, y: 40 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.7, type: "spring", stiffness: 70, damping: 15 }}
-                        >
-                            {IMAGES.map((img, idx) => (
-                                <div
-                                    key={img.src}
-                                    className={`
-                                        ${idx === 0
-                                            ? "row-span-2 col-span-1"
-                                            : idx === 1
-                                                ? "col-span-1 row-span-1"
-                                                : idx === 2
-                                                    ? "col-span-1 row-span-2"
-                                                    : "col-span-1 row-span-1"}
-                                        relative rounded-xl overflow-hidden transition-[transform,box-shadow] duration-300 group border border-gray-300 dark:border-[#232C4F]
-                                    `}
-                                    style={
-                                        idx === 0 || idx === 2
-                                            ? { minHeight: "190px", minWidth: "0" }
-                                            : { minHeight: "110px", minWidth: "0" }
-                                    }
-                                >
-                                    <Image
-                                        src={img.src}
-                                        alt={img.alt}
-                                        fill
-                                        className="object-cover object-center group-hover:scale-[1.035] transition-transform duration-300"
-                                        draggable={false}
-                                        sizes="(max-width: 550px) 100vw, 550px"
-                                    />
-                                    <span className="absolute left-0 bottom-0 w-full h-16 bg-gradient-to-t from-[#213765ad] to-transparent pointer-events-none"></span>
-                                </div>
-                            ))}
-                        </motion.div>
-                    </div>
-                </motion.div>
-            </motion.div>
-            {/* Stats Row (moved up for better mobile experience) */}
-            <motion.div
-                className="w-full flex flex-col sm:flex-row gap-4 md:gap-6 justify-center md:justify-between mt-8"
-                variants={containerVariants}
-                initial="hidden"
-                animate="show"
-            >
-                {stats.map(({ icon, value, label }, idx) => (
-                    <motion.div
-                        key={idx}
+                        className="
+                            flex-1
+                            max-w-xl
+                            text-center md:text-left
+                            flex flex-col items-center md:items-start
+                            gap-5 md:gap-9
+                            justify-center
+                        "
                         variants={leftVariants as any}
-                        whileHover={{ scale: 1.04 }}
-                        className="flex-1"
                     >
-                        <LegacyStatCard
-                            icon={icon}
-                            value={value}
-                            label={
-                                <span className="text-[1.03rem] md:text-base text-[#5E6792] dark:text-[#C1C8DC] font-semibold">
-                                    {label}
+                        <motion.h1
+                            className="text-[2.3rem] sm:text-4xl md:text-[2.7rem] lg:text-[3.1rem] font-extrabold tracking-tight text-[#232835] dark:text-white leading-tight md:leading-[1.08] mb-1"
+                            variants={headingVariants as any}
+                        >
+                            <span>The National Association of Aircraft Pilots &amp; Engineers</span>
+                        </motion.h1>
+
+                        <motion.p
+                            className="text-[#3B4360] dark:text-[#BDC4D7] text-[1.13rem] md:text-lg max-w-[95vw] max-w-md md:max-w-lg min-h-[3.8em] font-medium tracking-[0.005em] whitespace-pre-line"
+                            variants={paragraphVariants}
+                            aria-live="polite"
+                        >
+                            <span aria-hidden="true">
+                                {displayed}
+                                <span className="inline-block align-baseline w-4" aria-hidden>
+                                    {!done && showCursor && (
+                                        <span
+                                            className="ml-0.5 animate-blink font-mono text-[#232835] dark:text-white"
+                                            style={{
+                                                fontWeight: "bold",
+                                                letterSpacing: "0.01em",
+                                                opacity: 0.70,
+                                                fontSize: "1.04em",
+                                                position: "relative",
+                                                top: "1px",
+                                            }}
+                                        >
+                                            |
+                                        </span>
+                                    )}
                                 </span>
-                            }
-                            className="flex-1 bg-white min-w-[150px] h-auto max-w-xs rounded-xl border border-gray-200 dark:border-[#252c45] px-6 py-6 flex flex-col items-center"
-                        />
+                            </span>
+                            {done && (
+                                <span className="sr-only">{srText}</span>
+                            )}
+                        </motion.p>
+                        <motion.div
+                            className="flex flex-col sm:flex-row gap-3 md:gap-6 mt-2 md:mt-7 w-full max-w-sm md:max-w-full items-center md:items-start justify-center md:justify-start"
+                            variants={ctaVariants as any}
+                        >
+                            <Link href="/membership" className="w-full sm:w-auto" aria-label="Join NAAPE">
+                                <NaapButton
+                                    className="bg-primary hover:bg-primary/90 w-full h-full sm:w-auto text-white text-base font-semibold px-7 py-3 transition-colors rounded-full"
+                                    icon={<FaArrowRight size={18} />}
+                                    iconPosition="right"
+                                >
+                                    Join NAAPE
+                                </NaapButton>
+                            </Link>
+                            <Link href="/about-us" className="w-full sm:w-auto" aria-label="Learn More about NAAPE">
+                                <NaapButton
+                                    className="border border-primary h-full text-primary hover:bg-primary/10 text-base font-semibold px-7 py-3 w-full sm:w-auto bg-transparent transition-colors rounded-full"
+                                >
+                                    Learn More
+                                </NaapButton>
+                            </Link>
+                        </motion.div>
                     </motion.div>
-                ))}
-            </motion.div>
+
+                    {/* Right: Modern Image Gallery */}
+                    <motion.div
+                        className="
+                            flex-1 flex w-full justify-center items-center
+                            max-w-xl
+                        "
+                        style={{ minWidth: "270px" }}
+                        variants={rightVariants as any}
+                    >
+                        <div className="relative w-full flex items-center justify-center max-w-[420px] md:max-w-[520px] aspect-square pt-1 pb-1 md:py-0">
+                            <motion.div
+                                className="grid grid-cols-2 grid-rows-3 gap-4 md:gap-5 w-full h-full rounded-2xl overflow-hidden"
+                                initial={{ opacity: 0, y: 40 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.7, type: "spring", stiffness: 70, damping: 15 }}
+                            >
+                                {IMAGES.map((img, idx) => (
+                                    <div
+                                        key={img.src}
+                                        className={`
+                                            ${idx === 0
+                                                ? "row-span-2 col-span-1"
+                                                : idx === 1
+                                                    ? "col-span-1 row-span-1"
+                                                    : idx === 2
+                                                        ? "col-span-1 row-span-2"
+                                                        : "col-span-1 row-span-1"}
+                                            relative rounded-xl overflow-hidden transition-[transform,box-shadow] duration-300 group border border-gray-300 dark:border-[#232C4F]
+                                        `}
+                                        style={
+                                            idx === 0 || idx === 2
+                                                ? { minHeight: "160px", minWidth: "0" }
+                                                : { minHeight: "90px", minWidth: "0" }
+                                        }
+                                    >
+                                        <Image
+                                            src={img.src}
+                                            alt={img.alt}
+                                            fill
+                                            className="object-cover object-center group-hover:scale-[1.035] transition-transform duration-300"
+                                            draggable={false}
+                                            sizes="(max-width: 520px) 100vw, 520px"
+                                        />
+                                        <span className="absolute left-0 bottom-0 w-full h-16 bg-gradient-to-t from-[#213765ad] to-transparent pointer-events-none"></span>
+                                    </div>
+                                ))}
+                            </motion.div>
+                        </div>
+                    </motion.div>
+                </motion.div>
+
+                {/* Stats Row */}
+                <motion.div
+                    className="w-full flex flex-col sm:flex-row gap-4 md:gap-7 justify-center items-center md:justify-between mt-8 md:mt-11"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="show"
+                >
+                    {stats.map(({ icon, value, label }, idx) => (
+                        <motion.div
+                            key={idx}
+                            variants={leftVariants as any}
+                            whileHover={{ scale: 1.04 }}
+                            className="flex-1 flex justify-center md:justify-start"
+                        >
+                            <LegacyStatCard
+                                icon={icon}
+                                value={value}
+                                label={
+                                    <span className="text-[1.03rem] md:text-base text-[#5E6792] dark:text-[#C1C8DC] font-semibold">
+                                        {label}
+                                    </span>
+                                }
+                                className="flex-1 bg-white min-w-[150px] h-auto max-w-xs rounded-xl border border-gray-200 dark:border-[#252c45] px-6 py-6 flex flex-col items-center"
+                            />
+                        </motion.div>
+                    ))}
+                </motion.div>
+            </main>
             <style jsx global>{`
                 @keyframes blink {
                     0%, 100% {

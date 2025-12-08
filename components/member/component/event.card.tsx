@@ -468,7 +468,7 @@ const EventCard: React.FC<EventCardProps> = ({
                 )}
                 {/* --- END UI for payments prop --- */}
                 {/* Created/Updated at as a caption */}
-                {(createdAt || updatedAt) && (
+                {/* {(createdAt || updatedAt) && (
                     <div className={`mt-2 ${fontSizes.meta} ${colors.createdMeta} font-light flex items-center gap-4`}>
                         {createdAt && (
                             <span title={`Created: ${new Date(createdAt).toLocaleString()}`}>
@@ -481,7 +481,7 @@ const EventCard: React.FC<EventCardProps> = ({
                             </span>
                         )}
                     </div>
-                )}
+                )} */}
             </div>
         </div>
     );

@@ -57,12 +57,13 @@ export default function TopNavbar() {
   const activeMenuLink =
     "text-[color:var(--primary)] bg-[color:var(--primary)]/14 font-black border-b-[3.5px] border-[color:var(--primary)]";
 
+  // px-4 sm:px-6 md:px-10 xl:px-16
   return (
-    <nav className="w-full sticky top-0 left-0 z-40 bg-white border-b-2 border-[color:var(--primary)] px-6 xl:px-10 py-0 flex items-stretch justify-between relative">
+    <nav className="w-full sticky top-0 left-0 z-40 bg-white border-b-2 border-[color:var(--primary)]  py-2 md:py-0 flex items-stretch justify-between relative">
       {/* Main navbar horizontal container */}
-      <div className="flex w-full flex-row items-center justify-between h-[72px] min-h-[72px]">
+      <div className="flex w-full flex-row items-center justify-between min-h-[64px] h-[64px] sm:min-h-[72px] sm:h-[72px] px-4">
         {/* Branded Logo */}
-        <div className="flex flex-row items-center gap-4 flex-shrink-0 min-w-0 h-full">
+        <div className="flex flex-row items-center gap-3 sm:gap-4 flex-shrink-0 min-w-0 h-full pl-1 sm:pl-0">
           <Link
             href="/"
             className="flex items-center group min-w-0 h-full"
@@ -73,18 +74,18 @@ export default function TopNavbar() {
               alt="NAAPE Logo"
               width={53}
               height={53}
-              className="object-contain h-[48px] w-[48px] sm:h-[53px] sm:w-[53px] bg-white rounded-lg border-[2.5px] border-[color:var(--primary)]"
+              className="object-contain h-[42px] w-[42px] xs:h-[48px] xs:w-[48px] sm:h-[53px] sm:w-[53px] bg-white rounded-lg border-[2.5px] border-[color:var(--primary)]"
               priority
             />
-            <span className="ml-3 text-[24px] sm:text-[25px] font-extrabold tracking-tight text-[color:var(--primary)] uppercase hidden sm:inline whitespace-nowrap leading-none group-hover:underline decoration-4 underline-offset-[8px] decoration-[color:var(--primary)] transition-all">
+            <span className="ml-2 sm:ml-3 text-[21px] xs:text-[24px] sm:text-[25px] font-extrabold tracking-tight text-[color:var(--primary)] uppercase hidden sm:inline whitespace-nowrap leading-none group-hover:underline decoration-4 underline-offset-[8px] decoration-[color:var(--primary)] transition-all">
               NAAPE
             </span>
           </Link>
         </div>
 
         {/* Central navigation group */}
-        <div className="hidden md:flex items-center justify-center flex-1 h-full">
-          <div className="flex items-center gap-4 xl:gap-7 2xl:gap-10 text-[#1A2752] font-semibold text-[16.5px] uppercase tracking-wide h-full">
+        <div className="hidden md:flex items-center justify-center h-full ">
+          <div className="flex items-center gap-2 justify-center md:gap-2 xl:gap-2 2xl:gap-2 text-[#1A2752] font-semibold text-[16.5px] uppercase tracking-wide h-full py-1">
             {/* About group */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -209,10 +210,10 @@ export default function TopNavbar() {
         </div>
 
         {/* User auth/buttons group */}
-        <div className="flex items-center gap-2 md:gap-4 ml-3 xl:ml-8 h-full">
+        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-4 ml-1.5 sm:ml-3 xl:ml-8 h-full pr-1 sm:pr-0">
           {/* Hamburger menu button (mobile only) */}
           <button
-            className="md:hidden p-2.5 ml-2 flex items-center justify-center rounded-xl border-2 border-[color:var(--primary)] bg-white focus-visible:ring-2 focus-visible:ring-[color:var(--primary)]"
+            className="md:hidden p-1.5 xs:p-2 sm:p-2.5 ml-1 sm:ml-2 flex items-center justify-center rounded-xl border-2 border-[color:var(--primary)] bg-white focus-visible:ring-2 focus-visible:ring-[color:var(--primary)]"
             aria-label="Open main menu"
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
@@ -226,7 +227,7 @@ export default function TopNavbar() {
               <div className="flex items-center gap-2">
                 <Link href="/login">
                   <NaapButton
-                    className="py-2 px-5 border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[16.5px] font-extrabold min-w-[120px] tracking-wide uppercase"
+                    className="py-1.5 sm:py-2 px-4 sm:px-5 border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[16.5px] font-extrabold min-w-[100px] sm:min-w-[120px] tracking-wide uppercase"
                     style={{ letterSpacing: "0.04em" }}
                   >
                     Log In
@@ -234,7 +235,7 @@ export default function TopNavbar() {
                 </Link>
                 <Link href="/register">
                   <NaapButton
-                    className="py-2 px-5 bg-[color:var(--primary)] !rounded-xl hover:bg-[color:var(--primary)]/90 text-white text-[16.5px] font-extrabold min-w-[180px] border-2 border-[color:var(--primary)] uppercase tracking-wide"
+                    className="py-1.5 sm:py-2 px-5 bg-[color:var(--primary)]  hover:bg-[color:var(--primary)]/90 text-white text-[16.5px] font-extrabold min-w-[140px] sm:min-w-[180px] border-2 border-[color:var(--primary)] uppercase tracking-wide"
                     style={{ letterSpacing: "0.05em" }}
                   >
                     Become a member
@@ -245,22 +246,22 @@ export default function TopNavbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white border-2 border-[color:var(--primary)] font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] min-w-[50px] transition h-full"
+                    className="flex items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl bg-white border-2 border-[color:var(--primary)] font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] min-w-[44px] sm:min-w-[50px] transition h-full"
                     aria-label="Open account menu"
                     type="button"
                   >
-                    <span className="inline-flex items-center justify-center h-11 w-11 rounded-full bg-[color:var(--primary)] text-white font-extrabold text-lg uppercase border-4 border-white">
+                    <span className="inline-flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-[color:var(--primary)] text-white font-extrabold text-base sm:text-lg uppercase border-4 border-white">
                       {getInitials(user?.name)}
                     </span>
-                    <span className="text-[17px] text-[color:var(--primary)] font-black max-w-[148px] truncate hidden sm:inline tracking-wide uppercase">
+                    <span className="text-[15px] sm:text-[17px] text-[color:var(--primary)] font-black max-w-[108px] sm:max-w-[148px] truncate hidden sm:inline tracking-wide uppercase">
                       {user?.name}
                     </span>
-                    <ChevronDown size={22} className="text-[color:var(--primary)]" />
+                    <ChevronDown size={20} className="text-[color:var(--primary)] sm:w-[22px] sm:h-[22px]" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="min-w-[210px] mt-2 rounded-xl !overflow-hidden border-2 border-[color:var(--primary)]/[.22] bg-white"
+                  className="min-w-[190px] sm:min-w-[210px] mt-2 rounded-xl !overflow-hidden border-2 border-[color:var(--primary)]/[.22] bg-white"
                 >
                   <DropdownMenuItem asChild>
                     <Link
