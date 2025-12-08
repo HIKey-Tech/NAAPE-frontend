@@ -588,11 +588,11 @@ const EventsSection: React.FC = () => (
     <div className="px-2 sm:px-0">
       <SectionHeader title="Upcoming Events" />
     </div>
-    <div className="sm:hidden mt-1">
+    <div className="sm:hidden mt-2 px-1">
       <HorizontalScrollContainer>
         <AnimatePresence>
           <motion.div
-            className="flex gap-4"
+            className="flex gap-3"
             variants={STAGGER_CONTAINER}
             initial="hidden"
             animate="show"
@@ -601,7 +601,7 @@ const EventsSection: React.FC = () => (
             {eventsData.map((ev, idx) => (
               <motion.div
                 key={ev.id ?? idx}
-                className="shrink-0 w-[90vw] max-w-[275px] min-w-[180px] mx-auto"
+                className="shrink-0 w-[85vw] max-w-[295px] min-w-[210px] flex flex-col items-center"
                 variants={CARD_BOUNCE as any}
                 whileHover={{ scale: 1.016 }}
                 whileTap={{ scale: 0.985 }}
@@ -623,12 +623,12 @@ const EventsSection: React.FC = () => (
                   description={ev.description}
                 />
                 <motion.div
-                  className="mt-2 text-xs font-semibold text-[#F4B645] flex items-center gap-1 pl-1"
+                  className="mt-2 text-xs font-semibold text-[#F4B645] text-center flex items-center gap-1 justify-center"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.19 + idx * .08, duration: .18 }}
                 >
-                  <span role="img" aria-label="ticket">🎫</span> See You There!
+                  <span role="img" aria-label="ticket">🎫</span>See You There!
                 </motion.div>
               </motion.div>
             ))}
