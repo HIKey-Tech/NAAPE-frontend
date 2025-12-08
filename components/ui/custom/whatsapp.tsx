@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { FaWhatsapp } from "react-icons/fa"; // import from react-icons
 
@@ -11,6 +11,9 @@ export default function WhatsAppFloat() {
 
     // Pulsate controls
     const controls = useAnimation();
+
+    // Only run .set after mount to fix the runtime error.
+    const hasMounted = useRef(false);
 
     // Phone and message (can be easily customized)
     const phone = "+2349132508804";
@@ -27,6 +30,12 @@ export default function WhatsAppFloat() {
         return () => window.removeEventListener("resize", syncMobile);
     }, []);
 
+    // Track mounting
+    useEffect(() => {
+        hasMounted.current = true;
+        // No cleanup needed
+    }, []);
+
     // Pulsating (micro animation) effect
     useEffect(() => {
         if (!isOpen) {
@@ -39,15 +48,18 @@ export default function WhatsAppFloat() {
                     "2px 2px 10px rgba(0,0,0,0.3)"
                 ]
             });
-        } else {
-            controls.set({ scale: 1, boxShadow: "2px 2px 10px rgba(0,0,0,0.3)" });
         }
+        // Remove `else if` branch -- controls.set should not run synchronously or before mount.
+        // Instead, handle cleanup in its own useEffect below after mount.
     }, [isOpen, controls]);
 
-    // Always pulse unless open
+    // Always pulse unless open - refactored for safe controls.set only after mount
     useEffect(() => {
         let pulseTimeout: NodeJS.Timeout;
         let running = true;
+
+        if (!hasMounted.current) return; // Don't run animation before mount
+
         const repeatPulse = async () => {
             while (running && !isOpen) {
                 await controls.start({
@@ -60,17 +72,23 @@ export default function WhatsAppFloat() {
                     ],
                     transition: { duration: 1.16, ease: "easeInOut" }
                 });
-                // Small pause between pulses
                 await new Promise(resolve => {
                     pulseTimeout = setTimeout(resolve, 1400);
                 });
             }
         };
         repeatPulse();
+
+        // CLEANUP: Only call controls.set after mount and in cleanup.
         return () => {
             running = false;
             if (pulseTimeout) clearTimeout(pulseTimeout);
-            controls.set({ scale: 1, boxShadow: "2px 2px 10px rgba(0,0,0,0.3)" });
+            if (hasMounted.current) {
+                // Place controls.set in Promise microtask to ensure after unmount/layout
+                setTimeout(() => {
+                    controls.set({ scale: 1, boxShadow: "2px 2px 10px rgba(0,0,0,0.3)" });
+                }, 0);
+            }
         };
     }, [controls, isOpen]);
 
