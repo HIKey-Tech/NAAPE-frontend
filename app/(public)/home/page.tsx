@@ -14,6 +14,8 @@ import FAQSection from "@/components/ui/landing/home/faq";
 import JoinCommunitySection from "@/components/ui/landing/home/join";
 import WhyJoinSection from "@/components/ui/landing/home/why";
 import LatestNews from "../latest/page";
+// Add mission section import
+import MissionSection from "@/components/ui/landing/about/mission";
 
 // WhatsApp icon SVG (inline, so we don't need extra packages)
 function WhatsAppIcon({ size = 30 }: { size?: number }) {
@@ -215,11 +217,12 @@ function WhatsAppFloat() {
     );
 }
 
-// Define the section anchors
+// Updated SECTIONS to insert "mission" before "why"
 const SECTIONS = [
     "hero",
     "legacy",
     "about",
+    "mission", // Add mission anchor before why
     "why",
     "latest",
     "events",
@@ -368,13 +371,14 @@ function PlaneTrail() {
                     />
                 </motion.div>
             </motion.div>
-            {/* Render children with sectionRefs */}
+            {/* Render children with sectionRefs; insert MissionSection before WhyJoinSection */}
             {SECTIONS.map((key, i) => {
                 let Comp;
                 switch (key) {
                     case "hero": Comp = Hero; break;
                     // case "legacy": Comp = OurLegacy; break;
                     case "about": Comp = AboutSection; break;
+                    case "mission": Comp = MissionSection; break; // Insert MissionSection
                     case "why": Comp = WhyJoinSection; break;
                     case "latest": Comp = LatestNews; break;
                     case "events": Comp = UpcomingEvents; break;
