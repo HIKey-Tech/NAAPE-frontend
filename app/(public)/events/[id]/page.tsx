@@ -173,7 +173,7 @@ export default function AdminEventDetailsPage() {
                     } else if (result && typeof result.url === "string") {
                         window.location.href = result.url;
                     } else {
-                        window.location.href = `/events/${id}`;
+                        window.location.href = `/events/${id}/payment-complete`;
                     }
                 }
             }
