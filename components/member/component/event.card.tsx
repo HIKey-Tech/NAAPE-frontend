@@ -81,6 +81,7 @@ function formatEventTime(date: string | Date) {
 }
 
 const EventCard: React.FC<EventCardProps> = ({
+    _id,
     id,
     title,
     date,
@@ -160,7 +161,7 @@ const EventCard: React.FC<EventCardProps> = ({
         if (!id) return;
 
         if (!user?.name || !user?.email) {
-            router.push("/login?redirect=/events/" + id);
+            router.push("/login?redirect=/events/" + _id);
             return;
         }
 
@@ -218,7 +219,7 @@ const EventCard: React.FC<EventCardProps> = ({
 
     const handleCardClick = () => {
         if (disabled) return;
-        router.push(`/events/${id}`);
+        router.push(`/events/${_id}`);
     };
 
     const isPaidByUser =

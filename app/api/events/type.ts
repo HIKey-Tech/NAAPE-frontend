@@ -1,5 +1,6 @@
 // Model props based on IEvent model schema
 export interface EventCardProps {
+    _id?: string;
     id: string;
     title: string;
     date: string | Date;
