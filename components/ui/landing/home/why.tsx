@@ -137,7 +137,7 @@ export default function WhyJoinSection() {
                     ))}
                 </motion.div>
                 <motion.div variants={fadeInUp as any}>
-                    <Link href="/register" >
+                    <Link href="/membership" >
                         <NaapButton
                             className="bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white font-semibold px-8 py-3.5 text-[1.08rem] w-fit rounded-full transition mt-4"
                         >

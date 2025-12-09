@@ -78,7 +78,7 @@ export default function AboutSection() {
                         Since 1985, the <span className="font-bold">National Association of Aircraft Pilots and Engineers (NAAPE)</span> has been the united voice of Nigeria’s pilots and engineers—<span className=" font-semibold">our mission is to advance aviation safety, professionalism, and technical expertise</span> in the Nigerian aviation industry through advocacy and safeguarding the rights of those who keep our skies secure.
                     </p>
 
-                    <Link href="/about-us">
+                    <Link href="/about/about-us">
                         <NaapButton
                             className="bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 w-fit text-white font-semibold px-7 py-3 text-base transition flex items-center gap-2 rounded-full shadow-none border-0"
                             icon={<FaArrowRight size={16} />}

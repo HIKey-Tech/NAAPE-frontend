@@ -81,6 +81,7 @@ function formatEventTime(date: string | Date) {
 }
 
 const EventCard: React.FC<EventCardProps> = ({
+    _id,
     id,
     title,
     date,
