@@ -161,7 +161,7 @@ const EventCard: React.FC<EventCardProps> = ({
         if (!id) return;
 
         if (!user?.name || !user?.email) {
-            router.push("/login?redirect=/events/" + _id);
+            router.push("/login?redirect=/events/" + id);
             return;
         }
 
@@ -219,7 +219,7 @@ const EventCard: React.FC<EventCardProps> = ({
 
     const handleCardClick = () => {
         if (disabled) return;
-        router.push(`/events/${_id}`);
+        router.push(`/events/${id}`);
     };
 
     const isPaidByUser =
