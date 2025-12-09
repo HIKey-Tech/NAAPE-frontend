@@ -7,6 +7,7 @@ import { useEvents } from "@/hooks/useEvents";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { useRouter } from "next/navigation";
 import { parseJwt } from "@/proxy";
+import { EventCardProps } from "@/app/api/events/type";
 
 function getArrayFromEvents(events: any): any[] {
     if (Array.isArray(events)) return events;
@@ -62,7 +63,19 @@ export default function EventsComponent() {
         }
     }, []);
 
-    function eventCardProps(event: any) {
+    // Patch: ensure isPaid is strictly boolean for EventCardProps usage
+    function eventCardProps(event: any): EventCardProps {
+        let isPaid: boolean;
+        if (typeof event.isPaid === "boolean") {
+            isPaid = event.isPaid;
+        } else if (typeof event.isPaid === "number") {
+            // interpret 1 or >0 as true, 0 or falsy as false
+            isPaid = !!event.isPaid;
+        } else if (typeof event.price === "number") {
+            isPaid = event.price > 0;
+        } else {
+            isPaid = false;
+        }
         return {
             id: event.id,
             title: event.title ?? "Untitled",
@@ -70,9 +83,14 @@ export default function EventsComponent() {
             location: event.location ?? "Life Camp, Abuja",
             imageUrl: event.imageUrl ?? "/images/plane.jpg",
             description: event.description ?? "",
-            price: typeof event.price !== "undefined" ? event.price : (event.isPaid ? (event.price ?? 1000) : 0),
+            price:
+                typeof event.price !== "undefined"
+                    ? event.price
+                    : isPaid
+                    ? (event.price ?? 1000)
+                    : 0,
             currency: event.currency ?? "NGN",
-            isPaid: (typeof event.isPaid === "boolean" ? event.isPaid : (event.price && event.price > 0)),
+            isPaid: isPaid,
             registerLabel: "View Details",
             className: "cursor-pointer",
             disabled: false,

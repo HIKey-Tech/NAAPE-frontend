@@ -1,27 +1,25 @@
 "use client";
-import React, { useMemo } from "react";
+import React from "react";
 import DashboardCard from "../component/dashboardcard";
 import PublicationCard from "../component/publication.card";
 import CertCard from "../component/cert.card";
+import EventCard from "../component/event.card";
 import {
   MdLibraryBooks,
   MdSchool,
   MdEventAvailable,
   MdWork,
 } from "react-icons/md";
-import { motion, AnimatePresence } from "framer-motion";
 import { usePublications } from "@/hooks/usePublications";
 import { useMemberStats } from "@/hooks/useMembers";
+import { useEvents } from "@/hooks/useEvents";
 import { useAuth } from "@/context/authcontext";
-import { Skeleton } from "@/components/ui/skeleton";
-import EventCard from "../component/event.card";
 
 // --- Types ---
 type DashboardCardData = {
   icon: React.ReactNode;
   value: number;
   label: string;
-  highlight: string;
 };
 type CertificationStatus = "pending" | "ongoing" | "completed";
 type CertificationData = {
@@ -29,21 +27,6 @@ type CertificationData = {
   startDate: string;
   description: string;
   status: CertificationStatus;
-  progress?: number;
-};
-type EventCardProps = {
-  id?: string;
-  title: string;
-  date: string;
-  location: string;
-  imageUrl: string;
-  onRegister?: () => void;
-  registerLabel: string;
-  isPaid?: boolean;
-  price?: number;
-  currency?: string;
-  description?: string;
-  [key: string]: any;
 };
 
 // --- Dummy Data ---
@@ -71,439 +54,119 @@ const certificationsData: CertificationData[] = [
   },
 ];
 
-const eventsData: EventCardProps[] = [
-  {
-    title: "Annual Aviation Safety",
-    date: "2025-11-27T09:00:00Z",
-    location: "Abuja International Conference Center",
-    imageUrl: "/images/plane.jpg",
-    description: "The premier aviation safety event.",
-    isPaid: false,
-    price: 0,
-    currency: "NGN",
-    id: "event-1",
-    registerLabel: "",
-  },
-  {
-    title: "Crew Resource Optimization",
-    date: "2026-01-12T13:00:00Z",
-    location: "Lagos Expo Center",
-    imageUrl: "/images/plane.jpg",
-    description: "Maximize your crew efficiency.",
-    isPaid: true,
-    price: 5000,
-    currency: "NGN",
-    id: "event-2",
-    registerLabel: "",
-  },
-  {
-    title: "Safety Leadership Masterclass",
-    date: "2026-03-22T15:00:00Z",
-    location: "Online Webinar",
-    imageUrl: "/images/plane.jpg",
-    description: "Become a leader in aviation safety.",
-    isPaid: false,
-    price: 0,
-    currency: "NGN",
-    id: "event-3",
-    registerLabel: "",
-  },
-  {
-    title: "Women In Aviation",
-    date: "2026-07-09T10:00:00Z",
-    location: "Port Harcourt Hub",
-    imageUrl: "/images/plane.jpg",
-    description: "Celebrating women leaders in aviation.",
-    isPaid: true,
-    price: 2000,
-    currency: "NGN",
-    id: "event-4",
-    registerLabel: "",
-  },
-];
-
-// --- Animation Variants ---
-const STAGGER_CONTAINER = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0.08, delayChildren: 0.02 },
-  },
-};
-
-const CARD_BOUNCE = {
-  hidden: { opacity: 0, y: 24, scale: 0.99 },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { type: "spring", stiffness: 320, damping: 26, duration: 0.5 },
-  },
-};
-
-// --- Utility Components ---
-type SectionHeaderProps = {
-  title: string;
-  linkLabel?: string;
-  href?: string;
-  hideLink?: boolean;
-  onLinkClick?: () => void;
-  className?: string;
-};
-
-const SectionHeader: React.FC<SectionHeaderProps> = ({
-  title,
-  linkLabel = "View All",
-  href = "",
-  hideLink = false,
-  onLinkClick,
-  className = "",
-}) => (
-  <div className={`flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 mt-4 sm:mt-7 px-2 sm:px-0 gap-2 ${className}`}>
-    <motion.h2
-      className="text-lg sm:text-2xl font-extrabold text-[#19223B] tracking-tight leading-tight relative"
-      initial={{ x: -12, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 140 }}
-    >
-      {title}
-      <motion.span
-        layoutId={`${title}-underline`}
-        className="block h-0.5 mt-1 rounded bg-gradient-to-r from-[#4267E7] to-[#F4B645] w-10 sm:w-12"
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ delay: 0.23, duration: 0.4, type: "tween" }}
-      />
-    </motion.h2>
-    {!hideLink &&
-      (href ? (
-        <a
-          href={href}
-          onClick={onLinkClick}
-          className="text-[#4267E7] text-xs sm:text-sm font-semibold hover:underline focus:outline-none focus:text-[#2143B7] transition-colors px-1"
-          tabIndex={0}
-          aria-label={
-            typeof linkLabel === "string"
-              ? linkLabel
-              : "Section navigation"
-          }
-        >
-          {linkLabel}
-        </a>
-      ) : (
-        <button
-          type="button"
-          onClick={onLinkClick}
-          className="text-[#4267E7] text-xs sm:text-sm font-semibold hover:underline focus:outline-none focus:text-[#2143B7] transition-colors bg-transparent px-1"
-          tabIndex={0}
-        >
-          {linkLabel}
-        </button>
-      ))}
-  </div>
-);
-
-const SectionDivider: React.FC<{ className?: string }> = ({ className = "" }) => (
-  <motion.hr
-    className={`border-t border-gray-100 my-5 sm:my-10 ${className}`}
-    initial={{ scaleX: 0 }}
-    whileInView={{ scaleX: 1 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.44, delay: 0.04 }}
-    style={{ transformOrigin: "left" }}
-  />
-);
-
-const HorizontalScrollContainer: React.FC<{
-  children: React.ReactNode;
-  className?: string;
-}> = ({ children, className = "" }) => (
-  <div
-    className={
-      `flex gap-4 sm:gap-5 overflow-x-auto scrollbar-thin scrollbar-thumb-[#d1d5db] scrollbar-track-transparent -mx-1 px-2 ${className}`
-    }
-    style={{ WebkitOverflowScrolling: "touch" }}
-  >
-    {children}
-  </div>
-);
-
-// --- Skeletons ---
-const DashboardCardSkeleton: React.FC = () => (
-  <motion.div
-    className="shrink-0 w-[86vw] max-w-[230px] min-w-[170px] rounded-2xl border bg-white px-5 py-7 flex flex-col items-start justify-between space-y-3 mx-auto"
-    initial={{ scale: 0.96, opacity: 0.5 }}
-    animate={{ scale: [0.96, 1.06, 0.99, 1], opacity: [0.5, 1] }}
-    transition={{ repeat: Infinity, duration: 2, repeatType: "mirror" }}
-  >
-    <Skeleton className="h-10 w-10 rounded" />
-    <Skeleton className="h-7 w-24 rounded" />
-    <Skeleton className="h-4 w-28 rounded" />
-  </motion.div>
-);
-
-const PublicationCardSkeleton: React.FC = () => (
-  <motion.div
-    className="shrink-0 w-full max-w-full min-w-[180px] sm:min-w-[230px] bg-white rounded-2xl border px-3 py-6 sm:px-4 sm:py-7 space-y-4 mx-auto"
-    initial={{ scale: 0.96, opacity: 0.5 }}
-    animate={{ scale: [0.96, 1.04, 0.99, 1], opacity: [0.5, 1] }}
-    transition={{ repeat: Infinity, duration: 2.4, repeatType: "mirror" }}
-  >
-    <Skeleton className="h-36 w-full rounded-lg" />
-    <Skeleton className="h-5 w-24 sm:w-32 rounded" />
-    <Skeleton className="h-4 w-16 sm:w-20 rounded" />
-    <Skeleton className="h-4 w-2/3 rounded" />
-  </motion.div>
-);
-
 // --- Dashboard Cards Section ---
 const DashboardCards: React.FC = () => {
   const { data: stats, isPending, error } = useMemberStats();
   const metrics: DashboardCardData[] = [
     {
-      icon: <MdLibraryBooks className="text-[#4267E7] text-3xl" />,
+      icon: <MdLibraryBooks size={32} color="#1843BF" />,
       value: stats?.publicationCount ?? 0,
-      label: "Publications Submitted",
-      highlight: "Share Your Voice",
+      label: "Publications",
     },
     {
-      icon: <MdSchool className="text-[#41B079] text-3xl" />,
+      icon: <MdSchool size={32} color="#089669" />,
       value: stats?.trainingsEnrolled ?? 0,
-      label: "Trainings Enrolled",
-      highlight: "Keep Leveling Up!",
+      label: "Trainings",
     },
     {
-      icon: <MdEventAvailable className="text-[#F4B645] text-3xl" />,
+      icon: <MdEventAvailable size={32} color="#DB8801" />,
       value: stats?.eventsRegistered ?? 0,
-      label: "Events Registered",
-      highlight: "Stay In The Loop",
+      label: "Events",
     },
     {
-      icon: <MdWork className="text-[#748095] text-3xl" />,
+      icon: <MdWork size={32} color="#4D5770" />,
       value: stats?.jobMatches ?? 0,
-      label: "Job Matches",
-      highlight: "Open New Doors",
+      label: "Jobs",
     },
   ];
 
-  if (error) {
+  if (error)
     return (
-      <motion.div
-        className="w-full text-center text-red-500 font-semibold mb-8"
-        initial={{ y: -20, opacity: 0.5 }}
-        animate={{ y: 0, opacity: 1 }}
-      >
-        Oops! Couldn't fetch your dashboard stats. <span className="animate-pulse">🚨</span>
-      </motion.div>
+      <div className="text-center text-red-600 font-semibold py-4 bg-white rounded-xl shadow-sm">
+        Couldn't fetch stats.
+      </div>
     );
-  }
-
-  if (isPending) {
-    return (
-      <>
-        <div className="sm:hidden mb-5 pl-1 pr-1">
-          <HorizontalScrollContainer>
-            {[...Array(3)].map((_, idx) => (
-              <DashboardCardSkeleton key={idx} />
-            ))}
-          </HorizontalScrollContainer>
-        </div>
-        <div className="hidden sm:grid grid-cols-2 md:grid-cols-4 w-full gap-7 mb-8 px-2 justify-items-center">
-          {[...Array(4)].map((_, idx) => (
-            <DashboardCardSkeleton key={idx} />
-          ))}
-        </div>
-      </>
-    );
-  }
 
   return (
-    <>
-      <div className="sm:hidden mb-4 pl-1 pr-1">
-        <HorizontalScrollContainer>
-          <AnimatePresence>
-            <motion.div
-              className="flex gap-3"
-              variants={STAGGER_CONTAINER}
-              initial="hidden"
-              animate="show"
-              exit="exit"
-            >
-              {metrics.map((card, idx) => (
-                <motion.div
-                  key={idx}
-                  className="shrink-0 w-[86vw] max-w-[230px] min-w-[170px] mx-auto"
-                  variants={CARD_BOUNCE as any}
-                  whileHover={{ scale: 1.035 }}
-                  whileTap={{ scale: 0.987 }}
-                  transition={{ type: "spring", bounce: 0.32 }}
-                >
-                  <DashboardCard
-                    icon={card.icon}
-                    value={card.value}
-                    label={card.label}
-                  />
-                  <motion.div
-                    className="mt-2 text-xs font-medium text-[#4267E7] opacity-75 flex items-center gap-1 pl-1"
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: .27 + idx * 0.1, duration: 0.36 }}
-                  >
-                    <span role="img" aria-label="star">⭐</span>
-                    {card.highlight}
-                  </motion.div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </AnimatePresence>
-        </HorizontalScrollContainer>
+    <section aria-label="Dashboard summary cards" className="mb-10">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+        {isPending
+          ? [...Array(4)].map((_, idx) => (
+              <div
+                key={idx}
+                className="rounded-2xl border border-[#e5eaf2] bg-white p-5 flex flex-col items-center shadow-xs animate-pulse transition"
+              >
+                <div className="bg-gray-200 rounded-full w-12 h-12 mb-3" />
+                <div className="w-20 h-5 bg-gray-100 mb-2 rounded" />
+                <div className="w-12 h-4 bg-gray-100 rounded" />
+              </div>
+            ))
+          : metrics.map((card, idx) => (
+              <div
+                key={idx}
+                className="rounded-2xl border border-[#e5eaf2] bg-white p-5 flex flex-col items-center shadow-sm hover:shadow-md transition"
+              >
+                <div className="mb-2">{card.icon}</div>
+                <div className="font-extrabold text-2xl mt-1 text-[#1843BF] tracking-tight">
+                  {card.value}
+                </div>
+                <div className="text-[14px] text-[#4D5770] font-medium tracking-wide mt-1 uppercase">
+                  {card.label}
+                </div>
+              </div>
+            ))}
       </div>
-      <motion.div
-        className="hidden sm:grid grid-cols-2 md:grid-cols-4 w-full gap-6 mb-9 px-2 justify-items-center"
-        variants={STAGGER_CONTAINER}
-        initial="hidden"
-        animate="show"
-      >
-        {metrics.map((card, idx) => (
-          <motion.div
-            key={idx}
-            variants={CARD_BOUNCE as any}
-            whileHover={{ scale: 1.045 }}
-            whileTap={{ scale: 0.984 }}
-            className="w-full max-w-[260px] min-w-[210px] flex flex-col items-center"
-            transition={{ type: "spring", bounce: 0.34 }}
-          >
-            <DashboardCard
-              icon={card.icon}
-              value={card.value}
-              label={card.label}
-            />
-            <motion.div
-              className="mt-3 text-xs font-medium text-[#4267E7] opacity-80 text-center"
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: .285 + idx * 0.07, duration: 0.33 }}
-            >
-              <span role="img" aria-label="star">⭐</span>
-              {card.highlight}
-            </motion.div>
-          </motion.div>
-        ))}
-      </motion.div>
-    </>
+    </section>
   );
 };
+
+// --- Section Headline component ---
+const SectionHeading: React.FC<{
+  title: string;
+  children?: React.ReactNode;
+}> = ({ title, children }) => (
+  <div className="flex items-center justify-between mb-5">
+    <h2 className="font-extrabold text-xl text-[#15407C] tracking-tight flex-1 select-none">
+      {title}
+    </h2>
+    {children}
+  </div>
+);
 
 // --- Publications Section ---
 const PublicationsSection: React.FC = () => {
   const { data: publications, isPending: loading, error } = usePublications();
-  const pubList = useMemo(() => publications ?? [], [publications]);
 
   return (
-    <section className="mb-12 sm:mb-14">
-      <SectionDivider />
-      <div className="px-2 sm:px-0">
-        <SectionHeader
-          title="Publications"
-          href="/forum"
-          linkLabel="Join The Conversation"
-        />
-      </div>
+    <section className="mb-8 bg-white rounded-2xl py-6 px-4 shadow-sm border border-[#e6eaf1]">
+      <SectionHeading title="Recent Publications" />
       {loading ? (
-        <>
-          <div className="sm:hidden mt-2">
-            <HorizontalScrollContainer>
-              {[...Array(2)].map((_, idx) => (
-                <PublicationCardSkeleton key={idx} />
-              ))}
-            </HorizontalScrollContainer>
-          </div>
-          <div className="hidden sm:grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center px-2 w-full">
-            {[...Array(4)].map((_, idx) => (
-              <PublicationCardSkeleton key={idx} />
-            ))}
-          </div>
-        </>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {[...Array(3)].map((_, idx) => (
+            <div
+              key={idx}
+              className="rounded-xl border bg-gray-100 p-4 h-36 animate-pulse"
+            />
+          ))}
+        </div>
       ) : error ? (
-        <motion.div
-          className="py-6 text-base text-center text-red-600 font-semibold"
-          initial={{ scale: 0.9, opacity: 0.5 }}
-          animate={{ scale: 1, opacity: 1 }}
-        >
-          <span className="mr-1">🚫</span> Publications couldn't load. Try refreshing!
-        </motion.div>
-      ) : pubList.length === 0 ? (
-        <motion.div
-          className="py-6 text-base text-center text-gray-400 font-semibold"
-          initial={{ opacity: 0.25, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <span role="img" aria-label="paper">📰</span> No publications available right now. Be the first to contribute!
-        </motion.div>
+        <div className="text-center text-red-600 py-5">
+          Couldn't load publications.
+        </div>
+      ) : publications && publications.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {publications.slice(0, 3).map((pub: any, idx: number) => (
+            <PublicationCard
+              key={pub._id ?? idx}
+              publication={pub}
+              className="w-full"
+            />
+          ))}
+        </div>
       ) : (
-        <>
-          <div className="sm:hidden w-full mt-1">
-            <HorizontalScrollContainer>
-              <AnimatePresence>
-                <motion.div
-                  className="flex gap-4 w-full"
-                  variants={STAGGER_CONTAINER}
-                  initial="hidden"
-                  animate="show"
-                  exit="exit"
-                >
-                  {pubList.map((pub, idx) => (
-                    <motion.div
-                      key={pub._id ?? idx}
-                      className="shrink-0 w-full max-w-full min-w-[180px] sm:min-w-[230px] mx-auto flex flex-col"
-                      variants={CARD_BOUNCE as any}
-                      whileHover={{ scale: 1.025 }}
-                      whileTap={{ scale: 0.985 }}
-                      transition={{ type: "spring", bounce: 0.28 }}
-                    >
-                      <PublicationCard publication={pub} className="w-full" />
-                      <motion.div
-                        className="mt-2 text-xs italic text-[#41B079] flex gap-1 items-center pl-1"
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.18 + idx * 0.07, duration: 0.28 }}
-                      >
-                        <span>💡</span>
-                        {pub.title ? <>"{pub.title}"</> : "Join the conversation!"}
-                      </motion.div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </AnimatePresence>
-            </HorizontalScrollContainer>
-          </div>
-          <motion.div
-            className="hidden sm:grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center px-2 w-full"
-            variants={STAGGER_CONTAINER}
-            initial="hidden"
-            animate="show"
-          >
-            {pubList.map((pub, idx) => (
-              <motion.div
-                key={pub._id ?? idx}
-                variants={CARD_BOUNCE as any}
-                whileHover={{ scale: 1.017 }}
-                whileTap={{ scale: 0.989 }}
-                className="w-full max-w-full min-w-[230px] flex flex-col justify-center"
-                transition={{ type: "spring", bounce: 0.25 }}
-              >
-                <PublicationCard publication={pub} className="w-full" />
-                <motion.div
-                  className="mt-3 text-xs italic text-[#41B079] text-center"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.16 + idx * 0.06, duration: 0.25 }}
-                >
-                  {pub.title ? <>💡&nbsp;"{pub.title}"</> : "Join the conversation!"}
-                </motion.div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </>
+        <div className="text-center text-[#8BA4C9] py-6 font-medium">
+          No publications yet.
+        </div>
       )}
     </section>
   );
@@ -511,212 +174,71 @@ const PublicationsSection: React.FC = () => {
 
 // --- Certifications Section ---
 const CertificationsSection: React.FC = () => (
-  <section className="mb-12 sm:mb-14">
-    <SectionDivider />
-    <div className="px-2 sm:px-0">
-      <SectionHeader title="Training & Certifications" />
-    </div>
-    <div className="sm:hidden mt-1">
-      <HorizontalScrollContainer>
-        <AnimatePresence>
-          <motion.div
-            className="flex gap-4"
-            variants={STAGGER_CONTAINER}
-            initial="hidden"
-            animate="show"
-            exit="exit"
-          >
-            {certificationsData.map((cert, idx) => (
-              <motion.div
-                key={idx}
-                className="shrink-0 w-[90vw] max-w-[275px] min-w-[180px] mx-auto"
-                variants={CARD_BOUNCE as any}
-                whileHover={{ scale: 1.027 }}
-                whileTap={{ scale: 0.985 }}
-                transition={{ type: "spring", bounce: 0.30 }}
-              >
-                <CertCard {...cert} />
-                <motion.div
-                  className="mt-2 text-xs font-medium text-[#41B079] flex items-center gap-1 pl-1"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.14 + idx * .09, duration: .22 }}
-                >
-                  <span>🎓</span>
-                  {cert.status === "completed" ? "Certified!" : "In Progress"}
-                </motion.div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </AnimatePresence>
-      </HorizontalScrollContainer>
-    </div>
-    <motion.div
-      className="hidden sm:grid grid-cols-2 md:grid-cols-3 gap-5 justify-items-center px-2"
-      variants={STAGGER_CONTAINER}
-      initial="hidden"
-      animate="show"
-    >
+  <section className="mb-8 bg-white rounded-2xl py-6 px-4 shadow-sm border border-[#e6eaf1]">
+    <SectionHeading title="Certifications" />
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       {certificationsData.map((cert, idx) => (
-        <motion.div
-          key={idx}
-          variants={CARD_BOUNCE as any}
-          whileHover={{ scale: 1.025 }}
-          whileTap={{ scale: 0.988 }}
-          className="w-full max-w-[320px] min-w-[230px] flex flex-col items-center"
-          transition={{ type: "spring", bounce: 0.29 }}
-        >
-          <CertCard {...cert} />
-          <motion.div
-            className="mt-3 text-xs font-medium text-[#41B079] text-center"
-            initial={{ opacity: 0, y: 9 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.10 + idx * .08, duration: .19 }}
-          >
-            🎓 {cert.status === "completed" ? "Certified!" : "In Progress"}
-          </motion.div>
-        </motion.div>
+        <CertCard key={idx} {...cert} />
       ))}
-    </motion.div>
+    </div>
   </section>
 );
 
 // --- Events Section ---
-const EventsSection: React.FC = () => (
-  <section className="mb-4 sm:mb-2">
-    <SectionDivider />
-    <div className="px-2 sm:px-0">
-      <SectionHeader title="Upcoming Events" />
-    </div>
-    <div className="sm:hidden mt-2 px-1">
-      <HorizontalScrollContainer>
-        <AnimatePresence>
-          <motion.div
-            className="flex gap-3"
-            variants={STAGGER_CONTAINER}
-            initial="hidden"
-            animate="show"
-            exit="exit"
-          >
-            {eventsData.map((ev, idx) => (
-              <motion.div
-                key={ev.id ?? idx}
-                className="shrink-0 w-[85vw] max-w-[295px] min-w-[210px] flex flex-col items-center"
-                variants={CARD_BOUNCE as any}
-                whileHover={{ scale: 1.016 }}
-                whileTap={{ scale: 0.985 }}
-                transition={{ type: "spring", bounce: 0.23 }}
-              >
-                <EventCard
-                  className="w-full"
-                  id={ev.id ?? `${idx}`}
-                  title={ev.title}
-                  date={ev.date}
-                  location={ev.location}
-                  imageUrl={ev.imageUrl}
-                  registerLabel={ev.isPaid && typeof ev.price === 'number' && ev.price > 0
-                    ? ev.registerLabel || "Register"
-                    : (ev.registerLabel || "Register")}
-                  isPaid={!!ev.isPaid}
-                  price={typeof ev.price === 'number' ? ev.price : 0}
-                  currency={ev.currency ?? ''}
-                  description={ev.description}
-                />
-                <motion.div
-                  className="mt-2 text-xs font-semibold text-[#F4B645] text-center flex items-center gap-1 justify-center"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.19 + idx * .08, duration: .18 }}
-                >
-                  <span role="img" aria-label="ticket">🎫</span>See You There!
-                </motion.div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </AnimatePresence>
-      </HorizontalScrollContainer>
-    </div>
-    <motion.div
-      className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-5 justify-items-center px-2"
-      variants={STAGGER_CONTAINER}
-      initial="hidden"
-      animate="show"
-    >
-      {eventsData.map((ev, idx) => (
-        <motion.div
-          key={ev.id ?? idx}
-          variants={CARD_BOUNCE as any}
-          whileHover={{ scale: 1.019 }}
-          whileTap={{ scale: 0.986 }}
-          className="w-full max-w-[320px] min-w-[230px] flex flex-col items-center"
-          transition={{ type: "spring", bounce: 0.23 }}
-        >
-          <EventCard
-            className="w-full"
-            id={ev.id ?? `${idx}`}
-            title={ev.title}
-            date={ev.date}
-            location={ev.location}
-            imageUrl={ev.imageUrl}
-            registerLabel={ev.isPaid && typeof ev.price === 'number' && ev.price > 0
-              ? ev.registerLabel || "Register"
-              : (ev.registerLabel || "Register")}
-            isPaid={!!ev.isPaid}
-            price={typeof ev.price === 'number' ? ev.price : 0}
-            currency={ev.currency ?? ''}
-            description={ev.description}
-          />
-          <motion.div
-            className="mt-3 text-xs font-semibold text-[#F4B645] text-center flex items-center gap-1 justify-center"
-            initial={{ opacity: 0, y: 11 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12 + idx * .06, duration: .14 }}
-          >
-            <span role="img" aria-label="ticket">🎫</span> See You There!
-          </motion.div>
-        </motion.div>
-      ))}
-    </motion.div>
-  </section>
-);
-
-// --- Main Dashboard Home ---
-const GREETING_EMOJIS = [
-  "✈️", "🛩️", "🛬", "🌍", "🚀", "🎉", "🙌", "💼", "☁️"
-];
-
-function getRandomGreetingEmoji() {
-  return GREETING_EMOJIS[Math.floor(Math.random() * GREETING_EMOJIS.length)];
-}
-
-const WELCOME_PHRASES = [
-  "Ready to soar to new heights?",
-  "Let’s take off for a great day!",
-  "Navigate your career and network here.",
-  "Where aviators connect & grow.",
-  "Check out what’s happening in your cloud!",
-  "Your hub for opportunities & inspiration."
-];
-
-function getRandomWelcomePhrase() {
-  return WELCOME_PHRASES[Math.floor(Math.random() * WELCOME_PHRASES.length)];
-}
-
-const MemberDashboardHome: React.FC = () => {
-  const { user } = useAuth();
+const EventsSection: React.FC = () => {
+  const { data: events, isPending, error } = useEvents();
 
   return (
-    <main className="flex-1 pb-6 sm:pb-10 bg-[#fafbfd]">
-      <section className="w-full max-w-7xl mx-auto px-1 sm:px-6 pt-6 sm:pt-9 pb-3 sm:pb-6">
+    <section className="mb-8 bg-white rounded-2xl py-6 px-4 shadow-sm border border-[#e6eaf1]">
+      <SectionHeading title="Upcoming Events" />
+      {isPending ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {[...Array(3)].map((_, idx) => (
+            <div
+              key={idx}
+              className="rounded-xl border bg-gray-100 p-4 h-44 animate-pulse"
+            />
+          ))}
+        </div>
+      ) : error ? (
+        <div className="text-center text-red-600 py-5">
+          Couldn't load events.
+        </div>
+      ) : Array.isArray(events) && events.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {events.slice(0, 3).map((ev: any, idx: number) => (
+            <EventCard
+              key={ev.id ?? idx}
+              {...ev}
+              className="w-full"
+              id={ev.id ?? `${idx}`}
+              registerLabel={ev.registerLabel || "Register"}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center text-[#8BA4C9] py-6 font-medium">
+          No upcoming events.
+        </div>
+      )}
+    </section>
+  );
+};
+
+// --- Main Dashboard Home ---
+const MemberDashboardHome: React.FC = () => {
+  useAuth(); // Ensure user exists
+
+  return (
+    <main className="flex-1 pb-10 bg-[#f5f7fb] min-h-screen">
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-8 pt-8 pb-4">
         <DashboardCards />
-      </section>
-      <section className="w-full max-w-7xl mx-auto px-1 sm:px-6">
-        <PublicationsSection />
-      </section>
-      <section className="w-full max-w-7xl mx-auto px-1 sm:px-6">
-        <CertificationsSection />
-        <EventsSection />
-      </section>
+        <div className="space-y-7">
+          <PublicationsSection />
+          <CertificationsSection />
+          <EventsSection />
+        </div>
+      </div>
     </main>
   );
 };

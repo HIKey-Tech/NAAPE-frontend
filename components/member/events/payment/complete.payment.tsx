@@ -42,10 +42,26 @@ const messages = {
     }),
 };
 
-export default function PaymentComplete({ eventName = "the event" }: { eventName?: string }) {
+export default function PaymentComplete({ eventName: propEventName }: { eventName?: string }) {
     const params = useSearchParams();
     const status = params.get("status");
+    const eventNameFromParams = params.get("eventName");
     const [isReady, setIsReady] = useState(false);
+
+    // Determine dynamic event name: precedence is query param > prop > fallback
+    let eventName: string =
+        (eventNameFromParams && eventNameFromParams.trim()) ||
+        (propEventName && propEventName.trim()) ||
+        "the event";
+
+    // If eventName came from url, make it user-presentable:
+    if (eventName && eventName.length && eventNameFromParams) {
+        try {
+            eventName = decodeURIComponent(eventName.replace(/\+/g, " "));
+        } catch {
+            // fallback is raw eventName
+        }
+    }
 
     // Simulate a loader for a short moment for better UX polish
     useEffect(() => {
