@@ -165,8 +165,9 @@ export default function TopNavbar() {
     return (
         <>
             <ReminderBanner />
+            {/* Increase the height of the navbar */}
             <nav
-                className="w-full h-[54px] sm:h-[68px] min-h-[54px] sm:min-h-[68px] flex items-center justify-between px-1 sm:px-8 bg-gradient-to-r from-[#f4f8fd] via-white to-[#f4f8fd] border-b border-[#bfd3e6] sticky top-0 z-30"
+                className="w-full h-[74px] sm:h-[88px] min-h-[74px] sm:min-h-[88px] flex items-center justify-between px-1 sm:px-8 bg-gradient-to-r from-[#f4f8fd] via-white to-[#f4f8fd] border-b border-[#bfd3e6] sticky top-0 z-30"
                 style={{
                     WebkitBackdropFilter: "blur(6px)",
                     backdropFilter: "blur(6px)",
@@ -181,9 +182,9 @@ export default function TopNavbar() {
                         <Image
                             src="/images/plane.jpg"
                             alt="Logo"
-                            width={38}
-                            height={38}
-                            className="w-9 h-9 object-contain border-2 border-blue-400 rounded-full bg-white"
+                            width={48}
+                            height={48}
+                            className="w-12 h-12 object-contain border-2 border-blue-400 rounded-full bg-white"
                             priority
                             draggable={false}
                         />
@@ -191,31 +192,31 @@ export default function TopNavbar() {
                     {/* More personal welcome + subtle hierarchy */}
                     <div className="flex flex-col justify-center min-w-0">
                         {/* Mobile - show compact greeting */}
-                        <span className="sm:hidden text-xs font-bold text-[#163055] tracking-tight leading-tight truncate max-w-[80px]">
+                        <span className="sm:hidden text-[15px] font-bold text-[#163055] tracking-tight leading-tight truncate max-w-[100px]">
                             {user.name === "Loading"
                                 ? "..."
                                 : `Hi, ${user.name.split(" ")[0]}`}
                         </span>
-                        <span className="sm:hidden text-[10px] text-[#47608e] font-semibold tracking-wide truncate max-w-[80px]">{user.role}</span>
-                        <span className="hidden sm:inline text-[15px] font-extrabold text-[#163055] tracking-tight leading-tight">
+                        <span className="sm:hidden text-xs text-[#47608e] font-semibold tracking-wide truncate max-w-[100px]">{user.role}</span>
+                        <span className="hidden sm:inline text-lg font-extrabold text-[#163055] tracking-tight leading-tight">
                             Welcome back,{" "}
                             <span className="text-[#1C61B6] font-extrabold">
                                 {user.name === "Loading" ? "..." : user.name.split(" ")[0]}
                             </span>
                             !
                         </span>
-                        <span className="hidden sm:inline text-xs text-[#47608e] font-bold tracking-wide">{user.role}</span>
+                        <span className="hidden sm:inline text-base text-[#47608e] font-bold tracking-wide">{user.role}</span>
                     </div>
                     {/* Search bar on sm+ screens only */}
-                    <div className="relative w-full max-w-xs sm:max-w-sm md:w-80 sm:block hidden ml-6">
+                    <div className="relative w-full max-w-xs sm:max-w-sm md:w-96 sm:block hidden ml-8">
                         <input
                             type="text"
-                            className="pl-4 pr-10 py-2 rounded-lg border-2 border-[#9EC3E5] bg-white text-sm text-[#123165] placeholder-[#6a7fa0] focus:outline-none focus:border-[#205ea6] w-full shadow-inner"
+                            className="pl-5 pr-12 py-3 rounded-xl border-2 border-[#9EC3E5] bg-white text-base text-[#123165] placeholder-[#6a7fa0] focus:outline-none focus:border-[#205ea6] w-full shadow-inner"
                             placeholder="Search…"
                             aria-label="Search"
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#2762b3] pointer-events-none">
-                            <svg width="20" height="20" fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#2762b3] pointer-events-none">
+                            <svg width="24" height="24" fill="none" viewBox="0 0 20 20" aria-hidden="true">
                                 <circle cx="9" cy="9" r="7" stroke="#2762b3" strokeWidth="2" />
                                 <path d="M15 15l-2.2-2.2" stroke="#2762b3" strokeWidth="2" strokeLinecap="round" />
                             </svg>
@@ -224,31 +225,31 @@ export default function TopNavbar() {
                 </div>
 
                 {/* Right: icons and user */}
-                <div className="flex items-center gap-1 sm:gap-6 pr-0 sm:pr-0 flex-shrink-0">
+                <div className="flex items-center gap-2 sm:gap-8 pr-0 sm:pr-0 flex-shrink-0">
                     {/* Chat icon */}
                     <button
                         aria-label="Open chat"
-                        className="group p-2 rounded-full hover:bg-[#195488] transition-colors text-[#417ec5] focus:outline-none focus:ring-2 focus:ring-[#1D6FD0]/70"
+                        className="group p-3 rounded-full hover:bg-[#195488] transition-colors text-[#417ec5] focus:outline-none focus:ring-2 focus:ring-[#1D6FD0]/70"
                         style={{
                             minHeight: 0,
-                            height: 36,
-                            width: 36,
+                            height: 48,
+                            width: 48,
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                         }}
                     >
-                        <FaRegCommentDots size={18} className="group-hover:text-white group-hover:drop-shadow" />
+                        <FaRegCommentDots size={22} className="group-hover:text-white group-hover:drop-shadow" />
                     </button>
                     {/* Notification icon with dropdown */}
                     <div className="relative flex items-center" ref={notificationsDropdownRef}>
                         <button
                             aria-label="View notifications"
-                            className="group p-2 rounded-full hover:bg-[#205ea6] transition-colors text-[#1860a5] relative focus:outline-none focus:ring-2 focus:ring-[#1D6FD0]/70"
+                            className="group p-3 rounded-full hover:bg-[#205ea6] transition-colors text-[#1860a5] relative focus:outline-none focus:ring-2 focus:ring-[#1D6FD0]/70"
                             style={{
                                 minHeight: 0,
-                                height: 36,
-                                width: 36,
+                                height: 48,
+                                width: 48,
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -258,39 +259,39 @@ export default function TopNavbar() {
                                 setShowNotificationsDropdown((open) => !open);
                             }}
                         >
-                            <FaRegBell size={18} className="group-hover:text-white group-hover:drop-shadow" />
+                            <FaRegBell size={22} className="group-hover:text-white group-hover:drop-shadow" />
                             {/* Notification count badge */}
                             {notificationCount > 0 && (
-                                <span className="absolute -top-1 -right-1 flex items-center justify-center text-[10px] font-black w-4 h-4 rounded-full bg-[#D42054] text-white border-2 border-white shadow-md select-none">
+                                <span className="absolute -top-1 -right-1 flex items-center justify-center text-[11px] font-black w-5 h-5 rounded-full bg-[#D42054] text-white border-2 border-white shadow-md select-none">
                                     {notificationCount}
                                 </span>
                             )}
                         </button>
                         {showNotificationsDropdown && (
-                            <div className="absolute right-0 mt-2 w-[92vw] sm:w-80 max-w-[95vw] sm:max-w-[90vw] bg-white border border-[#9EC3E5] rounded-xl z-30 shadow-xl"
-                                 style={{boxShadow: '0 4px 24px #06376a1a', minWidth: "210px"}}>
-                                <div className="py-3 px-3 sm:px-5 border-b border-b-[#bfd3e6] bg-gradient-to-r from-[#eaf2fb] to-white rounded-t-xl flex justify-between items-center">
-                                    <span className="text-[15px] sm:text-[17px] font-bold text-[#153260]">Notifications</span>
+                            <div className="absolute right-0 mt-3 w-[92vw] sm:w-96 max-w-[95vw] sm:max-w-[90vw] bg-white border border-[#9EC3E5] rounded-xl z-30 shadow-xl"
+                                 style={{boxShadow: '0 4px 24px #06376a1a', minWidth: "240px"}}>
+                                <div className="py-4 px-4 sm:px-6 border-b border-b-[#bfd3e6] bg-gradient-to-r from-[#eaf2fb] to-white rounded-t-xl flex justify-between items-center">
+                                    <span className="text-[17px] sm:text-[19px] font-bold text-[#153260]">Notifications</span>
                                     {notificationCount > 0 && (
                                         <button
                                             onClick={() => markAllNotificationsRead.mutate()}
-                                            className="text-xs text-[#1860a5] hover:underline px-1 font-semibold"
+                                            className="text-sm text-[#1860a5] hover:underline px-2 font-semibold"
                                             disabled={markAllNotificationsRead.isPending}
                                         >
                                             Mark all as read
                                         </button>
                                     )}
                                 </div>
-                                <div className="max-h-52 sm:max-h-60 overflow-y-auto divide-y divide-[#dae9f8]">
+                                <div className="max-h-72 sm:max-h-80 overflow-y-auto divide-y divide-[#dae9f8]">
                                     {notificationsLoading ? (
-                                        <div className="p-5 text-xs sm:text-sm text-[#7e899e] text-center">Loading…</div>
+                                        <div className="p-6 text-sm sm:text-base text-[#7e899e] text-center">Loading…</div>
                                     ) : (!notifications || notifications.length === 0) ? (
-                                        <div className="p-5 text-xs sm:text-sm text-[#7e899e] text-center">No notifications.</div>
+                                        <div className="p-6 text-sm sm:text-base text-[#7e899e] text-center">No notifications.</div>
                                     ) : (
                                         notifications.map((notif: any) => (
                                             <div
                                                 className={`
-                                                    px-3 sm:px-5 py-2 sm:py-3 flex flex-col cursor-pointer transition group
+                                                    px-4 sm:px-6 py-3 sm:py-4 flex flex-col cursor-pointer transition group
                                                     rounded-none last:rounded-b-xl
                                                     hover:bg-[#e8f2fb]
                                                     ${!notif.read ? "bg-[#bfdcff] border-l-4 border-[#2263aa]" : ""}
@@ -302,25 +303,25 @@ export default function TopNavbar() {
                                                     }
                                                 }}
                                             >
-                                                <div className="flex justify-between items-start gap-2 sm:gap-3">
-                                                    <div className={`font-bold ${notif.read ? "text-[#8793af] font-medium" : "text-[#13479b] underline underline-offset-2"} text-xs sm:text-base`}>
+                                                <div className="flex justify-between items-start gap-3 sm:gap-4">
+                                                    <div className={`font-bold ${notif.read ? "text-[#8793af] font-medium" : "text-[#13479b] underline underline-offset-2"} text-sm sm:text-base`}>
                                                         {notif.message}
                                                     </div>
                                                     <button
                                                         aria-label="Delete notification"
-                                                        className="opacity-80 hover:opacity-100 p-1 text-[#a10f2a] hover:bg-[#ffe5ec] rounded-full transition"
+                                                        className="opacity-80 hover:opacity-100 p-2 text-[#a10f2a] hover:bg-[#ffe5ec] rounded-full transition"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             deleteNotification.mutate(notif.id);
                                                         }}
                                                         disabled={deleteNotification.isPending}
                                                     >
-                                                        <svg width="14" height="14" fill="none" viewBox="0 0 16 16">
+                                                        <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
                                                             <path d="M4 4l8 8M4 12L12 4" stroke="#a10f2a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                                                         </svg>
                                                     </button>
                                                 </div>
-                                                <div className="text-[10px] sm:text-xs text-[#687898] mt-0.5">{notif.createdAt ? new Date(notif.createdAt).toLocaleString() : ""}</div>
+                                                <div className="text-[11px] sm:text-sm text-[#687898] mt-1">{notif.createdAt ? new Date(notif.createdAt).toLocaleString() : ""}</div>
                                             </div>
                                         ))
                                     )}
@@ -329,17 +330,17 @@ export default function TopNavbar() {
                         )}
                     </div>
                     {/* User menu: avatar, greeting, dropdown */}
-                    <div className="relative flex items-center gap-1 sm:gap-4 ml-1 sm:ml-4" ref={userDropdownRef}>
+                    <div className="relative flex items-center gap-2 sm:gap-6 ml-2 sm:ml-6" ref={userDropdownRef}>
                         <button
                             className={`
-                                flex items-center gap-1 sm:gap-3 focus:outline-none px-1 sm:px-2 py-1
+                                flex items-center gap-2 sm:gap-4 focus:outline-none px-2 sm:px-3 py-2
                                 rounded-lg transition
                                 hover:bg-[#eaf2fb]
                                 ${showUserDropdown ? "ring-2 ring-[#2263aa] bg-[#eaf2fb]" : ""}
                             `}
                             style={{
                                 minHeight: 0,
-                                height: 40,
+                                height: 54,
                                 alignItems: "center",
                                 display: "flex",
                             }}
@@ -355,22 +356,22 @@ export default function TopNavbar() {
                                     src={''}
                                     alt={user.name}
                                     fallback={initials}
-                                    size={32}
+                                    size={44}
                                 />
                             </span>
                             {/* Greeting - make more personal, on mobile show just initials or nothing */}
                             <div className="flex flex-col min-w-0 items-start text-left leading-tight justify-center">
-                                <span className="hidden sm:inline text-[16px] font-extrabold text-[#1849ab] max-w-[90px] sm:max-w-[140px] truncate">
+                                <span className="hidden sm:inline text-lg font-extrabold text-[#1849ab] max-w-[120px] sm:max-w-[180px] truncate">
                                     {user.name === "Loading" ? "Welcome!" : `Hi, ${user.name.split(" ")[0]}`}
                                 </span>
-                                <span className="hidden sm:inline text-xs text-[#316bd3] font-bold max-w-[90px] sm:max-w-[140px] truncate">
+                                <span className="hidden sm:inline text-base text-[#316bd3] font-bold max-w-[120px] sm:max-w-[180px] truncate">
                                     {user.role}
                                 </span>
                             </div>
                             <svg
-                                width="16"
-                                height="16"
-                                className={`ml-1 sm:ml-2 text-[#2263aa] transition-transform duration-200 ease-in-out ${showUserDropdown ? "rotate-180" : ""} `}
+                                width="20"
+                                height="20"
+                                className={`ml-2 sm:ml-3 text-[#2263aa] transition-transform duration-200 ease-in-out ${showUserDropdown ? "rotate-180" : ""} `}
                                 fill="none"
                                 viewBox="0 0 16 16"
                                 aria-hidden="true"
@@ -387,51 +388,51 @@ export default function TopNavbar() {
                                     onClick={() => setShowUserDropdown(false)}
                                 />
                                 <div
-                                    className="absolute top-1 right-0 mt-10 sm:mt-12 w-[93vw] sm:w-60 min-w-[200px] max-w-xs sm:max-w-none bg-white rounded-xl border border-[#bfd3e6] py-3 sm:py-5 z-40 animate-fade-in flex flex-col items-stretch shadow-xl"
+                                    className="absolute top-1 right-0 mt-12 sm:mt-14 w-[93vw] sm:w-72 min-w-[230px] max-w-xs sm:max-w-none bg-white rounded-xl border border-[#bfd3e6] py-5 sm:py-7 z-40 animate-fade-in flex flex-col items-stretch shadow-xl"
                                     role="menu"
                                     aria-label="User menu"
                                     style={{boxShadow: '0 4px 24px #06376a1a'}}
                                 >
-                                    <div className="flex flex-col items-center mb-3 sm:mb-4 px-2">
+                                    <div className="flex flex-col items-center mb-4 sm:mb-6 px-2">
                                         <UserAvatar
                                             src={''}
                                             alt={user.name}
                                             fallback={initials}
-                                            size={44}
+                                            size={60}
                                         />
-                                        <span className="mt-1 font-bold text-[#123165] text-[15px] sm:text-[17px] text-center truncate max-w-[120px]">{user.name}</span>
-                                        <span className="text-xs sm:text-sm text-[#316bd3] text-center font-semibold truncate max-w-[90px]">{user.role}</span>
+                                        <span className="mt-2 font-bold text-[#123165] text-base sm:text-lg text-center truncate max-w-[160px]">{user.name}</span>
+                                        <span className="text-sm sm:text-base text-[#316bd3] text-center font-semibold truncate max-w-[120px]">{user.role}</span>
                                     </div>
-                                    <hr className="my-1 sm:my-2 border-[#bfd3e6]" />
+                                    <hr className="my-2 sm:my-3 border-[#bfd3e6]" />
                                     <button
-                                        className="w-full flex items-center gap-2 text-left px-4 sm:px-5 py-2 text-[13px] sm:text-[15px] text-[#123165] hover:bg-[#eaf2fb] focus:bg-[#eaf2fb] transition font-bold"
+                                        className="w-full flex items-center gap-3 text-left px-5 sm:px-7 py-3 text-[15px] sm:text-[17px] text-[#123165] hover:bg-[#eaf2fb] focus:bg-[#eaf2fb] transition font-bold"
                                         tabIndex={0}
                                         role="menuitem"
                                         onClick={handleProfileClick}
                                     >
-                                        <svg width="15" height="15" fill="none" viewBox="0 0 20 20" className="text-[#316bd3]">
+                                        <svg width="18" height="18" fill="none" viewBox="0 0 20 20" className="text-[#316bd3]">
                                             <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-6 8a6 6 0 0112 0H4z" stroke="#316bd3" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
                                         Profile
                                     </button>
                                     <button
-                                        className="w-full flex items-center gap-2 text-left px-4 sm:px-5 py-2 text-[13px] sm:text-[15px] text-[#123165] hover:bg-[#eaf2fb] focus:bg-[#eaf2fb] transition font-bold"
+                                        className="w-full flex items-center gap-3 text-left px-5 sm:px-7 py-3 text-[15px] sm:text-[17px] text-[#123165] hover:bg-[#eaf2fb] focus:bg-[#eaf2fb] transition font-bold"
                                         tabIndex={0}
                                         role="menuitem"
                                     >
-                                        <svg width="15" height="15" fill="none" viewBox="0 0 20 20" className="text-[#316bd3]">
+                                        <svg width="18" height="18" fill="none" viewBox="0 0 20 20" className="text-[#316bd3]">
                                             <path d="M4 11V7a6 6 0 1112 0v4" stroke="#316bd3" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                                             <rect x="2" y="11" width="16" height="7" rx="2" stroke="#316bd3" strokeWidth="1.6" />
                                         </svg>
                                         Settings
                                     </button>
-                                    <hr className="my-1 sm:my-2 border-[#bfd3e6]" />
+                                    <hr className="my-2 sm:my-3 border-[#bfd3e6]" />
                                     <button
-                                        className="w-full flex items-center gap-2 text-left px-4 sm:px-5 py-2 text-[13px] sm:text-[15px] text-[#bf112b] hover:bg-[#ffe5ec] focus:bg-[#ffe5ec] transition font-bold"
+                                        className="w-full flex items-center gap-3 text-left px-5 sm:px-7 py-3 text-[15px] sm:text-[17px] text-[#bf112b] hover:bg-[#ffe5ec] focus:bg-[#ffe5ec] transition font-bold"
                                         tabIndex={0}
                                         role="menuitem"
                                     >
-                                        <svg width="15" height="15" fill="none" viewBox="0 0 20 20" className="text-[#bf112b]">
+                                        <svg width="18" height="18" fill="none" viewBox="0 0 20 20" className="text-[#bf112b]">
                                             <path d="M6 6l8 8M6 14L14 6" stroke="#bf112b" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
                                         Logout

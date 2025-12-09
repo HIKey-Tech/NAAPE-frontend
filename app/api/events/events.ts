@@ -10,7 +10,10 @@ export const createEventApi = async (data: FormData) => {
     const token = localStorage.getItem("token")
 
     try {
-        const BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL!}/api` || "http://localhost:5000/api"
+        const BASE_URL =  "http://localhost:5000/api";
+        // const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
+        //     ? `${process.env.NEXT_PUBLIC_BASE_URL}/api`
+        //     : "http://localhost:5000/api";
         const response = await axios.post(`${BASE_URL}/v1/events`, data, {
             headers: {
                 "Content-Type": "multipart/form-data",

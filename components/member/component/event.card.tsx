@@ -191,7 +191,7 @@ const EventCard: React.FC<EventCardProps> = ({
 
     const handleRegister = (e?: React.MouseEvent) => {
         const { user } = useAuth()
-        
+
         if (e) e.stopPropagation();
         if (!id) return false;
 
@@ -462,7 +462,7 @@ const EventCard: React.FC<EventCardProps> = ({
                                     <span className="inline-block font-semibold">{payment.user?.name || payment.user?.email || "User"}</span>
                                     <span className="opacity-60 ml-1">paid</span>
                                     <span className="font-bold text-[#5161ab]">
-                                        {payment.currency === "NGN" ? "₦" : payment.currency}{payment.amount?.toLocaleString?.() ?? payment.amount ?? "?"}
+                                        {payment.currency === "NGN" ? "₦p" : payment.currency}{payment.amount?.toLocaleString?.() ?? payment.amount ?? "?"}
                                     </span>
                                     <span className="ml-1 text-[#b0b6c6]">{payment.date ? formatEventDate(payment.date) : ""}</span>
                                 </li>
