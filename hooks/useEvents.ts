@@ -1,7 +1,7 @@
-import { 
+import {
     payForEvent,
-    createEventApi, 
-    fetchEvents, 
+    createEventApi,
+    fetchEvents,
     getSingleEvent,
     registerEvent,
     verifyPayment,
@@ -30,7 +30,7 @@ export const useCreateEvent = () => {
     return useMutation({
         mutationFn: createEventApi,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["events"] });
+            // queryClient.invalidateQueries({ queryKey: ["events"] });
         },
     });
 };
@@ -42,7 +42,7 @@ export const useRegisterEvent = () => {
         mutationFn: registerEvent,
         // Optionally: refetch the events or event after registration
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["events"] });
+            // queryClient.invalidateQueries({ queryKey: ["events"] });
         },
     });
 };
@@ -55,7 +55,9 @@ export const usePayForEvent = () => {
     return useMutation({
         mutationFn: payForEvent,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["events"] });
+            // Don't invalidate queries immediately since we're redirecting
+            // The events will be refetched when the user navigates back
+            // This prevents the card from disappearing before redirect
         },
     });
 };
@@ -68,7 +70,7 @@ export const useVerifyPayment = () => {
         mutationFn: verifyPayment,
         onSuccess: () => {
             // You may invalidate or refetch related event/payment data here
-            queryClient.invalidateQueries({ queryKey: ["events"] });
+            // queryClient.invalidateQueries({ queryKey: ["events"] });
         },
     });
 };

@@ -12,6 +12,7 @@ import {
 } from "react-icons/md";
 import { usePublications } from "@/hooks/usePublications";
 import { useMemberStats } from "@/hooks/useMembers";
+import { useEvents } from "@/hooks/useEvents";
 import { useAuth } from "@/context/authcontext";
 
 // --- Types ---
@@ -26,18 +27,6 @@ type CertificationData = {
   startDate: string;
   description: string;
   status: CertificationStatus;
-};
-type EventCardProps = {
-  id?: string;
-  title: string;
-  date: string;
-  location: string;
-  imageUrl: string;
-  registerLabel?: string;
-  isPaid?: boolean;
-  price?: number;
-  currency?: string;
-  description?: string;
 };
 
 // --- Dummy Data ---
@@ -62,57 +51,6 @@ const certificationsData: CertificationData[] = [
     description:
       "Learn how to recognize, mitigate, and manage fatigue to ensure enhanced crew alertness and well-being.",
     status: "completed",
-  },
-];
-
-const eventsData: EventCardProps[] = [
-  {
-    title: "Annual Aviation Safety",
-    date: "2025-11-27T09:00:00Z",
-    location: "Abuja International Conference Center",
-    imageUrl: "/images/plane.jpg",
-    description: "The premier aviation safety event.",
-    isPaid: false,
-    price: 0,
-    currency: "NGN",
-    id: "event-1",
-    registerLabel: "",
-  },
-  {
-    title: "Crew Resource Optimization",
-    date: "2026-01-12T13:00:00Z",
-    location: "Lagos Expo Center",
-    imageUrl: "/images/plane.jpg",
-    description: "Maximize your crew efficiency.",
-    isPaid: true,
-    price: 5000,
-    currency: "NGN",
-    id: "event-2",
-    registerLabel: "",
-  },
-  {
-    title: "Safety Leadership Masterclass",
-    date: "2026-03-22T15:00:00Z",
-    location: "Online Webinar",
-    imageUrl: "/images/plane.jpg",
-    description: "Become a leader in aviation safety.",
-    isPaid: false,
-    price: 0,
-    currency: "NGN",
-    id: "event-3",
-    registerLabel: "",
-  },
-  {
-    title: "Women In Aviation",
-    date: "2026-07-09T10:00:00Z",
-    location: "Port Harcourt Hub",
-    imageUrl: "/images/plane.jpg",
-    description: "Celebrating women leaders in aviation.",
-    isPaid: true,
-    price: 2000,
-    currency: "NGN",
-    id: "event-4",
-    registerLabel: "",
   },
 ];
 
@@ -247,29 +185,45 @@ const CertificationsSection: React.FC = () => (
 );
 
 // --- Events Section ---
-const EventsSection: React.FC = () => (
-  <section className="mb-8 bg-white rounded-2xl py-6 px-4 shadow-sm border border-[#e6eaf1]">
-    <SectionHeading title="Upcoming Events" />
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      {eventsData.map((ev, idx) => (
-        <EventCard
-          key={ev.id ?? idx}
-          className="w-full"
-          id={ev.id ?? `${idx}`}
-          title={ev.title}
-          date={ev.date}
-          location={ev.location}
-          imageUrl={ev.imageUrl}
-          registerLabel={ev.registerLabel || "Register"}
-          isPaid={!!ev.isPaid}
-          price={typeof ev.price === "number" ? ev.price : 0}
-          currency={ev.currency ?? ""}
-          description={ev.description}
-        />
-      ))}
-    </div>
-  </section>
-);
+const EventsSection: React.FC = () => {
+  const { data: events, isPending, error } = useEvents();
+
+  return (
+    <section className="mb-8 bg-white rounded-2xl py-6 px-4 shadow-sm border border-[#e6eaf1]">
+      <SectionHeading title="Upcoming Events" />
+      {isPending ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {[...Array(3)].map((_, idx) => (
+            <div
+              key={idx}
+              className="rounded-xl border bg-gray-100 p-4 h-44 animate-pulse"
+            />
+          ))}
+        </div>
+      ) : error ? (
+        <div className="text-center text-red-600 py-5">
+          Couldn't load events.
+        </div>
+      ) : Array.isArray(events) && events.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {events.slice(0, 3).map((ev: any, idx: number) => (
+            <EventCard
+              key={ev.id ?? idx}
+              {...ev}
+              className="w-full"
+              id={ev.id ?? `${idx}`}
+              registerLabel={ev.registerLabel || "Register"}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center text-[#8BA4C9] py-6 font-medium">
+          No upcoming events.
+        </div>
+      )}
+    </section>
+  );
+};
 
 // --- Main Dashboard Home ---
 const MemberDashboardHome: React.FC = () => {

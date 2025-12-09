@@ -172,8 +172,11 @@ export default function AdminEventDetailsPage() {
         payForEventMutation.mutate(
             {
                 eventId: id,
-                name: user.name,
-                email: user.email
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                },
             },
             {
                 onSuccess: (result: any) => {

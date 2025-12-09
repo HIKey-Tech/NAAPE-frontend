@@ -238,7 +238,7 @@ export function AppSidebar() {
       navLinksMain.map((link, idx) => {
         const isActive = link.href
           ? pathname === link.href ||
-            (idx !== 0 && pathname?.startsWith(link.href))
+          (idx !== 0 && pathname?.startsWith(link.href))
           : false;
         return (
           <NavItem
@@ -281,7 +281,7 @@ export function AppSidebar() {
       navLinksSecondary.map((link) => {
         const isActive = link.href
           ? pathname === link.href ||
-            (link.href !== "/subscription" && pathname?.startsWith(link.href))
+          (link.href !== "/subscription" && pathname?.startsWith(link.href))
           : false;
         return (
           <NavItem
@@ -330,20 +330,18 @@ export function AppSidebar() {
 
           {/* MAIN */}
           <li className={SECTION_TITLE}>Main</li>
-          <li className="mb-0">{navItemsMain[0]}</li>
+          {navItemsMain[0]}
           <li className={SECTION_DIVIDER + " my-3"} />
 
           {/* NEWS & PUBLICATIONS */}
           <li className={SECTION_LABEL}>News & Publications</li>
-          <li>
-            <DropdownNavItem
-              label="News & Publications"
-              icon={FaNewspaper}
-              isActive={isNewsPubsDropdownActive}
-            >
-              {navItemsNewsPublicationsDropdown}
-            </DropdownNavItem>
-          </li>
+          <DropdownNavItem
+            label="News & Publications"
+            icon={FaNewspaper}
+            isActive={isNewsPubsDropdownActive}
+          >
+            {navItemsNewsPublicationsDropdown}
+          </DropdownNavItem>
           <li className={SECTION_DIVIDER} />
 
           {/* ACTIVITIES */}

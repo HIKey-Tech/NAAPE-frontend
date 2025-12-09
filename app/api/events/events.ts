@@ -56,32 +56,44 @@ export const registerEvent = async ({ id }: { id: string }) => {
  */
 export const payForEvent = async ({
     eventId,
-    name,
-    email
+    user,
+    guest,
 }: {
     eventId: string;
-    name: string;
-    email: string;
+    user?: { id: string; name: string; email: string } | null; // logged-in
+    guest?: { name: string; email: string } | null;             // guest checkout
 }) => {
-    // Validate parameters
     if (!eventId) {
-        throw new Error("Event ID is required to complete payment.");
+        throw new Error("Event ID is required.");
     }
-    if (!name || !email) {
-        throw new Error("Name and Email are required to complete payment.");
+
+    // Guest must supply name + email
+    if (!user && guest) {
+        if (!guest.name || !guest.email) {
+            throw new Error("Guest name and email are required.");
+        }
     }
+
     try {
-        // Construct payload with all required details
-        const payload = {
-            eventId,
-            name,
-            email
-        };
-        const response = await api.post(`/payment/event/register`, payload);
-        return response.data;
+        const payload: any = { eventId };
+
+        // If NOT logged in → send guest details to backend
+        if (!user && guest) {
+            payload.name = guest.name;
+            payload.email = guest.email;
+        }
+
+        const res = await api.post(`/payment/events/register`, payload, {
+            withCredentials: true,
+        });
+
+        return res.data; // { link, tx_ref } OR { message }
     } catch (error: any) {
-        const message = error?.response?.data?.message || error.message || "Failed to process event payment.";
-        throw new Error(message);
+        const msg =
+            error?.response?.data?.message ||
+            error?.message ||
+            "Failed to initiate event payment";
+        throw new Error(msg);
     }
 };
 
@@ -97,7 +109,7 @@ export const verifyPayment = async (transactionId: string) => {
         throw new Error("Payment reference is required for verification.");
     }
     try {
-        const response = await api.get(`/payment/event/verify?transaction_id=${transactionId}`);
+        const response = await api.get(`/payment/events/verify?transaction_id=${transactionId}`);
         return response.data;
     } catch (error: any) {
         const message = error?.response?.data?.message || error.message || "Failed to verify payment.";
@@ -112,7 +124,7 @@ export const getStatus = async (eventId: string, email: string) => {
     }
     try {
         const response = await api.get(
-            `/payment/event/status`,
+            `/payment/events/status`,
             { params: { eventId, email } }
         );
         // Axios returns data on .data, not .json().
