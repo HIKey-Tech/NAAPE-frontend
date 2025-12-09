@@ -171,25 +171,25 @@ const EventCard: React.FC<EventCardProps> = ({
         payForEventMutation.mutate(
             {
                 eventId: id,
-                user: {
-                    id: user._id,
-                    name: user.name,
-                    email: user.email,
-                },
+                
+                // ONLY send guest details if user is not logged in
+                ...user ,
                 // guest: {
                 //     name: guestName,
                 //     email: guestEmail,
                 // },
             },
             {
-                onSuccess: (result: any) => {
+                onSuccess: (data: any) => {
                     setShowRegisterLoading(false);
-                    if (result?.link) {
+                    const link = data?.paymentLink || data?.link || data?.url;
+                    if (link) {
                         setPaymentLinkOpened(true);
                         setShowVerify(true);
-                        window.open(result.link, "_blank");
-                    } else if (result?.url) {
-                        window.location.href = result.url;
+                        window.open(link, "_blank");
+                        console.log("Payment link opened:", link);
+                    } else {
+                        console.error("No payment link returned from server");
                     }
                 },
                 onError: () => {

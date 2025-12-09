@@ -182,6 +182,7 @@ export default function AdminEventDetailsPage() {
                 onSuccess: (result: any) => {
                     // Chart payment/registration path, like EventCard
                     if (typeof result === "string") {
+                        console.log("result link", result)
                         window.location.href = result;
                     } else if (result && typeof result.url === "string") {
                         window.location.href = result.url;
