@@ -208,11 +208,11 @@ const EventsSection: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {events.slice(0, 3).map((ev: any, idx: number) => (
             <EventCard
-              key={ev.id ?? idx}
+              key={ev._id ?? idx}
               {...ev}
               className="w-full"
-              id={ev.id ?? `${idx}`}
-              registerLabel={ev.registerLabel || "Register"}
+              id={ev._id?.toString() ?? `${idx}`}
+              // registerLabel={ev.registerLabel || "Register"}
             />
           ))}
         </div>

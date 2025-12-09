@@ -10,10 +10,12 @@ export const createEventApi = async (data: FormData) => {
     const token = localStorage.getItem("token")
 
     try {
-        const BASE_URL =  "http://localhost:5000/api";
-        // const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
-        //     ? `${process.env.NEXT_PUBLIC_BASE_URL}/api`
-        //     : "http://localhost:5000/api";
+        // const BASE_URL =  "http://localhost:5000/api";
+        const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
+            ? `${process.env.NEXT_PUBLIC_BASE_URL}/api`
+            : "http://localhost:5000/api";
+        
+        
         const response = await axios.post(`${BASE_URL}/v1/events`, data, {
             headers: {
                 "Content-Type": "multipart/form-data",
@@ -83,7 +85,7 @@ export const payForEvent = async ({
             payload.email = guest.email;
         }
 
-        const res = await api.post(`/payment/events/register`, payload, {
+        const res = await api.post(`/payments/events/register`, payload, {
             withCredentials: true,
         });
 
@@ -109,7 +111,7 @@ export const verifyPayment = async (transactionId: string) => {
         throw new Error("Payment reference is required for verification.");
     }
     try {
-        const response = await api.get(`/payment/events/verify?transaction_id=${transactionId}`);
+        const response = await api.get(`/payments/events/verify?transaction_id=${transactionId}`);
         return response.data;
     } catch (error: any) {
         const message = error?.response?.data?.message || error.message || "Failed to verify payment.";
@@ -124,7 +126,7 @@ export const getStatus = async (eventId: string, email: string) => {
     }
     try {
         const response = await api.get(
-            `/payment/events/status`,
+            `/payments/events/status`,
             { params: { eventId, email } }
         );
         // Axios returns data on .data, not .json().
