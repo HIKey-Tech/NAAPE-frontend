@@ -18,6 +18,7 @@ import LatestNews from "../latest/page";
 import MissionSection from "@/components/ui/landing/about/mission";
 import WhatsAppFloat from "@/components/ui/custom/whatsapp";
 import EventsPage from "../events/page";
+import Image from "next/image";
 
 // Updated SECTIONS to insert "mission" before "why"
 const SECTIONS = [
@@ -33,6 +34,43 @@ const SECTIONS = [
     "faq",
     "join"
 ];
+
+// Pulsating logo loader component
+function Loader() {
+    // Use Tailwind for the animation and ensure it's centered and covers the whole screen.
+    // Ensuring background color matches background.
+    return (
+        <div className="fixed inset-0 z-[99] flex flex-col items-center justify-center bg-[#F5F7FA]">
+            <motion.div
+                initial={{ scale: 0.97, opacity: 0.8 }}
+                animate={{ 
+                    scale: [1, 1.10, 1],
+                    opacity: [0.88, 1, 0.88]
+                }}
+                transition={{ 
+                    repeat: Infinity, 
+                    duration: 1.7,
+                    ease: "easeInOut" 
+                }}
+                style={{
+                    boxShadow: "0 4px 32px 0 rgba(40,82,180,0.09)"
+                }}
+                className="rounded-full bg-white p-[22px] sm:p-7 flex items-center justify-center border-[2.5px] border-[color:var(--primary)]"
+            >
+                <Image
+                    src="/logo.png"
+                    alt="NAAPE Logo"
+                    width={74}
+                    height={74}
+                    className="object-contain h-[62px] w-[62px] sm:h-[74px] sm:w-[74px] select-none"
+                    priority
+                    draggable={false}
+                />
+            </motion.div>
+            <span className="mt-7 font-black text-xl tracking-wider text-[color:var(--primary)] uppercase select-none">NAAPE</span>
+        </div>
+    );
+}
 
 function PlaneTrail() {
     // Refs for each section
@@ -208,15 +246,28 @@ function PlaneTrail() {
 
 export default function LandingPage() {
     // PlaneTrail manages the refs, plane, and all sections
+    // Loader state: show loader until site is hydrated and maybe a small delay for visual effect.
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // Mark loaded after next tick, gives a minimal logo pulse for snappiness.
+        const t = setTimeout(() => setLoading(false), 1150);
+        return () => clearTimeout(t);
+    }, []);
+
     return (
         <main className="flex flex-col min-h-screen bg-[#F5F7FA] relative overflow-x-clip">
-            <TopNavbar />
-            <div className="relative">
-                <PlaneTrail />
-            </div>
-            <WhatsAppFloat />
-
-            <Footer />
+            {loading && <Loader />}
+            {!loading && (
+                <>
+                    <TopNavbar />
+                    <div className="relative">
+                        <PlaneTrail />
+                    </div>
+                    <WhatsAppFloat />
+                    <Footer />
+                </>
+            )}
         </main>
     );
 }
