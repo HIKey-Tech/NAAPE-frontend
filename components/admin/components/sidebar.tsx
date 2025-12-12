@@ -23,7 +23,9 @@ import {
     FaComments,
     FaBook,
     FaPlusSquare,
-    FaChalkboardTeacher
+    FaChalkboardTeacher,
+    FaBars,
+    FaTimes
 } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
@@ -37,14 +39,13 @@ type NavLink = {
     label: string;
     icon: React.ElementType;
     href?: string;
-    group?: string; // e.g. "Content", "User Management"
+    group?: string;
     description?: string;
-    subcategory?: string; // for category-specific grouping
+    subcategory?: string;
 };
 
-// --- Visual Contrast & Hierarchy: CSS ---
 const iconAnimationStyles = `
-/* ... same as before ... */
+/* ... Existing styles ... */
 @keyframes icon-bounce {
   0%, 100% { transform: translateY(0);}
   15% { transform: translateY(-4px);}
@@ -79,96 +80,15 @@ const iconAnimationStyles = `
 }
 /* Remove all shadow/background gradient for clear flat look */
 @media (max-width: 639px) {
-  .mobile-bottom-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: 58px;
-    z-index: 50;
-    background: #f7f9fb;
-    border-top: 2px solid #d9e7f5;
-    margin-top: 24px;
-  }
-  .mobile-bottom-nav ul {
-    flex: 1 1 0;
-    display: flex; width: 100%; height: 100%;
-    padding: 0; margin: 0;
-    align-items: stretch; justify-content: space-around;
-    list-style: none;
-  }
-  .bottomnav-item {
-    flex: 1 1 0;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    font-size: 11px; color: #17223b;
-    gap: 4px;
-    text-align: center;
-    font-weight: 500;
-    min-width: 0; min-height: 0;
-    height: 58px;
-    padding: 0;
-    background: transparent;
-    border: none;
-    outline: none;
-    transition: background 0.13s;
-    cursor: pointer;
-    letter-spacing: 0.01em;
-  }
-  .bottomnav-item .animated-bottomnav-icon {
-    width: 22px;
-    height: 22px;
-    display: block;
-    margin: 0 auto 1px auto;
-    color: #8E9BB5;
-    transition: color 0.2s;
-  }
-  .bottomnav-item-active {
-    background: #def0fc;
-    color: var(--color-primary);
-    font-weight: 700;
-    border-left: 3px solid var(--color-primary);
-  }
-  .bottomnav-item-active .animated-bottomnav-icon {
-    color: var(--color-primary) !important;
-  }
-  .bottomnav-dropdown-panel {
-    position: absolute;
-    bottom: 62px;
-    left: 8px; right: 8px;
-    background: #fff;
-    border-radius: 7px;
-    border: 2px solid #c4d4e9;
-    z-index: 51;
-    padding: 5px 0 2px 0;
-    animation: dropdown-fadein 0.18s cubic-bezier(0.42,0,0.58,1);
-  }
-  @keyframes dropdown-fadein {
-    0% { transform: translateY(12px); opacity: 0;}
-    100% { transform: translateY(0); opacity: 1;}
-  }
-  .bottomnav-label {
-    font-size: 11.3px;
-    font-weight: 500;
-    line-height: 1.06;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 0;
-    margin-top: 0;
-    color: #1a2440;
-    transition: color 0.2s;
-  }
-  .sidebar-container,
-  .mobile-topbar { display: none !important; }
+  .sidebar-container { display: none !important; }
+  .mobile-bottom-nav { display: none !important; }
+  .mobile-topbar { display: flex !important; }
 }
 @media (min-width: 640px) {
-  .mobile-bottom-nav { display: none !important; }
+  .mobile-topbar { display: none !important; }
 }
 `;
 
-// --- Navigation structure grouped for deeper visual hierarchy ------------
-
-// Section: Dashboard & Home
 const homeLinks: NavLink[] = [
     {
         label: "Overview",
@@ -178,8 +98,6 @@ const homeLinks: NavLink[] = [
         description: "Admin Home & Stats"
     },
 ];
-
-// Section: User Management
 const userManagementLinks: NavLink[] = [
     {
         label: "Members",
@@ -203,10 +121,7 @@ const userManagementLinks: NavLink[] = [
         description: "Membership status overview"
     },
 ];
-
-// Section: Content Management
 const contentLinks: NavLink[] = [
-    // Events & Forum NOW come after Member Status
     {
         label: "Events",
         icon: FaCalendarAlt,
@@ -224,8 +139,6 @@ const contentLinks: NavLink[] = [
         description: "Discussion board"
     },
 ];
-
-// Section: Publications & News
 const publicationsDropdownLinks: NavLink[] = [
     {
         label: "All Publications",
@@ -249,7 +162,6 @@ const publicationsDropdownLinks: NavLink[] = [
         description: "Add a new publication"
     },
 ];
-
 const newsDropdownLinks: NavLink[] = [
     {
         label: "All News",
@@ -267,7 +179,6 @@ const newsDropdownLinks: NavLink[] = [
     },
 ];
 
-// Combine tabs for mobile bottom nav
 const organizePublicationTabsForMobile = (list: NavLink[]) => [
     ...list.filter(l => l.group === "Publications"),
     ...list.filter(l => l.group === "News"),
@@ -276,13 +187,10 @@ const publicationsDropdownLinksMobile: NavLink[] = organizePublicationTabsForMob
     ...publicationsDropdownLinks,
     ...newsDropdownLinks
 ]);
-
-// Section: System/Utility/Secondary (Settings removed)
 const navLinksSecondary: NavLink[] = [
-    // Add more utility links as needed...
+    // ...
 ];
 
-// PROFILE/USER
 function UserAvatar({ user }: { user: { name?: string, email?: string, avatarUrl?: string } }) {
     return (
         <div className="flex items-center gap-3 px-3 py-3">
@@ -303,7 +211,6 @@ function UserAvatar({ user }: { user: { name?: string, email?: string, avatarUrl
     );
 }
 
-// NAV ITEM (unchanged)
 type NavItemProps = {
     icon: React.ElementType;
     label: string;
@@ -414,12 +321,10 @@ function NavItem({
     );
 }
 
-// Publications Dropdown for Sidebar (desktop)
 function PublicationsDropdown({ pathname }: { pathname: string | null }) {
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef<HTMLUListElement>(null);
 
-    // Determine if any child tab is active
     const isChildActive = publicationsDropdownLinks.some(
         (link) => pathname === link.href || (link.href && pathname?.startsWith(link.href))
     );
@@ -568,110 +473,104 @@ function NewsDropdown({ pathname }: { pathname: string | null }) {
     );
 }
 
-// BottomNavDropdown: mobile dropdown
-function BottomNavDropdown({
+// HamburgerDrawer for mobile
+function HamburgerDrawer({
     open,
     onClose,
-    items,
-    activeHref
+    navSections,
+    user,
+    onSignOut
 }: {
     open: boolean;
     onClose: () => void;
-    items: NavLink[];
-    activeHref: string | null;
+    navSections: React.ReactNode;
+    user: any;
+    onSignOut: () => void;
 }) {
-    const dropdownRef = useRef<HTMLDivElement>(null);
-
+    // Trap scroll when sidebar is open
     useEffect(() => {
-        if (!open) return;
-        function listener(e: MouseEvent) {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(e.target as Node)
-            ) {
-                onClose();
-            }
+        if (open) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
         }
-        document.addEventListener("mousedown", listener);
-        return () => document.removeEventListener("mousedown", listener);
-    }, [open, onClose]);
+        return () => { document.body.style.overflow = ""; };
+    }, [open]);
 
-    useEffect(() => {
-        if (!open) return;
-        function keyHandler(e: KeyboardEvent) {
-            if (e.key === "Escape") onClose();
-        }
-        window.addEventListener("keydown", keyHandler);
-        return () => window.removeEventListener("keydown", keyHandler);
-    }, [open, onClose]);
-
-    useEffect(() => {
-        onClose();
-    }, [activeHref]);
-
-    if (!open) return null;
-    const createTab = items.find(link => link.label === "Create Publication");
-    const nonCreateTabs = items.filter(link => link.label !== "Create Publication");
     return (
-        <div
-            ref={dropdownRef}
-            className="bottomnav-dropdown-panel"
-            tabIndex={-1}
-            aria-label="News & Publications submenu"
-            style={{
-                minWidth: '180px',
-                maxWidth: '90vw',
-                background: "#f7fafe",
-                boxShadow: "none",
-                border: "2px solid #c4d4e9",
-            }}
-        >
-            {nonCreateTabs.map(link => {
-                const isActive = activeHref === link.href;
-                return (
-                    <Link
-                        key={link.label}
-                        href={link.href ?? "#"}
-                        onClick={onClose}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium transition-colors hover:bg-[#eaf3fd] ${isActive ? "font-bold bg-[#def0fc] text-primary border-l-4 border-primary" : "text-[#1e2535]"}`}
-                        tabIndex={0}
-                        style={isActive ? { color: "var(--color-primary)" } : undefined}
-                    >
-                        <link.icon className={`w-5 h-5 mr-2 animated-dropdown-icon${isActive ? " text-primary" : " text-[#7d8daa]"}`
-                        } style={isActive ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
-                        <span className="bottomnav-label">{link.label}</span>
-                        {link.description && (
-                            <span className="ml-auto text-xs text-[#97aac9] hidden sm:inline">{link.description}</span>
-                        )}
+        <>
+            <div
+                className={`fixed inset-0 z-[101] bg-black bg-opacity-20 transition-opacity duration-200 ${open ? 'block opacity-100' : 'pointer-events-none opacity-0'}`}
+                aria-hidden="true"
+                onClick={onClose}
+                style={{ display: open ? "block" : "none" }}
+            />
+            <aside
+                className={`
+                  fixed top-0 left-0 h-full w-[82vw] max-w-xs z-[110]
+                  bg-[#f7f9fb] border-r-2 border-[#c2d8ed]
+                  shadow-2xl transition-transform duration-200
+                  ${open ? "translate-x-0" : "-translate-x-full"}
+                  flex flex-col
+                `}
+                style={{
+                    transition: "transform 0.22s cubic-bezier(.8,0,0,1)"
+                }}
+                aria-label="Mobile Navigation"
+                role="dialog"
+                tabIndex={-1}
+            >
+                <div className="flex justify-between items-center px-4 pt-3 pb-2 border-b-2 border-[#c2d8ed]">
+                    <Link href="/" aria-label="Home" className="block shrink-0 focus:outline-none focus:ring-2 focus:ring-primary">
+                        <Image
+                            src="/logo.png"
+                            alt="Logo"
+                            width={54}
+                            height={32}
+                            className="h-8 w-auto object-contain"
+                            priority
+                        />
                     </Link>
-                );
-            })}
-            {createTab && (
-                <>
-                    <div className="border-t border-[#e5edfa] my-1" />
-                    <Link
-                        key={createTab.label}
-                        href={createTab.href ?? "#"}
+                    <button
                         onClick={onClose}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium transition-colors hover:bg-[#eaf3fd] ${activeHref === createTab.href ? "font-bold bg-[#def0fc] text-primary border-l-4 border-primary" : "text-[#1e2535]"
-                            }`}
-                        tabIndex={0}
-                        style={activeHref === createTab.href ? { color: "var(--color-primary)" } : undefined}
+                        aria-label="Close menu"
+                        className="p-2 ml-2 rounded hover:bg-[#e7eef5] focus:outline-none focus:ring-2 focus:ring-primary"
                     >
-                        <createTab.icon className={`w-5 h-5 mr-2 animated-dropdown-icon${activeHref === createTab.href ? " text-primary" : " text-[#7d8daa]"}`
-                        } style={activeHref === createTab.href ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
-                        <span className="bottomnav-label">{createTab.label}</span>
-                        {createTab.description && (
-                            <span className="ml-auto text-xs text-[#97aac9] hidden sm:inline">{createTab.description}</span>
-                        )}
-                    </Link>
-                </>
-            )}
-        </div>
+                        <FaTimes size={22} />
+                    </button>
+                </div>
+                <nav className="flex-1 overflow-y-auto pt-1 pb-3">
+                    {navSections}
+                </nav>
+                {/* Account (sign out, profile, etc) */}
+                <div className="border-t-2 border-[#c2d8ed] px-0 py-2 bg-[#f0f5fc]">
+                    <ul className="flex flex-col gap-1">
+                        <li>
+                            <button
+                                onClick={onSignOut}
+                                className="sidebar-navitem flex items-center w-full px-5 py-2.5 rounded-lg text-[15px] font-medium gap-3 mb-0.5 text-[#c62027] hover:bg-[#f6eaea] transition-colors"
+                                aria-label="Sign out of your account"
+                            >
+                                <FaSignOutAlt size={18} className="text-[#c62027]"/>
+                                <span className="">Sign Out</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <footer className="w-full border-t-2 border-[#c2d8ed] bg-[#f0f5fc]">
+                    <div className="flex items-center gap-3 px-3 py-3">
+                        <UserAvatar user={user ?? {}} />
+                        <div className="flex flex-col min-w-0">
+                            <span className="text-[14px] font-bold text-[#16355D] truncate">{user?.name || "Loading..."}</span>
+                            <span className="text-xs text-[#7f97b5] truncate">{user?.email}</span>
+                        </div>
+                    </div>
+                </footer>
+            </aside>
+        </>
     );
 }
 
-// Sidebar container (unchanged)
 function SidebarContainer({
     SidebarContent
 }: { SidebarContent: React.ReactNode }) {
@@ -684,148 +583,143 @@ function SidebarContainer({
     );
 }
 
-// Mobile Bottom Nav: Grouped/categorized for mobile
-function MobileBottomNavBar({
-    pathname,
+// MobileTopbarHamburger: Top app bar with hamburger menu for mobile
+function MobileTopbarHamburger({
+    navSections,
+    user,
     onSignOut
 }: {
-    pathname: string | null;
+    navSections: React.ReactNode;
+    user: any;
     onSignOut: () => void;
 }) {
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-
-    // Mobile order: show high priority sections first, group as admins expect
-    const bottomTabs = [
-        {
-            key: "home",
-            icon: FaHome,
-            label: "Home",
-            href: "/admin/dashboard"
-        },
-        {
-            key: "publications",
-            icon: FaBook,
-            label: "Publications",
-            dropdown: publicationsDropdownLinksMobile,
-            iconDropdown: FaSearch
-        },
-        {
-            key: "news",
-            icon: FaChalkboardTeacher,
-            label: "News",
-            href: "/admin/news"
-        },
-        {
-            key: "members",
-            icon: FaUsers,
-            label: "Members",
-            href: "/admin/members"
-        },
-        {
-            key: "payment-history",
-            icon: FaMoneyCheckAlt,
-            label: "Payment History",
-            href: "/admin/members/payment-history"
-        },
-        {
-            key: "member-status",
-            icon: FaIdBadge,
-            label: "Member Status",
-            href: "/admin/members/status"
-        },
-        {
-            key: "events",
-            icon: FaCalendarAlt,
-            label: "Events",
-            href: "/admin/events"
-        },
-        {
-            key: "forum",
-            icon: FaComments,
-            label: "Forum",
-            href: "/admin/forum"
-        },
-    ];
-
-    const isPubActive = publicationsDropdownLinksMobile.some(l =>
-        l.href && (pathname === l.href || pathname?.startsWith(l.href))
-    );
-
-    // Only display needed tabs, no settings
-    const visibleTabKeys = [
-        "home", "publications", "news", "members", "payment-history", "member-status", "events", "forum"
-    ];
-    const filteredTabs = bottomTabs.filter(tab => visibleTabKeys.includes(tab.key));
-
-    useEffect(() => {
-        setDropdownOpen(false);
-    }, [pathname]);
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     return (
-        <>
-            <nav
-                className="mobile-bottom-nav"
-                style={{ marginTop: 24 }}
-                role="navigation"
-                aria-label="Mobile bottom navigation"
-            >
-                <ul>
-                    {filteredTabs.map((tab, idx) => {
-                        if (tab.dropdown) {
-                            return (
-                                <li key={tab.key} style={{ position: "relative", zIndex: dropdownOpen ? 100 : undefined }}>
-                                    <button
-                                        type="button"
-                                        className={`bottomnav-item ${isPubActive ? "bottomnav-item-active" : ""}`}
-                                        aria-haspopup="true"
-                                        aria-expanded={dropdownOpen}
-                                        aria-label="News & Publications"
-                                        onClick={() => setDropdownOpen((v) => !v)}
-                                        tabIndex={0}
-                                        style={{
-                                            position: "relative",
-                                            zIndex: dropdownOpen ? 100 : undefined,
-                                            color: isPubActive ? "var(--color-primary)" : undefined,
-                                            fontWeight: isPubActive ? 700 : undefined
-                                        }}
-                                    >
-                                        <tab.iconDropdown className={`animated-bottomnav-icon`} style={isPubActive ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
-                                        <span className="bottomnav-label">{tab.label}</span>
-                                    </button>
-                                    <BottomNavDropdown
-                                        open={dropdownOpen}
-                                        onClose={() => setDropdownOpen(false)}
-                                        items={tab.dropdown}
-                                        activeHref={pathname}
-                                    />
-                                </li>
-                            );
-                        }
-                        const isActive = pathname === tab.href || (tab.href && pathname?.startsWith(tab.href));
-                        return (
-                            <li key={tab.key}>
-                                <Link
-                                    href={tab.href ?? "#"}
-                                    className={`bottomnav-item ${isActive ? "bottomnav-item-active" : ""}`}
-                                    aria-current={isActive ? "page" : undefined}
-                                    tabIndex={0}
-                                    aria-label={tab.label}
-                                    onClick={() => setDropdownOpen(false)}
-                                    style={{ color: isActive ? "var(--color-primary)" : undefined, fontWeight: isActive ? 700 : undefined }}
-                                >
-                                    <tab.icon className="animated-bottomnav-icon" style={isActive ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
-                                    <span className="bottomnav-label">{tab.label}</span>
-                                </Link>
-                            </li>
-                        );
-                    })}
-                </ul>
-            </nav>
-        </>
+        <header
+            className="mobile-topbar flex items-center justify-between sm:hidden px-4 py-2 bg-[#f7f9fb] border-b-2 border-[#c2d8ed] sticky top-0 left-0 right-0 z-[120]"
+            style={{ minHeight: "54px" }}
+        >
+            <div className="flex items-center gap-2 min-w-0">
+                <button
+                    onClick={() => setDrawerOpen(true)}
+                    aria-label="Open menu"
+                    className="p-2 rounded hover:bg-[#e7eef5] focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                    <FaBars size={24} />
+                </button>
+                <Link href="/" aria-label="Home" className="shrink-0 focus:outline-none focus:ring-2 focus:ring-primary">
+                    <Image
+                        src="/logo.png"
+                        alt="Logo"
+                        width={48}
+                        height={30}
+                        className="h-8 w-auto object-contain"
+                        priority
+                    />
+                </Link>
+            </div>
+            <div className="flex items-center gap-2">
+                <span className="text-[12px] font-semibold text-[#16355D] leading-tight truncate max-w-[110px] tracking-wide" style={{ textTransform: "uppercase", color: "#14203c" }}>
+                    NAAPE
+                </span>
+                <Image
+                    src={user?.avatarUrl || "/default-avatar.png"}
+                    alt="User"
+                    width={31}
+                    height={31}
+                    className="w-8 h-8 rounded-full border-2 border-[#bbc9dc] object-cover"
+                    style={{ background: "#eaf0f7" }}
+                />
+            </div>
+            <HamburgerDrawer
+                open={drawerOpen}
+                onClose={() => setDrawerOpen(false)}
+                navSections={navSections}
+                user={user}
+                onSignOut={onSignOut}
+            />
+            <style>{iconAnimationStyles}</style>
+        </header>
     );
 }
 
-// Improved Sidebar with detailed/polished hierarchy and categorization
+// GroupLabel helper reused for both views
+function GroupLabel({ label }: { label: string }) {
+    return (
+        <div className="mt-1.5 mb-1 px-7 uppercase text-[11px] tracking-wider font-semibold text-[#8694b3] pb-1">
+            {label}
+        </div>
+    );
+}
+
+// MobileNavSections: The full navigation structure for the hamburger drawer
+function MobileNavSections({ pathname }: { pathname: string | null }) {
+    return (
+        <ul className="flex flex-col py-2 px-0 gap-2">
+            {/* Dashboard */}
+            <li>
+                <GroupLabel label="Dashboard" />
+                <ul className="flex flex-col">
+                    {homeLinks.map(link => (
+                        <NavItem
+                            key={link.label}
+                            icon={link.icon}
+                            label={link.label}
+                            href={link.href}
+                            description={link.description}
+                            active={pathname === link.href}
+                        />
+                    ))}
+                </ul>
+            </li>
+            <li>
+                <GroupLabel label="User Management" />
+                <ul className="flex flex-col">
+                    {userManagementLinks.map(link => (
+                        <NavItem
+                            key={link.label}
+                            icon={link.icon}
+                            label={link.label}
+                            href={link.href}
+                            description={link.description}
+                            active={pathname === link.href}
+                        />
+                    ))}
+                </ul>
+            </li>
+            <li>
+                <GroupLabel label="Content" />
+                <ul className="flex flex-col">
+                    <NavItem
+                        icon={FaSearch}
+                        label="Publications"
+                        href="/admin/publications/all-publications"
+                        active={pathname?.startsWith("/admin/publications")}
+                    />
+                    <NavItem
+                        icon={FaSearch}
+                        label="News"
+                        href="/admin/news"
+                        active={pathname === "/admin/news"}
+                    />
+                    {contentLinks.map(link => (
+                        <NavItem
+                            key={link.label}
+                            icon={link.icon}
+                            label={link.label}
+                            href={link.href}
+                            description={link.description}
+                            active={pathname === link.href}
+                        />
+                    ))}
+                </ul>
+            </li>
+        </ul>
+    );
+}
+
+// Main Sidebar (desktop) + Hamburger (mobile)
 export function AdminSidebar() {
     const pathname = usePathname();
     const { user, loading, logout } = useAuth();
@@ -844,16 +738,7 @@ export function AdminSidebar() {
         }
     }, [logout]);
 
-    // Helper rendering for group labels
-    function GroupLabel({ label }: { label: string }) {
-        return (
-            <div className="mt-1.5 mb-1 px-7 uppercase text-[11px] tracking-wider font-semibold text-[#8694b3] pb-1">
-                {label}
-            </div>
-        );
-    }
-
-    // Dashboard/Home group
+    // Desktop nav sections reused for desktop sidebar
     const navSectionDashboard = useMemo(() =>
         homeLinks.map(link => {
             const isActive = link.href ? pathname === link.href : false;
@@ -867,9 +752,8 @@ export function AdminSidebar() {
                     active={isActive}
                 />
             );
-        }), [pathname]);
-
-    // User Management group
+        }), [pathname]
+    );
     const navSectionUserManagement = useMemo(() =>
         userManagementLinks.map(link => {
             const isActive = link.href ? pathname === link.href : false;
@@ -883,9 +767,8 @@ export function AdminSidebar() {
                     active={isActive}
                 />
             );
-        }), [pathname]);
-
-    // Content section (Forum, Events, etc)
+        }), [pathname]
+    );
     const navSectionContent = useMemo(() =>
         contentLinks.map(link => {
             const isActive = link.href ? pathname === link.href : false;
@@ -899,10 +782,8 @@ export function AdminSidebar() {
                     active={isActive}
                 />
             );
-        }), [pathname]);
-
-    // Publications/News: Use dropdowns (above defined)
-    // System (secondary/utility)
+        }), [pathname]
+    );
     const navSectionUtility = useMemo(() =>
         navLinksSecondary.map(link => {
             const isActive = link.href ? pathname === link.href : false;
@@ -916,9 +797,9 @@ export function AdminSidebar() {
                     active={isActive}
                 />
             );
-        }), [pathname]);
+        }), [pathname]
+    );
 
-    // Main structure
     const SidebarContent = (
         <>
             <style>{iconAnimationStyles}</style>
@@ -936,7 +817,6 @@ export function AdminSidebar() {
                 aria-label="Sidebar Navigation"
                 role="navigation"
             >
-                {/* TOP: Logo, org name, or branded section */}
                 <header className="flex flex-col border-b-2 border-[#c2d8ed] pb-2 backdrop-blur-sm">
                     <div className="flex justify-between items-center px-4 pt-3 pb-2">
                         <div className="flex items-center gap-2 min-w-0">
@@ -956,34 +836,28 @@ export function AdminSidebar() {
                         </div>
                     </div>
                 </header>
-                {/* NAVIGATION SECTIONS */}
                 <ul className="flex-1 w-full flex flex-col pt-3 px-0 pb-2 overflow-y-auto divide-y divide-[#e7eef5]">
-                    {/* Dashboard */}
                     <li className="py-0">
                         <GroupLabel label="Dashboard" />
                         <ul className="flex flex-col">
                             {navSectionDashboard}
                         </ul>
                     </li>
-                    {/* User Management */}
                     <li className="py-0">
                         <GroupLabel label="User Management" />
                         <ul className="flex flex-col">
                             {navSectionUserManagement}
                         </ul>
                     </li>
-                    {/* Content Management */}
                     <li className="py-0">
                         <GroupLabel label="Content" />
                         <ul className="flex flex-col">
-                            {/* Publications/news dropdowns placed first for visibility */}
                             <PublicationsDropdown pathname={pathname} />
                             <NewsDropdown pathname={pathname} />
                             {navSectionContent}
                         </ul>
                     </li>
                 </ul>
-                {/* SECONDARY/UTILITY */}
                 <div className="border-t-2 border-[#c2d8ed] bg-transparent mt-1">
                     <ul className="flex flex-col py-2 px-0">
                         <GroupLabel label="System & Account" />
@@ -996,7 +870,6 @@ export function AdminSidebar() {
                         />
                     </ul>
                 </div>
-                {/* User profile: visually separated, more contrast */}
                 <footer className="w-full border-t-2 border-[#c2d8ed] bg-[#f0f5fc] mt-2">
                     <div className="flex items-center gap-3 px-4 py-3">
                         <UserAvatar user={user ?? {}} />
@@ -1014,8 +887,12 @@ export function AdminSidebar() {
         <>
             {/* Desktop sidebar */}
             <SidebarContainer SidebarContent={SidebarContent} />
-            {/* Mobile Bottom Nav */}
-            <MobileBottomNavBar pathname={pathname} onSignOut={handleSignOut} />
+            {/* Mobile Hamburger Topbar */}
+            <MobileTopbarHamburger
+                navSections={<MobileNavSections pathname={pathname} />}
+                user={user}
+                onSignOut={handleSignOut}
+            />
         </>
     );
 }

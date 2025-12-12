@@ -290,7 +290,7 @@ export default function Hero() {
                         variants={leftVariants as any}
                     >
                         <motion.h1
-                            className="text-[2.3rem] sm:text-4xl md:text-[2.7rem] lg:text-[3.1rem] font-extrabold tracking-tight text-[#232835] dark:text-white leading-tight md:leading-[1.08] mb-1"
+                            className="text-[1.35rem] sm:text-2xl md:text-[1.7rem] lg:text-[2.15rem] font-extrabold tracking-tight text-[#232835] dark:text-white leading-snug md:leading-[1.12] mb-1"
                             variants={headingVariants as any}
                         >
                             <span>The National Association of Aircraft Pilots &amp; Engineers</span>

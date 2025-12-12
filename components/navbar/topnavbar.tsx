@@ -159,7 +159,7 @@ export default function TopNavbar() {
                 {/* Mobile: Logo with better contrast */}
                 <div className="sm:hidden flex pr-3 items-center">
                     <Image
-                        src="/images/plane.jpg"
+                        src="/logo.png"
                         alt="Logo"
                         width={48}
                         height={48}
@@ -168,7 +168,7 @@ export default function TopNavbar() {
                         draggable={false}
                     />
                 </div>
-                
+
                 {/* Desktop: Search with higher-contrast */}
                 <div className="relative hidden sm:block ml-10 min-w-[240px] max-w-[380px] w-full">
                     <input
@@ -266,8 +266,7 @@ export default function TopNavbar() {
                                         >
                                             <div className="flex justify-between items-start gap-3 sm:gap-4">
                                                 <div className={
-                                                    `font-bold ${
-                                                        notif.read
+                                                    `font-bold ${notif.read
                                                         ? "text-[#7b8bb2] font-medium"
                                                         : "text-[#143161] underline"
                                                     } text-sm sm:text-base`
@@ -352,7 +351,7 @@ export default function TopNavbar() {
                                 "
                                 role="menu"
                                 aria-label="User menu"
-                                style={{boxShadow: '0 8px 36px #14316122'}}
+                                style={{ boxShadow: '0 8px 36px #14316122' }}
                             >
                                 <div className="flex flex-col items-center mb-5 sm:mb-7 px-2">
                                     <UserAvatar

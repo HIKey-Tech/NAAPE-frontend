@@ -13,6 +13,8 @@ import {
   FaIdBadge,
   FaChevronDown,
   FaChevronUp,
+  FaBars,
+  FaTimes,
 } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
@@ -207,9 +209,17 @@ function SidebarProfileCard({ user }: { user: User }) {
   );
 }
 
+/** --- Responsive Sidebar --- */
 export function AppSidebar() {
   const pathname = usePathname();
   const { logout, user } = useAuth();
+
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Close sidebar when navigating to a new path (improves UX)
+  React.useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   const handleSignOut = useCallback(() => {
     if (
@@ -296,18 +306,9 @@ export function AppSidebar() {
     [pathname]
   );
 
-  return (
-    <aside
-      className="hidden sm:flex flex-col z-[50] border-r border-[#dde7f3] bg-[#fafdff] pt-0"
-      style={{
-        width: SIDEBAR_WIDTH,
-        minWidth: 265,
-        maxWidth: 370,
-        top: 0,
-        position: "sticky",
-        height: "100vh"
-      }}
-    >
+  // Sidebar inner content for reuse
+  const SidebarContent = (
+    <>
       {/* Logo / Title */}
       <div className="flex items-center px-8 py-6 border-b border-[#d1e0f3] bg-gradient-to-b from-[#f3f7fa] to-[#e8f0fb] gap-3">
         <Link href="/" aria-label="Home" className="flex items-center mr-1">
@@ -369,6 +370,137 @@ export function AppSidebar() {
       <footer className="w-full border-t border-[#dde7f3] bg-gradient-to-r from-[#f8fbfc] to-[#eaf3fc] px-2.5 py-4 shadow-inner">
         <SidebarProfileCard user={user ?? {}} />
       </footer>
-    </aside>
+    </>
+  );
+
+  // Responsive: Show overlay and sidebar for mobile
+  return (
+    <>
+      {/* -- Mobile Hamburger only visible below sm (sm:hidden) -- */}
+      <button
+        className="fixed bottom-4 left-4 z-[100] rounded-full p-3 bg-[#fafdff] border border-[#dde7f3] shadow-md flex items-center justify-center sm:hidden"
+        aria-label={mobileOpen ? "Close menu" : "Open menu"}
+        onClick={() => setMobileOpen(v => !v)}
+      >
+        {mobileOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
+      </button>
+
+      {/* -- Sidebar for Desktop -- */}
+      <aside
+        className="hidden sm:flex flex-col z-[50] border-r border-[#dde7f3] bg-[#fafdff] pt-0"
+        style={{
+          width: SIDEBAR_WIDTH,
+          minWidth: 265,
+          maxWidth: 370,
+          top: 0,
+          position: "sticky",
+          height: "100vh"
+        }}
+      >
+        {SidebarContent}
+      </aside>
+
+      {/* -- Sidebar for Mobile -- */}
+      {/* Fullscreen overlay & slide-in sidebar */}
+      {mobileOpen && (
+        <div>
+          <div
+            className="fixed inset-0 z-[99] bg-black/40 transition-opacity sm:hidden"
+            aria-hidden="true"
+            onClick={() => setMobileOpen(false)}
+          />
+          <aside
+            className="fixed top-0 left-0 z-[100] w-[89vw] max-w-[360px] min-w-[220px] h-screen bg-[#fafdff] border-r border-[#dde7f3] flex flex-col animate-slide-in sm:hidden"
+            style={{
+              transition: "transform .2s cubic-bezier(.4,0,.2,1)",
+            }}
+            tabIndex={-1}
+            aria-modal="true"
+            role="dialog"
+          >
+            <div className="flex items-center px-4 py-6 border-b border-[#d1e0f3] bg-gradient-to-b from-[#f3f7fa] to-[#e8f0fb] gap-3">
+              <Link href="/" aria-label="Home" className="flex items-center mr-1">
+                <Image
+                  src="/logo.png"
+                  alt="Logo"
+                  width={40}
+                  height={28}
+                  className="object-contain bg-[#f0f5fc] rounded-md shadow-md"
+                  priority
+                />
+              </Link>
+              <span className="font-black text-[1.1rem] tracking-wider text-[#15407c] select-none ml-2 drop-shadow-sm uppercase">
+                NAAPE
+              </span>
+              <button
+                className="ml-auto p-2 text-[#204a7a] rounded hover:bg-[#eaf3fc] focus:outline-none"
+                aria-label="Close menu"
+                onClick={() => setMobileOpen(false)}
+                tabIndex={0}
+              >
+                <FaTimes size={22} />
+              </button>
+            </div>
+            {/* Scrollable content area */}
+            <div className="flex-1 overflow-y-auto py-2 px-0 min-h-0">
+              <ul className={LIST_RESET + " px-1"}>
+
+                {/* MAIN */}
+                <li className={SECTION_TITLE}>Main</li>
+                {navItemsMain[0]}
+                <li className={SECTION_DIVIDER + " my-3"} />
+
+                {/* NEWS & PUBLICATIONS */}
+                <li className={SECTION_LABEL}>News & Publications</li>
+                <DropdownNavItem
+                  label="News & Publications"
+                  icon={FaNewspaper}
+                  isActive={isNewsPubsDropdownActive}
+                >
+                  {navItemsNewsPublicationsDropdown}
+                </DropdownNavItem>
+                <li className={SECTION_DIVIDER} />
+
+                {/* ACTIVITIES */}
+                <li className={SECTION_LABEL}>Activities</li>
+                <div className="flex flex-col gap-[2.5px] mb-1 mt-1 pl-1.5 border-l-2 border-[#eaf3fc]">
+                  {navItemsMain.slice(1)}
+                </div>
+                <li className={SECTION_DIVIDER + " mt-5"} />
+
+                {/* ACCOUNT */}
+                <li className={SECTION_LABEL}>Account</li>
+                <div className="flex flex-col gap-[2px] mb-2 mt-1 pl-1.5 border-l-2 border-[#eaf3fc]">
+                  {navItemsSecondary}
+                  <NavItem
+                    icon={FaSignOutAlt}
+                    label="Sign Out"
+                    onClick={handleSignOut}
+                    asButton={true}
+                    disabled={typeof logout !== "function"}
+                  />
+                </div>
+              </ul>
+            </div>
+            {/* Profile footer */}
+            <footer className="w-full border-t border-[#dde7f3] bg-gradient-to-r from-[#f8fbfc] to-[#eaf3fc] px-2.5 py-4 shadow-inner">
+              <SidebarProfileCard user={user ?? {}} />
+            </footer>
+          </aside>
+        </div>
+      )}
+      {/* Animation (slide-in) for mobile sidebar */}
+      <style jsx global>{`
+        @media (max-width: 639px) {
+          .animate-slide-in {
+            animation: sidebar-slide-in 0.19s cubic-bezier(.4,0,.2,1) both;
+          }
+          @keyframes sidebar-slide-in {
+            0% { transform: translateX(-110%); }
+            100% { transform: translateX(0); }
+          }
+        }
+      `}</style>
+    </>
   );
 }
