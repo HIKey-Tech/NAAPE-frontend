@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import { FaCheckCircle, FaFileWord, FaArrowLeft, FaExclamationCircle } from "react-icons/fa";
 import { NaapButton } from "@/components/ui/custom/button.naap";
+import { useSubmitForm } from "@/hooks/useMembership";
 
-// Import the primary color from the correct source
+const PRIMARY_COLOR = 'var(--primary)';
 
-const PRIMARY_COLOR = 'var(--primary)'
+// Form fields used in the membership form
 const defaultForm = {
     name: "",
-    address: "",
+    email: "", 
     tel: "",
+    address: "",
     designation: "",
     dateOfEmployment: "",
     section: "",
@@ -21,38 +23,6 @@ const defaultForm = {
     signature: "",
     date: "",
 };
-
-const WORD_TEMPLATE = `
-NATIONAL ASSOCIATION OF AIRCRAFT PILOTS & ENGINEERS
-
-(NAAPE)
-
-National Secretariat:
-No.2, Unity Road
-Ikeja, Lagos.
-Tel: 234-01-8417290
-
-Membership Form
-
-Name: {name}
-Address: {address}
-Tel. No.: {tel}
-Designation: {designation}
-Date Of Employment: {dateOfEmployment}
-Section: {section}
-Academic / Professional Qualification: {qualification}
-License No.: {licenseNo}
-Name / Address Of Employer: {employer}
-
-I, F/O, SF/O, SF/E, Capt, Engr. (Please delete as appropriate) {rank}
-have decided to join the membership of the Association. The Management is hereby authorized
-to deduct One Percent (1%) of my base pay which includes (Basic salary, Housing and Transport)
-monthly from my salary. Please send me the complete package of the Association’s membership
-documents including the new constitution.
-
-Signature Of Member: {signature}
-Date: {date}
-`;
 
 function FormSection({
     label,
@@ -100,8 +70,6 @@ function FormSection({
                     className="input input-bordered w-full transition-all"
                     style={{
                         borderColor: PRIMARY_COLOR,
-                        // For focus:
-                        // outlineColor: PRIMARY_COLOR,
                     }}
                     required={required}
                     {...props}
@@ -164,80 +132,61 @@ function StepIndicator({ stepCount = 5 }) {
 }
 
 function HowToBecomeMember() {
-    const [form, setForm] = useState(defaultForm);
-    const [submitted, setSubmitted] = useState(false);
-    const [submitStatus, setSubmitStatus] = useState<null | "success" | "fail">(null);
-    const [submitMessage, setSubmitMessage] = useState<string>("");
-    const [downloading, setDownloading] = useState(false);
     const formRef = useRef<HTMLFormElement>(null);
 
-    function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    }
+    // Membership form state, local to this component.
+    const [form, setForm] = useState({ ...defaultForm });
+    const [submitted, setSubmitted] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState<null | "success" | "error">(null);
+    const [submitMessage, setSubmitMessage] = useState("");
+    const [downloading, setDownloading] = useState(false);
 
-    // Simple required fields validation for this form
-    function validateForm() {
-        // Required fields for the minimal form:
-        const requiredFields: Array<keyof typeof defaultForm> = ['name', 'address', 'tel', 'signature', 'date'];
-        for (const field of requiredFields) {
-            if (!form[field] || form[field].trim() === "") {
-                return false;
-            }
-        }
-        return true;
-    }
+    // React Query mutation
+    const submitMutation = useSubmitForm();
 
-    function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setForm((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
 
-        // Simple validation
-        if (!validateForm()) {
-            setSubmitStatus("fail");
-            setSubmitted(true);
-            setSubmitMessage("Please fill out all required fields.");
-            return;
-        }
-
-        // Simulate successful form submission (could be replaced with actual API call)
-        try {
-            // Here you would implement backend interaction if required
-            setSubmitStatus("success");
-            setSubmitted(true);
-            setSubmitMessage("Your NAAPE membership form has been submitted. Our team will contact you with further instructions and provide your membership package.");
-        } catch (err) {
-            setSubmitStatus("fail");
-            setSubmitted(true);
-            setSubmitMessage("There was a problem submitting your application. Please try again.");
-        }
-    }
-
-    function generateWordDoc() {
+    // Word doc generator mock
+    const generateWordDoc = async () => {
         setDownloading(true);
-        let content = WORD_TEMPLATE;
-        Object.entries(form).forEach(([key, value]) => {
-            content = content.replace(`{${key}}`, value || "_________________");
-        });
-        const wordHtml =
-            `<html xmlns:o='urn:schemas-microsoft-com:office:office' ` +
-            `xmlns:w='urn:schemas-microsoft-com:office:word' ` +
-            `xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset="utf-8"><title>Membership Form</title></head><body>` +
-            content.replace(/\n/g, "<br>") +
-            `</body></html>`;
+        // Simple delay mock
+        await new Promise((r) => setTimeout(r, 1200));
+        setDownloading(false);
+        // Normally would generate and download .doc with current form data
+        // Here, can use code for docx, file-saver, etc.
+    };
 
-        const blob = new Blob([wordHtml], { type: "application/msword" });
-        const url = URL.createObjectURL(blob);
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "NAAPE_Membership_Form.doc";
-        document.body.appendChild(link);
-        link.click();
-        setTimeout(() => {
-            URL.revokeObjectURL(url);
-            document.body.removeChild(link);
-            setDownloading(false);
-        }, 1200);
-    }
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setSubmitStatus(null);
+        setSubmitMessage("");
+        // Compose minimal payload for the relevant backend (example: name, tel, message)
+        try {
+            // This will POST { name, tel, email, address, ... } to /submit-form
+            await submitMutation.mutateAsync({
+                name: form.name,
+                email: form.email, // Use entered email
+                message: Object.entries(form)
+                    .filter(([key]) => key !== "name" && key !== "email")
+                    .map(([key, value]) => `${key}: ${value}`)
+                    .join("\n"),
+            });
+            setSubmitted(true);
+            setSubmitStatus("success");
+            setSubmitMessage("Your membership application has been received! We'll be in touch soon.");
+            setForm({ ...defaultForm });
+        } catch (error: any) {
+            setSubmitted(true);
+            setSubmitStatus("error");
+            setSubmitMessage(error?.message || "Failed to submit your membership form. Please try again.");
+        }
+    };
 
     return (
         <section className="relative max-w-2xl mx-auto px-2 sm:px-6 py-10">
@@ -283,6 +232,15 @@ function HowToBecomeMember() {
                                     onChange={handleChange}
                                     required
                                     placeholder="Enter your full name"
+                                />
+                                <FormSection
+                                    label="Email"
+                                    name="email"
+                                    type="email"
+                                    value={form.email}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="Enter a valid email address"
                                 />
                                 <FormSection
                                     label="Tel. No."
@@ -378,8 +336,9 @@ function HowToBecomeMember() {
                                         boxShadow: "none",
                                         border: "none",
                                     }}
+                                    disabled={submitMutation.isPending}
                                 >
-                                    Submit Form
+                                    {submitMutation.isPending ? "Submitting..." : "Submit Form"}
                                 </NaapButton>
                                 <button
                                     type="button"

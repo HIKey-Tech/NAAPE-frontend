@@ -63,25 +63,42 @@ export default function TopNavbar() {
       <div className="w-full flex flex-col justify-center items-center">
         {/* Main navbar horizontal container with centralized content and max width */}
         <div className="w-full max-w-full mx-auto flex items-center justify-center px-2 sm:px-4  min-h-[64px] h-[64px] sm:min-h-[72px] sm:h-[72px]">
-          {/* Branded Logo - always left, vertically centered */}
-          <div className="flex flex-row items-center gap-3 sm:gap-4 min-w-0 h-full">
-            <Link
-              href="/"
-              className="flex items-center group min-w-0 h-full"
-              aria-label="Go to NAAPE homepage"
+          {/* Branded Logo and Hamburger Menu in flex row for mobile spacing */}
+          <div className="flex flex-row items-center px-6 justify-between min-w-0 h-full w-full md:w-auto">
+            {/* Logo Group */}
+            <div className="flex flex-row items-center gap-3 sm:gap-4 min-w-0 h-full">
+              <Link
+                href="/"
+                className="flex items-center group min-w-0 h-full"
+                aria-label="Go to NAAPE homepage"
+              >
+                <Image
+                  src="/logo.png"
+                  alt="NAAPE Logo"
+                  width={53}
+                  height={53}
+                  className="object-contain h-[42px] w-[42px] xs:h-[48px] xs:w-[48px] sm:h-[53px] sm:w-[53px] bg-white rounded-lg border-[2.5px] border-[color:var(--primary)]"
+                  priority
+                />
+                <span className="ml-2 sm:ml-3 text-[18px] xs:text-[19px] sm:text-[20px] font-extrabold tracking-tight text-[color:var(--primary)] uppercase hidden sm:inline whitespace-nowrap leading-none group-hover:underline decoration-4 underline-offset-[8px] decoration-[color:var(--primary)] transition-all">
+                  NAAPE
+                </span>
+              </Link>
+            </div>
+            {/* Hamburger menu button (mobile only) with space */}
+            <button
+              className="md:hidden ml-4 p-1.5 xs:p-2 sm:p-2.5 flex items-center justify-center rounded-xl border-2 border-[color:var(--primary)] bg-white focus-visible:ring-2 focus-visible:ring-[color:var(--primary)]"
+              aria-label="Open main menu"
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-nav"
+              onClick={() => setMobileOpen((prev) => !prev)}
             >
-              <Image
-                src="/logo.png"
-                alt="NAAPE Logo"
-                width={53}
-                height={53}
-                className="object-contain h-[42px] w-[42px] xs:h-[48px] xs:w-[48px] sm:h-[53px] sm:w-[53px] bg-white rounded-lg border-[2.5px] border-[color:var(--primary)]"
-                priority
-              />
-              <span className="ml-2 sm:ml-3 text-[18px] xs:text-[19px] sm:text-[20px] font-extrabold tracking-tight text-[color:var(--primary)] uppercase hidden sm:inline whitespace-nowrap leading-none group-hover:underline decoration-4 underline-offset-[8px] decoration-[color:var(--primary)] transition-all">
-                NAAPE
-              </span>
-            </Link>
+              {mobileOpen ? (
+                <X size={28} className="text-[color:var(--primary)]" />
+              ) : (
+                <Menu size={26} className="text-[color:var(--primary)]" />
+              )}
+            </button>
           </div>
 
           {/* Central navigation group - truly centered horizontally */}
@@ -212,20 +229,6 @@ export default function TopNavbar() {
 
           {/* User auth/buttons group - always right, vertically centered */}
           <div className="flex items-center gap-1.5 sm:gap-2 md:gap-4 ml-1 sm:ml-3 xl:ml-8  sm:pr-0 justify-end h-full">
-            {/* Hamburger menu button (mobile only) */}
-            <button
-              className="md:hidden p-1.5 xs:p-2 sm:p-2.5 ml-1 sm:ml-2 flex items-center justify-center rounded-xl border-2 border-[color:var(--primary)] bg-white focus-visible:ring-2 focus-visible:ring-[color:var(--primary)]"
-              aria-label="Open main menu"
-              aria-expanded={mobileOpen}
-              aria-controls="mobile-nav"
-              onClick={() => setMobileOpen((prev) => !prev)}
-            >
-              {mobileOpen ? (
-                <X size={28} className="text-[color:var(--primary)]" />
-              ) : (
-                <Menu size={26} className="text-[color:var(--primary)]" />
-              )}
-            </button>
             {/* Auth section (desktop only) */}
             <div className="hidden md:flex items-center px-4 gap-2 justify-end">
               {!isAuthenticated ? (
