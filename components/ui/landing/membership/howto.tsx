@@ -37,7 +37,7 @@ function FormSection({
     ...props
 }: any) {
     return (
-        <div>
+        <div className="mb-2">
             <label
                 className="block text-sm font-semibold tracking-wide mb-1"
                 style={{ color: PRIMARY_COLOR }}
@@ -46,6 +46,14 @@ function FormSection({
                 {label}
                 {required && <span className="text-red-500 ml-1">*</span>}
             </label>
+            <div
+                className="rounded-md transition-all"
+                style={{
+                    border: `1.5px solid ${PRIMARY_COLOR}`,
+                    background: "white",
+                    overflow: "hidden"
+                }}
+            >
             {textarea ? (
                 <textarea
                     id={name}
@@ -53,9 +61,12 @@ function FormSection({
                     value={value}
                     onChange={onChange}
                     placeholder={placeholder}
-                    className="input input-bordered w-full min-h-[42px] resize-none transition-all"
+                    className="input w-full min-h-[42px] resize-none bg-transparent border-0 focus:ring-0 focus:outline-0"
                     style={{
-                        borderColor: PRIMARY_COLOR,
+                        border: "none",
+                        boxShadow: "none",
+                        outline: "none",
+                        padding: "10px 14px"
                     }}
                     {...props}
                 />
@@ -67,14 +78,18 @@ function FormSection({
                     value={value}
                     onChange={onChange}
                     placeholder={placeholder}
-                    className="input input-bordered w-full transition-all"
+                    className="input w-full bg-transparent border-0 focus:ring-0 focus:outline-0"
                     style={{
-                        borderColor: PRIMARY_COLOR,
+                        border: "none",
+                        boxShadow: "none",
+                        outline: "none",
+                        padding: "10px 14px"
                     }}
                     required={required}
                     {...props}
                 />
             )}
+            </div>
             {children}
         </div>
     );
