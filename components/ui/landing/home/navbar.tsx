@@ -55,10 +55,9 @@ export default function TopNavbar() {
     return initials.toUpperCase();
   }
 
-  // Tighter padding & spacing, min-w-0 to avoid overflow, max-w for responsive control
-  // Reduced from text-[15px] to text-[13px]
+  // Adjust to ensure text is always centered for all items
   const baseMenuLink =
-    "px-2.5 xl:px-3 py-2 font-bold transition focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] border-b-2 border-transparent uppercase tracking-wide text-[13px] hover:border-[color:var(--primary)] hover:text-[color:var(--primary)] flex items-center justify-center h-full text-center min-w-0 max-w-[155px] truncate";
+    "px-2.5 xl:px-3 py-2 font-bold transition focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] border-b-2 border-transparent uppercase tracking-wide text-[13px] hover:border-[color:var(--primary)] hover:text-[color:var(--primary)] flex items-center justify-center h-full text-center min-w-0 max-w-[155px] truncate justify-center items-center text-center";
   const activeMenuLink =
     "text-[color:var(--primary)] font-black border-b-[3px] border-[color:var(--primary)]";
 
@@ -92,7 +91,7 @@ export default function TopNavbar() {
                   className="object-contain h-[40px] w-[40px] xs:h-[46px] xs:w-[46px] sm:h-[53px] sm:w-[53px] bg-white rounded-lg border-[2.5px] border-[color:var(--primary)]"
                   priority
                 />
-                <span className="ml-2 sm:ml-2 text-[15px] xs:text-[16px] sm:text-[18px] font-extrabold tracking-tight text-[color:var(--primary)] uppercase hidden sm:inline whitespace-nowrap leading-none group-hover:underline decoration-4 underline-offset-[8px] decoration-[color:var(--primary)] transition-all min-w-0">
+                <span className="ml-2 sm:ml-2 text-[15px] xs:text-[16px] sm:text-[18px] font-extrabold tracking-tight text-[color:var(--primary)] uppercase hidden sm:inline whitespace-nowrap leading-none group-hover:underline decoration-4 underline-offset-[8px] decoration-[color:var(--primary)] transition-all min-w-0 text-center">
                   NAAPE
                 </span>
               </Link>
@@ -121,8 +120,8 @@ export default function TopNavbar() {
             }}
           >
             <div
-              className="flex items-center gap-0.5 sm:gap-1 xl:gap-2 text-[#1A2752] font-semibold text-[13px] uppercase h-full py-1 min-w-0"
-              style={{ width: "100%", minWidth: 0 }}
+              className="flex items-center gap-0.5 sm:gap-1 xl:gap-2 text-[#1A2752] font-semibold text-[13px] uppercase h-full py-1 min-w-0 w-full justify-center"
+              style={{ width: "100%", minWidth: 0, justifyContent: "center", textAlign: "center" }}
             >
               {/* About group */}
               <DropdownMenu>
@@ -132,30 +131,30 @@ export default function TopNavbar() {
                     className={`${baseMenuLink} ${active.startsWith("/about") ? activeMenuLink : ""}`}
                     tabIndex={0}
                   >
-                    <span className="flex items-center gap-1 mx-auto justify-center min-w-0 truncate">
+                    <span className="flex items-center gap-1 mx-auto justify-center min-w-0 truncate text-center w-full">
                       About
                       <ChevronDown size={15} />
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent className="text-center">
                   <DropdownMenuItem asChild>
-                    <Link href="/about/about-us" className="font-bold text-[color:var(--primary)]/90 text-[13px]">
+                    <Link href="/about/about-us" className="font-bold text-[color:var(--primary)]/90 text-[13px] text-center w-full flex justify-center">
                       About Us
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/about/nac-members" className="font-semibold text-[13px]">
+                    <Link href="/about/nac-members" className="font-semibold text-[13px] text-center w-full flex justify-center">
                       NAC Members
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/about/organs-of-association" className="font-semibold text-[13px]">
+                    <Link href="/about/organs-of-association" className="font-semibold text-[13px] text-center w-full flex justify-center">
                       Organs of Association
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/about/rights-and-responsibilites" className="font-semibold text-[13px]">
+                    <Link href="/about/rights-and-responsibilites" className="font-semibold text-[13px] text-center w-full flex justify-center">
                       Rights &amp; Responsibilities
                     </Link>
                   </DropdownMenuItem>
@@ -165,9 +164,9 @@ export default function TopNavbar() {
               {/* Membership */}
               <Link
                 href="/membership"
-                className={`${baseMenuLink} ${active === "/membership" ? activeMenuLink : ""}`}
+                className={`${baseMenuLink} ${active === "/membership" ? activeMenuLink : ""} text-center flex justify-center`}
                 tabIndex={0}
-                style={{ minWidth: 0, maxWidth: "140px" }}
+                style={{ minWidth: 0, maxWidth: "140px", textAlign: "center" }}
               >
                 Membership
               </Link>
@@ -180,15 +179,15 @@ export default function TopNavbar() {
                     className={`${baseMenuLink} ${active.startsWith("/news") ? activeMenuLink : ""}`}
                     tabIndex={0}
                   >
-                    <span className="flex items-center gap-1 mx-auto justify-center min-w-0 truncate">
+                    <span className="flex items-center gap-1 mx-auto justify-center min-w-0 truncate text-center w-full">
                       News
                       <ChevronDown size={15} />
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent className="text-center">
                   <DropdownMenuItem asChild>
-                    <Link href="/news/naape" className="font-bold text-[color:var(--primary)]/90 text-[13px]">
+                    <Link href="/news/naape" className="font-bold text-[color:var(--primary)]/90 text-[13px] text-center w-full flex justify-center">
                       NAAPE News
                     </Link>
                   </DropdownMenuItem>
@@ -203,20 +202,20 @@ export default function TopNavbar() {
                     className={`${baseMenuLink} ${active.startsWith("/publications") ? activeMenuLink : ""}`}
                     tabIndex={0}
                   >
-                    <span className="flex items-center gap-1 mx-auto justify-center min-w-0 truncate">
+                    <span className="flex items-center gap-1 mx-auto justify-center min-w-0 truncate text-center w-full">
                       Publications
                       <ChevronDown size={15} />
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent className="text-center">
                   <DropdownMenuItem asChild>
-                    <Link href="/publication/members" className="font-semibold text-[13px]">
+                    <Link href="/publication/members" className="font-semibold text-[13px] text-center w-full flex justify-center">
                       From Members
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/publication/naape" className="font-semibold text-[13px]">
+                    <Link href="/publication/naape" className="font-semibold text-[13px] text-center w-full flex justify-center">
                       From NAAPE
                     </Link>
                   </DropdownMenuItem>
@@ -226,8 +225,8 @@ export default function TopNavbar() {
               {/* Advertisement */}
               <Link
                 href="/advertisement"
-                className={`${baseMenuLink} ${active === "/advertisement" ? activeMenuLink : ""}`}
-                style={{ minWidth: 0, maxWidth: "160px" }}
+                className={`${baseMenuLink} ${active === "/advertisement" ? activeMenuLink : ""} text-center flex justify-center`}
+                style={{ minWidth: 0, maxWidth: "160px", textAlign: "center" }}
                 tabIndex={0}
               >
                 Advertisement
@@ -236,8 +235,8 @@ export default function TopNavbar() {
               {/* Gallery */}
               <Link
                 href="/gallery"
-                className={`${baseMenuLink} ${active === "/gallery" ? activeMenuLink : ""}`}
-                style={{ minWidth: 0, maxWidth: "100px" }}
+                className={`${baseMenuLink} ${active === "/gallery" ? activeMenuLink : ""} text-center flex justify-center`}
+                style={{ minWidth: 0, maxWidth: "100px", textAlign: "center" }}
                 tabIndex={0}
               >
                 Gallery
@@ -246,7 +245,7 @@ export default function TopNavbar() {
               {/* Contact */}
               <Link
                 href="/contact"
-                className={`${baseMenuLink} ${active === "/contact" ? activeMenuLink : ""}`}
+                className={`${baseMenuLink} ${active === "/contact" ? activeMenuLink : ""} text-center flex justify-center`}
                 style={{
                   position: "relative",
                   zIndex: 1,
@@ -256,6 +255,7 @@ export default function TopNavbar() {
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
+                  textAlign: "center"
                 }}
                 tabIndex={0}
               >
@@ -278,7 +278,7 @@ export default function TopNavbar() {
                 <div className="flex items-center gap-1.5 min-w-0">
                   <Link href="/login" tabIndex={0}>
                     <NaapButton
-                      className="py-1.5 sm:py-2 px-4 border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[13px] font-extrabold min-w-[85px] sm:min-w-[105px] max-w-[112px] tracking-wide uppercase text-center truncate"
+                      className="py-1.5 sm:py-2 px-4 border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[13px] font-extrabold min-w-[85px] sm:min-w-[105px] max-w-[112px] tracking-wide uppercase text-center truncate flex justify-center text-center"
                       style={{ letterSpacing: "0.035em" }}
                     >
                       Log In
@@ -286,7 +286,7 @@ export default function TopNavbar() {
                   </Link>
                   <Link href="/register" tabIndex={0}>
                     <NaapButton
-                      className="py-1.5 sm:py-2 px-4 bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white text-[13px] font-extrabold min-w-[110px] sm:min-w-[145px] max-w-[146px] border-2 border-[color:var(--primary)] uppercase tracking-wide text-center truncate"
+                      className="py-1.5 sm:py-2 px-4 bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white text-[13px] font-extrabold min-w-[110px] sm:min-w-[145px] max-w-[146px] border-2 border-[color:var(--primary)] uppercase tracking-wide text-center truncate flex justify-center text-center"
                       style={{ letterSpacing: "0.04em" }}
                     >
                       Become a member
@@ -304,7 +304,7 @@ export default function TopNavbar() {
                       <span className="inline-flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-[color:var(--primary)] text-white font-extrabold text-xs sm:text-sm uppercase border-4 border-white">
                         {getInitials(user?.name)}
                       </span>
-                      <span className="text-[12px] sm:text-[13px] text-[color:var(--primary)] font-black max-w-[100px] sm:max-w-[130px] truncate hidden sm:inline tracking-wide uppercase text-left">
+                      <span className="text-[12px] sm:text-[13px] text-[color:var(--primary)] font-black max-w-[100px] sm:max-w-[130px] truncate hidden sm:inline tracking-wide uppercase text-center">
                         {user?.name}
                       </span>
                       <ChevronDown size={16} className="text-[color:var(--primary)] sm:w-[17px] sm:h-[17px]" />
@@ -312,12 +312,12 @@ export default function TopNavbar() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="min-w-[150px] sm:min-w-[160px] mt-2 rounded-xl !overflow-hidden border-2 border-[color:var(--primary)]/[.22] bg-white"
+                    className="min-w-[150px] sm:min-w-[160px] mt-2 rounded-xl !overflow-hidden border-2 border-[color:var(--primary)]/[.22] bg-white text-center"
                   >
                     <DropdownMenuItem asChild>
                       <Link
                         href="/dashboard"
-                        className="font-bold text-[13px] flex items-center gap-2 py-2 hover:bg-[color:var(--primary)]/16 hover:text-[color:var(--primary)] transition-colors text-left"
+                        className="font-bold text-[13px] flex items-center gap-2 py-2 hover:bg-[color:var(--primary)]/16 hover:text-[color:var(--primary)] transition-colors text-center w-full justify-center"
                       >
                         <User2 className="w-4 h-4" />
                         Dashboard
@@ -325,7 +325,7 @@ export default function TopNavbar() {
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={logout}
-                      className="!text-red-600 cursor-pointer font-bold text-[13px] flex items-center gap-2 py-2 hover:bg-red-50 transition-all text-left"
+                      className="!text-red-600 cursor-pointer font-bold text-[13px] flex items-center gap-2 py-2 hover:bg-red-50 transition-all text-center w-full justify-center"
                     >
                       <LogOut className="w-4 h-4" />
                       Log Out
@@ -338,7 +338,7 @@ export default function TopNavbar() {
         </div>
       </div>
 
-      {/* Mobile Navigation Drawer - content centered and harmonized spacing */}
+      {/* Mobile Navigation Drawer - items and groupings centrally aligned */}
       {mobileOpen && (
         <div
           ref={drawerRef}
@@ -356,8 +356,8 @@ export default function TopNavbar() {
               United. Safe. Professional. Proud.
             </span>
           </div>
-          {/* Section: Main Navigation Links */}
-          <div className="flex flex-col gap-1 w-full items-center">
+          {/* Section: Main Navigation Links (centralized text) */}
+          <div className="flex flex-col gap-1 w-full items-center justify-center text-center">
             {[
               { href: "/about", label: "About" },
               { href: "/membership", label: "Membership" },
@@ -368,8 +368,7 @@ export default function TopNavbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`py-2 px-2 w-full text-[13px] rounded-xl font-black hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 transition uppercase tracking-wider text-center 
-                  ${item.label === "Contact" ? "mt-1 mb-2" : ""}`}
+                className={`py-2 px-2 w-full text-[13px] rounded-xl font-black hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 transition uppercase tracking-wider text-center flex justify-center items-center ${item.label === "Contact" ? "mt-1 mb-2" : ""}`}
                 style={
                   item.label === "Contact"
                     ? {
@@ -378,8 +377,9 @@ export default function TopNavbar() {
                         zIndex: 2,
                         position: "relative",
                         fontFamily: "inherit",
+                        textAlign: "center"
                       }
-                    : undefined
+                    : { textAlign: "center" }
                 }
                 onClick={() => setMobileOpen(false)}
                 tabIndex={0}
@@ -388,35 +388,37 @@ export default function TopNavbar() {
               </Link>
             ))}
           </div>
-          {/* Section: Dropdown groupings */}
-          <div className="flex flex-col gap-1 w-full items-center">
+          {/* Section: Dropdown groupings (centralized dropdown content) */}
+          <div className="flex flex-col gap-1 w-full items-center justify-center text-center">
             {/* News Dropdown - mobile */}
-            <div className="w-full">
+            <div className="w-full flex flex-col items-center text-center">
               <button
-                className="flex items-center justify-between w-full py-2 px-2 text-[13px] rounded-xl font-black hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 transition uppercase tracking-wider text-center"
+                className="flex items-center justify-center w-full py-2 px-2 text-[13px] rounded-xl font-black hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 transition uppercase tracking-wider text-center"
                 aria-expanded={serveOpen}
                 aria-controls="mobile-news-menu"
                 onClick={() => setServeOpen((open) => !open)}
                 type="button"
+                style={{ textAlign: "center" }}
               >
                 <span className="flex-1 text-center">News</span>
-                <span className="flex-none">
+                <span className="flex-none ml-2">
                   {serveOpen ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
                 </span>
               </button>
               {serveOpen && (
                 <div
                   id="mobile-news-menu"
-                  className="flex flex-col ml-4 pl-2 py-1 border-l-4 border-[color:var(--primary)]/40"
+                  className="flex flex-col items-center justify-center ml-4 pl-2 py-1 border-l-4 border-[color:var(--primary)]/40 text-center"
                 >
                   <Link
                     href="/news/naape"
-                    className="py-1.5 text-[13px] rounded font-bold hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 uppercase transition text-left"
+                    className="py-1.5 text-[13px] rounded font-bold hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 uppercase transition text-center flex justify-center items-center w-full"
                     onClick={() => {
                       setMobileOpen(false);
                       setServeOpen(false);
                     }}
                     tabIndex={0}
+                    style={{ textAlign: "center" }}
                   >
                     NAAPE News
                   </Link>
@@ -425,16 +427,17 @@ export default function TopNavbar() {
             </div>
 
             {/* Publications Dropdown - mobile */}
-            <div className="w-full">
+            <div className="w-full flex flex-col items-center text-center">
               <button
-                className="flex items-center justify-between w-full py-2 px-2 text-[13px] rounded-xl font-black hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 transition uppercase tracking-wider text-center"
+                className="flex items-center justify-center w-full py-2 px-2 text-[13px] rounded-xl font-black hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 transition uppercase tracking-wider text-center"
                 aria-expanded={publicationsOpen}
                 aria-controls="mobile-publications-menu"
                 onClick={() => setPublicationsOpen((open) => !open)}
                 type="button"
+                style={{ textAlign: "center" }}
               >
                 <span className="flex-1 text-center">Publications</span>
-                <span className="flex-none">
+                <span className="flex-none ml-2">
                   {publicationsOpen ? (
                     <ChevronUp size={15} />
                   ) : (
@@ -445,27 +448,29 @@ export default function TopNavbar() {
               {publicationsOpen && (
                 <div
                   id="mobile-publications-menu"
-                  className="flex flex-col ml-4 pl-2 py-1 border-l-4 border-[color:var(--primary)]/40"
+                  className="flex flex-col items-center justify-center ml-4 pl-2 py-1 border-l-4 border-[color:var(--primary)]/40 text-center"
                 >
                   <Link
                     href="/publication/members"
-                    className="py-1.5 text-[13px] rounded font-bold hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 uppercase transition text-left"
+                    className="py-1.5 text-[13px] rounded font-bold hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 uppercase transition text-center flex justify-center items-center w-full"
                     onClick={() => {
                       setMobileOpen(false);
                       setPublicationsOpen(false);
                     }}
                     tabIndex={0}
+                    style={{ textAlign: "center" }}
                   >
                     From Members
                   </Link>
                   <Link
                     href="/publication/naape"
-                    className="py-1.5 text-[13px] rounded font-bold hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 uppercase transition text-left"
+                    className="py-1.5 text-[13px] rounded font-bold hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 uppercase transition text-center flex justify-center items-center w-full"
                     onClick={() => {
                       setMobileOpen(false);
                       setPublicationsOpen(false);
                     }}
                     tabIndex={0}
+                    style={{ textAlign: "center" }}
                   >
                     From NAAPE
                   </Link>
@@ -474,33 +479,33 @@ export default function TopNavbar() {
             </div>
           </div>
           {/* Section: Authentication */}
-          <div className="flex flex-col gap-2 mt-6 w-full items-center">
+          <div className="flex flex-col gap-2 mt-6 w-full items-center justify-center text-center">
             {!isAuthenticated ? (
-              <div className="flex flex-col gap-2 w-full items-center">
-                <Link href="/login" onClick={() => setMobileOpen(false)} className="w-full">
-                  <NaapButton className="w-full border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[13px] font-extrabold uppercase py-1.5 text-center">
+              <div className="flex flex-col gap-2 w-full items-center justify-center text-center">
+                <Link href="/login" onClick={() => setMobileOpen(false)} className="w-full flex justify-center">
+                  <NaapButton className="w-full border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[13px] font-extrabold uppercase py-1.5 text-center flex justify-center items-center">
                     Log In
                   </NaapButton>
                 </Link>
-                <Link href="/register" onClick={() => setMobileOpen(false)} className="w-full">
-                  <NaapButton className="w-full bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white text-[13px] font-extrabold border-2 border-[color:var(--primary)] uppercase py-1.5 text-center">
+                <Link href="/register" onClick={() => setMobileOpen(false)} className="w-full flex justify-center">
+                  <NaapButton className="w-full bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white text-[13px] font-extrabold border-2 border-[color:var(--primary)] uppercase py-1.5 text-center flex justify-center items-center">
                     Become a member
                   </NaapButton>
                 </Link>
               </div>
             ) : (
-              <div className="flex flex-col items-stretch w-full">
+              <div className="flex flex-col items-center w-full text-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
-                      className="flex items-center gap-2 px-2.5 py-1.5 rounded-2xl bg-white border-2 border-[color:var(--primary)] font-bold w-full uppercase transition justify-start text-center"
+                      className="flex items-center gap-2 px-2.5 py-1.5 rounded-2xl bg-white border-2 border-[color:var(--primary)] font-bold w-full uppercase transition justify-center text-center"
                       aria-label="Open account menu"
                       type="button"
                     >
                       <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-[color:var(--primary)] text-white font-extrabold text-xs uppercase border-4 border-white">
                         {getInitials(user?.name)}
                       </span>
-                      <span className="text-[12px] text-[color:var(--primary)] font-black truncate tracking-wide text-left max-w-[80px]">
+                      <span className="text-[12px] text-[color:var(--primary)] font-black truncate tracking-wide text-center max-w-[80px]">
                         {user?.name}
                       </span>
                       <ChevronDown size={16} className="text-[color:var(--primary)]" />
@@ -509,12 +514,12 @@ export default function TopNavbar() {
                   <DropdownMenuContent
                     align="start"
                     sideOffset={7}
-                    className="min-w-[135px] mt-2 rounded-xl border-2 border-[color:var(--primary)]/[.22] !overflow-hidden bg-white"
+                    className="min-w-[135px] mt-2 rounded-xl border-2 border-[color:var(--primary)]/[.22] !overflow-hidden bg-white text-center"
                   >
                     <DropdownMenuItem asChild>
                       <Link
                         href="/dashboard"
-                        className="font-bold text-[13px] flex items-center gap-2 py-1.5 hover:bg-[color:var(--primary)]/12 hover:text-[color:var(--primary)] transition-colors uppercase text-left"
+                        className="font-bold text-[13px] flex items-center gap-2 py-1.5 hover:bg-[color:var(--primary)]/12 hover:text-[color:var(--primary)] transition-colors uppercase text-center w-full justify-center"
                       >
                         <User2 className="w-4 h-4" />
                         Dashboard
@@ -525,7 +530,7 @@ export default function TopNavbar() {
                         logout();
                         setMobileOpen(false);
                       }}
-                      className="!text-red-600 cursor-pointer font-bold text-[13px] flex items-center gap-2 py-1.5 hover:bg-red-50 transition-all uppercase text-left"
+                      className="!text-red-600 cursor-pointer font-bold text-[13px] flex items-center gap-2 py-1.5 hover:bg-red-50 transition-all uppercase text-center w-full justify-center"
                     >
                       <LogOut className="w-4 h-4" />
                       Log Out
