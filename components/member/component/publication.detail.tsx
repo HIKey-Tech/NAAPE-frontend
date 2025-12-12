@@ -1,10 +1,14 @@
+"use client"
+
+
 import React, { useEffect, useRef, useState } from "react";
 import type { IPublication } from "@/app/api/publication/types";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useComments, useAddComment } from "@/hooks/useComment";
-import { usePublications } from "@/hooks/usePublications";
+import { useGetSinglePublication, usePublications } from "@/hooks/usePublications";
 
-// --- Constants (status, categories, etc.) ---
+// Treat this as [slug] route
+
 const STATUS_CONFIG = {
     pending: {
         label: "Pending",
@@ -88,12 +92,11 @@ function getAuthorString(author: any) {
     return "";
 }
 
-// --- Comments Section ---
-
 const PublicationComments: React.FC<{ publicationId: string }> = ({ publicationId }) => {
     const [input, setInput] = useState("");
     const { data: commentsRaw = [], isPending, error, refetch } = useComments(publicationId);
     const addComment = useAddComment();
+    console.log("publication Id", publicationId)
 
     const comments: any[] = Array.isArray(commentsRaw)
         ? commentsRaw
@@ -173,7 +176,6 @@ const PublicationComments: React.FC<{ publicationId: string }> = ({ publicationI
     );
 };
 
-// --- Meta row for info display ---
 const DetailMetaRow = ({
     icon,
     label,
@@ -208,23 +210,38 @@ const DetailMetaRow = ({
 const FallbackImage =
     "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=thumb&w=600&q=80";
 
-// ------------- MAIN DETAIL COMPONENT -------------
-// This must always work with routing: both as a rendered page (with id from URL) AND as a component (id passed as prop).
+// --- For routing back to card grid ---
+const BackToCardButton: React.FC<{ backHref?: string }> = ({ backHref }) => {
+    const router = useRouter();
+    return (
+        <button
+            onClick={() => {
+                if (backHref) router.push(backHref);
+                else router.back();
+            }}
+            className="bg-blue-100 text-blue-900 rounded px-3 py-1 mb-2 font-semibold border border-blue-200 hover:bg-blue-200 transition-colors"
+            style={{ width: "auto", marginTop: 22, marginLeft: 32, zIndex: 30, position: "absolute" }}
+        >
+            ← Back to Publications
+        </button>
+    );
+};
 
-const PublicationDetail: React.FC<{ publicationId?: string }> = ({ publicationId }) => {
-    // Accept slug param via props or from url
+// Main detail component for [slug] route
+const PublicationDetail: React.FC<{ publicationId?: string; backTo?: string }> = ({ publicationId, backTo }) => {
+    // For [slug] routes, param is typically called slug, but we alias to id for consistency
     const params = useParams();
-    // Next.js dynamic route: e.g. /member/publication/[id]
-    // params?.id may be string | string[] | undefined, so normalize:
     let id = publicationId;
+    // Prefer prop if provided, otherwise use slug param; fallback to treating param as string/array
     if (!id) {
-        if (typeof params?.id === "string") {
-            id = params.id;
-        } else if (Array.isArray(params?.id)) {
-            id = params.id[0];
+        // Accept [slug] or [id] as key for param
+        const slugParam = (params as any)?.slug ?? (params as any)?.id;
+        if (typeof slugParam === "string") {
+            id = slugParam;
+        } else if (Array.isArray(slugParam)) {
+            id = slugParam[0];
         }
     }
-    // If there is still no id, show not found immediately
     if (!id) {
         return (
             <div className="max-w-xl mx-auto flex flex-col items-center justify-center py-20 gap-4 bg-white rounded-2xl border border-[#E5EAF2]">
@@ -234,10 +251,7 @@ const PublicationDetail: React.FC<{ publicationId?: string }> = ({ publicationId
         );
     }
 
-    // Fetch (custom hook expects string id)
-    const { data: publication, isPending, error } = usePublications(id as string);
-
-    // For optional measurement UI
+    const { data: publication, isPending, error } = useGetSinglePublication(id as string);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [dims, setDims] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
     useEffect(() => {
@@ -271,7 +285,6 @@ const PublicationDetail: React.FC<{ publicationId?: string }> = ({ publicationId
         );
     }
 
-    // --- Publication payload mapping ---
     const {
         title,
         content,
@@ -302,7 +315,6 @@ const PublicationDetail: React.FC<{ publicationId?: string }> = ({ publicationId
                 : "rejected";
     const statusInfo = STATUS_CONFIG[statusValue] || STATUS_CONFIG["pending"];
 
-    // Normalize tags, references, attachments
     const tagList = Array.isArray(tags)
         ? tags
         : tags
@@ -320,8 +332,16 @@ const PublicationDetail: React.FC<{ publicationId?: string }> = ({ publicationId
                 ? attachments
                 : [];
 
-    // Fallback if no image
     const mainImage = image || FallbackImage;
+
+    // Use backTo query param, if any, to return to grid
+    let backHref: string | undefined = backTo;
+    if (typeof window !== "undefined" && !backHref) {
+        const url = new URL(window.location.href);
+        if (url.searchParams.has("backTo")) {
+            backHref = url.searchParams.get("backTo") || undefined;
+        }
+    }
 
     return (
         <section
@@ -331,8 +351,12 @@ const PublicationDetail: React.FC<{ publicationId?: string }> = ({ publicationId
                 minWidth: 320,
                 minHeight: 400,
                 marginTop: 36,
+                position: "relative",
             }}
         >
+            {/* "Back" button (to publication card grid) */}
+            <BackToCardButton backHref={backHref} />
+
             {/* Dim overlay */}
             <div
                 style={{
@@ -432,10 +456,10 @@ const PublicationDetail: React.FC<{ publicationId?: string }> = ({ publicationId
                     <DetailMetaRow
                         icon={<svg className="w-5 h-5 mr-1.5 text-blue-400" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#E5EAF2" /><path d="M6 12.5V8.5c0-2 1-3 4-3s4 1 4 3v4c0 2-1 3-4 3s-4-1-4-3z" stroke="#3666AE" strokeWidth="1.2" /><circle cx="10" cy="12" r="1" fill="#3666AE" /></svg>}
                         label="Author"
-                        value={author?.name.toString() || "Unknown"}
+                        value={author?.name?.toString() || getAuthorString(author) || "Unknown"}
                     />
                     <DetailMetaRow
-                        icon={<svg className="w-5 h-5 text-gray-400 mr-1" fill="none" viewBox="0 0 24 24"><path stroke="#4061a5" strokeWidth="1.4" d="M12 7v5l4 2"/><circle cx="12" cy="12" r="10" stroke="#C9D9F6" strokeWidth="1.7" fill="#F0F5FB"/></svg>}
+                        icon={<svg className="w-5 h-5 text-gray-400 mr-1" fill="none" viewBox="0 0 24 24"><path stroke="#4061a5" strokeWidth="1.4" d="M12 7v5l4 2" /><circle cx="12" cy="12" r="10" stroke="#C9D9F6" strokeWidth="1.7" fill="#F0F5FB" /></svg>}
                         label="Published"
                         value={createdAt
                             ? new Date(createdAt).toLocaleString(undefined, {
@@ -449,7 +473,7 @@ const PublicationDetail: React.FC<{ publicationId?: string }> = ({ publicationId
                     />
                     {updatedAt && (
                         <DetailMetaRow
-                            icon={<svg className="w-5 h-5 text-blue-300 mr-1" fill="none" viewBox="0 0 24 24"><path stroke="#3896f6" strokeWidth="1.5" d="M17.8 17.8A8 8 0 1 1 21 12"/><path stroke="#3896f6" strokeWidth="1.5" d="M12 8v4l4 2"/></svg>}
+                            icon={<svg className="w-5 h-5 text-blue-300 mr-1" fill="none" viewBox="0 0 24 24"><path stroke="#3896f6" strokeWidth="1.5" d="M17.8 17.8A8 8 0 1 1 21 12" /><path stroke="#3896f6" strokeWidth="1.5" d="M12 8v4l4 2" /></svg>}
                             label="Updated"
                             value={new Date(updatedAt).toLocaleString(undefined, { year: "numeric", month: "short", day: "numeric", hour: '2-digit', minute: '2-digit' })}
                         />
@@ -459,7 +483,7 @@ const PublicationDetail: React.FC<{ publicationId?: string }> = ({ publicationId
                 {/* Summary */}
                 {summary && (
                     <DetailMetaRow
-                        icon={<svg className="w-5 h-5 text-amber-400 mr-1" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="5" fill="#FFFDE1"/><path d="M5 7h10M5 10h10M5 13h7" stroke="#D9A53E" strokeWidth="1.7" strokeLinecap="round"/></svg>}
+                        icon={<svg className="w-5 h-5 text-amber-400 mr-1" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="5" fill="#FFFDE1" /><path d="M5 7h10M5 10h10M5 13h7" stroke="#D9A53E" strokeWidth="1.7" strokeLinecap="round" /></svg>}
                         label="Summary"
                         value={<span className="font-medium text-[#535c7d]">{summary}</span>}
                     />
@@ -536,7 +560,6 @@ const PublicationDetail: React.FC<{ publicationId?: string }> = ({ publicationId
 
                 {/* Comments Section */}
                 <PublicationComments publicationId={_id || id || ""} />
-
             </div>
         </section>
     );

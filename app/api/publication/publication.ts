@@ -23,7 +23,7 @@ export const getMyPublications = async (status?: string) => {
 
 export async function getSinglePublication(id: string) {
     try {
-        const response = await api.get(`/publications/${id}`)
+        const response = await api.get(`/publications/my/${id}`)
         return response.data;
 
     } catch (error) {
@@ -69,4 +69,24 @@ export const rejectPublication = async (id: string) => {
     const { data } = await api.patch(`/publications/${id}/reject`);
     return data;
 };
+
+
+
+// Delete publication
+export const deletePublication = async (id: string) => {
+    const { data } = await api.delete(`/publications/my/${id}`);
+    return data;
+};
+
+// Edit (update) publication
+export const editPublication = async (id: string, updatedData: any) => {
+    const { data } = await api.patch(`/publications/my/${id}`, updatedData, {
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    return data;
+};
+
+
 

@@ -14,6 +14,10 @@ import {
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { useAuth } from "@/context/authcontext";
 
+// Utility: Responsive width padding class for max screen support
+const NAVBAR_MAX_WIDTH = "max-w-[1440px]"; // change this if your layout is wider/smaller
+const DESKTOP_NAV_MIN_WIDTH = 1160; // px, should be high enough for all items + buttons
+
 export default function TopNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [serveOpen, setServeOpen] = useState(false);
@@ -51,59 +55,74 @@ export default function TopNavbar() {
     return initials.toUpperCase();
   }
 
-  // Refined menu link styling for more visually centered alignment
+  // Tighter padding & spacing, min-w-0 to avoid overflow, max-w for responsive control
   const baseMenuLink =
-    "px-4 py-2 flex-1 font-bold transition focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] border-b-2 border-transparent uppercase tracking-wide text-[15px] hover:border-[color:var(--primary)] hover:text-[color:var(--primary)] flex items-center justify-center h-full text-center";
+    "px-2.5 xl:px-3 py-2 font-bold transition focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] border-b-2 border-transparent uppercase tracking-wide text-[15px] hover:border-[color:var(--primary)] hover:text-[color:var(--primary)] flex items-center justify-center h-full text-center min-w-0 max-w-[155px] truncate";
   const activeMenuLink =
     "text-[color:var(--primary)] font-black border-b-[3px] border-[color:var(--primary)]";
 
   return (
-    <nav className="w-full sticky top-0 left-0 z-40 bg-white border-b-2 border-[color:var(--primary)] justify-center py-0 flex items-center  relative">
-      {/* Centered Navbar Container */}
-      <div className="w-full flex flex-col justify-center items-center">
-        {/* Main navbar horizontal container with centralized content and max width */}
-        <div className="w-full max-w-full mx-auto flex items-center justify-center px-2 sm:px-4  min-h-[64px] h-[64px] sm:min-h-[72px] sm:h-[72px]">
-          {/* Branded Logo and Hamburger Menu in flex row for mobile spacing */}
-          <div className="flex flex-row items-center px-6 justify-between min-w-0 h-full w-full md:w-auto">
+    <nav className="w-full sticky top-0 left-0 z-40 bg-white border-b-2 border-[color:var(--primary)] flex items-center justify-center relative py-0">
+      {/* Outer centered container, limit width */}
+      <div className={`w-full flex flex-col items-center justify-center`}>
+        {/* Main navbar row: set max-w and responsive px, hide overflow */}
+        <div
+          className={`w-full ${NAVBAR_MAX_WIDTH} mx-auto flex items-center justify-between px-2 xs:px-3 sm:px-4 min-h-[64px] h-[64px] sm:min-h-[72px] sm:h-[72px]`}
+          style={{
+            minWidth: 0,
+            overflowX: "hidden",
+          }}
+        >
+          {/* Logo & Hamburger */}
+          <div className="flex flex-row items-center px-2 sm:px-6 justify-between min-w-0 h-full shrink-0">
             {/* Logo Group */}
-            <div className="flex flex-row items-center gap-3 sm:gap-4 min-w-0 h-full">
+            <div className="flex flex-row items-center gap-2 sm:gap-4 min-w-0 h-full shrink-0">
               <Link
                 href="/"
                 className="flex items-center group min-w-0 h-full"
                 aria-label="Go to NAAPE homepage"
+                tabIndex={0}
               >
                 <Image
                   src="/logo.png"
                   alt="NAAPE Logo"
-                  width={53}
-                  height={53}
-                  className="object-contain h-[42px] w-[42px] xs:h-[48px] xs:w-[48px] sm:h-[53px] sm:w-[53px] bg-white rounded-lg border-[2.5px] border-[color:var(--primary)]"
+                  width={48}
+                  height={48}
+                  className="object-contain h-[40px] w-[40px] xs:h-[46px] xs:w-[46px] sm:h-[53px] sm:w-[53px] bg-white rounded-lg border-[2.5px] border-[color:var(--primary)]"
                   priority
                 />
-                <span className="ml-2 sm:ml-3 text-[18px] xs:text-[19px] sm:text-[20px] font-extrabold tracking-tight text-[color:var(--primary)] uppercase hidden sm:inline whitespace-nowrap leading-none group-hover:underline decoration-4 underline-offset-[8px] decoration-[color:var(--primary)] transition-all">
+                <span className="ml-2 sm:ml-2 text-[17px] xs:text-[18px] sm:text-[20px] font-extrabold tracking-tight text-[color:var(--primary)] uppercase hidden sm:inline whitespace-nowrap leading-none group-hover:underline decoration-4 underline-offset-[8px] decoration-[color:var(--primary)] transition-all min-w-0">
                   NAAPE
                 </span>
               </Link>
             </div>
-            {/* Hamburger menu button (mobile only) with space */}
+            {/* Hamburger for mobile only */}
             <button
-              className="md:hidden ml-4 p-1.5 xs:p-2 sm:p-2.5 flex items-center justify-center rounded-xl border-2 border-[color:var(--primary)] bg-white focus-visible:ring-2 focus-visible:ring-[color:var(--primary)]"
+              className="md:hidden ml-2 p-2 flex items-center justify-center rounded-xl border-2 border-[color:var(--primary)] bg-white focus-visible:ring-2 focus-visible:ring-[color:var(--primary)]"
               aria-label="Open main menu"
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav"
               onClick={() => setMobileOpen((prev) => !prev)}
             >
               {mobileOpen ? (
-                <X size={28} className="text-[color:var(--primary)]" />
+                <X size={25} className="text-[color:var(--primary)]" />
               ) : (
-                <Menu size={26} className="text-[color:var(--primary)]" />
+                <Menu size={23} className="text-[color:var(--primary)]" />
               )}
             </button>
           </div>
 
-          {/* Central navigation group - truly centered horizontally */}
-          <div className="hidden md:flex flex-1 min-w-0  items-center justify-center h-full">
-            <div className="flex items-center gap-1 md:gap-1.5 xl:gap-2 2xl:gap-2 text-[#1A2752] font-semibold text-[15px] uppercase h-full py-1">
+          {/* Desktop Navigation Center */}
+          <div
+            className="hidden md:flex grow flex-shrink-[2] basis-0 items-center justify-center min-w-0"
+            style={{
+              maxWidth: "calc(100vw - 375px)",
+            }}
+          >
+            <div
+              className="flex items-center gap-0.5 sm:gap-1 xl:gap-2 text-[#1A2752] font-semibold text-[15px] uppercase h-full py-1 min-w-0"
+              style={{ width: "100%", minWidth: 0 }}
+            >
               {/* About group */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -112,9 +131,9 @@ export default function TopNavbar() {
                     className={`${baseMenuLink} ${active.startsWith("/about") ? activeMenuLink : ""}`}
                     tabIndex={0}
                   >
-                    <span className="flex items-center gap-1 mx-auto justify-center">
+                    <span className="flex items-center gap-1 mx-auto justify-center min-w-0 truncate">
                       About
-                      <ChevronDown size={18} />
+                      <ChevronDown size={17} />
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
@@ -146,6 +165,8 @@ export default function TopNavbar() {
               <Link
                 href="/membership"
                 className={`${baseMenuLink} ${active === "/membership" ? activeMenuLink : ""}`}
+                tabIndex={0}
+                style={{ minWidth: 0, maxWidth: "140px" }}
               >
                 Membership
               </Link>
@@ -158,9 +179,9 @@ export default function TopNavbar() {
                     className={`${baseMenuLink} ${active.startsWith("/news") ? activeMenuLink : ""}`}
                     tabIndex={0}
                   >
-                    <span className="flex items-center gap-1 mx-auto justify-center">
+                    <span className="flex items-center gap-1 mx-auto justify-center min-w-0 truncate">
                       News
-                      <ChevronDown size={18} />
+                      <ChevronDown size={17} />
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
@@ -181,9 +202,9 @@ export default function TopNavbar() {
                     className={`${baseMenuLink} ${active.startsWith("/publications") ? activeMenuLink : ""}`}
                     tabIndex={0}
                   >
-                    <span className="flex items-center gap-1 mx-auto justify-center">
+                    <span className="flex items-center gap-1 mx-auto justify-center min-w-0 truncate">
                       Publications
-                      <ChevronDown size={18} />
+                      <ChevronDown size={17} />
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
@@ -205,6 +226,8 @@ export default function TopNavbar() {
               <Link
                 href="/advertisement"
                 className={`${baseMenuLink} ${active === "/advertisement" ? activeMenuLink : ""}`}
+                style={{ minWidth: 0, maxWidth: "160px" }}
+                tabIndex={0}
               >
                 Advertisement
               </Link>
@@ -213,6 +236,8 @@ export default function TopNavbar() {
               <Link
                 href="/gallery"
                 className={`${baseMenuLink} ${active === "/gallery" ? activeMenuLink : ""}`}
+                style={{ minWidth: 0, maxWidth: "100px" }}
+                tabIndex={0}
               >
                 Gallery
               </Link>
@@ -221,6 +246,17 @@ export default function TopNavbar() {
               <Link
                 href="/contact"
                 className={`${baseMenuLink} ${active === "/contact" ? activeMenuLink : ""}`}
+                style={{
+                  position: "relative",
+                  zIndex: 1,
+                  minWidth: 0,
+                  maxWidth: "100px",
+                  marginRight: "0.35rem",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+                tabIndex={0}
               >
                 Contact
               </Link>
@@ -228,23 +264,29 @@ export default function TopNavbar() {
           </div>
 
           {/* User auth/buttons group - always right, vertically centered */}
-          <div className="flex items-center gap-1.5 sm:gap-2 md:gap-4 ml-1 sm:ml-3 xl:ml-8  sm:pr-0 justify-end h-full">
+          <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 ml-1 sm:ml-2 xl:ml-4 justify-end h-full shrink-0">
             {/* Auth section (desktop only) */}
-            <div className="hidden md:flex items-center px-4 gap-2 justify-end">
+            <div
+              className="hidden md:flex items-center px-2 gap-2 justify-end min-w-0"
+              style={{
+                minWidth: "200px",
+                maxWidth: "285px",
+              }}
+            >
               {!isAuthenticated ? (
-                <div className="flex items-center gap-2">
-                  <Link href="/login">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <Link href="/login" tabIndex={0}>
                     <NaapButton
-                      className="py-1.5 sm:py-2 px-4 sm:px-5 border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[15px] font-extrabold min-w-[100px] sm:min-w-[120px] tracking-wide uppercase text-center"
-                      style={{ letterSpacing: "0.04em" }}
+                      className="py-1.5 sm:py-2 px-4 border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[15px] font-extrabold min-w-[85px] sm:min-w-[105px] max-w-[112px] tracking-wide uppercase text-center truncate"
+                      style={{ letterSpacing: "0.035em" }}
                     >
                       Log In
                     </NaapButton>
                   </Link>
-                  <Link href="/register">
+                  <Link href="/register" tabIndex={0}>
                     <NaapButton
-                      className="py-1.5 sm:py-2 px-5 bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white text-[15px] font-extrabold min-w-[140px] sm:min-w-[180px] border-2 border-[color:var(--primary)] uppercase tracking-wide text-center"
-                      style={{ letterSpacing: "0.05em" }}
+                      className="py-1.5 sm:py-2 px-4 bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white text-[15px] font-extrabold min-w-[110px] sm:min-w-[145px] max-w-[146px] border-2 border-[color:var(--primary)] uppercase tracking-wide text-center truncate"
+                      style={{ letterSpacing: "0.04em" }}
                     >
                       Become a member
                     </NaapButton>
@@ -254,22 +296,22 @@ export default function TopNavbar() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
-                      className="flex items-center gap-2.5 sm:gap-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-2xl bg-white border-2 border-[color:var(--primary)] font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] min-w-[44px] sm:min-w-[50px] transition h-full justify-center text-center"
+                      className="flex items-center gap-2 sm:gap-2.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-2xl bg-white border-2 border-[color:var(--primary)] font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] min-w-[44px] sm:min-w-[50px] transition h-full justify-center text-center"
                       aria-label="Open account menu"
                       type="button"
                     >
-                      <span className="inline-flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-[color:var(--primary)] text-white font-extrabold text-sm sm:text-base uppercase border-4 border-white">
+                      <span className="inline-flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-[color:var(--primary)] text-white font-extrabold text-sm sm:text-base uppercase border-4 border-white">
                         {getInitials(user?.name)}
                       </span>
-                      <span className="text-[14px] sm:text-[15px] text-[color:var(--primary)] font-black max-w-[108px] sm:max-w-[148px] truncate hidden sm:inline tracking-wide uppercase text-left">
+                      <span className="text-[14px] sm:text-[15px] text-[color:var(--primary)] font-black max-w-[100px] sm:max-w-[130px] truncate hidden sm:inline tracking-wide uppercase text-left">
                         {user?.name}
                       </span>
-                      <ChevronDown size={20} className="text-[color:var(--primary)] sm:w-[22px] sm:h-[22px]" />
+                      <ChevronDown size={19} className="text-[color:var(--primary)] sm:w-[21px] sm:h-[21px]" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="min-w-[190px] sm:min-w-[210px] mt-2 rounded-xl !overflow-hidden border-2 border-[color:var(--primary)]/[.22] bg-white"
+                    className="min-w-[170px] sm:min-w-[185px] mt-2 rounded-xl !overflow-hidden border-2 border-[color:var(--primary)]/[.22] bg-white"
                   >
                     <DropdownMenuItem asChild>
                       <Link
@@ -302,7 +344,7 @@ export default function TopNavbar() {
           role="dialog"
           aria-modal="true"
           id="mobile-nav"
-          className="absolute left-0 top-[100%] w-full z-50 bg-white border-t-2 border-[color:var(--primary)] flex flex-col items-center px-4 py-6 gap-4 md:hidden shadow-xl"
+          className="absolute left-0 top-[100%] w-full z-50 bg-white border-t-2 border-[color:var(--primary)] flex flex-col items-center px-4 py-6 gap-4 md:hidden shadow-xl overflow-x-auto"
         >
           {/* Welcome header */}
           <div className="mb-3 flex flex-col items-center text-center w-full">
@@ -325,7 +367,19 @@ export default function TopNavbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="py-2.5 px-2.5 w-full text-[15px] rounded-xl font-black hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 transition uppercase tracking-wider text-center"
+                className={`py-2.5 px-2.5 w-full text-[15px] rounded-xl font-black hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 transition uppercase tracking-wider text-center 
+                  ${item.label === "Contact" ? "mt-1 mb-2" : ""}`}
+                style={
+                  item.label === "Contact"
+                    ? {
+                        marginTop: "0.22rem",
+                        marginBottom: "0.5rem",
+                        zIndex: 2,
+                        position: "relative",
+                        fontFamily: "inherit",
+                      }
+                    : undefined
+                }
                 onClick={() => setMobileOpen(false)}
                 tabIndex={0}
               >
@@ -438,23 +492,23 @@ export default function TopNavbar() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
-                      className="flex items-center gap-3 px-3 py-3 rounded-2xl bg-white border-2 border-[color:var(--primary)] font-bold w-full uppercase transition justify-start text-center"
+                      className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white border-2 border-[color:var(--primary)] font-bold w-full uppercase transition justify-start text-center"
                       aria-label="Open account menu"
                       type="button"
                     >
-                      <span className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-[color:var(--primary)] text-white font-extrabold text-sm uppercase border-4 border-white">
+                      <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-[color:var(--primary)] text-white font-extrabold text-sm uppercase border-4 border-white">
                         {getInitials(user?.name)}
                       </span>
-                      <span className="text-[15px] text-[color:var(--primary)] font-black truncate tracking-wide text-left">
+                      <span className="text-[15px] text-[color:var(--primary)] font-black truncate tracking-wide text-left max-w-[90px]">
                         {user?.name}
                       </span>
-                      <ChevronDown size={21} className="text-[color:var(--primary)]" />
+                      <ChevronDown size={20} className="text-[color:var(--primary)]" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="start"
                     sideOffset={7}
-                    className="min-w-[165px] mt-2 rounded-xl border-2 border-[color:var(--primary)]/[.22] !overflow-hidden bg-white"
+                    className="min-w-[155px] mt-2 rounded-xl border-2 border-[color:var(--primary)]/[.22] !overflow-hidden bg-white"
                   >
                     <DropdownMenuItem asChild>
                       <Link
