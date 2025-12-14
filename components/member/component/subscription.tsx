@@ -169,8 +169,8 @@ export default function MembershipSubscription() {
                 disabled={!!isActive}
                 style={{
                   flex: 1,
-                  minWidth: 0,
-                  maxWidth: 170,
+                  // minWidth: 0,
+                  // maxWidth: 170,
                   background: isActive ? "#e9ffe9" : isSelected ? "#ECECFF" : plan.highlight ? "#F2FBF6" : "#fff",
                   border: `2px solid ${
                     isActive
