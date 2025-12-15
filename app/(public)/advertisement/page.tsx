@@ -15,7 +15,7 @@ export default function AdminAdvertisementPage() {
           textAlign: "center",
         }}
       >
-        Advertisement Section Preview
+        Advertisement Section Overview
       </h1>
       <AdvertisementSection />
     </div>

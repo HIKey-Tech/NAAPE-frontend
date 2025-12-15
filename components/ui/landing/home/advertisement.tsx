@@ -7,13 +7,13 @@ const CONTACT_EMAIL = "info@naape.org.ng";
  */
 const PRIMARY = "var(--primary, #ff004e)";
 
+// Ensure the icon wrapper is a perfect circle by enforcing aspectRatio 1/1 or using width/height + overflow:hidden + display:inline-flex and stretch the contents evenly.
 function Feature({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
     <div style={{
       display: "flex", alignItems: "center", gap: 13, marginBottom: 17,
       background: "rgba(255,255,255,0.95)",
       borderRadius: 9, padding: "12px 16px"
-      // no shadow here
     }}>
       <span style={{
         background: PRIMARY,
@@ -24,8 +24,13 @@ function Feature({ icon, title, children }: { icon: React.ReactNode; title: stri
         color: "#fff",
         fontSize: 20,
         width: 40,
-        height: 40
-        // no shadow here
+        height: 40,
+        aspectRatio: "1 / 1",
+        overflow: "hidden",
+        minWidth: 40,
+        minHeight: 40,
+        maxWidth: 40,
+        maxHeight: 40,
       }}>
         {icon}
       </span>
@@ -83,7 +88,6 @@ export default function AdvertisementSection() {
         background: "#fff",
         borderRadius: 22,
         border: `2.2px solid ${PRIMARY}`,
-        // boxShadow removed
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -118,15 +122,20 @@ export default function AdvertisementSection() {
             justifyContent: "center",
             width: 64,
             height: 64,
-            background: PRIMARY, // no gradient here
+            minWidth: 64,
+            minHeight: 64,
+            maxWidth: 64,
+            maxHeight: 64,
+            aspectRatio: "1 / 1",
+            overflow: "hidden",
+            background: PRIMARY,
             borderRadius: "50%",
-            // boxShadow removed
             marginTop: -22,
             marginBottom: 12,
             border: `2.2px solid var(--primary, #ff004e)`,
           }}
         >
-          <FaBullhorn color="#fff" size={30} /* filter left for the icon shadow, since it's not a gradient or box-shadow on the parent */ style={{ filter: "drop-shadow(0 3px 10px #a00)" }} />
+          <FaBullhorn color="#fff" size={30} style={{ filter: "drop-shadow(0 3px 10px #a00)" }} />
         </span>
         <h2
           style={{
@@ -137,10 +146,9 @@ export default function AdvertisementSection() {
             margin: 0,
             marginBottom: 7,
             textAlign: "center"
-            // gradient removed: no background, no text gradient
           }}
         >
-          Advertise With <span style={{ letterSpacing: 0.25 }}>NAAP Plan</span>
+          Advertise With <span style={{ letterSpacing: 0.25 }}>NAAPE Plan</span>
         </h2>
         <div
           style={{
@@ -191,10 +199,11 @@ export default function AdvertisementSection() {
             marginBottom: 30,
             background: "#fff",
             borderRadius: 17,
-            // boxShadow removed
             padding: "19px 24px 15px 24px",
             border: `1.5px solid ${PRIMARY}`,
-            position: "relative"
+            position: "relative",
+            boxSizing: "border-box",
+            overflow: "visible"
           }}
         >
           <h3
@@ -232,8 +241,26 @@ export default function AdvertisementSection() {
               <span>Thank you! Your inquiry is being processed <br />via your email client.</span>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 15 }}>
-              <div style={{ display: "flex", gap: 13 }}>
+            <form 
+              onSubmit={handleSubmit} 
+              style={{ 
+                display: "flex", 
+                flexDirection: "column", 
+                gap: 15, 
+                width: "100%",
+                boxSizing: "border-box"
+              }}
+            >
+              {/* Responsive arrangement for Name and Organization */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: 13,
+                  width: "100%",
+                  flexWrap: "wrap",
+                  boxSizing: "border-box"
+                }}
+              >
                 <input
                   name="name"
                   type="text"
@@ -245,6 +272,7 @@ export default function AdvertisementSection() {
                   placeholder="Your Name"
                   style={{
                     flex: 1,
+                    minWidth: 0,
                     padding: "11px 12px",
                     fontSize: 15.5,
                     borderRadius: 7,
@@ -253,7 +281,9 @@ export default function AdvertisementSection() {
                     background: "#fff",
                     fontWeight: 500,
                     transition: "box-shadow 0.19s",
-                    // boxShadow stays for input focus, for slight input accessibility, but can be removed if needed
+                    boxSizing: "border-box",
+                    width: "100%",
+                    maxWidth: "100%",
                   }}
                   disabled={submitting}
                   autoComplete="off"
@@ -269,6 +299,7 @@ export default function AdvertisementSection() {
                   placeholder="Organization / Company"
                   style={{
                     flex: 1,
+                    minWidth: 0,
                     padding: "11px 12px",
                     fontSize: 15.5,
                     borderRadius: 7,
@@ -276,7 +307,9 @@ export default function AdvertisementSection() {
                     color: PRIMARY,
                     background: "#fff",
                     fontWeight: 500,
-                    // boxShadow stays for input focus
+                    boxSizing: "border-box",
+                    width: "100%",
+                    maxWidth: "100%",
                   }}
                   disabled={submitting}
                   autoComplete="off"
@@ -299,7 +332,9 @@ export default function AdvertisementSection() {
                   color: PRIMARY,
                   background: "#fff",
                   fontWeight: 500,
-                  // boxShadow stays for input focus
+                  boxSizing: "border-box",
+                  width: "100%",
+                  maxWidth: "100%",
                 }}
                 disabled={submitting}
                 autoComplete="off"
@@ -322,7 +357,9 @@ export default function AdvertisementSection() {
                   color: PRIMARY,
                   background: "#fff",
                   fontWeight: 500,
-                  // boxShadow stays for input focus
+                  boxSizing: "border-box",
+                  width: "100%",
+                  maxWidth: "100%",
                 }}
                 disabled={submitting}
               />
@@ -342,11 +379,13 @@ export default function AdvertisementSection() {
                   opacity: submitting ? 0.66 : 1,
                   transition: "background 0.18s, opacity 0.18s",
                   letterSpacing: 0.09,
-                  // boxShadow removed from button
                   display: "flex",
                   alignItems: "center",
                   gap: 9,
-                  justifyContent: "center"
+                  justifyContent: "center",
+                  boxSizing: "border-box",
+                  width: "100%",
+                  maxWidth: "100%",
                 }}
               >
                 <FaPaperPlane style={{
@@ -355,6 +394,23 @@ export default function AdvertisementSection() {
                 }} />
                 {submitting ? "Sending..." : "Send Inquiry"}
               </button>
+              {/* Ensures no horizontal overflow */}
+              <style>{`
+                @media (max-width: 600px) {
+                  form > div {
+                    flex-direction: column !important;
+                    gap: 10px !important;
+                  }
+                  form input, form textarea, form button {
+                    width: 100% !important;
+                    min-width: 0 !important;
+                    max-width: 100% !important;
+                  }
+                  form > div > input {
+                    width: 100% !important;
+                  }
+                }
+              `}</style>
             </form>
           )}
           <div style={{ fontSize: 13.5, color: PRIMARY, textAlign: "center", marginTop: 9, opacity: 0.77 }}>
@@ -372,7 +428,6 @@ export default function AdvertisementSection() {
             background: "var(--primary, #ff004e)1a",
             borderRadius: 7,
             padding: "9px 18px 8px 18px",
-            // boxShadow removed
             maxWidth: 440,
             border: `1.2px dashed ${PRIMARY}`,
             fontWeight: 500

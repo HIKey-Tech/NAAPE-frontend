@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Menu, X, ChevronDown, ChevronUp, LogOut, User2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,8 @@ export default function TopNavbar() {
   const [publicationsOpen, setPublicationsOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const { user, logout, isAuthenticated } = useAuth();
+  const router = useRouter();
+  const [loginLoading, setLoginLoading] = useState(false);
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -60,6 +63,25 @@ export default function TopNavbar() {
     "px-2.5 xl:px-3 py-2 font-bold transition focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] border-b-2 border-transparent uppercase tracking-wide text-[13px] hover:border-[color:var(--primary)] hover:text-[color:var(--primary)] flex items-center justify-center h-full text-center min-w-0 max-w-[155px] truncate justify-center items-center text-center";
   const activeMenuLink =
     "text-[color:var(--primary)] font-black border-b-[3px] border-[color:var(--primary)]";
+
+  // Improved Login Button Handler (for Desktop Nav)
+  const handleLoginClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    if (!loginLoading) {
+      setLoginLoading(true);
+      router.push("/login");
+    }
+  };
+
+  // Improved Login Button Handler (for Mobile Nav)
+  const handleMobileLoginClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    if (!loginLoading) {
+      setLoginLoading(true);
+      setMobileOpen(false);
+      router.push("/login");
+    }
+  };
 
   return (
     <nav className="w-full sticky top-0 left-0 z-40 bg-white border-b-2 border-[color:var(--primary)] flex items-center justify-center relative py-0">
@@ -276,14 +298,15 @@ export default function TopNavbar() {
             >
               {!isAuthenticated ? (
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <Link href="/login" tabIndex={0}>
-                    <NaapButton
-                      className="py-1.5 sm:py-2 px-4 border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[13px] font-extrabold min-w-[85px] sm:min-w-[105px] max-w-[112px] tracking-wide uppercase text-center truncate flex justify-center text-center"
-                      style={{ letterSpacing: "0.035em" }}
-                    >
-                      Log In
-                    </NaapButton>
-                  </Link>
+                  {/* Use a real button for login for instant UI feedback/click handling */}
+                  <NaapButton
+                    className="py-1.5 sm:py-2 px-4 border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[13px] font-extrabold min-w-[85px] sm:min-w-[105px] max-w-[112px] tracking-wide uppercase text-center truncate flex justify-center text-center"
+                    style={{ letterSpacing: "0.035em" }}
+                    onClick={handleLoginClick}
+                    disabled={loginLoading}
+                  >
+                    {loginLoading ? "Logging In..." : "Log In"}
+                  </NaapButton>
                   <Link href="/register" tabIndex={0}>
                     <NaapButton
                       className="py-1.5 sm:py-2 px-4 bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white text-[13px] font-extrabold min-w-[110px] sm:min-w-[145px] max-w-[146px] border-2 border-[color:var(--primary)] uppercase tracking-wide text-center truncate flex justify-center text-center"
@@ -482,11 +505,14 @@ export default function TopNavbar() {
           <div className="flex flex-col gap-2 mt-6 w-full items-center justify-center text-center">
             {!isAuthenticated ? (
               <div className="flex flex-col gap-2 w-full items-center justify-center text-center">
-                <Link href="/login" onClick={() => setMobileOpen(false)} className="w-full flex justify-center">
-                  <NaapButton className="w-full border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[13px] font-extrabold uppercase py-1.5 text-center flex justify-center items-center">
-                    Log In
-                  </NaapButton>
-                </Link>
+                {/* REAL BUTTON ensures instant feedback on tap */}
+                <NaapButton
+                  className="w-full border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[13px] font-extrabold uppercase py-1.5 text-center flex justify-center items-center"
+                  onClick={handleMobileLoginClick}
+                  disabled={loginLoading}
+                >
+                  {loginLoading ? "Logging In..." : "Log In"}
+                </NaapButton>
                 <Link href="/register" onClick={() => setMobileOpen(false)} className="w-full flex justify-center">
                   <NaapButton className="w-full bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white text-[13px] font-extrabold border-2 border-[color:var(--primary)] uppercase py-1.5 text-center flex justify-center items-center">
                     Become a member

@@ -71,7 +71,7 @@ export default function BirthSection() {
             >
                 <figure className="relative w-full aspect-[4/3] rounded-xl overflow-hidden border-4 border-[#CA9414] bg-neutral-100 flex items-end">
                     <Image
-                        src="/images/historic-aviators.jpg"
+                        src="/gallery/1.jpeg"
                         alt="Historic photo: Early Nigerian pilots and engineers"
                         fill
                         style={{ objectFit: 'cover', filter: "saturate(0.46) contrast(1.22) brightness(0.98)" }}
