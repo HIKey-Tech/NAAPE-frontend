@@ -1,63 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { useFlutterwaveSubscription } from "@/hooks/useSubscription";
+import { useFetchSubscriptionPlans, useFlutterwaveSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/context/authcontext";
 
-/**
- * Custom hook to fetch active subscription status.
- * Replace this mock with your actual API integration.
- * (Simple UI mock: active subscription shown if userId ends with "2".)
- */
-function useActiveSubscription(userId: string) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [active, setActive] = useState<null | {
-    planId: string;
-    planLabel: string;
-    startedAt: string;
-    expiresAt: string;
-  }>(null);
-
-  useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      if (typeof userId === "string" && userId.trim() && userId.endsWith("2")) {
-        setActive({
-          planId: "premium",
-          planLabel: "Premium Plan",
-          startedAt: "2023-11-01",
-          expiresAt: "2024-12-01",
-        });
-      } else {
-        setActive(null);
-      }
-      setIsLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [userId]);
-
-  return { subscription: active, isLoading };
+// SubscriptionPlan interface based on backend data schema
+export interface SubscriptionPlan {
+  _id: string;
+  name: string;
+  flutterwavePlanId: string;
+  price: number;
+  currency: string;
+  interval: string;
+  features: string[];
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  highlight?: boolean;
+  description?: string;
 }
-
-const PLANS = [
-  {
-    id: "basic",
-    name: "Basic Plan",
-    price: "₦3,000/mo",
-    description: "Essential features for getting started.",
-    perks: ["✓ Full Platform Access", "✓ Email Support"],
-  },
-  {
-    id: "premium",
-    name: "Premium Plan",
-    price: "₦8,500/mo",
-    description: "Everything in Basic, plus advanced perks.",
-    perks: [
-      "✓ Priority Support",
-      "✓ All Advanced Features",
-      "✓ Early Access to New Tools",
-    ],
-    highlight: true,
-  },
-];
 
 export default function MembershipSubscription() {
   const {
@@ -69,16 +29,68 @@ export default function MembershipSubscription() {
     useVerifySubscription,
   } = useFlutterwaveSubscription();
 
+  const {
+    data: planData,
+    isPending: plansLoading,
+    error: plansError,
+  } = useFetchSubscriptionPlans();
+
   const { user } = useAuth();
   const userId = user?._id || "";
 
-  // Use custom (mocked) hook for "active subscription" – replace w/ real query!
-  const { subscription: activeSub, isLoading: loadingActiveSub } = useActiveSubscription(userId);
-
+  const [activeSub, setActiveSub] = useState<null | {
+    planId: string;
+    planLabel: string;
+    startedAt: string;
+    expiresAt: string;
+  }>(null);
+  const [loadingActiveSub, setLoadingActiveSub] = useState(true);
   const [planId, setPlanId] = useState("");
   const [startedPayment, setStartedPayment] = useState(false);
   const [txId, setTxId] = useState("");
   const [showVerify, setShowVerify] = useState(false);
+
+  // Plans sourced from fetch hook (typed)
+  const PLANS: SubscriptionPlan[] = planData || [];
+
+  console.log("the plans", planData)
+
+  // Automatically detect and set "premium basic" (free/entry) plan as active, with notice for free for 2 months
+  useEffect(() => {
+    setLoadingActiveSub(true);
+    // Only run if plans loaded
+    if (PLANS.length > 0) {
+      // Try to find a "Premium Basic" or "Free" plan (case-insensitive, fallback to first plan)
+      const freePlan =
+        PLANS.find(
+          (p) =>
+            p.name.toLowerCase().includes("basic") ||
+            p.name.toLowerCase().includes("free") ||
+            p.price === 0
+        ) || PLANS[0];
+
+      if (freePlan) {
+        const today = new Date();
+        const startedAt = today.toISOString().slice(0, 10);
+        // Add 2 months to today
+        const expires = new Date(today);
+        expires.setMonth(today.getMonth() + 2);
+        const expiresAt = expires.toISOString().slice(0, 10);
+
+        setActiveSub({
+          planId: freePlan._id,
+          planLabel: freePlan.name,
+          startedAt,
+          expiresAt,
+        });
+
+        setPlanId(freePlan._id); // Select the free plan by default
+      } else {
+        setActiveSub(null);
+      }
+      setLoadingActiveSub(false);
+    }
+  }, [PLANS.length]);
 
   const {
     data: verifyData,
@@ -91,6 +103,13 @@ export default function MembershipSubscription() {
     e.preventDefault();
     resetCreate();
     setStartedPayment(false);
+
+    // If already free plan, don't process subscription
+    const currentPlan = PLANS.find((p) => p._id === planId);
+    if (currentPlan && (currentPlan.price === 0 || currentPlan.name.toLowerCase().includes("free") || currentPlan.name.toLowerCase().includes("basic"))) {
+      window.alert("You are already on the free subscription (Premium Basic). Enjoy 2 months free!");
+      return;
+    }
 
     if (!(typeof planId === "string" && planId.trim())) {
       window.alert("Missing Plan\nPlease select a subscription plan.");
@@ -105,7 +124,6 @@ export default function MembershipSubscription() {
       if (res && res.link) {
         setStartedPayment(true);
         setShowVerify(true);
-        // Open payment link
         window.open(res.link, "_blank");
         window.alert("Payment link opened! Please complete payment in your browser.");
       }
@@ -129,6 +147,8 @@ export default function MembershipSubscription() {
           Invest in your growth—get instant access in minutes!
         </p>
 
+        {/* Subscription status */}
+        {/* 
         {loadingActiveSub ? (
           <div style={{ display: "flex", alignItems: "center", background: "#f8fffd", border: "2px solid #b3efcd", borderRadius: 13, padding: 12, marginBottom: 18 }}>
             <span style={{ color: "#4B38E7", marginRight: 9 }}><b>⏳</b></span>
@@ -142,12 +162,48 @@ export default function MembershipSubscription() {
                 You have an <span style={{ color: "#0A9953", fontWeight: "bold" }}>{activeSub.planLabel}</span> active!
               </div>
               <div style={{ color: "#376d49", fontWeight: 600, fontSize: 13 }}>
-                Active from <b>{activeSub.startedAt}</b> until <b>{activeSub.expiresAt}</b>
+                Free for 2 months. Active from <b>{activeSub.startedAt}</b> until <b>{activeSub.expiresAt}</b>
               </div>
             </div>
             <span style={{ background: "#0A9953", color: "#fff", borderRadius: 15, padding: "4px 10px", fontWeight: 900, marginLeft: 8 }}>Active</span>
           </div>
         ) : null}
+        */}
+        {activeSub ? (
+          <div style={{ display: "flex", alignItems: "center", background: "#e0fee6", border: "2px solid #0A9953", borderRadius: 13, padding: 15, marginBottom: 18 }}>
+            <span style={{ fontSize: 31, marginRight: 12 }}>🌟</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ color: "#198754", fontWeight: 800 }}>
+                You have an <span style={{ color: "#0A9953", fontWeight: "bold" }}>{activeSub.planLabel}</span> active!
+              </div>
+              <div style={{ color: "#376d49", fontWeight: 600, fontSize: 13 }}>
+                Free for 2 months. Active from <b>{activeSub.startedAt}</b> until <b>{activeSub.expiresAt}</b>
+              </div>
+            </div>
+            <span style={{ background: "#0A9953", color: "#fff", borderRadius: 15, padding: "4px 10px", fontWeight: 900, marginLeft: 8 }}>Active</span>
+          </div>
+        ) : null}
+
+        {/* Notice for free subscription */}
+        {activeSub && PLANS.length > 0 && (() => {
+          const planObj = PLANS.find((p) => p._id === activeSub.planId);
+          if (planObj && (planObj.price === 0 || planObj.name.toLowerCase().includes("basic") || planObj.name.toLowerCase().includes("free"))) {
+            return (
+              <div style={{ background: "#e9f7e9", border: "1.5px solid #6ac99a", color: "#174f31", borderRadius: 9, padding: 13, fontSize: 15.3, fontWeight: 600, marginBottom: 15, textAlign: "center" }}>
+                🎉 <span style={{ color: "#0A9953", fontWeight: "bold" }}>Premium Basic is active!</span> <br />
+                Enjoy <b>FREE Premium Basic</b> access for <b>2 months</b>.
+              </div>
+            );
+          }
+          return null;
+        })()}
+
+        {/* Fetch plan errors */}
+        {plansError && (
+          <div style={{ color: "#D8000C", fontWeight: 700, marginBottom: 15, textAlign: "center" }}>
+            {plansError.message || "Could not load subscription plans."}
+          </div>
+        )}
 
         {/* Plans */}
         <div style={{
@@ -158,111 +214,131 @@ export default function MembershipSubscription() {
           marginBottom: 18,
           width: "100%"
         }}>
-          {PLANS.map((plan) => {
-            const isSelected = planId === plan.id;
-            const isActive = activeSub && activeSub.planId === plan.id;
-            return (
-              <button
-                key={plan.id}
-                type="button"
-                onClick={() => setPlanId(plan.id)}
-                disabled={!!isActive}
-                style={{
-                  flex: 1,
-                  // minWidth: 0,
-                  // maxWidth: 170,
-                  background: isActive ? "#e9ffe9" : isSelected ? "#ECECFF" : plan.highlight ? "#F2FBF6" : "#fff",
-                  border: `2px solid ${
-                    isActive
-                      ? "#0A9953"
+          {plansLoading ? (
+            <div style={{ width: "100%", textAlign: "center", fontWeight: 600, color: "#5048b0" }}>Loading plans…</div>
+          ) : (
+            PLANS.map((plan) => {
+              const id = plan._id;
+              // The Premium Basic (free plan) is always selected/active
+              const isFreePlan = plan.price === 0 || plan.name.toLowerCase().includes("free") || plan.name.toLowerCase().includes("basic");
+              const isSelected = planId === id || isFreePlan;
+              const isActive = activeSub && activeSub.planId === id;
+
+              const priceText = plan.price === 0
+                ? "₦0 / 2 months (Free)" // Show the free text for 2 months, adjust as needed
+                : `${plan.currency === "NGN" ? "₦" : ""}${plan.price.toLocaleString()}${plan.currency !== "NGN" ? ` ${plan.currency}` : ""} / ${plan.interval}`;
+
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => !isFreePlan && setPlanId(id)}
+                  disabled={!!isActive || isFreePlan}
+                  style={{
+                    flex: 1,
+                    background: isActive || isFreePlan
+                      ? "#e9ffe9"
                       : isSelected
-                        ? "#4B38E7"
+                        ? "#ECECFF"
                         : plan.highlight
-                          ? "#0A9953"
-                          : "#e3e3e7"
-                  }`,
-                  borderRadius: 13,
-                  padding: "20px 13px",
-                  alignItems: "flex-start",
-                  margin: "0 2.5px 5px",
-                  opacity: isActive ? 0.7 : 1,
-                  boxShadow: isActive ? "0 5px 10px 0 #5defa522" : "none",
-                  cursor: !!isActive ? "not-allowed" : "pointer",
-                  position: "relative",
-                  display: "flex",
-                  flexDirection: "column"
-                }}
-              >
-                <span style={{
-                  fontSize: 17,
-                  fontWeight: "700",
-                  color: isActive
-                    ? "#0A9953"
-                    : plan.highlight
-                    ? "#0A9953"
-                    : "#363062"
-                }}>
-                  {plan.name}
-                  {isActive && (
-                    <span style={{
-                      color: "#0A9953",
-                      fontWeight: "bold",
-                      fontSize: 13,
-                      marginLeft: 4
-                    }}> (Current)</span>
-                  )}
-                  {plan.highlight && (
-                    <span style={{
-                      color: "#fff",
-                      background: "#0A9953",
-                      borderRadius: 5,
-                      fontSize: 10,
-                      padding: "2px 6px",
-                      marginLeft: 7,
-                      marginRight: 0,
-                      fontWeight: "800"
-                    }}> RECOMMENDED </span>
-                  )}
-                </span>
-                <span style={{ fontSize: 22, fontWeight: 800, color: "#4B38E7", margin: "5px 0 7px" }}>{plan.price}</span>
-                <span style={{ fontSize: 13.5, color: "#74718a", marginBottom: 7 }}>
-                  {plan.description}
-                </span>
-                <div style={{ marginTop: 8, marginBottom: 4 }}>
-                  {plan.perks.map((perk, i) => (
-                    <div key={i} style={{
-                      fontSize: 13.6,
-                      color: "#0A9953",
-                      margin: "1.5px 0",
-                      fontWeight: 600,
-                    }}>
-                      {perk}
-                    </div>
-                  ))}
-                </div>
-                {isSelected && (
+                          ? "#F2FBF6"
+                          : "#fff",
+                    border: `2px solid ${
+                      isActive || isFreePlan
+                        ? "#0A9953"
+                        : isSelected
+                          ? "#4B38E7"
+                          : plan.highlight
+                            ? "#0A9953"
+                            : "#e3e3e7"
+                    }`,
+                    borderRadius: 13,
+                    padding: "20px 13px",
+                    alignItems: "flex-start",
+                    margin: "0 2.5px 5px",
+                    opacity: isActive || isFreePlan ? 0.7 : 1,
+                    boxShadow: isActive || isFreePlan ? "0 5px 10px 0 #5defa522" : "none",
+                    cursor: (isActive || isFreePlan) ? "not-allowed" : "pointer",
+                    position: "relative",
+                    display: "flex",
+                    flexDirection: "column"
+                  }}
+                >
                   <span style={{
-                    fontSize: 13,
-                    color: "#198754",
-                    marginTop: 9,
+                    fontSize: 17,
                     fontWeight: "700",
-                  }}>Selected ✓</span>
-                )}
-                {isActive && (
-                  <span style={{
-                    marginTop: 9,
-                    color: "#198754",
-                    fontSize: 13,
-                    fontWeight: "bold",
-                    background: "#e3ffe7",
-                    borderRadius: 8,
-                    padding: "1px 8px",
-                    alignSelf: "flex-start"
-                  }}>✔ Active Subscription</span>
-                )}
-              </button>
-            );
-          })}
+                    color: isActive || isFreePlan
+                      ? "#0A9953"
+                      : plan.highlight
+                        ? "#0A9953"
+                        : "#363062"
+                  }}>
+                    {plan.name.charAt(0).toUpperCase() + plan.name.slice(1)}
+                    {(isActive || isFreePlan) && (
+                      <span style={{
+                        color: "#0A9953",
+                        fontWeight: "bold",
+                        fontSize: 13,
+                        marginLeft: 4
+                      }}> (Current)</span>
+                    )}
+                    {plan.highlight && (
+                      <span style={{
+                        color: "#fff",
+                        background: "#0A9953",
+                        borderRadius: 5,
+                        fontSize: 10,
+                        padding: "2px 6px",
+                        marginLeft: 7,
+                        marginRight: 0,
+                        fontWeight: "800"
+                      }}> RECOMMENDED </span>
+                    )}
+                  </span>
+                  <span style={{ fontSize: 22, fontWeight: 800, color: "#4B38E7", margin: "5px 0 7px" }}>{priceText}</span>
+                  <span style={{ fontSize: 13.5, color: "#74718a", marginBottom: 7 }}>
+                    {plan.price === 0
+                      ? "Get Premium Basic for free for 2 months! 🎉 (No payment required)"
+                      : plan.description ??
+                        `Billed ${plan.interval}, cancel anytime`
+                    }
+                  </span>
+                  <div style={{ marginTop: 8, marginBottom: 4 }}>
+                    {(plan.features || []).map((perk, i) => (
+                      <div key={i} style={{
+                        fontSize: 13.6,
+                        color: "#0A9953",
+                        margin: "1.5px 0",
+                        fontWeight: 600,
+                      }}>
+                        {perk}
+                      </div>
+                    ))}
+                  </div>
+                  {isSelected && !isFreePlan && (
+                    <span style={{
+                      fontSize: 13,
+                      color: "#198754",
+                      marginTop: 9,
+                      fontWeight: "700",
+                    }}>Selected ✓</span>
+                  )}
+                  {(isActive || isFreePlan) && (
+                    <span style={{
+                      marginTop: 9,
+                      color: "#198754",
+                      fontSize: 13,
+                      fontWeight: "bold",
+                      background: "#e3ffe7",
+                      borderRadius: 8,
+                      padding: "1px 8px",
+                      alignSelf: "flex-start"
+                    }}>✔ Active Subscription</span>
+                  )}
+                </button>
+              );
+            })
+          )}
         </div>
 
         {/* Subscription Form */}
@@ -303,6 +379,13 @@ export default function MembershipSubscription() {
               || !(typeof planId === "string" && planId.trim())
               || creating
               || (!!activeSub && activeSub.planId === planId)
+              || plansLoading
+              || !!plansError
+              // Always disable for free plan (already active)
+              || (() => {
+                const planObj = PLANS.find((p) => p._id === planId);
+                return planObj && (planObj.price === 0 || planObj.name.toLowerCase().includes("free") || planObj.name.toLowerCase().includes("basic"));
+              })()
             }
             style={{
               marginTop: 6,
@@ -311,6 +394,12 @@ export default function MembershipSubscription() {
                 || !(typeof planId === "string" && planId.trim())
                 || creating
                 || (!!activeSub && activeSub.planId === planId)
+                || plansLoading
+                || !!plansError
+                || (() => {
+                  const planObj = PLANS.find((p) => p._id === planId);
+                  return planObj && (planObj.price === 0 || planObj.name.toLowerCase().includes("free") || planObj.name.toLowerCase().includes("basic"));
+                })()
               )
                 ? "#bbb"
                 : "#4B38E7",
@@ -329,16 +418,28 @@ export default function MembershipSubscription() {
                 || !(typeof planId === "string" && planId.trim())
                 || creating
                 || (!!activeSub && activeSub.planId === planId)
+                || plansLoading
+                || !!plansError
+                || (() => {
+                  const planObj = PLANS.find((p) => p._id === planId);
+                  return planObj && (planObj.price === 0 || planObj.name.toLowerCase().includes("free") || planObj.name.toLowerCase().includes("basic"));
+                })()
                   ? "not-allowed" : "pointer"
             }}
           >
             {creating ? (
               "Processing…"
-            ) : (activeSub && activeSub.planId === planId) ? (
-              "Already Subscribed"
-            ) : (
-              "Start Subscription"
-            )}
+            ) : (() => {
+              // If free plan, show "Already on Premium Basic"
+              const planObj = PLANS.find((p) => p._id === planId);
+              if (planObj && (planObj.price === 0 || planObj.name.toLowerCase().includes("free") || planObj.name.toLowerCase().includes("basic"))) {
+                return "Already on Premium Basic (Free)";
+              }
+              if (activeSub && activeSub.planId === planId) {
+                return "Already Subscribed";
+              }
+              return "Start Subscription";
+            })()}
           </button>
         </form>
 
@@ -473,4 +574,3 @@ export default function MembershipSubscription() {
     </div>
   );
 }
-
