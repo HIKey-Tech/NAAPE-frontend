@@ -2,26 +2,34 @@
 
 import { useState } from "react";
 import { NaapButton } from "@/components/ui/custom/button.naap";
+import { useForgotPassword } from "@/hooks/use-forgotPassword";
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState("");
     const [submitted, setSubmitted] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+    const [localError, setLocalError] = useState<string>("");
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const { mutate: forgotPassword, isPending, error } = useForgotPassword();
+
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
-        setError("");
-        try {
-            // Replace with real API integration
-            await new Promise(res => setTimeout(res, 1300)); // Mock network delay
-            setSubmitted(true);
-        } catch (err) {
-            setError("Something went wrong. Please try again.");
-        } finally {
-            setLoading(false);
-        }
+        setLocalError("");
+        forgotPassword(
+            { email },
+            {
+                onSuccess: () => {
+                    setSubmitted(true);
+                },
+                onError: (err: any) => {
+                    // Display human-friendly error, if available
+                    setLocalError(
+                        err?.response?.data?.message ||
+                        err?.message ||
+                        "Something went wrong. Please try again."
+                    );
+                },
+            }
+        );
     };
 
     return (
@@ -44,20 +52,25 @@ export default function ForgotPassword() {
                             value={email}
                             onChange={e => setEmail(e.target.value)}
                             required
-                            disabled={loading}
+                            disabled={isPending}
                             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 transition"
                             placeholder="you@email.com"
                         />
                     </div>
-                    {error && (
-                        <div className="text-red-600 text-sm">{error}</div>
+                    {(localError || (error && typeof error === "object" && "message" in error)) && (
+                        <div className="text-red-600 text-sm">
+                            {localError ||
+                                (typeof error?.message === "string"
+                                    ? error.message
+                                    : "Something went wrong. Please try again.")}
+                        </div>
                     )}
                     <NaapButton
                         type="submit"
                         className="w-full bg-primary text-white py-2 font-semibold text-base rounded-md hover:bg-primary/90 transition-shadow shadow"
-                        disabled={loading}
+                        disabled={isPending}
                     >
-                        {loading ? "Sending..." : "Send Reset Link"}
+                        {isPending ? "Sending..." : "Send Reset Link"}
                     </NaapButton>
                 </form>
             )}
