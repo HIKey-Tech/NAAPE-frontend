@@ -125,14 +125,8 @@ export default function AboutHeroSection() {
           onHoverStart={() => setH1Hover(true)}
           onHoverEnd={() => setH1Hover(false)}
         >
-          <motion.span
-            variants={h1MicroAnim as any}
-            transition={{ type: "spring" }}
-            style={{ display: "inline-block" }}
-          >
-            Our Story: National Association of{" "}
-            <br className="hidden md:block" />
-            Aircraft Pilots &amp; Engineers
+          <motion.span variants={h1MicroAnim as any} transition={{ type: "spring" }} style={{ display: "inline-block" }}>
+            Our Story: National Association of Aircraft Pilots &amp; Engineers
           </motion.span>
           {/* Micro-animated underline on hover */}
           <motion.span

@@ -129,11 +129,11 @@ export default function FutureSection() {
                         priority
                     />
                 </motion.div>
-                <div className="w-full flex flex-row gap-4 mt-3">
+                <div className="w-full flex flex-row gap-4 mt-3 justify-center">
                     {/* Placeholders/historic illustrative images */}
                     <div className="relative aspect-square w-24 rounded border border-neutral-300 overflow-hidden bg-white flex items-center justify-center">
                         <Image
-                            src="/img/historic-pilot.png"
+                            src="/gallery/2.jpeg"
                             alt="Historic NAAPE pilot"
                             fill
                             style={{ objectFit: 'cover', filter: 'grayscale(88%) contrast(1.12)' }}
@@ -142,7 +142,7 @@ export default function FutureSection() {
                     </div>
                     <div className="relative aspect-square w-24 rounded border border-neutral-300 overflow-hidden bg-white flex items-center justify-center">
                         <Image
-                            src="/img/logbook.png"
+                            src="/gallery/3.jpeg"
                             alt="Old pilot logbook"
                             fill
                             style={{ objectFit: 'cover', filter: 'sepia(0.3) contrast(1.07)' }}
@@ -151,7 +151,34 @@ export default function FutureSection() {
                     </div>
                     <div className="relative aspect-square w-24 rounded border border-neutral-300 overflow-hidden bg-white flex items-center justify-center">
                         <Image
-                            src="/img/naape-aircraft.png"
+                            src="/gallery/4.jpeg"
+                            alt="Legacy NAAPE aircraft"
+                            fill
+                            style={{ objectFit: 'cover', filter: 'grayscale(75%) contrast(1.10)' }}
+                            className="rounded"
+                        />
+                    </div>
+                    <div className="relative aspect-square w-24 rounded border border-neutral-300 overflow-hidden bg-white flex items-center justify-center">
+                        <Image
+                            src="/gallery/5.jpeg"
+                            alt="Legacy NAAPE aircraft"
+                            fill
+                            style={{ objectFit: 'cover', filter: 'grayscale(75%) contrast(1.10)' }}
+                            className="rounded"
+                        />
+                    </div>
+                    <div className="relative aspect-square w-24 rounded border border-neutral-300 overflow-hidden bg-white flex items-center justify-center">
+                        <Image
+                            src="/gallery/6.jpeg"
+                            alt="Legacy NAAPE aircraft"
+                            fill
+                            style={{ objectFit: 'cover', filter: 'grayscale(75%) contrast(1.10)' }}
+                            className="rounded"
+                        />
+                    </div>
+                    <div className="relative aspect-square w-24 rounded border border-neutral-300 overflow-hidden bg-white flex items-center justify-center">
+                        <Image
+                            src="/gallery/7.jpeg"
                             alt="Legacy NAAPE aircraft"
                             fill
                             style={{ objectFit: 'cover', filter: 'grayscale(75%) contrast(1.10)' }}
