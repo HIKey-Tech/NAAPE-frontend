@@ -113,7 +113,7 @@ export default function RegisterPage() {
                 <div>
                     <div className="font-semibold">Registration Failed</div>
                     <div className="text-sm mt-1">
-                        {error?.response?.data?.message ?? "An unexpected error occurred. Please try again."}
+                        {error?.response?.data?.message ?? "Registration Failed."}
                     </div>
                 </div>,
                 {
