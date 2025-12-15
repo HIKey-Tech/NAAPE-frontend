@@ -514,7 +514,7 @@ export default function TopNavbar() {
                   {loginLoading ? "Logging In..." : "Log In"}
                 </NaapButton>
                 <Link href="/register" onClick={() => setMobileOpen(false)} className="w-full flex justify-center">
-                  <NaapButton className="w-full bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white text-[13px] font-extrabold border-2 border-[color:var(--primary)] uppercase py-1.5 text-center flex justify-center items-center">
+                  <NaapButton className="w-full px-2 bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white text-[13px] font-extrabold border-2 border-[color:var(--primary)] uppercase py-1.5 text-center flex justify-center items-center">
                     Become a member
                   </NaapButton>
                 </Link>

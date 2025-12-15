@@ -5,14 +5,35 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 function isValidString(val: any): val is string {
     return typeof val === "string" && !!val.trim();
 }
-function isValidPayload(payload: any): payload is { planId: string; userId: string } {
-    return payload &&
-        typeof payload === "object" &&
-        isValidString(payload.planId) &&
-        isValidString(payload.userId);
-}
 function safeGet(obj: any, path: string[], fallback: any = null) {
     return path.reduce((acc, curr) => (acc && acc[curr] !== undefined ? acc[curr] : fallback), obj);
+}
+
+// Fetch subscription plans
+export const fetchSubscriptionPlansRequest = async () => {
+    try {
+        const res = await api.get("/admin/plans/get-plans");
+        if (!res || !res.data) {
+            throw new Error("No response from server while fetching plans.");
+        }
+        return res.data.data;
+    } catch (error: any) {
+        const msg =
+            safeGet(error, ["response", "data", "message"]) ||
+            error.message ||
+            "Failed to fetch subscription plans.";
+        throw new Error(msg);
+    }
+};
+
+// Hook: Fetch subscription plans via react-query
+export function useFetchSubscriptionPlans(enabled = true) {
+    return useQuery({
+        queryKey: ["subscriptionPlans"],
+        queryFn: fetchSubscriptionPlansRequest,
+        enabled,
+        retry: 1,
+    });
 }
 
 // Create subscription - handles edge cases
@@ -30,14 +51,13 @@ const createSubscriptionRequest = async ({
         throw new Error("Invalid userId: Required and must be a non-empty string.");
     }
     try {
-        const res = await api.post("/payment/subscription", {
+        const res = await api.post("/payments/subscription", {
             planId,
             userId,
         });
         if (!res || !res.data) {
             throw new Error("No response from server.");
         }
-        // Expecting a payment link in res.data.link
         if (typeof res.data.link !== "string") {
             throw new Error("Payment link missing or invalid in server response.");
         }
@@ -58,12 +78,11 @@ const verifySubscriptionRequest = async (transactionId: string) => {
     }
     try {
         const res = await api.get(
-            `/payment/subscription/verify?transaction_id=${encodeURIComponent(transactionId)}`
+            `/payments/subscription/verify?transaction_id=${encodeURIComponent(transactionId)}`
         );
         if (!res || !res.data) {
             throw new Error("No response from server during verification.");
         }
-        // Expect success message or details
         if (typeof res.data.message !== "string") {
             throw new Error("Missing or invalid message in verification response.");
         }
@@ -77,6 +96,9 @@ const verifySubscriptionRequest = async (transactionId: string) => {
     }
 };
 
+/**
+ * Main subscription hook
+ */
 export const useFlutterwaveSubscription = () => {
     // Safer mutation for creating a subscription
     const {
@@ -90,7 +112,12 @@ export const useFlutterwaveSubscription = () => {
         mutationFn: createSubscriptionRequest,
     });
 
-    // Safer query for verifying subscription with all edge cases covered
+    /**
+     * Safer query for verifying subscription with all edge cases covered.
+     * 
+     * @param transactionId string
+     * @param enabled default true
+     */
     const useVerifySubscription = (
         transactionId: string,
         enabled = true

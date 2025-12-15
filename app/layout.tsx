@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NAAPE App",
+  title: "Welcome to NAAPE official app",
   description: "Welcome to NAAPE official app",
 };
 

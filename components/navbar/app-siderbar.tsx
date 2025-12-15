@@ -64,9 +64,9 @@ type NavLink = {
 /** --- Links config --- */
 const newsPublicationsLinks: NavLink[] = [
   { label: "All News", icon: FaNewspaper, href: "/news", group: "News" },
-  { label: "All Publications", icon: FaBook, href: "/publications", group: "Publications" },
+  { label: "My Publications", icon: FaBook, href: "/publications", group: "Publications" },
   { label: "Create Publications", icon: FaPlusSquare, href: "/publications/new", group: "Publications" },
-  { label: "My Publications", icon: FaBook, href: "/publications/mine", group: "Publications" },
+  // { label: "My Publications", icon: FaBook, href: "/publications/mine", group: "Publications" },
 ];
 
 const navLinksMain: NavLink[] = [
