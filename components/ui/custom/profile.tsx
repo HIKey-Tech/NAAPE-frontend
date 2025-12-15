@@ -26,6 +26,7 @@ import {
     MdOutlineVisibilityOff,
 } from "react-icons/md";
 import { NaapButton } from "./button.naap";
+import { toast } from "sonner";
 
 const PRIMARY_TEXT = "text-primary";
 const PRIMARY_BG = "bg-primary";
@@ -33,17 +34,30 @@ const PRIMARY_BG_LIGHT = "bg-primary-50";
 const PRIMARY_BG_HOVER = "hover:bg-primary-100";
 const PRIMARY_FOCUS = "focus:border-primary";
 
-interface ProfileData {
+export interface ProfileData {
     _id: string;
     name: string;
     email: string;
-    role: string;
-    specialization?: string;
-    experience?: number;
-    organization?: string;
-    licenseNumber?: string;
+    role: "admin" | "editor" | "member";
+    isVerified: boolean;
     createdAt: string;
-    profileImage?: string;
+    updatedAt: string;
+    profile: {
+        image?: {
+            url: string;
+            publicId: string;
+        } | string;
+        specialization?: string;
+        bio?: string;
+        organization?: string;
+        phone?: string;
+    };
+    professional: {
+        licenseNumber?: string;
+        licenseDocument?: string;
+        yearsOfExperience?: number;
+        certifications?: string[];
+    };
     stats?: {
         total: number;
         approved: number;
@@ -59,6 +73,7 @@ export default function ProfilePage() {
     const [editMode, setEditMode] = useState(false);
     const [form, setForm] = useState<Partial<ProfileData>>({});
     const [picPreview, setPicPreview] = useState<string | undefined>();
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [showPasswordFields, setShowPasswordFields] = useState(false);
     const [showPersonalSettings, setShowPersonalSettings] = useState(false);
     const [showEmail, setShowEmail] = useState(false);
@@ -74,44 +89,234 @@ export default function ProfilePage() {
         confirm: false,
     });
 
+    function getProfileImage(p: ProfileData) {
+        if (!p) return undefined;
+        if (p.profile?.image) {
+            if (typeof p.profile.image === "string") return p.profile.image;
+            if ("url" in p.profile.image && p.profile.image.url) return p.profile.image.url;
+        }
+        return undefined;
+    }
+
     function startEditing() {
         setForm({
             name: profile?.name ?? "",
-            specialization: profile?.specialization ?? "",
-            experience: profile?.experience ?? undefined,
-            organization: profile?.organization ?? "",
-            licenseNumber: profile?.licenseNumber ?? "",
+            profile: {
+                specialization: profile?.profile?.specialization ?? "",
+                organization: profile?.profile?.organization ?? "",
+                bio: profile?.profile?.bio ?? "",
+                phone: profile?.profile?.phone ?? "",
+            },
+            professional: {
+                licenseNumber: profile?.professional?.licenseNumber ?? "",
+                licenseDocument: profile?.professional?.licenseDocument ?? "",
+                yearsOfExperience:
+                    profile?.professional?.yearsOfExperience ??
+                    undefined,
+                certifications: Array.isArray(profile?.professional?.certifications)
+                    ? [...profile.professional.certifications]
+                    : [],
+            },
         });
         setPicPreview(undefined);
+        setImageFile(null);
         setEditMode(true);
     }
 
-    function handleFieldChange(e: React.ChangeEvent<HTMLInputElement>) {
+    function handleFieldChange(
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) {
         const { name, value } = e.target;
-        setForm((prev) => ({
-            ...prev,
-            [name]: name === "experience" ? Number(value) : value,
-        }));
+        if (name.startsWith("profile.")) {
+            const key = name.split(".")[1];
+            setForm((prev) => ({
+                ...prev,
+                profile: {
+                    ...prev.profile,
+                    [key]: value,
+                },
+            }));
+        } else if (name.startsWith("professional.")) {
+            const key = name.split(".")[1];
+            setForm((prev) => ({
+                ...prev,
+                professional: {
+                    ...prev.professional,
+                    [key]:
+                        key === "yearsOfExperience"
+                            ? (value === "" ? undefined : Number(value))
+                            : value,
+                },
+            }));
+        } else {
+            setForm((prev) => ({
+                ...prev,
+                [name]: value,
+            }));
+        }
+    }
+
+    function handleCertificationsChange(index: number, val: string) {
+        setForm((prev) => {
+            const currentCerts = Array.isArray(prev.professional?.certifications)
+                ? [...(prev.professional!.certifications as string[] ?? [])]
+                : [];
+            currentCerts[index] = val;
+            return {
+                ...prev,
+                professional: {
+                    ...prev.professional,
+                    certifications: currentCerts,
+                },
+            };
+        });
+    }
+
+    function addCertification() {
+        setForm((prev) => {
+            const certs = Array.isArray(prev.professional?.certifications)
+                ? [...(prev.professional!.certifications as string[] ?? [])]
+                : [];
+            certs.push("");
+            return {
+                ...prev,
+                professional: {
+                    ...prev.professional,
+                    certifications: certs,
+                },
+            };
+        });
+    }
+
+    function removeCertification(index: number) {
+        setForm((prev) => {
+            const certs = Array.isArray(prev.professional?.certifications)
+                ? [...(prev.professional!.certifications as string[] ?? [])]
+                : [];
+            certs.splice(index, 1);
+            return {
+                ...prev,
+                professional: {
+                    ...prev.professional,
+                    certifications: certs,
+                },
+            };
+        });
     }
 
     function handlePicChange(e: React.ChangeEvent<HTMLInputElement>) {
-        if (e.target.files && e.target.files[0]) {
-            setPicPreview(URL.createObjectURL(e.target.files[0]));
-            setForm((prev) => ({ ...prev, profileImage: URL.createObjectURL(e.target.files![0]) }));
-        }
+        if (!e.target.files?.[0]) return;
+        const file = e.target.files[0];
+        setImageFile(file);
+        setPicPreview(URL.createObjectURL(file));
     }
 
     function cancelEditing() {
         setEditMode(false);
         setForm({});
+        setImageFile(null);
+        setPicPreview(undefined);
     }
 
+    // --- THIS IS THE REVISED saveProfile IMPLEMENTATION ---
     function saveProfile() {
-        const payload = { ...form };
-        updateProfile.mutate(payload, {
-            onSuccess: () => setEditMode(false),
+        // Collect all field updates using dot notation keys for nested fields,
+        // matching the expected backend payload. Also handle file image.
+        const data: Partial<ProfileData> = {};
+        // Flat fields
+        if (form.name !== undefined) data.name = form.name;
+
+        // Profile (nested object) fields
+        if (form.profile) {
+            data.profile = { ...form.profile };
+        }
+
+        // Professional (nested object) fields
+        if (form.professional) {
+            // Clean certifications: remove blank ones, always send as array
+            const certifications = Array.isArray(form.professional.certifications)
+                ? form.professional.certifications.filter(
+                      (cert) => typeof cert === "string" && cert.trim() !== ""
+                  )
+                : [];
+            data.professional = {
+                ...form.professional,
+                certifications,
+            };
+        }
+
+        // Use the same upload logic as in @file_context_0: profile.tsx
+        // The backend expects multipart FormData with `profile`, `professional` keys (for object fields),
+        // or flattened dot notation for simple fields.
+        //
+        // We'll flatten all fields as dot notation except for the image file,
+        // which is sent as "image" key.
+        //
+        // To support custom FormData conventions, this build a flat object first with dot-notation,
+        // then appends each (non-file) value to FormData.
+
+        function flattenDotNotation(obj: any, prefix = "", acc: Record<string, any> = {}) {
+            for (const key in obj) {
+                if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
+                const val = obj[key];
+                if (val === undefined || val === null) continue;
+                // We only send string/number/boolean/array
+                const flatKey = prefix ? `${prefix}.${key}` : key;
+                if (val instanceof File || val instanceof Blob) {
+                    // These should be handled outside
+                    acc[flatKey] = val;
+                } else if (Array.isArray(val)) {
+                    // For arrays (e.g., certifications), use proper field
+                    acc[flatKey] = val;
+                } else if (typeof val === "object") {
+                    flattenDotNotation(val, flatKey, acc);
+                } else {
+                    acc[flatKey] = val;
+                }
+            }
+            return acc;
+        }
+
+        // Build the flat data for fields, except image
+        const toSend = flattenDotNotation(data);
+
+        // Create the backend FormData as required by profile.tsx
+        const formData = new FormData();
+        Object.entries(toSend).forEach(([key, value]) => {
+            if (value === undefined || value === null) return;
+            if (Array.isArray(value)) {
+                // For (string[]) arrays, backend expects repeatable keys (no brackets)
+                // E.g. professional.certifications=Cert1&professional.certifications=Cert2
+                value.forEach((v) => {
+                    formData.append(key, String(v));
+                });
+            } else if (value instanceof File || value instanceof Blob) {
+                // This would only happen if ever we let user upload a file field (beside image), currently not used
+                formData.append(key, value);
+            } else {
+                formData.append(key, String(value));
+            }
+        });
+        if (imageFile) {
+            formData.append("image", imageFile);
+        }
+
+        updateProfile.mutate(formData as any, {
+            onSuccess: () => {
+                setEditMode(false);
+                setImageFile(null);
+                setPicPreview(undefined);
+                toast.success("Profile updated!");
+            },
+            onError: (err: any) => {
+                toast.error(
+                    err?.message ||
+                        "Failed to update profile. Please try again."
+                );
+            },
         });
     }
+    // END REVISED saveProfile
 
     function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
         const { name, value } = e.target;
@@ -183,14 +388,18 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto py-8 px-2 lg:px-0">
+        <div className="max-w-4xl mx-auto py-8 px-2 lg:px-0 relative">
             {/* HERO */}
             <section className="relative flex flex-col md:flex-row bg-white rounded-3xl overflow-hidden border mb-8">
                 {/* Avatar + Details */}
                 <div className="flex flex-col items-center justify-center py-8 px-8 min-w-[280px] relative bg-gradient-to-b from-[var(--primary-100,#f0f5ff)] via-white to-white">
                     <div className="relative group mb-4 w-40 flex justify-center">
                         <img
-                            src={picPreview || profile.profileImage || "/default-avatar.png"}
+                            src={
+                                picPreview ||
+                                getProfileImage(profile as ProfileData) ||
+                                "/default-avatar.png"
+                            }
                             alt="Profile"
                             className="w-36 h-36 rounded-full object-cover border-[5px] shadow"
                             style={{ borderColor: "var(--primary-200, #d2e0f7)" }}
@@ -379,7 +588,6 @@ export default function ProfilePage() {
                                     />
                                     <span>Show Email on Profile</span>
                                 </label>
-                                {/* Add more settings/controls here if needed */}
                             </div>
                         </div>
                     </div>
@@ -411,6 +619,40 @@ export default function ProfilePage() {
                             value={profile.email}
                             editing={false}
                         />
+                        <FormDetailRow
+                            icon={<MdOutlineBusinessCenter />}
+                            label="Organization"
+                            editing={editMode}
+                            value={profile.profile?.organization}
+                            field="profile.organization"
+                            form={form}
+                            onChange={handleFieldChange}
+                            editable
+                            disabled={updateProfile.isPending}
+                        />
+                        <FormDetailRow
+                            icon={<>📞</>}
+                            label="Phone"
+                            editing={editMode}
+                            value={profile.profile?.phone}
+                            field="profile.phone"
+                            form={form}
+                            onChange={handleFieldChange}
+                            editable
+                            disabled={updateProfile.isPending}
+                        />
+                        <FormDetailRow
+                            icon={<>📝</>}
+                            label="Bio"
+                            editing={editMode}
+                            value={profile.profile?.bio}
+                            field="profile.bio"
+                            form={form}
+                            onChange={handleFieldChange}
+                            editable
+                            type="textarea"
+                            disabled={updateProfile.isPending}
+                        />
                     </div>
                 </div>
 
@@ -421,22 +663,11 @@ export default function ProfilePage() {
                     </h3>
                     <div className="space-y-3">
                         <FormDetailRow
-                            icon={<MdOutlineBusinessCenter />}
-                            label="Organization"
-                            editing={editMode}
-                            value={profile.organization}
-                            field="organization"
-                            form={form}
-                            onChange={handleFieldChange}
-                            editable
-                            disabled={updateProfile.isPending}
-                        />
-                        <FormDetailRow
                             icon={<MdOutlineWorkOutline />}
                             label="Specialization"
                             editing={editMode}
-                            value={profile.specialization}
-                            field="specialization"
+                            value={profile.profile?.specialization}
+                            field="profile.specialization"
                             form={form}
                             onChange={handleFieldChange}
                             editable
@@ -446,8 +677,8 @@ export default function ProfilePage() {
                             icon={<MdCreditCard />}
                             label="License #"
                             editing={editMode}
-                            value={profile.licenseNumber}
-                            field="licenseNumber"
+                            value={profile.professional?.licenseNumber}
+                            field="professional.licenseNumber"
                             form={form}
                             onChange={handleFieldChange}
                             editable
@@ -455,14 +686,101 @@ export default function ProfilePage() {
                         />
                         <FormDetailRow
                             icon={<MdOutlineWorkOutline />}
-                            label="Experience"
+                            label="Years of Experience"
                             editing={editMode}
-                            value={profile.experience ? `${profile.experience} years` : ''}
-                            field="experience"
+                            value={
+                                profile.professional?.yearsOfExperience !== undefined &&
+                                    profile.professional?.yearsOfExperience !== null
+                                    ? `${profile.professional.yearsOfExperience} years`
+                                    : ''
+                            }
+                            field="professional.yearsOfExperience"
                             form={form}
                             onChange={handleFieldChange}
                             editable
                             type="number"
+                            disabled={updateProfile.isPending}
+                        />
+                        {editMode ? (
+                            <div className="flex items-start gap-3">
+                                <div className="opacity-50 text-lg">🎓</div>
+                                <div className="w-32 text-sm font-bold text-gray-700 mt-1">Certifications</div>
+                                <div className="flex-1 flex flex-col gap-2">
+                                    {Array.isArray(form.professional?.certifications) &&
+                                        form.professional.certifications.length > 0 ? (
+                                        form.professional.certifications.map((cert: string, idx: number) => (
+                                            <div key={idx} className="flex items-center gap-2">
+                                                <input
+                                                    name={`certification_${idx}`}
+                                                    className="input input-bordered flex-1 py-1 px-2 text-base border border-[var(--primary-200,#d2e0f7)] rounded-lg"
+                                                    disabled={updateProfile.isPending}
+                                                    value={cert}
+                                                    onChange={e => handleCertificationsChange(idx, e.target.value)}
+                                                    placeholder={`Certification #${idx + 1}`}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="text-red-600 text-2xl ml-1"
+                                                    onClick={() => removeCertification(idx)}
+                                                    title="Remove certification"
+                                                    tabIndex={-1}
+                                                >
+                                                    &times;
+                                                </button>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <span className="text-gray-400 italic">—</span>
+                                    )}
+                                    <button
+                                        type="button"
+                                        className="text-primary mt-2 underline text-sm"
+                                        onClick={addCertification}
+                                    >
+                                        + Add certification
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <FormDetailRow
+                                icon={<>🎓</>}
+                                label="Certifications"
+                                editing={false}
+                                value={
+                                    Array.isArray(profile.professional?.certifications) &&
+                                    profile.professional?.certifications.length
+                                    ? (
+                                        <ul className="list-disc ml-6">
+                                            {(profile.professional.certifications as string[]).map((c: string, idx: number) => (
+                                                <li key={idx}>{c}</li>
+                                            ))}
+                                        </ul>
+                                    )
+                                    : <span className="text-gray-400 italic">—</span>
+                                }
+                            />
+                        )}
+                        <FormDetailRow
+                            icon={<MdOutlineBusinessCenter />}
+                            label="License Document"
+                            editing={editMode}
+                            value={
+                                profile.professional?.licenseDocument
+                                    ? (
+                                        <a
+                                            href={profile.professional.licenseDocument}
+                                            className="underline text-blue-600"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            View Document
+                                        </a>
+                                    ) : undefined
+                            }
+                            field="professional.licenseDocument"
+                            form={form}
+                            onChange={handleFieldChange}
+                            editable
                             disabled={updateProfile.isPending}
                         />
                     </div>
@@ -479,6 +797,8 @@ export default function ProfilePage() {
                     <div className="grid grid-cols-1 gap-3 text-base">
                         <DetailPair label="Member Since" value={new Date(profile.createdAt).toLocaleDateString()} />
                         <DetailPair label="Member ID" value={<span className="font-mono tracking-wide">{profile._id}</span>} />
+                        <DetailPair label="Role" value={profile.role} />
+                        <DetailPair label="Verified" value={profile.isVerified ? "Yes" : "No"} />
                     </div>
                 </div>
                 {profile.stats && (
@@ -495,8 +815,10 @@ export default function ProfilePage() {
                 )}
             </section>
 
-            {/* Controls */}
-            <section className="sticky bottom-0 bg-opacity-80 py-6 z-10 flex flex-wrap gap-4 items-center border-t">
+            {/* Controls (now as a regular block at the end, not sticky, to prevent overlap) */}
+            <section
+                className="bg-opacity-80 py-6 z-10 flex flex-wrap gap-4 items-center border-t"
+            >
                 {!showPasswordFields && (
                     <NaapButton
                         variant="ghost"
@@ -533,7 +855,7 @@ export default function ProfilePage() {
                     className="fixed inset-0 bg-black/40 z-[1100] flex items-center justify-center animate-fade-in"
                 >
                     <div className="max-w-md w-full p-8 bg-white border border-[var(--primary-100,#f0f5ff)] rounded-2xl space-y-5 relative"
-                         onClick={e => e.stopPropagation()}>
+                        onClick={e => e.stopPropagation()}>
                         <h3 className="text-xl font-bold flex items-center gap-2 text-[var(--primary)] mb-2">
                             <MdOutlineLockReset />
                             Change Password
@@ -698,6 +1020,7 @@ function DetailPair({
 
 /**
  * FormDetailRow for profile sections – editable or readonly
+ * Recognizes dot notation for nested fields in `form` prop.
  */
 function FormDetailRow({
     icon,
@@ -717,28 +1040,67 @@ function FormDetailRow({
     editing?: boolean;
     field?: string;
     form?: Record<string, any>;
-    onChange?: React.ChangeEventHandler<HTMLInputElement>;
+    onChange?: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
     editable?: boolean;
     type?: string;
     disabled?: boolean;
 }) {
-    return (
-        <div className="flex items-center gap-3">
-            <div className="opacity-50 text-lg">{icon}</div>
-            <div className="w-32 text-sm font-bold text-gray-700">{label}</div>
-            {editing && editable && field && typeof onChange === "function" ? (
+    function getFormFieldValue(form: any, field?: string) {
+        if (!form || !field) return "";
+        const keys = field.split(".");
+        let v = form;
+        for (const k of keys) {
+            if (v && typeof v === "object" && k in v) {
+                v = v[k];
+            } else {
+                return "";
+            }
+        }
+        return v ?? "";
+    }
+
+    if (editing && editable && field && typeof onChange === "function") {
+        if (type === "textarea") {
+            return (
+                <div className="flex items-center gap-3">
+                    <div className="opacity-50 text-lg">{icon}</div>
+                    <div className="w-32 text-sm font-bold text-gray-700">{label}</div>
+                    <textarea
+                        name={field}
+                        value={getFormFieldValue(form, field)}
+                        onChange={onChange as React.ChangeEventHandler<HTMLTextAreaElement>}
+                        placeholder={label}
+                        className="input input-bordered flex-1 py-1 px-2 text-base border border-[var(--primary-200,#d2e0f7)] rounded-lg min-h-[60px]"
+                        disabled={disabled}
+                    />
+                </div>
+            );
+        }
+        return (
+            <div className="flex items-center gap-3">
+                <div className="opacity-50 text-lg">{icon}</div>
+                <div className="w-32 text-sm font-bold text-gray-700">{label}</div>
                 <input
                     name={field}
-                    value={form?.[field] ?? ""}
-                    onChange={onChange}
+                    value={getFormFieldValue(form, field)}
+                    onChange={onChange as React.ChangeEventHandler<HTMLInputElement>}
                     type={type || "text"}
                     placeholder={label}
                     className="input input-bordered flex-1 py-1 px-2 text-base border border-[var(--primary-200,#d2e0f7)] rounded-lg"
                     disabled={disabled}
                 />
-            ) : (
-                <span className="text-base">{value || <span className="text-gray-400 italic">—</span>}</span>
-            )}
+            </div>
+        );
+    }
+    return (
+        <div className="flex items-center gap-3">
+            <div className="opacity-50 text-lg">{icon}</div>
+            <div className="w-32 text-sm font-bold text-gray-700">{label}</div>
+            <span className="text-base">
+                {typeof value !== "undefined" && value !== null && value !== ""
+                    ? value
+                    : <span className="text-gray-400 italic">—</span>}
+            </span>
         </div>
     );
 }

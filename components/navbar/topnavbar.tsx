@@ -146,6 +146,21 @@ export default function TopNavbar() {
         }
     }
 
+   
+
+    async function handleLogout() {
+        setShowUserDropdown(false);
+        try {
+
+            checkUser.logout()
+            router.push("/login");
+        } catch (err) {
+            // handle error option (e.g. toast or alert)
+            alert("Logout failed. Please try again.");
+        }
+    }
+    // --- End: Implement logout ---
+
     return (
         <nav
             className="w-full h-[76px] sm:h-[94px] min-h-[76px] sm:min-h-[94px] flex items-center justify-between px-2 sm:px-10 border-b border-[#43618b] bg-gradient-to-b from-[#fafcff] to-[#f4f8fd] sticky top-0 z-30"
@@ -397,6 +412,7 @@ export default function TopNavbar() {
                                     "
                                     tabIndex={0}
                                     role="menuitem"
+                                    onClick={handleLogout}
                                 >
                                     <svg width="18" height="18" fill="none" viewBox="0 0 20 20" className="text-[#bf112b]">
                                         <path d="M6 6l8 8M6 14L14 6" stroke="#bf112b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

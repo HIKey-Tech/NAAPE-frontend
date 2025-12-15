@@ -1,4 +1,4 @@
-import { approvePublication, createPublication, fetchAllPublications, getMyPublications, getSinglePublication, rejectPublication } from "@/app/api/publication/publication";
+import { approvePublication, createPublication, editPublication, deletePublication, fetchAllPublications, getMyPublications, getSinglePublication, rejectPublication } from "@/app/api/publication/publication";
 import { IPublication } from "@/app/api/publication/types";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -53,6 +53,33 @@ export const useRejectPublication = () => {
         mutationFn: rejectPublication,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["admin-publications"] });
+        },
+    });
+};
+
+// Edit publication mutation
+export const useEditPublication = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, updatedData }: { id: string; updatedData: any }) =>
+            editPublication(id, updatedData),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["my_publications"] });
+            queryClient.invalidateQueries({ queryKey: ["publications"] });
+        },
+    });
+};
+
+// Delete publication mutation
+export const useDeletePublication = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: string) => deletePublication(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["my_publications"] });
+            queryClient.invalidateQueries({ queryKey: ["publications"] });
         },
     });
 };

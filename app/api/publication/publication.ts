@@ -23,7 +23,7 @@ export const getMyPublications = async (status?: string) => {
 
 export async function getSinglePublication(id: string) {
     try {
-        const response = await api.get(`/publications/my/${id}`)
+        const response = await api.get(`/publications/${id}`)
         return response.data;
 
     } catch (error) {

@@ -1,11 +1,16 @@
 "use client"
 
-
 import React, { useEffect, useRef, useState } from "react";
 import type { IPublication } from "@/app/api/publication/types";
 import { useParams, useRouter } from "next/navigation";
 import { useComments, useAddComment } from "@/hooks/useComment";
-import { useGetSinglePublication, usePublications } from "@/hooks/usePublications";
+import {
+    useGetSinglePublication,
+    usePublications,
+    useDeletePublication,
+    useEditPublication,
+} from "@/hooks/usePublications";
+import { useAuth } from "@/context/authcontext"; // <-- Import auth context
 
 // Treat this as [slug] route
 
@@ -96,7 +101,6 @@ const PublicationComments: React.FC<{ publicationId: string }> = ({ publicationI
     const [input, setInput] = useState("");
     const { data: commentsRaw = [], isPending, error, refetch } = useComments(publicationId);
     const addComment = useAddComment();
-    console.log("publication Id", publicationId)
 
     const comments: any[] = Array.isArray(commentsRaw)
         ? commentsRaw
@@ -227,10 +231,153 @@ const BackToCardButton: React.FC<{ backHref?: string }> = ({ backHref }) => {
     );
 };
 
+// --- Edit/Delete actions ---
+const PublicationActions: React.FC<{ publicationId: string, onDeleted?: () => void, onEdited?: () => void, publication?: IPublication, show?: boolean }> = ({
+    publicationId,
+    onDeleted,
+    onEdited,
+    publication,
+    show = true,
+}) => {
+    // Only render controls if show is true.
+    if (!show) return null;
+
+    const router = useRouter();
+    const deletePublication = useDeletePublication();
+    const editPublication = useEditPublication(); // Just demo edit, not full-featured
+
+    const [editMode, setEditMode] = useState(false);
+    const [editTitle, setEditTitle] = useState(publication?.title ?? "");
+    const [editSummary, setEditSummary] = useState(publication?.content ?? "");
+
+    // If publication changes, reset edit state
+    useEffect(() => {
+        setEditTitle(publication?.title ?? "");
+        setEditSummary(publication?.content ?? "");
+        setEditMode(false);
+    }, [publication?.title, publication?.content]);
+
+    const handleDelete = () => {
+        if (window.confirm("Are you sure you want to delete this publication?")) {
+            deletePublication.mutate(
+                publicationId,
+                {
+                    onSuccess: () => {
+                        if (onDeleted) onDeleted();
+                        // If not provided, go back or to publication list
+                        else router.back();
+                    },
+                    onError: err => {
+                        alert("Error deleting publication.");
+                    },
+                }
+            );
+        }
+    };
+
+    const handleStartEdit = () => {
+        setEditMode(true);
+    };
+
+    const handleCancelEdit = () => {
+        setEditTitle(publication?.title ?? "");
+        setEditSummary(publication?.content ?? "");
+        setEditMode(false);
+    };
+
+    const handleEditSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        // Only simple title/summary update demo
+        editPublication.mutate(
+            {
+                id: publicationId,
+                updatedData: {
+                    title: editTitle,
+                    summary: editSummary
+                }
+            },
+            {
+                onSuccess: () => {
+                    setEditMode(false);
+                    if (onEdited) onEdited();
+                },
+                onError: () => {
+                    alert("Error editing publication.");
+                },
+            }
+        );
+    };
+
+    return (
+        <div className="flex gap-3 mt-1">
+            {/* Edit form, minimal */}
+            {editMode ? (
+                <form onSubmit={handleEditSubmit} className="flex flex-col gap-2">
+                    <input
+                        type="text"
+                        className="border px-2 py-1 rounded"
+                        value={editTitle}
+                        required
+                        onChange={e => setEditTitle(e.target.value)}
+                        placeholder="Title"
+                        style={{ minWidth: 180 }}
+                    />
+                    <input
+                        type="text"
+                        className="border px-2 py-1 rounded"
+                        value={editSummary}
+                        onChange={e => setEditSummary(e.target.value)}
+                        placeholder="Summary"
+                        style={{ minWidth: 180 }}
+                    />
+                    <div className="flex gap-2">
+                        <button
+                            type="submit"
+                            className="bg-green-600 text-white px-3 py-1 rounded font-bold text-xs"
+                            disabled={editPublication.isPending}
+                        >Save</button>
+                        <button
+                            type="button"
+                            className="bg-gray-400 text-white px-3 py-1 rounded font-bold text-xs"
+                            onClick={handleCancelEdit}
+                            disabled={editPublication.isPending}
+                        >Cancel</button>
+                    </div>
+                </form>
+            ) : (
+                <>
+                    <button
+                        className="bg-yellow-200 text-yellow-900 border border-yellow-400 px-3 py-1 rounded font-bold text-xs hover:bg-yellow-300"
+                        onClick={handleStartEdit}
+                        disabled={editPublication.isPending}
+                        type="button"
+                    >
+                        Edit
+                    </button>
+                    <button
+                        className="bg-red-100 text-red-700 border border-red-400 px-3 py-1 rounded font-bold text-xs hover:bg-red-200"
+                        onClick={handleDelete}
+                        disabled={deletePublication.isPending}
+                        type="button"
+                    >
+                        Delete
+                    </button>
+                </>
+            )}
+            {/* Feedback */}
+            {deletePublication.isPending && <span className="ml-2 text-red-400 text-xs">Deleting...</span>}
+            {editPublication.isPending && <span className="ml-2 text-yellow-500 text-xs">Saving...</span>}
+        </div>
+    );
+};
+
 // Main detail component for [slug] route
 const PublicationDetail: React.FC<{ publicationId?: string; backTo?: string }> = ({ publicationId, backTo }) => {
     // For [slug] routes, param is typically called slug, but we alias to id for consistency
     const params = useParams();
+    const router = useRouter();
+    const { user } = useAuth(); // Get logged-in user
+
     let id = publicationId;
     // Prefer prop if provided, otherwise use slug param; fallback to treating param as string/array
     if (!id) {
@@ -251,9 +398,16 @@ const PublicationDetail: React.FC<{ publicationId?: string; backTo?: string }> =
         );
     }
 
-    const { data: publication, isPending, error } = useGetSinglePublication(id as string);
+    const { data: publication, isPending, error, refetch } = useGetSinglePublication(id as string);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [dims, setDims] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+
+    // For refetch after edit
+    useEffect(() => {
+        // Respond to updates (after edit/delete)
+        // (could use react-query invalidateQueries pub list/single, but using refetch for simplicity)
+    }, []);
+
     useEffect(() => {
         function updateDims() {
             if (containerRef.current) {
@@ -340,6 +494,30 @@ const PublicationDetail: React.FC<{ publicationId?: string; backTo?: string }> =
         const url = new URL(window.location.href);
         if (url.searchParams.has("backTo")) {
             backHref = url.searchParams.get("backTo") || undefined;
+        }
+    }
+
+    // Use onEdit/onDelete callback: refresh details on edit (for UI consistency)
+    const handleDeleted = () => {
+        // Go to publications grid or back
+        if (backHref) router.push(backHref);
+        else router.back();
+    };
+    const handleEdited = () => {
+        refetch?.();
+    };
+
+    // --- Only show edit/delete if author is current logged-in user ---
+    let showEditDelete = false;
+    if (user && author) {
+        // Safe check for user id vs author._id or equivalent
+        // user._id, author._id could be ObjectId or string
+        // Also fallback to email if available
+        if (
+            (user._id && author._id && String(user._id) === String(author._id)) ||
+            (user.email && author.email && String(user.email).toLowerCase() === String(author.email).toLowerCase())
+        ) {
+            showEditDelete = true;
         }
     }
 
@@ -451,6 +629,16 @@ const PublicationDetail: React.FC<{ publicationId?: string; backTo?: string }> =
                 <h1 className="text-3xl sm:text-4xl font-extrabold text-[#184072] tracking-tight mb-2 break-words">
                     {title}
                 </h1>
+
+                {/* --- Edit/Delete controls (only if user is author) --- */}
+                <PublicationActions
+                    publicationId={_id || id || ""}
+                    onDeleted={handleDeleted}
+                    onEdited={handleEdited}
+                    publication={publication}
+                    show={showEditDelete}
+                />
+
                 {/* Meta info */}
                 <div className="flex flex-col sm:flex-row sm:gap-16 gap-3 mb-3">
                     <DetailMetaRow

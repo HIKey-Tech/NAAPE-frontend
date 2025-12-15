@@ -92,29 +92,29 @@ const DashboardCards: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
         {isPending
           ? [...Array(4)].map((_, idx) => (
-              <div
-                key={idx}
-                className="rounded-2xl border border-[#e5eaf2] bg-white p-5 flex flex-col items-center shadow-xs animate-pulse transition"
-              >
-                <div className="bg-gray-200 rounded-full w-12 h-12 mb-3" />
-                <div className="w-20 h-5 bg-gray-100 mb-2 rounded" />
-                <div className="w-12 h-4 bg-gray-100 rounded" />
-              </div>
-            ))
+            <div
+              key={idx}
+              className="rounded-2xl border border-[#e5eaf2] bg-white p-5 flex flex-col items-center shadow-xs animate-pulse transition"
+            >
+              <div className="bg-gray-200 rounded-full w-12 h-12 mb-3" />
+              <div className="w-20 h-5 bg-gray-100 mb-2 rounded" />
+              <div className="w-12 h-4 bg-gray-100 rounded" />
+            </div>
+          ))
           : metrics.map((card, idx) => (
-              <div
-                key={idx}
-                className="rounded-2xl border border-[#e5eaf2] bg-white p-5 flex flex-col items-center shadow-sm hover:shadow-md transition"
-              >
-                <div className="mb-2">{card.icon}</div>
-                <div className="font-extrabold text-2xl mt-1 text-[#1843BF] tracking-tight">
-                  {card.value}
-                </div>
-                <div className="text-[14px] text-[#4D5770] font-medium tracking-wide mt-1 uppercase">
-                  {card.label}
-                </div>
+            <div
+              key={idx}
+              className="rounded-2xl border border-[#e5eaf2] bg-white p-5 flex flex-col items-center shadow-sm hover:shadow-md transition"
+            >
+              <div className="mb-2">{card.icon}</div>
+              <div className="font-extrabold text-2xl mt-1 text-[#1843BF] tracking-tight">
+                {card.value}
               </div>
-            ))}
+              <div className="text-[14px] text-[#4D5770] font-medium tracking-wide mt-1 uppercase">
+                {card.label}
+              </div>
+            </div>
+          ))}
       </div>
     </section>
   );
@@ -154,12 +154,12 @@ const PublicationsSection: React.FC = () => {
           Couldn't load publications.
         </div>
       ) : publications && publications.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 w-full sm:grid-cols-2 md:grid-cols-3 gap-4">
           {publications.slice(0, 3).map((pub: any, idx: number) => (
             <PublicationCard
               key={pub._id ?? idx}
               publication={pub}
-              className="w-full"
+            // className="w-full"
             />
           ))}
         </div>
@@ -212,7 +212,7 @@ const EventsSection: React.FC = () => {
               {...ev}
               className="w-full"
               id={ev._id?.toString() ?? `${idx}`}
-              // registerLabel={ev.registerLabel || "Register"}
+            // registerLabel={ev.registerLabel || "Register"}
             />
           ))}
         </div>
