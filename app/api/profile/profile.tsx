@@ -44,7 +44,7 @@ export const updateMyProfile = async (data: Partial<ProfileData>) => {
         formData,
         {
             headers: {
-                Authorization: `Bearer ${token}`, // 👈 no Content-Type here
+                Authorization: `Bearer ${token}`, 
             },
         }
     );
