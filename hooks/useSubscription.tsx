@@ -2,8 +2,8 @@ import api from "@/lib/axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 // Utility functions for validation
-function isValidString(val: any): val is string {
-    return typeof val === "string" && !!val.trim();
+function isValidTier(val: string): val is "basic" | "premium" {
+    return typeof val === "string" && ["basic", "premium"].includes(val);
 }
 function safeGet(obj: any, path: string[], fallback: any = null) {
     return path.reduce((acc, curr) => (acc && acc[curr] !== undefined ? acc[curr] : fallback), obj);
@@ -36,44 +36,44 @@ export function useFetchSubscriptionPlans(enabled = true) {
     });
 }
 
-// Create subscription - handles edge cases
+// Create subscription with tier validation
 const createSubscriptionRequest = async ({
-    planId,
-    userId,
+    tier,
 }: {
-    planId: string;
-    userId: string;
+    tier: "basic" | "premium";
 }) => {
-    if (!isValidString(planId)) {
-        throw new Error("Invalid planId: Required and must be a non-empty string.");
+    if (!isValidTier(tier)) {
+        throw new Error("Invalid subscription tier");
     }
-    if (!isValidString(userId)) {
-        throw new Error("Invalid userId: Required and must be a non-empty string.");
-    }
+
     try {
-        const res = await api.post("/payments/subscription", {
-            planId,
-            userId,
-        });
+        // API endpoint expects { tier }
+        const res = await api.post("/payments/subscription", { tier });
+
         if (!res || !res.data) {
-            throw new Error("No response from server.");
+            throw new Error("Failed to create subscription (no response from server)");
         }
-        if (typeof res.data.link !== "string") {
-            throw new Error("Payment link missing or invalid in server response.");
+        const data = res.data?.subscription;
+        if (!data) {
+            throw new Error(res.data?.error || "Failed to create subscription");
         }
-        return res.data;
-    } catch (error: any) {
+        return {
+            message: res.data.message,
+            subscription: data,
+        };
+    } catch (err: any) {
         const msg =
-            safeGet(error, ["response", "data", "message"]) ||
-            error.message ||
-            "Failed to initiate subscription payment.";
+            safeGet(err, ["response", "data", "error"]) ||
+            safeGet(err, ["response", "data", "message"]) ||
+            err.message ||
+            "create subscription failed";
         throw new Error(msg);
     }
 };
 
-// Verify subscription - handles edge cases
+// Verify subscription - edge case handling (unchanged from before)
 const verifySubscriptionRequest = async (transactionId: string) => {
-    if (!isValidString(transactionId)) {
+    if (typeof transactionId !== "string" || !transactionId.trim()) {
         throw new Error("Invalid transactionId: Required and must be a non-empty string.");
     }
     try {
@@ -97,10 +97,10 @@ const verifySubscriptionRequest = async (transactionId: string) => {
 };
 
 /**
- * Main subscription hook
+ * Main subscription hook (for creating & verifying)
  */
 export const useFlutterwaveSubscription = () => {
-    // Safer mutation for creating a subscription
+    // Mutation for creating a subscription (by tier)
     const {
         mutateAsync: createSubscription,
         isPending: creating,
@@ -112,12 +112,9 @@ export const useFlutterwaveSubscription = () => {
         mutationFn: createSubscriptionRequest,
     });
 
-    /**
-     * Safer query for verifying subscription with all edge cases covered.
-     * 
-     * @param transactionId string
-     * @param enabled default true
-     */
+    
+
+    /** Query for verifying a subscription by transactionId */
     const useVerifySubscription = (
         transactionId: string,
         enabled = true
@@ -125,7 +122,7 @@ export const useFlutterwaveSubscription = () => {
         useQuery({
             queryKey: ["flutterwaveSubscriptionVerify", transactionId],
             queryFn: async () => await verifySubscriptionRequest(transactionId),
-            enabled: !!isValidString(transactionId) && enabled,
+            enabled: typeof transactionId === "string" && !!transactionId.trim() && enabled,
             retry: 1,
         });
 

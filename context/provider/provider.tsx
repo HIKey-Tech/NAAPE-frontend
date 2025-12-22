@@ -3,7 +3,12 @@
 import { useState, ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "../authcontext";
-// import { GoogleOAuthProvider } from "@react-oauth/google";
+
+// import {
+//     ClerkProvider,
+    
+// } from '@clerk/nextjs'
+// // import { GoogleOAuthProvider } from "@react-oauth/google";
 
 
 
@@ -25,11 +30,14 @@ export function Providers({ children }: ProvidersProps) {
     return (
         <QueryClientProvider client={queryClient}>
             {/* <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}> */}
+            {/* <ClerkProvider> */}
 
             <AuthProvider>
 
                 {children}
                 </AuthProvider>
+                {/* </ClerkProvider> */}
+
                 
             {/* </GoogleOAuthProvider> */}
 

@@ -16,40 +16,42 @@ export const getMyProfile = async () => {
     return response.data.data;
 }
 
-export const updateMyProfile = async (data: Partial<ProfileData>) => {
+export const updateMyProfile = async (data: ProfileData) => {
     const token = localStorage.getItem("token");
-
-    if (!token) {
-        throw new Error("Not authenticated");
-    }
+    if (!token) throw new Error("Not authenticated");
 
     const formData = new FormData();
+    
 
-    Object.entries(data).forEach(([key, value]) => {
-        if (value === undefined || value === null) return;
-
-        if (value instanceof File) {
-            formData.append(key, value);
-        } else {
-            formData.append(key, String(value));
+    for (const [key, value] of Object.entries(data)) {
+        if (value !== undefined && value !== null) { 
+            formData.append(key, value instanceof File ? value : String(value))
         }
-    });
+    }
 
-    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
-        ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1`
-        : "http://localhost:5000/api/v1";
+    const baseUrl =
+        process.env.NEXT_PUBLIC_BASE_URL
+            ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1`
+            : "http://localhost:5000/api/v1";
 
-    const response = await axios.put(
-        `${BASE_URL}/users/profile`,
-        formData,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`, 
-            },
-        }
-    );
-
-    return response.data;
+    try {
+        const response = await axios.put(
+            `${baseUrl}/users/profile`,
+            formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        return response.data;
+    } catch (error: any) {
+        const message =
+            error?.response?.data?.message ||
+            error?.message ||
+            "Failed to update profile. Please try again.";
+        throw new Error(message);
+    }
 };
 
 export const updateMyPassword = async (data: any) => {

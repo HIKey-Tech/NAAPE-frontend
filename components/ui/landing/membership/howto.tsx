@@ -10,7 +10,7 @@ const PRIMARY_COLOR = 'var(--primary)';
 // Form fields used in the membership form
 const defaultForm = {
     name: "",
-    email: "", 
+    email: "",
     tel: "",
     address: "",
     designation: "",
@@ -54,41 +54,41 @@ function FormSection({
                     overflow: "hidden"
                 }}
             >
-            {textarea ? (
-                <textarea
-                    id={name}
-                    name={name}
-                    value={value}
-                    onChange={onChange}
-                    placeholder={placeholder}
-                    className="input w-full min-h-[42px] resize-none bg-transparent border-0 focus:ring-0 focus:outline-0"
-                    style={{
-                        border: "none",
-                        boxShadow: "none",
-                        outline: "none",
-                        padding: "10px 14px"
-                    }}
-                    {...props}
-                />
-            ) : (
-                <input
-                    id={name}
-                    name={name}
-                    type={type}
-                    value={value}
-                    onChange={onChange}
-                    placeholder={placeholder}
-                    className="input w-full bg-transparent border-0 focus:ring-0 focus:outline-0"
-                    style={{
-                        border: "none",
-                        boxShadow: "none",
-                        outline: "none",
-                        padding: "10px 14px"
-                    }}
-                    required={required}
-                    {...props}
-                />
-            )}
+                {textarea ? (
+                    <textarea
+                        id={name}
+                        name={name}
+                        value={value}
+                        onChange={onChange}
+                        placeholder={placeholder}
+                        className="input w-full min-h-[42px] resize-none bg-transparent border-0 focus:ring-0 focus:outline-0"
+                        style={{
+                            border: "none",
+                            boxShadow: "none",
+                            outline: "none",
+                            padding: "10px 14px"
+                        }}
+                        {...props}
+                    />
+                ) : (
+                    <input
+                        id={name}
+                        name={name}
+                        type={type}
+                        value={value}
+                        onChange={onChange}
+                        placeholder={placeholder}
+                        className="input w-full bg-transparent border-0 focus:ring-0 focus:outline-0"
+                        style={{
+                            border: "none",
+                            boxShadow: "none",
+                            outline: "none",
+                            padding: "10px 14px"
+                        }}
+                        required={required}
+                        {...props}
+                    />
+                )}
             </div>
             {children}
         </div>
@@ -124,16 +124,15 @@ function StepIndicator({ stepCount = 5 }) {
             {steps.map(({ text, icon }, idx) => (
                 <li
                     key={idx}
-                    className={`flex items-center gap-2 pl-2 py-1 rounded ${
-                        idx === 0
+                    className={`flex items-center gap-2 pl-2 py-1 rounded ${idx === 0
                             ? "font-semibold"
                             : ""
-                    }
+                        }
                     text-gray-700 dark:text-gray-200`}
                     style={
                         idx === 0
                             ? { background: "#f4faff", color: PRIMARY_COLOR }
-                            : { }
+                            : {}
                     }
                 >
                     <span className="flex items-center justify-center w-6">
@@ -181,17 +180,17 @@ function HowToBecomeMember() {
         e.preventDefault();
         setSubmitStatus(null);
         setSubmitMessage("");
-        // Compose minimal payload for the relevant backend (example: name, tel, message)
+        // Send the full form object (all fields) to the backend for maximal data completeness
         try {
-            // This will POST { name, tel, email, address, ... } to /submit-form
+            // This will POST the whole form object to /submit-form via the useSubmitForm hook.
             await submitMutation.mutateAsync({
-                name: form.name,
-                email: form.email, // Use entered email
-                message: Object.entries(form)
-                    .filter(([key]) => key !== "name" && key !== "email")
-                    .map(([key, value]) => `${key}: ${value}`)
-                    .join("\n"),
+                ...form,
+                date: form.date ? new Date(form.date) : undefined,
+                dateOfEmployment: form.dateOfEmployment
+                    ? new Date(form.dateOfEmployment)
+                    : undefined,
             });
+
             setSubmitted(true);
             setSubmitStatus("success");
             setSubmitMessage("Your membership application has been received! We'll be in touch soon.");
@@ -414,7 +413,7 @@ function HowToBecomeMember() {
                                         style={{ color: PRIMARY_COLOR }}
                                         onClick={() => { setSubmitted(false); setSubmitStatus(null); setSubmitMessage(""); }}
                                     >
-                                        <FaArrowLeft/> Fill another form
+                                        <FaArrowLeft /> Fill another form
                                     </button>
                                     <button
                                         className="btn btn-outline flex items-center gap-2"
@@ -443,7 +442,7 @@ function HowToBecomeMember() {
                                         style={{ color: PRIMARY_COLOR }}
                                         onClick={() => { setSubmitted(false); setSubmitStatus(null); setSubmitMessage(""); }}
                                     >
-                                        <FaArrowLeft/> Try Again
+                                        <FaArrowLeft /> Try Again
                                     </button>
                                 </div>
                             </div>
