@@ -11,14 +11,14 @@ export function useSubmitForm() {
       email: string;
       address: string;
       designation?: string;
-      dateOfEmployment?: string;
+      dateOfEmployment?: Date;
       section?: string;
       qualification?: string;
       licenseNo?: string;
       employer?: string;
       rank?: string;
       signature?: string;
-      date?: string;
+      date?: Date;
     }) => {
       try {
         // Send all expected fields to the backend.

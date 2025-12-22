@@ -124,11 +124,10 @@ function StepIndicator({ stepCount = 5 }) {
             {steps.map(({ text, icon }, idx) => (
                 <li
                     key={idx}
-                    className={`flex items-center gap-2 pl-2 py-1 rounded ${
-                        idx === 0
+                    className={`flex items-center gap-2 pl-2 py-1 rounded ${idx === 0
                             ? "font-semibold"
                             : ""
-                    }
+                        }
                     text-gray-700 dark:text-gray-200`}
                     style={
                         idx === 0
@@ -184,7 +183,14 @@ function HowToBecomeMember() {
         // Send the full form object (all fields) to the backend for maximal data completeness
         try {
             // This will POST the whole form object to /submit-form via the useSubmitForm hook.
-            await submitMutation.mutateAsync({ ...form });
+            await submitMutation.mutateAsync({
+                ...form,
+                date: form.date ? new Date(form.date) : undefined,
+                dateOfEmployment: form.dateOfEmployment
+                    ? new Date(form.dateOfEmployment)
+                    : undefined,
+            });
+
             setSubmitted(true);
             setSubmitStatus("success");
             setSubmitMessage("Your membership application has been received! We'll be in touch soon.");
