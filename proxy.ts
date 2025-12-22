@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { clerkMiddleware } from '@clerk/nextjs/server'
+// import { clerkMiddleware } from '@clerk/nextjs/server'
 
 
 
-export default clerkMiddleware()
+// export default clerkMiddleware()
 
 
 // A utility to decode a JWT and extract the payload
