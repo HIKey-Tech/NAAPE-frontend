@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useFetchSubscriptionPlans, useFlutterwaveSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/context/authcontext";
+import { toast } from "sonner";
 
 // SubscriptionPlan interface based on backend data schema
 export interface SubscriptionPlan {
@@ -19,21 +20,27 @@ export interface SubscriptionPlan {
   description?: string;
 }
 
+// Helper function to determine tier from plan name
+function getTierFromPlanName(name: string): "basic" | "premium" {
+  if (name?.toLowerCase().includes("basic") || name?.toLowerCase().includes("free") || name?.toLowerCase().includes("trial")) {
+    return "basic";
+  }
+  return "premium";
+}
+
 export default function MembershipSubscription() {
+  // useFetchSubscriptionPlans returns { data, isPending, error } via react-query
+  const { data: planData, isPending: plansLoading, error: plansError } = useFetchSubscriptionPlans();
+
+  // useFlutterwaveSubscription returns all createSubscription logic and the useVerifySubscription hook factory
   const {
     createSubscription,
     creating,
     createError,
     createData,
     resetCreate,
-    useVerifySubscription,
+    useVerifySubscription 
   } = useFlutterwaveSubscription();
-
-  const {
-    data: planData,
-    isPending: plansLoading,
-    error: plansError,
-  } = useFetchSubscriptionPlans();
 
   const { user } = useAuth();
   const userId = user?._id || "";
@@ -50,41 +57,33 @@ export default function MembershipSubscription() {
   const [txId, setTxId] = useState("");
   const [showVerify, setShowVerify] = useState(false);
 
-  // Plans sourced from fetch hook (typed)
-  const PLANS: SubscriptionPlan[] = planData || [];
+  // Ensure PLANS is always typed correctly
+  const PLANS: SubscriptionPlan[] = Array.isArray(planData) ? planData : [];
 
-  console.log("the plans", planData)
-
-  // Automatically detect and set "premium basic" (free/entry) plan as active, with notice for free for 2 months
+  // Set "premium basic" as the default free/active plan (free for 2 months simulation) using useEffect
   useEffect(() => {
     setLoadingActiveSub(true);
-    // Only run if plans loaded
     if (PLANS.length > 0) {
-      // Try to find a "Premium Basic" or "Free" plan (case-insensitive, fallback to first plan)
       const freePlan =
         PLANS.find(
           (p) =>
-            p.name.toLowerCase().includes("basic") ||
-            p.name.toLowerCase().includes("free") ||
+            p.name?.toLowerCase()?.includes("basic") ||
+            p.name?.toLowerCase()?.includes("free") ||
             p.price === 0
         ) || PLANS[0];
-
       if (freePlan) {
         const today = new Date();
         const startedAt = today.toISOString().slice(0, 10);
-        // Add 2 months to today
         const expires = new Date(today);
         expires.setMonth(today.getMonth() + 2);
         const expiresAt = expires.toISOString().slice(0, 10);
-
         setActiveSub({
           planId: freePlan._id,
           planLabel: freePlan.name,
           startedAt,
           expiresAt,
         });
-
-        setPlanId(freePlan._id); // Select the free plan by default
+        setPlanId(freePlan._id);
       } else {
         setActiveSub(null);
       }
@@ -95,40 +94,62 @@ export default function MembershipSubscription() {
   const {
     data: verifyData,
     error: verifyError,
-    isLoading: verifying,
+    isPending: verifying,
     refetch: refetchVerify,
-  } = useVerifySubscription(txId, !!(showVerify && typeof txId === "string" && txId.trim().length > 0));
+  } = useVerifySubscription(
+    txId,
+    !!(showVerify && typeof txId === "string" && txId.trim().length > 0)
+  );
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     resetCreate();
     setStartedPayment(false);
 
-    // If already free plan, don't process subscription
+    // Don't process subscription if already on the free plan
     const currentPlan = PLANS.find((p) => p._id === planId);
-    if (currentPlan && (currentPlan.price === 0 || currentPlan.name.toLowerCase().includes("free") || currentPlan.name.toLowerCase().includes("basic"))) {
-      window.alert("You are already on the free subscription (Premium Basic). Enjoy 2 months free!");
+    if (
+      currentPlan &&
+      (currentPlan.price === 0 ||
+        currentPlan.name?.toLowerCase()?.includes("free") ||
+        currentPlan.name?.toLowerCase()?.includes("basic"))
+    ) {
+      toast.info(
+        "You are already on the free subscription (Premium Basic). Enjoy 2 months free!"
+      );
       return;
     }
 
     if (!(typeof planId === "string" && planId.trim())) {
-      window.alert("Missing Plan\nPlease select a subscription plan.");
+      toast.error("Missing Plan. Please select a subscription plan.");
       return;
     }
     if (!(typeof userId === "string" && userId.trim())) {
-      window.alert("Missing User ID\nUser ID could not be determined.");
+      toast.error("Missing User ID. User ID could not be determined.");
       return;
     }
+
     try {
-      const res = await createSubscription({ planId, userId });
+      // Find the selected plan and extract the tier
+      const planObj = PLANS.find((p) => p._id === planId);
+      if (!planObj) {
+        toast.error("Could not find the selected subscription plan.");
+        return;
+      }
+      const tier = getTierFromPlanName(planObj.name);
+
+      // createSubscription expects { tier: "basic" | "premium" }
+      const res: any = await createSubscription({ tier }); 
       if (res && res.link) {
         setStartedPayment(true);
         setShowVerify(true);
         window.open(res.link, "_blank");
-        window.alert("Payment link opened! Please complete payment in your browser.");
+        toast.success(
+          "Payment link opened! Please complete payment in your browser."
+        );
       }
     } catch (err) {
-      // Error shown by createError below
+      // createError handled below
     }
   };
 
@@ -146,29 +167,7 @@ export default function MembershipSubscription() {
         <p style={{ fontSize: 16, color: "#6F6E8B", textAlign: "center", maxWidth: 400, margin: "0 auto 24px" }}>
           Invest in your growth—get instant access in minutes!
         </p>
-
         {/* Subscription status */}
-        {/* 
-        {loadingActiveSub ? (
-          <div style={{ display: "flex", alignItems: "center", background: "#f8fffd", border: "2px solid #b3efcd", borderRadius: 13, padding: 12, marginBottom: 18 }}>
-            <span style={{ color: "#4B38E7", marginRight: 9 }}><b>⏳</b></span>
-            <span style={{ color: "#198754", fontWeight: 800 }}>Checking subscription status…</span>
-          </div>
-        ) : activeSub ? (
-          <div style={{ display: "flex", alignItems: "center", background: "#e0fee6", border: "2px solid #0A9953", borderRadius: 13, padding: 15, marginBottom: 18 }}>
-            <span style={{ fontSize: 31, marginRight: 12 }}>🌟</span>
-            <div style={{ flex: 1 }}>
-              <div style={{ color: "#198754", fontWeight: 800 }}>
-                You have an <span style={{ color: "#0A9953", fontWeight: "bold" }}>{activeSub.planLabel}</span> active!
-              </div>
-              <div style={{ color: "#376d49", fontWeight: 600, fontSize: 13 }}>
-                Free for 2 months. Active from <b>{activeSub.startedAt}</b> until <b>{activeSub.expiresAt}</b>
-              </div>
-            </div>
-            <span style={{ background: "#0A9953", color: "#fff", borderRadius: 15, padding: "4px 10px", fontWeight: 900, marginLeft: 8 }}>Active</span>
-          </div>
-        ) : null}
-        */}
         {activeSub ? (
           <div style={{ display: "flex", alignItems: "center", background: "#e0fee6", border: "2px solid #0A9953", borderRadius: 13, padding: 15, marginBottom: 18 }}>
             <span style={{ fontSize: 31, marginRight: 12 }}>🌟</span>
@@ -187,7 +186,12 @@ export default function MembershipSubscription() {
         {/* Notice for free subscription */}
         {activeSub && PLANS.length > 0 && (() => {
           const planObj = PLANS.find((p) => p._id === activeSub.planId);
-          if (planObj && (planObj.price === 0 || planObj.name.toLowerCase().includes("basic") || planObj.name.toLowerCase().includes("free"))) {
+          if (
+            planObj &&
+            (planObj.price === 0 ||
+              planObj.name?.toLowerCase()?.includes("basic") ||
+              planObj.name?.toLowerCase()?.includes("free"))
+          ) {
             return (
               <div style={{ background: "#e9f7e9", border: "1.5px solid #6ac99a", color: "#174f31", borderRadius: 9, padding: 13, fontSize: 15.3, fontWeight: 600, marginBottom: 15, textAlign: "center" }}>
                 🎉 <span style={{ color: "#0A9953", fontWeight: "bold" }}>Premium Basic is active!</span> <br />
@@ -219,8 +223,7 @@ export default function MembershipSubscription() {
           ) : (
             PLANS.map((plan) => {
               const id = plan._id;
-              // The Premium Basic (free plan) is always selected/active
-              const isFreePlan = plan.price === 0 || plan.name.toLowerCase().includes("free") || plan.name.toLowerCase().includes("basic");
+              const isFreePlan = plan.price === 0 || plan.name?.toLowerCase()?.includes("free") || plan.name?.toLowerCase()?.includes("basic");
               const isSelected = planId === id || isFreePlan;
               const isActive = activeSub && activeSub.planId === id;
 
@@ -384,7 +387,7 @@ export default function MembershipSubscription() {
               // Always disable for free plan (already active)
               || (() => {
                 const planObj = PLANS.find((p) => p._id === planId);
-                return planObj && (planObj.price === 0 || planObj.name.toLowerCase().includes("free") || planObj.name.toLowerCase().includes("basic"));
+                return planObj && (planObj.price === 0 || planObj.name?.toLowerCase()?.includes("free") || planObj.name?.toLowerCase()?.includes("basic"));
               })()
             }
             style={{
@@ -398,7 +401,7 @@ export default function MembershipSubscription() {
                 || !!plansError
                 || (() => {
                   const planObj = PLANS.find((p) => p._id === planId);
-                  return planObj && (planObj.price === 0 || planObj.name.toLowerCase().includes("free") || planObj.name.toLowerCase().includes("basic"));
+                  return planObj && (planObj.price === 0 || planObj.name?.toLowerCase()?.includes("free") || planObj.name?.toLowerCase()?.includes("basic"));
                 })()
               )
                 ? "#bbb"
@@ -422,7 +425,7 @@ export default function MembershipSubscription() {
                 || !!plansError
                 || (() => {
                   const planObj = PLANS.find((p) => p._id === planId);
-                  return planObj && (planObj.price === 0 || planObj.name.toLowerCase().includes("free") || planObj.name.toLowerCase().includes("basic"));
+                  return planObj && (planObj.price === 0 || planObj.name?.toLowerCase()?.includes("free") || planObj.name?.toLowerCase()?.includes("basic"));
                 })()
                   ? "not-allowed" : "pointer"
             }}
@@ -432,7 +435,7 @@ export default function MembershipSubscription() {
             ) : (() => {
               // If free plan, show "Already on Premium Basic"
               const planObj = PLANS.find((p) => p._id === planId);
-              if (planObj && (planObj.price === 0 || planObj.name.toLowerCase().includes("free") || planObj.name.toLowerCase().includes("basic"))) {
+              if (planObj && (planObj.price === 0 || planObj.name?.toLowerCase()?.includes("free") || planObj.name?.toLowerCase()?.includes("basic"))) {
                 return "Already on Premium Basic (Free)";
               }
               if (activeSub && activeSub.planId === planId) {
@@ -455,7 +458,7 @@ export default function MembershipSubscription() {
           </div>
         )}
 
-        {createData?.link && (
+        {(createData && (createData as any).link) && (
           <div style={{
             color: "#11aa4c",
             marginTop: 12,

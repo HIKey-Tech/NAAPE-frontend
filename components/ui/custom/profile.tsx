@@ -29,10 +29,6 @@ import { NaapButton } from "./button.naap";
 import { toast } from "sonner";
 
 const PRIMARY_TEXT = "text-primary";
-const PRIMARY_BG = "bg-primary";
-const PRIMARY_BG_LIGHT = "bg-primary-50";
-const PRIMARY_BG_HOVER = "hover:bg-primary-100";
-const PRIMARY_FOCUS = "focus:border-primary";
 
 export interface ProfileData {
     _id: string;
@@ -93,7 +89,8 @@ export default function ProfilePage() {
         if (!p) return undefined;
         if (p.profile?.image) {
             if (typeof p.profile.image === "string") return p.profile.image;
-            if ("url" in p.profile.image && p.profile.image.url) return p.profile.image.url;
+            // if ("url" in p.profile.image && p.profile.image.url) return p.profile.image.url;
+            if ("publicId" in p.profile.image && p.profile.image.publicId) return p.profile.image.url;
         }
         return undefined;
     }
@@ -218,105 +215,49 @@ export default function ProfilePage() {
         setPicPreview(undefined);
     }
 
-    // --- THIS IS THE REVISED saveProfile IMPLEMENTATION ---
+    // --- saveProfile IMPLEMENTATION (flattening replaced) ---
     function saveProfile() {
-        // Collect all field updates using dot notation keys for nested fields,
-        // matching the expected backend payload. Also handle file image.
-        const data: Partial<ProfileData> = {};
-        // Flat fields
-        if (form.name !== undefined) data.name = form.name;
-
-        // Profile (nested object) fields
-        if (form.profile) {
-            data.profile = { ...form.profile };
-        }
-
-        // Professional (nested object) fields
-        if (form.professional) {
-            // Clean certifications: remove blank ones, always send as array
-            const certifications = Array.isArray(form.professional.certifications)
-                ? form.professional.certifications.filter(
-                      (cert) => typeof cert === "string" && cert.trim() !== ""
-                  )
-                : [];
-            data.professional = {
-                ...form.professional,
-                certifications,
-            };
-        }
-
-        // Use the same upload logic as in @file_context_0: profile.tsx
-        // The backend expects multipart FormData with `profile`, `professional` keys (for object fields),
-        // or flattened dot notation for simple fields.
-        //
-        // We'll flatten all fields as dot notation except for the image file,
-        // which is sent as "image" key.
-        //
-        // To support custom FormData conventions, this build a flat object first with dot-notation,
-        // then appends each (non-file) value to FormData.
-
-        function flattenDotNotation(obj: any, prefix = "", acc: Record<string, any> = {}) {
-            for (const key in obj) {
-                if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
-                const val = obj[key];
-                if (val === undefined || val === null) continue;
-                // We only send string/number/boolean/array
-                const flatKey = prefix ? `${prefix}.${key}` : key;
-                if (val instanceof File || val instanceof Blob) {
-                    // These should be handled outside
-                    acc[flatKey] = val;
-                } else if (Array.isArray(val)) {
-                    // For arrays (e.g., certifications), use proper field
-                    acc[flatKey] = val;
-                } else if (typeof val === "object") {
-                    flattenDotNotation(val, flatKey, acc);
-                } else {
-                    acc[flatKey] = val;
-                }
-            }
-            return acc;
-        }
-
-        // Build the flat data for fields, except image
-        const toSend = flattenDotNotation(data);
-
-        // Create the backend FormData as required by profile.tsx
         const formData = new FormData();
-        Object.entries(toSend).forEach(([key, value]) => {
-            if (value === undefined || value === null) return;
-            if (Array.isArray(value)) {
-                // For (string[]) arrays, backend expects repeatable keys (no brackets)
-                // E.g. professional.certifications=Cert1&professional.certifications=Cert2
-                value.forEach((v) => {
-                    formData.append(key, String(v));
-                });
-            } else if (value instanceof File || value instanceof Blob) {
-                // This would only happen if ever we let user upload a file field (beside image), currently not used
-                formData.append(key, value);
-            } else {
-                formData.append(key, String(value));
-            }
-        });
+
+        if (form.name) {
+            formData.append("name", form.name);
+        }
+
+        if (form.profile) {
+            formData.append("profile", JSON.stringify(form.profile));
+        }
+
+        if (form.professional) {
+            formData.append(
+                "professional",
+                JSON.stringify({
+                    ...form.professional,
+                    certifications: form.professional.certifications?.filter(Boolean) || [],
+                })
+            );
+        }
+
         if (imageFile) {
             formData.append("image", imageFile);
         }
 
-        updateProfile.mutate(formData as any, {
+        // Convert FormData back to a plain object for updateProfile
+        const profileData: any = {};
+        formData.forEach((value, key) => {
+            profileData[key] = value;
+        });
+
+        updateProfile.mutate(profileData, {
             onSuccess: () => {
                 setEditMode(false);
-                setImageFile(null);
-                setPicPreview(undefined);
                 toast.success("Profile updated!");
             },
             onError: (err: any) => {
-                toast.error(
-                    err?.message ||
-                        "Failed to update profile. Please try again."
-                );
+                toast.error(err?.message || "Profile update failed");
             },
         });
     }
-    // END REVISED saveProfile
+    // --- end saveProfile implementation ---
 
     function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
         const { name, value } = e.target;
@@ -364,7 +305,7 @@ export default function ProfilePage() {
         return (
             <div className="flex min-h-[60vh] items-center justify-center">
                 <div
-                    className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2"
+                    className="animate-spin rounded-full h-10 w-10 border border-2"
                     style={{ borderColor: "var(--primary)" }}
                 />
                 <span className="ml-3 text-lg">Loading profile...</span>
@@ -794,9 +735,9 @@ export default function ProfilePage() {
                         <MdDateRange className="text-xl" />
                         Membership & IDs
                     </h3>
-                    <div className="grid grid-cols-1 gap-3 text-base">
+                    <div className="grid grid-cols-1  gap-3 text-base">
                         <DetailPair label="Member Since" value={new Date(profile.createdAt).toLocaleDateString()} />
-                        <DetailPair label="Member ID" value={<span className="font-mono tracking-wide">{profile._id}</span>} />
+                        <DetailPair label="Member ID" value={<span className="pr-4 font-mono tracking-wide">{profile._id}</span>} />
                         <DetailPair label="Role" value={profile.role} />
                         <DetailPair label="Verified" value={profile.isVerified ? "Yes" : "No"} />
                     </div>
