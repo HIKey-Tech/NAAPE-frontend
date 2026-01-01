@@ -63,6 +63,7 @@ export default function LoginPage() {
 
             login(userData, res.data.token);
 
+
             router.push("/dashboard");
             toast.success("🎉 Logged in! Welcome back.", {
                 description: (
