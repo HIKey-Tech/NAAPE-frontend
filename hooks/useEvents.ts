@@ -3,7 +3,6 @@ import {
     createEventApi,
     fetchEvents,
     getSingleEvent,
-    registerEvent,
     verifyPayment,
     getStatus
 } from "@/app/api/events/events";
@@ -30,45 +29,35 @@ export const useCreateEvent = () => {
     return useMutation({
         mutationFn: createEventApi,
         onSuccess: () => {
+            // Optionally re-fetch events after a successful creation
             // queryClient.invalidateQueries({ queryKey: ["events"] });
         },
     });
 };
 
-// Register for an event
-export const useRegisterEvent = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: registerEvent,
-        // Optionally: refetch the events or event after registration
-        onSuccess: () => {
-            // queryClient.invalidateQueries({ queryKey: ["events"] });
-        },
-    });
-};
-
-
-
-// Pay for an event
+/**
+ * Pay/register for an event.
+ * Handles both guest and user-based registration, depending on which args you supply.
+ * 
+ * Example usage:
+ *   payForEvent({ eventId, user }) // for logged-in user
+ *   payForEvent({ eventId, guest }) // for guest
+ */
 export const usePayForEvent = () => {
-    const queryClient = useQueryClient();
     return useMutation({
         mutationFn: payForEvent,
         onSuccess: () => {
-            
+            // You may want to refetch payment or event status after success
         },
     });
 };
 
-
-// Verify payment for an event (mutation)
+// Verify payment for an event by transactionId
 export const useVerifyPayment = () => {
-    const queryClient = useQueryClient();
     return useMutation({
         mutationFn: verifyPayment,
         onSuccess: () => {
-            // You may invalidate or refetch related event/payment data here
-            // queryClient.invalidateQueries({ queryKey: ["events"] });
+            // Optionally: refetch events or payment status here
         },
     });
 };

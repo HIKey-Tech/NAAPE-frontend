@@ -2,8 +2,12 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { usePayForEvent, useGetStatus, useVerifyPayment } from "@/hooks/useEvents";
 import { EventCardProps } from "@/app/api/events/type";
+import {
+    payForEvent,
+    verifyPayment,
+    getStatus
+} from "@/app/api/events/events";
 
 import {
     CalendarClock,
@@ -106,23 +110,41 @@ const EventCard: React.FC<EventCardProps> = ({
     const [showVerify, setShowVerify] = useState(false);
     const [txId, setTxId] = useState("");
     const [paymentLinkOpened, setPaymentLinkOpened] = useState(false);
-
-    // For keeping a "local" UI registration state
     const [showRegisterLoading, setShowRegisterLoading] = useState(false);
+    const [checkingStatus, setCheckingStatus] = useState(false);
+    const [paymentStatus, setPaymentStatus] = useState<any | null>(null);
+    const [statusError, setStatusError] = useState<string | null>(null);
 
     const router = useRouter();
-    const payForEventMutation = usePayForEvent();
-    const verifyPaymentMutation = useVerifyPayment();
     const { user } = useAuth();
 
     // -------------------------------
-    // Payment Status
+    // Payment Status (now local call)
     // -------------------------------
-    const {
-        data: paymentStatus,
-        isLoading: checkingStatus,
-        refetch: refetchStatus,
-    } = useGetStatus(id, user?.email || undefined);
+    const fetchPaymentStatus = async () => {
+        if (!id || !user?.email) return;
+        setCheckingStatus(true);
+        setStatusError(null);
+        try {
+            const status = await getStatus(id, user.email);
+            setPaymentStatus(status);
+        } catch (err: any) {
+            setPaymentStatus(null);
+            setStatusError(err?.message || "Could not check payment status");
+        } finally {
+            setCheckingStatus(false);
+        }
+    };
+
+    // refetch payment status (used after verify, etc)
+    const refetchStatus = fetchPaymentStatus;
+
+    useEffect(() => {
+        if (id && user?.email) {
+            fetchPaymentStatus();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id, user?.email]);
 
     // -------------------------------
     // Animation CSS
@@ -157,67 +179,62 @@ const EventCard: React.FC<EventCardProps> = ({
     // -------------------------------
     // Handle Payment/Registration
     // -------------------------------
-    const handleRegister = () => {
+    const handleRegister = async () => {
         if (!id) return;
 
-        // Handle guest users: if not logged in, redirect to register screen for the event
-        // "Guest" if !user or user.role === "guest"
         if (!user || user.role === "guest") {
-            // Assuming register page is /register?event=<id>
             router.push(`/register?event=${id}`);
             return;
         }
-
-        // Handle login redirect for other missing info
         if (!user?.name || !user?.email) {
             router.push("/login?redirect=/events/" + id);
             return;
         }
-
-        // Don't disable the register button if paymentStatus?.paid, just prevent duplicate calls
         if (showRegisterLoading) return;
 
         setShowRegisterLoading(true);
-        payForEventMutation.mutate(
-            {
+        try {
+            const data = await payForEvent({
                 eventId: id,
-                ...user,
-            },
-            {
-                onSuccess: (data: any) => {
-                    setShowRegisterLoading(false);
-                    const link = data?.paymentLink || data?.link || data?.url;
-                    if (link) {
-                        setPaymentLinkOpened(true);
-                        setShowVerify(true);
-                        window.open(link, "_blank");
-                        console.log("Payment link opened:", link);
-                    } else {
-                        console.error("No payment link returned from server");
-                    }
-                },
-                onError: () => {
-                    setShowRegisterLoading(false);
-                },
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email
+                }
+            });
+            setShowRegisterLoading(false);
+            const link = data?.paymentLink || data?.link || data?.url;
+            if (link) {
+                setPaymentLinkOpened(true);
+                setShowVerify(true);
+                window.open(link, "_blank");
+                console.log("Payment link opened:", link);
+            } else {
+                // free event (registered)
+                fetchPaymentStatus();
+                setShowVerify(false);
             }
-        );
+        } catch (error: any) {
+            setShowRegisterLoading(false);
+        }
     };
 
-    const handleVerifyPayment = () => {
+    const handleVerifyPayment = async () => {
         if (!txId.trim()) {
             alert("Enter a valid transaction ID");
             return;
         }
 
-        verifyPaymentMutation.mutate(txId, {
-            onSuccess: () => {
-                refetchStatus();
-                setTimeout(() => {
-                    setShowVerify(false);
-                    setTxId("");
-                }, 1500);
-            },
-        });
+        try {
+            await verifyPayment(txId);
+            fetchPaymentStatus();
+            setTimeout(() => {
+                setShowVerify(false);
+                setTxId("");
+            }, 1500);
+        } catch (e: any) {
+            // error handling could be improved if needed
+        }
     };
 
     const handleCardClick = () => {
@@ -231,7 +248,6 @@ const EventCard: React.FC<EventCardProps> = ({
         paymentStatus?.status === "success";
 
     const isPaymentPending = paymentStatus?.status === "pending";
-
     const isCardClickable = !!id && !disabled;
 
     // -------------------------------
