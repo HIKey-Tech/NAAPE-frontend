@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import EventCard from "../component/event.card";
+import EventCard from "../component/event.card"; // @file_context_0 -- this import stays the same
 import { FilterHeader } from "../component/header";
 import { useEvents } from "@/hooks/useEvents";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { useRouter } from "next/navigation";
 import { parseJwt } from "@/proxy";
-import { EventCardProps } from "@/app/api/events/type";
 
+// Utility to normalize events array structure
 function getArrayFromEvents(events: any): any[] {
     if (Array.isArray(events)) return events;
     if (events && Array.isArray(events.data)) return events.data;
@@ -22,20 +22,15 @@ export default function EventsComponent() {
 
     useEffect(() => {
         if (typeof window === "undefined") return;
-
-        const getUserFromToken = () => {
-            const token = localStorage.getItem("token");
-            if (!token) return null;
+        const token = localStorage.getItem("token");
+        let userObj = null;
+        if (token) {
             try {
-                const userObj = parseJwt(token);
-                return userObj;
+                userObj = parseJwt(token);
             } catch (e) {
-                console.error("Invalid token", e);
-                return null;
+                userObj = null;
             }
-        };
-
-        const userObj = getUserFromToken();
+        }
         setUser(userObj);
         setRole(userObj?.role ?? null);
     }, []);
@@ -54,7 +49,7 @@ export default function EventsComponent() {
 
     // Only admins should see the create button
     const isAdmin = user?.role === "admin";
-    // Only needed for event navigation, not for showing create button
+    // For navigation purpose
     const isMember = user?.role === "member";
 
     const handleCreateEvent = useCallback(() => {
@@ -63,44 +58,7 @@ export default function EventsComponent() {
         }
     }, []);
 
-    // Patch: ensure isPaid is strictly boolean for EventCardProps usage
-    function eventCardProps(event: any): EventCardProps {
-        let isPaid: boolean;
-        if (typeof event.isPaid === "boolean") {
-            isPaid = event.isPaid;
-        } else if (typeof event.isPaid === "number") {
-            // interpret 1 or >0 as true, 0 or falsy as false
-            isPaid = !!event.isPaid;
-        } else if (typeof event.price === "number") {
-            isPaid = event.price > 0;
-        } else {
-            isPaid = false;
-        }
-        return {
-            id: event.id,
-            title: event.title ?? "Untitled",
-            date: event.date ?? new Date().toISOString(),
-            location: event.location ?? "Life Camp, Abuja",
-            imageUrl: event.imageUrl ?? "/images/plane.jpg",
-            description: event.description ?? "",
-            price:
-                typeof event.price !== "undefined"
-                    ? event.price
-                    : isPaid
-                    ? (event.price ?? 1000)
-                    : 0,
-            currency: event.currency ?? "NGN",
-            isPaid: isPaid,
-            registerLabel: "View Details",
-            className: "cursor-pointer",
-            disabled: false,
-            registeredUsers: event.registeredUsers,
-            createdBy: event.createdBy,
-            payments: event.payments,
-        };
-    }
-
-    // Render
+    // Render early exit if user role isn't known
     if (user?.role === null) return null;
 
     return (
@@ -124,9 +82,7 @@ export default function EventsComponent() {
                         variant="primary"
                         onClick={handleCreateEvent}
                         iconPosition="left"
-                        icon={
-                            <span className="text-lg font-bold leading-none">+</span>
-                        }
+                        icon={<span className="text-lg font-bold leading-none">+</span>}
                         type="button"
                     >
                         Create an event
@@ -144,34 +100,68 @@ export default function EventsComponent() {
                         Failed to load events.
                     </div>
                 ) : filteredEvents.length === 0 ? (
-                    <>
-                        <div className="col-span-full text-center text-[#96A6BF] text-[16px] py-16 font-medium">
-                            Nothing New
-                            {isAdmin && (
-                                <>
-                                    <br />
-                                    <span className="text-[#274fb7]">
-                                        You can <strong>create a new event</strong> to get started!
-                                    </span>
-                                </>
-                            )}
-                        </div>
-                    </>
+                    <div className="col-span-full text-center text-[#96A6BF] text-[16px] py-16 font-medium">
+                        Nothing New
+                        {isAdmin && (
+                            <>
+                                <br />
+                                <span className="text-[#274fb7]">
+                                    You can <strong>create a new event</strong> to get started!
+                                </span>
+                            </>
+                        )}
+                    </div>
                 ) : (
                     filteredEvents.map((event: any, idx: number) => (
                         <EventCard
                             key={event.id ?? idx}
-                            {...eventCardProps(event)}
-                            registerLabel={isAdmin ? "Manage" : "View & Register"}
+                            id={event.id ?? event._id ?? idx}
+                            _id={event._id}
+                            title={event.title ?? "Untitled"}
+                            date={event.date ?? new Date().toISOString()}
+                            location={event.location ?? "Life Camp, Abuja"}
+                            imageUrl={event.imageUrl ?? "/images/plane.jpg"}
+                            description={event.description ?? ""}
+                            price={
+                                typeof event.price !== "undefined"
+                                    ? event.price
+                                    : event.isPaid
+                                    ? event.price ?? 1000
+                                    : 0
+                            }
+                            currency={event.currency ?? "NGN"}
+                            isPaid={
+                                typeof event.isPaid === "boolean"
+                                    ? event.isPaid
+                                    : typeof event.isPaid === "number"
+                                    ? !!event.isPaid
+                                    : typeof event.price === "number"
+                                    ? event.price > 0
+                                    : false
+                            }
+                            registerLabel={
+                                isAdmin
+                                    ? "Manage"
+                                    : isMember
+                                    ? "View & Register"
+                                    : "View & Register"
+                            }
+                            className="cursor-pointer"
+                            disabled={false}
+                            registeredUsers={event.registeredUsers}
+                            createdBy={event.createdBy}
+                            payments={event.payments}
+                            // Only admins/members get navigation shortcut on card click
                             {...((isAdmin || isMember)
                                 ? {
-                                    onClick: () => {
-                                        if (!event.id) return;
-                                        if (isAdmin) router.push(`/admin/events/${event.id}`);
-                                        else if (isMember) router.push(`/events/${event.id}`);
-                                        else router.push(`/events/${event.id}`);
-                                    },
-                                }
+                                      onClick: () => {
+                                          if (!event.id && !event._id) return;
+                                          const evId = event.id ?? event._id;
+                                          if (isAdmin)
+                                              router.push(`/admin/events/${evId}`);
+                                          else router.push(`/events/${evId}`);
+                                      },
+                                  }
                                 : {})}
                         />
                     ))
