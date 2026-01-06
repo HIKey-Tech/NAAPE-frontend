@@ -155,11 +155,20 @@ const EventCard: React.FC<EventCardProps> = ({
     }, [badgePing]);
 
     // -------------------------------
-    // Handle Payment
+    // Handle Payment/Registration
     // -------------------------------
     const handleRegister = () => {
         if (!id) return;
 
+        // Handle guest users: if not logged in, redirect to register screen for the event
+        // "Guest" if !user or user.role === "guest"
+        if (!user || user.role === "guest") {
+            // Assuming register page is /register?event=<id>
+            router.push(`/register?event=${id}`);
+            return;
+        }
+
+        // Handle login redirect for other missing info
         if (!user?.name || !user?.email) {
             router.push("/login?redirect=/events/" + id);
             return;
@@ -172,13 +181,7 @@ const EventCard: React.FC<EventCardProps> = ({
         payForEventMutation.mutate(
             {
                 eventId: id,
-                
-                // ONLY send guest details if user is not logged in
-                ...user ,
-                // guest: {
-                //     name: guestName,
-                //     email: guestEmail,
-                // },
+                ...user,
             },
             {
                 onSuccess: (data: any) => {
@@ -230,10 +233,6 @@ const EventCard: React.FC<EventCardProps> = ({
     const isPaymentPending = paymentStatus?.status === "pending";
 
     const isCardClickable = !!id && !disabled;
-
-    // Override: Show button after click if not paid yet (only block if local success)
-    // The Register button should remain *until* a payment status change
-    // So: always render the Register button if not paidByUser or pending
 
     // -------------------------------
     // UI
