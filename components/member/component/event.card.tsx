@@ -17,6 +17,11 @@ import {
 
 import { useAuth } from "@/context/authcontext";
 
+// Extend props to allow optional onRegister
+type EventCardExtendedProps = EventCardProps & {
+    onRegister?: () => void;
+};
+
 const truncate = (text: string, max = 40) =>
     text.length > max ? text.slice(0, max - 1) + "…" : text;
 
@@ -80,7 +85,7 @@ function formatEventTime(date: string | Date) {
         .toLowerCase();
 }
 
-const EventCard: React.FC<EventCardProps> = ({
+const EventCard: React.FC<EventCardExtendedProps> = ({
     _id,
     id,
     title,
@@ -99,6 +104,7 @@ const EventCard: React.FC<EventCardProps> = ({
     className = "",
     registerLabel = "Register",
     disabled = false,
+    onRegister, // optional prop
 }) => {
     const cardRef = useRef<HTMLDivElement | null>(null);
     const [pressing, setPressing] = useState(false);
@@ -157,7 +163,7 @@ const EventCard: React.FC<EventCardProps> = ({
     // -------------------------------
     // Handle Payment
     // -------------------------------
-    const handleRegister = () => {
+    const handleRegisterInternal = () => {
         if (!id) return;
 
         if (!user?.name || !user?.email) {
@@ -172,13 +178,7 @@ const EventCard: React.FC<EventCardProps> = ({
         payForEventMutation.mutate(
             {
                 eventId: id,
-                
-                // ONLY send guest details if user is not logged in
-                ...user ,
-                // guest: {
-                //     name: guestName,
-                //     email: guestEmail,
-                // },
+                ...user,
             },
             {
                 onSuccess: (data: any) => {
@@ -230,10 +230,6 @@ const EventCard: React.FC<EventCardProps> = ({
     const isPaymentPending = paymentStatus?.status === "pending";
 
     const isCardClickable = !!id && !disabled;
-
-    // Override: Show button after click if not paid yet (only block if local success)
-    // The Register button should remain *until* a payment status change
-    // So: always render the Register button if not paidByUser or pending
 
     // -------------------------------
     // UI
@@ -327,7 +323,11 @@ const EventCard: React.FC<EventCardProps> = ({
                             type="button"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                handleRegister();
+                                if (onRegister) {
+                                    onRegister();
+                                } else {
+                                    handleRegisterInternal();
+                                }
                             }}
                             disabled={disabled || showRegisterLoading}
                             className="px-4 py-2 rounded-full bg-[#f7f8fc] border border-[#bfd6f5] text-[#2049a2] hover:bg-[#eff4fd]"
