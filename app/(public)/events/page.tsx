@@ -1,4 +1,3 @@
-"use client";
 
 import UpcomingEvents from "@/components/ui/landing/home/events";
 

@@ -55,9 +55,7 @@ export const usePayForEvent = () => {
     return useMutation({
         mutationFn: payForEvent,
         onSuccess: () => {
-            // Don't invalidate queries immediately since we're redirecting
-            // The events will be refetched when the user navigates back
-            // This prevents the card from disappearing before redirect
+            
         },
     });
 };
