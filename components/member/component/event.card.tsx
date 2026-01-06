@@ -17,11 +17,6 @@ import {
 
 import { useAuth } from "@/context/authcontext";
 
-// Extend props to allow optional onRegister
-type EventCardExtendedProps = EventCardProps & {
-    onRegister?: () => void;
-};
-
 const truncate = (text: string, max = 40) =>
     text.length > max ? text.slice(0, max - 1) + "…" : text;
 
@@ -85,7 +80,7 @@ function formatEventTime(date: string | Date) {
         .toLowerCase();
 }
 
-const EventCard: React.FC<EventCardExtendedProps> = ({
+const EventCard: React.FC<EventCardProps> = ({
     _id,
     id,
     title,
@@ -104,7 +99,6 @@ const EventCard: React.FC<EventCardExtendedProps> = ({
     className = "",
     registerLabel = "Register",
     disabled = false,
-    onRegister, // optional prop
 }) => {
     const cardRef = useRef<HTMLDivElement | null>(null);
     const [pressing, setPressing] = useState(false);
@@ -161,11 +155,20 @@ const EventCard: React.FC<EventCardExtendedProps> = ({
     }, [badgePing]);
 
     // -------------------------------
-    // Handle Payment
+    // Handle Payment/Registration
     // -------------------------------
-    const handleRegisterInternal = () => {
+    const handleRegister = () => {
         if (!id) return;
 
+        // Handle guest users: if not logged in, redirect to register screen for the event
+        // "Guest" if !user or user.role === "guest"
+        if (!user || user.role === "guest") {
+            // Assuming register page is /register?event=<id>
+            router.push(`/register?event=${id}`);
+            return;
+        }
+
+        // Handle login redirect for other missing info
         if (!user?.name || !user?.email) {
             router.push("/login?redirect=/events/" + id);
             return;
@@ -323,11 +326,7 @@ const EventCard: React.FC<EventCardExtendedProps> = ({
                             type="button"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                if (onRegister) {
-                                    onRegister();
-                                } else {
-                                    handleRegisterInternal();
-                                }
+                                handleRegister();
                             }}
                             disabled={disabled || showRegisterLoading}
                             className="px-4 py-2 rounded-full bg-[#f7f8fc] border border-[#bfd6f5] text-[#2049a2] hover:bg-[#eff4fd]"

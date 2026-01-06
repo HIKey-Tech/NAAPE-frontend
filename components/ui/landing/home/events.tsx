@@ -1,22 +1,13 @@
 
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import EventCard from "@/components/member/component/event.card";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useEvents, usePayForEvent, useVerifyPayment } from "@/hooks/useEvents";
 import type { EventCardProps } from "@/app/api/events/type";
-import { useRouter } from "next/navigation";
-
-// Helper to check login (token in localStorage)
-function isLoggedIn() {
-    if (typeof window !== "undefined") {
-        return !!localStorage.getItem("token");
-    }
-    return false;
-}
 
 const containerVariants = {
     hidden: {},
@@ -60,7 +51,6 @@ function EventsMobileSlider(props: { events: EventCardProps[] }) {
     const [active, setActive] = useState(0);
     const [direction, setDirection] = useState(0);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
-    const router = useRouter();
 
     const prev = () => {
         setDirection(-1);
@@ -106,20 +96,6 @@ function EventsMobileSlider(props: { events: EventCardProps[] }) {
         }
     };
 
-    // Handler for Register, checks login
-    const handleRegister = useCallback(
-        (event: EventCardProps) => {
-            if (!isLoggedIn()) {
-                // Redirect to login page, optionally keep next?
-                router.push("/login");
-                return;
-            }
-            // Optionally: handle true registration here
-            // If the EventCard needs to handle, can forward a callback
-        },
-        [router]
-    );
-
     const swipeVariants = {
         enter: (dir: number) => ({
             x: typeof dir === "number" ? (dir > 0 ? 60 : -60) : 0,
@@ -163,8 +139,7 @@ function EventsMobileSlider(props: { events: EventCardProps[] }) {
                     transition={{ type: "spring", stiffness: 80, damping: 19 }}
                     className="w-full flex justify-center"
                 >
-                    {/* Pass onRegister callback to EventCard */}
-                    <EventCard {...events[active]} onRegister={() => handleRegister(events[active])} />
+                    <EventCard {...events[active]} />
                 </motion.div>
             </div>
             <button
@@ -195,23 +170,10 @@ function EventsMobileSlider(props: { events: EventCardProps[] }) {
 // --- MAIN COMPONENT ---
 
 export default function UpcomingEvents() {
-    const router = useRouter();
     // Fetch events via react-query hook
     const { data, isLoading, isError } = useEvents();
     const payForEvent = usePayForEvent();
     const verifyPayment = useVerifyPayment();
-
-    // Handler for Register (for desktop grid)
-    const handleRegister = useCallback(
-        (event: EventCardProps) => {
-            if (!isLoggedIn()) {
-                router.push("/login");
-                return;
-            }
-            // Place registration logic here if needed
-        },
-        [router]
-    );
 
     // Normalization: Ensure data is an array and matches EventCardProps shape
     let eventsList: EventCardProps[] = [];
@@ -297,8 +259,7 @@ export default function UpcomingEvents() {
                             whileInView="show"
                             viewport={{ once: true, margin: "-60px" }}
                         >
-                            {/* Pass the onRegister handler prop to EventCard */}
-                            <EventCard {...event} onRegister={() => handleRegister(event)} />
+                            <EventCard {...event} />
                         </motion.div>
                     ))
                 )}
