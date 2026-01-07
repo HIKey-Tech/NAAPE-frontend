@@ -1,6 +1,6 @@
 "use client";
 import { useState, useMemo, useCallback } from "react";
-import PublicationCard from "../component/publication.card";
+import {PublicationCard} from "../component/publication.card";
 import { FilterHeader } from "../component/header";
 import { useMyPublications } from "@/hooks/usePublications";
 import { IPublication } from "@/app/api/publication/types";

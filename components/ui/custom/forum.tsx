@@ -1,6 +1,6 @@
 "use client";
 import React, { useMemo, useRef } from "react";
-import PublicationCard from "@/components/member/component/publication.card";
+import {PublicationCard} from "@/components/member/component/publication.card";
 import { usePublications } from "@/hooks/usePublications";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdSearch, MdInfoOutline } from "react-icons/md";
