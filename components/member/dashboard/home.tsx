@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import DashboardCard from "../component/dashboardcard";
-import PublicationCard from "../component/publication.card";
+import {PublicationCard} from "../component/publication.card";
 import CertCard from "../component/cert.card";
 import EventCard from "../component/event.card";
 import {

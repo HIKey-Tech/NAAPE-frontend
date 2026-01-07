@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import type { IPublication } from "@/app/api/publication/types";
 import { useComments, useAddComment } from "@/hooks/useComment";
 import { useRouter } from "next/navigation";
+import { usePublicationUIStore } from "@/store/usePublicationStore";
 
 // STATUS_CONFIG: unchanged
 const STATUS_CONFIG = {
@@ -199,7 +200,7 @@ const PublicationComments: React.FC<{ publicationId: string }> = ({ publicationI
 };
 
 // Card UI
-const PublicationCard: React.FC<PublicationCardProps> = ({
+export const PublicationCard: React.FC<PublicationCardProps> = ({
   publication,
   className = "",
   isAdmin = false,
@@ -207,7 +208,6 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
   onReject,
   onDelete,
 }) => {
-  const [showComments, setShowComments] = useState(false);
   const router = useRouter();
 
   if (!publication) {
@@ -229,6 +229,12 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
     category,
   } = publication;
 
+  /** ✅ Zustand state */
+  const showComments = usePublicationUIStore(
+    (s) => s.openComments[_id ?? ""] ?? false
+  );
+  const toggleComments = usePublicationUIStore((s) => s.toggleComments);
+
   // status handling
   let statusValue: PublicationStatus;
   if (status === "approved") statusValue = "approved";
@@ -243,11 +249,6 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
       if (author.name) return author.name;
       if (author.email) return author.email;
       if (author._id) return author._id;
-      try {
-        return JSON.stringify(author);
-      } catch {
-        return "";
-      }
     }
     return "";
   }
@@ -257,11 +258,9 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
   const commentCount =
     Array.isArray(commentsForCount)
       ? commentsForCount.length
-      : (commentsForCount && typeof commentsForCount === "object" && commentsForCount !== null)
-        ? Object.values(commentsForCount).length
-        : 0;
+      : Object.values(commentsForCount ?? {}).length;
 
-  function handleCardClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+  function handleCardClick(e: React.MouseEvent<HTMLDivElement>) {
     const tag = (e.target as HTMLElement).tagName.toLowerCase();
     if (
       tag === "button" ||
@@ -272,29 +271,20 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
     ) {
       return;
     }
-    if (_id) {
-      router.push(`/publications/${_id}`);
-    }
+    router.push(`/publications/${_id}`);
   }
 
   return (
     <div
       className={[
-        "w-full max-w-md",
-        "rounded-xl overflow-hidden",
-        // remove shadow-md and use a thicker border
-        "bg-white border-2 border-blue-200",
-        "flex flex-col",
+        "w-full max-w-md rounded-xl overflow-hidden",
+        "bg-white border-2 border-blue-200 flex flex-col",
         className,
       ].join(" ")}
       tabIndex={0}
       onClick={handleCardClick}
       role="button"
-      aria-label={title ? `Go to publication: ${title}` : "Go to publication"}
-      aria-describedby={`pubcard-info-${_id}`}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") handleCardClick(e as any);
-      }}
+      aria-label={`Go to publication: ${title}`}
       style={{ cursor: "pointer", minHeight: 340 }}
     >
       {/* IMAGE */}
@@ -302,105 +292,81 @@ const PublicationCard: React.FC<PublicationCardProps> = ({
         {image ? (
           <img
             src={image}
-            alt={title ? `Cover image for ${title}` : "Publication cover"}
+            alt={`Cover image for ${title}`}
             className="object-cover w-full h-full"
-            style={{ minHeight: 140, maxHeight: 220 }}
-            draggable={false}
             loading="lazy"
           />
         ) : (
-          <div className="flex items-center justify-center w-full h-full text-3xl text-gray-300">No image</div>
+          <div className="flex items-center justify-center w-full h-full text-3xl text-gray-300">
+            No image
+          </div>
         )}
 
-        {/* STATUS PILL */}
-        <span className={`absolute top-3 right-3 px-3 py-1 rounded-full text-sm font-semibold border ${STATUS_CONFIG[statusValue].bg} ${STATUS_CONFIG[statusValue].text}`}>
+        <span
+          className={`absolute top-3 right-3 px-3 py-1 rounded-full text-sm font-semibold border ${STATUS_CONFIG[statusValue].bg} ${STATUS_CONFIG[statusValue].text}`}
+        >
           {STATUS_CONFIG[statusValue].icon}
           {STATUS_CONFIG[statusValue].label}
         </span>
-        {/* CATEGORY PILL */}
+
         {category && (
           <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold border border-blue-200">
-            {String(category)}
+            {category}
           </span>
         )}
       </div>
+
       {/* CONTENT */}
-      <div id={`pubcard-info-${_id}`} className="flex flex-col gap-2 p-4 flex-1">
-        {/* TITLE */}
-        <h2 className="text-xl font-bold truncate w-full">{title}</h2>
-        {/* META */}
-        <div className="flex items-center gap-2 text-sm text-gray-500">
+      <div className="flex flex-col gap-2 p-4 flex-1">
+        <h2 className="text-xl font-bold truncate">{title}</h2>
+
+        <div className="text-sm text-gray-500 flex gap-2">
           <span>
             By <span className="font-semibold">{getAuthorString(author?.name) || "Unknown"}</span>
           </span>
           <span>·</span>
-          <span>
-            {createdAt
-              ? new Date(createdAt).toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })
-              : "Unknown date"}
-          </span>
+          <span>{new Date(createdAt).toLocaleDateString()}</span>
         </div>
-        {/* MAIN CONTENT (excerpt) */}
-        <p className="text-gray-700 text-base mt-1 mb-2 line-clamp-3 whitespace-pre-line">{content}</p>
-        {/* Action bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-end gap-2 sm:gap-6 mt-auto">
-          {/* Admin - accept/reject */}
+
+        <p className="text-gray-700 line-clamp-3 whitespace-pre-line">
+          {content}
+        </p>
+
+        {/* ACTION BAR */}
+        <div className="mt-auto flex justify-between items-end gap-4">
           {isAdmin && statusValue === "pending" && (
-            <div className="flex flex-row gap-2">
-              <button
-                className="bg-green-100 hover:bg-green-200 text-green-800 px-4 py-2 rounded-full font-semibold text-sm border border-green-200"
-                onClick={onAccept}
-                type="button"
-                data-stop-propagation
-                aria-label="Accept publication"
-              >
-                Accept
-              </button>
-              <button
-                className="bg-red-100 hover:bg-red-200 text-red-900 px-4 py-2 rounded-full font-semibold text-sm border border-red-200"
-                onClick={onReject}
-                type="button"
-                data-stop-propagation
-                aria-label="Reject publication"
-              >
-                Reject
-              </button>
+            <div className="flex gap-2">
+              <button onClick={onAccept} data-stop-propagation>Accept</button>
+              <button onClick={onReject} data-stop-propagation>Reject</button>
             </div>
           )}
-          {/* Comments toggle */}
+
           <button
-            className={`flex items-center gap-1 text-blue-700 font-semibold px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-sm ${showComments ? 'bg-blue-100 border-blue-300' : ''}`}
-            onClick={e => {
+            className={`flex items-center gap-1 text-sm px-3 py-1 rounded-full border ${showComments
+                ? "bg-blue-100 border-blue-300"
+                : "bg-blue-50 border-blue-100"
+              }`}
+            onClick={(e) => {
               e.stopPropagation();
-              setShowComments(v => !v);
+              toggleComments(_id);
             }}
-            type="button"
-            aria-expanded={showComments}
-            aria-controls={`pubcard-comments-${_id}`}
             data-stop-propagation
           >
-            <svg viewBox="0 0 20 20" fill="none" width="18" height="18" className="inline-block align-middle mr-1" aria-hidden="true">
-              <path d="M6.7 15.91c-2.98 0-5.33-2.02-5.33-4.5s2.35-4.5 5.33-4.5c.45 0 .89.04 1.32.13.71-1.35 2.3-2.27 4.11-2.27 2.12 0 3.85 1.25 3.85 2.79 0 .08-.01.16-.02.24.72.61 1.15 1.39 1.15 2.24 0 1.85-1.98 3.36-4.43 3.36a5.92 5.92 0 01-1.4-.15c-.38 1.04-1.65 1.81-3.19 1.81Z" stroke="#2268E5" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
             {showComments ? "Hide comments" : "Comments"}
-            <span className="ml-1 px-2 py-0.5 rounded-full bg-blue-100 text-blue-900 font-bold text-xs">
+            <span className="ml-1 px-2 py-0.5 rounded-full bg-blue-100 text-xs font-bold">
               {commentCount}
             </span>
           </button>
         </div>
       </div>
+
       {/* COMMENTS */}
       {showComments && (
-        <div className="px-3 pb-2 pt-1" id={`pubcard-comments-${_id}`}>
-          <PublicationComments publicationId={_id ?? "na"} />
+        <div className="px-3 pb-2">
+          <PublicationComments publicationId={_id} />
         </div>
       )}
     </div>
   );
 };
 
-export default PublicationCard;

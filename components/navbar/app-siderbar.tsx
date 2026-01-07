@@ -373,19 +373,22 @@ export function AppSidebar() {
     </>
   );
 
-  // Responsive: Show overlay and sidebar for mobile
+  // Show overlay and sidebar for mobile (now on all screens, floating)
   return (
     <>
-      {/* -- Mobile Hamburger only visible below sm (sm:hidden) -- */}
+      {/* -- Mobile Hamburger now visible on all screens (removed sm:hidden, made floating/draggable/fixed) -- */}
       <button
-        className="fixed bottom-4 left-4 z-[100] rounded-full p-3 bg-[#fafdff] border border-[#dde7f3] shadow-md flex items-center justify-center sm:hidden"
+        className="fixed bottom-4 left-4 z-[100] rounded-full p-3 bg-[#fafdff] border border-[#dde7f3] shadow-xl flex items-center justify-center backdrop-blur-md"
+        style={{
+          boxShadow: "0 8px 24px 6px rgba(40,50,80,0.19), 0 1.5px 7px #b3c9e6"
+        }}
         aria-label={mobileOpen ? "Close menu" : "Open menu"}
         onClick={() => setMobileOpen(v => !v)}
       >
         {mobileOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
       </button>
 
-      {/* -- Sidebar for Desktop -- */}
+      {/* -- Sidebar for Desktop remains (for reference, can be removed if only want floating nav) -- */}
       <aside
         className="hidden sm:flex flex-col z-[50] border-r border-[#dde7f3] bg-[#fafdff] pt-0"
         style={{
@@ -400,25 +403,27 @@ export function AppSidebar() {
         {SidebarContent}
       </aside>
 
-      {/* -- Sidebar for Mobile -- */}
-      {/* Fullscreen overlay & slide-in sidebar */}
+      {/* -- Floating Sidebar: show on all screen sizes (removed sm:hidden, floating high z) */}
       {mobileOpen && (
         <div>
           <div
-            className="fixed inset-0 z-[99] bg-black/40 transition-opacity sm:hidden"
+            className="fixed inset-0 z-[199] bg-black/40 transition-opacity"
             aria-hidden="true"
             onClick={() => setMobileOpen(false)}
+            style={{ pointerEvents: "auto", backdropFilter: "blur(2px)" }}
           />
           <aside
-            className="fixed top-0 left-0 z-[100] w-[89vw] max-w-[360px] min-w-[220px] h-screen bg-[#fafdff] border-r border-[#dde7f3] flex flex-col animate-slide-in sm:hidden"
+            className="fixed top-7 left-6 z-[200] w-[88vw] max-w-[380px] min-w-[220px] h-[90vh] bg-[#fafdff] border border-[#dde7f3] rounded-2xl shadow-2xl flex flex-col animate-float-in"
             style={{
-              transition: "transform .2s cubic-bezier(.4,0,.2,1)",
+              transition: "transform .22s cubic-bezier(.4,0,.2,1)",
+              boxShadow:
+                "0 32px 64px 0 rgba(42,54,108,0.18), 0 2px 16px 0 #b3c9e6",
             }}
             tabIndex={-1}
             aria-modal="true"
             role="dialog"
           >
-            <div className="flex items-center px-4 py-6 border-b border-[#d1e0f3] bg-gradient-to-b from-[#f3f7fa] to-[#e8f0fb] gap-3">
+            <div className="flex items-center px-4 py-6 border-b border-[#d1e0f3] bg-gradient-to-b from-[#f3f7fa] to-[#e8f0fb] gap-3 rounded-t-2xl">
               <Link href="/" aria-label="Home" className="flex items-center mr-1">
                 <Image
                   src="/logo.png"
@@ -483,22 +488,21 @@ export function AppSidebar() {
               </ul>
             </div>
             {/* Profile footer */}
-            <footer className="w-full border-t border-[#dde7f3] bg-gradient-to-r from-[#f8fbfc] to-[#eaf3fc] px-2.5 py-4 shadow-inner">
+            <footer className="w-full border-t border-[#dde7f3] bg-gradient-to-r from-[#f8fbfc] to-[#eaf3fc] px-2.5 py-4 shadow-inner rounded-b-2xl">
               <SidebarProfileCard user={user ?? {}} />
             </footer>
           </aside>
         </div>
       )}
-      {/* Animation (slide-in) for mobile sidebar */}
+      {/* Animation (slide-in/floating) for sidebar */}
       <style jsx global>{`
-        @media (max-width: 639px) {
-          .animate-slide-in {
-            animation: sidebar-slide-in 0.19s cubic-bezier(.4,0,.2,1) both;
-          }
-          @keyframes sidebar-slide-in {
-            0% { transform: translateX(-110%); }
-            100% { transform: translateX(0); }
-          }
+        .animate-float-in {
+          animation: sidebar-float-in 0.22s cubic-bezier(.4,0,.2,1) both;
+        }
+        @keyframes sidebar-float-in {
+          0% { transform: translateY(40%) scale(0.97) rotateY(5deg); opacity: 0; }
+          65% { opacity: 1; }
+          100% { transform: none; opacity: 1; }
         }
       `}</style>
     </>
