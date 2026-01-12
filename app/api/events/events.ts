@@ -1,3 +1,4 @@
+import api from "@/lib/axios";
 import axios from "axios";
 
 // BASE URL for backend API
@@ -8,7 +9,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 // Fetch all events (GET /v1/events)
 export const fetchEvents = async () => {
     try {
-        const response = await axios.get(`${BASE_URL}/v1/events`);
+        const response = await api.get(`/events`);
         return response.data;
     } catch (error: any) {
         throw new Error(error?.response?.data?.message || error.message || "Failed to fetch events.");
