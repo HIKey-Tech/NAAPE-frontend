@@ -35,7 +35,7 @@ export const createEventApi = async (data: FormData) => {
 // Get single event by ID (GET /v1/events/:id)
 export const getSingleEvent = async (id: string) => {
     try {
-        const response = await axios.get(`${BASE_URL}/v1/events/${id}`);
+        const response = await api.get(`/events/${id}`);
         return response.data;
     } catch (error: any) {
         throw new Error(error?.response?.data?.message || error.message || "Failed to fetch event.");
