@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { verifyPayment } from "@/app/api/events/events";
 
-type State = "loading" | "success" | "failed" | "pending";
+type State = "loading" | "successful" | "failed" | "pending";
 
 export default function PaymentComplete() {
     const params = useSearchParams();
@@ -29,14 +29,14 @@ export default function PaymentComplete() {
     const icons = {
         loading: <Loader2 className="animate-spin text-blue-500" size={60} />,
         pending: <Loader2 className="animate-spin text-yellow-500" size={60} />,
-        success: <CheckCircle2 className="text-green-600" size={74} />,
+        successful: <CheckCircle2 className="text-green-600" size={74} />,
         failed: <XCircle className="text-red-600" size={74} />,
     };
 
     const messages = {
         loading: "Verifying your payment...",
         pending: "Payment is being confirmed. Please wait...",
-        success: "Payment successful! You're registered 🎉",
+        successful: "Payment successful! You're registered 🎉",
         failed: "Payment failed or was cancelled.",
     };
 
