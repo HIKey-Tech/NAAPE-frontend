@@ -1,12 +1,10 @@
 "use client";
 import React from "react";
 import DashboardCard from "../component/dashboardcard";
-import {PublicationCard} from "../component/publication.card";
-import CertCard from "../component/cert.card";
+import { PublicationCard } from "../component/publication.card";
 import EventCard from "../component/event.card";
 import {
   MdLibraryBooks,
-  MdSchool,
   MdEventAvailable,
   MdWork,
 } from "react-icons/md";
@@ -21,38 +19,6 @@ type DashboardCardData = {
   value: number;
   label: string;
 };
-type CertificationStatus = "pending" | "ongoing" | "completed";
-type CertificationData = {
-  title: string;
-  startDate: string;
-  description: string;
-  status: CertificationStatus;
-};
-
-// --- Dummy Data ---
-const certificationsData: CertificationData[] = [
-  {
-    title: "Human Factors in Aviation Safety",
-    startDate: "Oct 13, 2024",
-    description:
-      "Understand human limitations and performance in aviation to minimize errors and improve operational safety.",
-    status: "completed",
-  },
-  {
-    title: "Risk Assessment & Decision Making",
-    startDate: "Feb 2, 2025",
-    description:
-      "Master essential risk evaluation methods and real-time decision strategies for safe flight operations.",
-    status: "completed",
-  },
-  {
-    title: "Fatigue Management Strategies",
-    startDate: "May 19, 2025",
-    description:
-      "Learn how to recognize, mitigate, and manage fatigue to ensure enhanced crew alertness and well-being.",
-    status: "completed",
-  },
-];
 
 // --- Dashboard Cards Section ---
 const DashboardCards: React.FC = () => {
@@ -62,11 +28,6 @@ const DashboardCards: React.FC = () => {
       icon: <MdLibraryBooks size={32} color="#1843BF" />,
       value: stats?.publicationCount ?? 0,
       label: "Publications",
-    },
-    {
-      icon: <MdSchool size={32} color="#089669" />,
-      value: stats?.trainingsEnrolled ?? 0,
-      label: "Trainings",
     },
     {
       icon: <MdEventAvailable size={32} color="#DB8801" />,
@@ -89,32 +50,32 @@ const DashboardCards: React.FC = () => {
 
   return (
     <section aria-label="Dashboard summary cards" className="mb-10">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
         {isPending
-          ? [...Array(4)].map((_, idx) => (
-            <div
-              key={idx}
-              className="rounded-2xl border border-[#e5eaf2] bg-white p-5 flex flex-col items-center shadow-xs animate-pulse transition"
-            >
-              <div className="bg-gray-200 rounded-full w-12 h-12 mb-3" />
-              <div className="w-20 h-5 bg-gray-100 mb-2 rounded" />
-              <div className="w-12 h-4 bg-gray-100 rounded" />
-            </div>
-          ))
+          ? [...Array(3)].map((_, idx) => (
+              <div
+                key={idx}
+                className="rounded-2xl border border-[#e5eaf2] bg-white p-5 flex flex-col items-center shadow-xs animate-pulse transition"
+              >
+                <div className="bg-gray-200 rounded-full w-12 h-12 mb-3" />
+                <div className="w-20 h-5 bg-gray-100 mb-2 rounded" />
+                <div className="w-12 h-4 bg-gray-100 rounded" />
+              </div>
+            ))
           : metrics.map((card, idx) => (
-            <div
-              key={idx}
-              className="rounded-2xl border border-[#e5eaf2] bg-white p-5 flex flex-col items-center shadow-sm hover:shadow-md transition"
-            >
-              <div className="mb-2">{card.icon}</div>
-              <div className="font-extrabold text-2xl mt-1 text-[#1843BF] tracking-tight">
-                {card.value}
+              <div
+                key={idx}
+                className="rounded-2xl border border-[#e5eaf2] bg-white p-5 flex flex-col items-center shadow-sm hover:shadow-md transition"
+              >
+                <div className="mb-2">{card.icon}</div>
+                <div className="font-extrabold text-2xl mt-1 text-[#1843BF] tracking-tight">
+                  {card.value}
+                </div>
+                <div className="text-[14px] text-[#4D5770] font-medium tracking-wide mt-1 uppercase">
+                  {card.label}
+                </div>
               </div>
-              <div className="text-[14px] text-[#4D5770] font-medium tracking-wide mt-1 uppercase">
-                {card.label}
-              </div>
-            </div>
-          ))}
+            ))}
       </div>
     </section>
   );
@@ -172,18 +133,6 @@ const PublicationsSection: React.FC = () => {
   );
 };
 
-// --- Certifications Section ---
-const CertificationsSection: React.FC = () => (
-  <section className="mb-8 bg-white rounded-2xl py-6 px-4 shadow-sm border border-[#e6eaf1]">
-    <SectionHeading title="Certifications" />
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      {certificationsData.map((cert, idx) => (
-        <CertCard key={idx} {...cert} />
-      ))}
-    </div>
-  </section>
-);
-
 // --- Events Section ---
 const EventsSection: React.FC = () => {
   const { data: events, isPending, error } = useEvents();
@@ -235,7 +184,6 @@ const MemberDashboardHome: React.FC = () => {
         <DashboardCards />
         <div className="space-y-7">
           <PublicationsSection />
-          <CertificationsSection />
           <EventsSection />
         </div>
       </div>

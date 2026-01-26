@@ -48,7 +48,6 @@ export function useDeleteComment() {
     mutationFn: deleteComment,
     onSuccess: (_data, commentId) => {
       // Optimistically remove the deleted comment from the cache
-      // Find all cached comment queries and remove the deleted comment from lists
       queryClient
         .getQueriesData({ queryKey: ["comments"] })
         .forEach(([key, value]: any) => {
