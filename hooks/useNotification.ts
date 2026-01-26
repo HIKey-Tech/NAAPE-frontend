@@ -27,11 +27,33 @@ const invalidateNotifications = (qc: ReturnType<typeof useQueryClient>) =>
  */
 export const useMarkNotificationRead = () => {
     const qc = useQueryClient();
+
     return useMutation({
         mutationFn: markNotificationRead,
-        onSuccess: () => invalidateNotifications(qc),
+        onMutate: async (id: string) => {
+            await qc.cancelQueries({ queryKey: ["notifications"] });
+
+            const prev = qc.getQueryData<any[]>(["notifications"]);
+
+            qc.setQueryData(["notifications"], (old: any[] | undefined) =>
+                old?.map(n =>
+                    n._id === id ? { ...n, read: true } : n
+                )
+            );
+
+            return { prev };
+        },
+        onError: (_err, _id, ctx) => {
+            if (ctx?.prev) {
+                qc.setQueryData(["notifications"], ctx.prev);
+            }
+        },
+        onSettled: () => {
+            qc.invalidateQueries({ queryKey: ["notifications"] });
+        },
     });
 };
+
 
 /**
  * Hook for marking all notifications as read.
