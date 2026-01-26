@@ -9,7 +9,12 @@ import {
 export function useComments(publicationId: string) {
   return useQuery({
     queryKey: ["comments", publicationId],
-    queryFn: () => fetchComments(publicationId),
+    queryFn: async () => {
+      const res = await fetchComments(publicationId);
+      const json = await res.json();
+      console.log("raw coments", json)
+      return json.data ?? json
+    },
     enabled: !!publicationId,
   });
 }
@@ -28,6 +33,10 @@ export function useAddComment() {
           comments: [data, ...(old.comments || [])],
         };
       });
+
+      queryClient.invalidateQueries({
+        queryKey: ["comments", variables.publicationId]
+      })
     },
   });
 }

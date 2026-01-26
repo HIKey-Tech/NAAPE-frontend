@@ -12,6 +12,8 @@ import {
 } from "@/hooks/usePublications";
 
 import { useAuth } from "@/context/authcontext";
+import { getAuthorLabel, isOwner, normalizeArray } from "@/lib/utils";
+import { parseAppSegmentConfig } from "next/dist/build/segment-config/app/app-segment-config";
 
 /* -------------------------------------------------------------------------- */
 /*                                   CONFIG                                   */
@@ -59,32 +61,6 @@ type PublicationStatus = keyof typeof STATUS_CONFIG;
 const FallbackImage =
     "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=1200&q=80";
 
-/* -------------------------------------------------------------------------- */
-/*                               HELPER UTILS                                 */
-/* -------------------------------------------------------------------------- */
-
-function normalizeArray(input?: string | string[]) {
-    if (!input) return [];
-    if (Array.isArray(input)) return input;
-    return input
-        .split(/[,;]+/)
-        .map((v) => v.trim())
-        .filter(Boolean);
-}
-
-function getAuthorLabel(author: any) {
-    if (!author) return "Unknown";
-    return author?.name || author?.email || author?._id || "Unknown";
-}
-
-function isOwner(user: any, author: any) {
-    if (!user || !author) return false;
-    return (
-        String(user?._id) === String(author?._id) ||
-        String(user?.email).toLowerCase() ===
-        String(author?.email).toLowerCase()
-    );
-}
 
 /* -------------------------------------------------------------------------- */
 /*                               COMMENTS BLOCK                               */
@@ -95,6 +71,8 @@ const PublicationComments = ({ publicationId }: { publicationId: string }) => {
     const { data = [], isPending, refetch } = useComments(publicationId);
     const addComment = useAddComment();
 
+    console.log("The comments", data)
+
     const comments = Array.isArray(data) ? data : [];
 
     const submit = (e: React.FormEvent) => {
@@ -103,7 +81,7 @@ const PublicationComments = ({ publicationId }: { publicationId: string }) => {
 
         addComment.mutate(
             { publicationId, text: text.trim() },
-            { onSuccess: () => (setText(""), refetch()) }
+            { onSuccess: () => (setText("")) }
         );
     };
 
@@ -133,7 +111,7 @@ const PublicationComments = ({ publicationId }: { publicationId: string }) => {
             )}
 
             <ul className="space-y-2">
-                {comments.map((c: any) => (
+                {comments.map((c) => (
                     <li
                         key={c._id}
                         className="bg-gray-50 border rounded px-3 py-2"
@@ -237,7 +215,11 @@ const PublicationActions = ({
 
 export default function PublicationDetail() {
     const { slug, id } = useParams() as any;
-    const publicationId = slug || id;
+    // const publicationId = slug || id;
+
+    const publicationId = Array.isArray(slug.id)
+        ? slug.id[0]
+        : slug.id
 
     const { user } = useAuth();
     const router = useRouter();
