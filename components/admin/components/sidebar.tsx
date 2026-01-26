@@ -113,13 +113,7 @@ const userManagementLinks: NavLink[] = [
         group: "User Management",
         description: "Payments & transactions"
     },
-    {
-        label: "Member Status",
-        icon: FaIdBadge,
-        href: "/admin/members/status",
-        group: "User Management",
-        description: "Membership status overview"
-    },
+
 ];
 const contentLinks: NavLink[] = [
     {
@@ -551,7 +545,7 @@ function HamburgerDrawer({
                                 className="sidebar-navitem flex items-center w-full px-5 py-2.5 rounded-lg text-[15px] font-medium gap-3 mb-0.5 text-[#c62027] hover:bg-[#f6eaea] transition-colors"
                                 aria-label="Sign out of your account"
                             >
-                                <FaSignOutAlt size={18} className="text-[#c62027]"/>
+                                <FaSignOutAlt size={18} className="text-[#c62027]" />
                                 <span className="">Sign Out</span>
                             </button>
                         </li>

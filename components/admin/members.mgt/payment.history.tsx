@@ -35,121 +35,8 @@ const STATUS: Record<string, { label: string; color: string; bg: string }> = {
   Refunded: { label: "Refunded", color: "#165685", bg: "#e9f5fd" },
 };
 
-// Simulated detailed record data
-const paymentHistory = [
-  {
-    id: "TXN-202407031256",
-    date: "2024-07-03",
-    time: "12:56 PM",
-    amount: 120.0,
-    currency: "USD",
-    status: "Paid",
-    method: "Credit Card",
-    channel: "Online Portal",
-    member: {
-      id: "M-002315",
-      name: "Akira Yamada",
-      email: "akira.yamada@email.com",
-    },
-    membershipType: "Premium",
-    covering: "Annual renewal (2024-2025)",
-    processedBy: "Stripe",
-    transactionFee: 4.20,
-    reference: "STRP-54637831",
-    remarks: "Renewed premium for 1 year.",
-    invoice: "https://domain.com/invoice/TXN-202407031256",
-  },
-  {
-    id: "TXN-202307051140",
-    date: "2023-07-05",
-    time: "11:40 AM",
-    amount: 112.0,
-    currency: "USD",
-    status: "Paid",
-    method: "Credit Card",
-    channel: "Online Portal",
-    member: {
-      id: "M-002315",
-      name: "Akira Yamada",
-      email: "akira.yamada@email.com",
-    },
-    membershipType: "Premium",
-    covering: "Annual renewal (2023-2024)",
-    processedBy: "Stripe",
-    transactionFee: 4.12,
-    reference: "STRP-49387124",
-    remarks: "Renewed premium.",
-    invoice: "https://domain.com/invoice/TXN-202307051140",
-  },
-  {
-    id: "TXN-202207011003",
-    date: "2022-07-01",
-    time: "10:03 AM",
-    amount: 109.0,
-    currency: "USD",
-    status: "Refunded",
-    method: "Bank Transfer",
-    channel: "Manual",
-    member: {
-      id: "M-002315",
-      name: "Akira Yamada",
-      email: "akira.yamada@email.com",
-    },
-    membershipType: "Premium",
-    covering: "Annual renewal (2022-2023)",
-    processedBy: "Manual Refund",
-    transactionFee: 0.00,
-    reference: "BNK-1634782",
-    remarks: "Refund processed due to duplicate payment.",
-    invoice: "https://domain.com/invoice/TXN-202207011003",
-  },
-  {
-    id: "TXN-202106251543",
-    date: "2021-06-25",
-    time: "03:43 PM",
-    amount: 109.0,
-    currency: "USD",
-    status: "Failed",
-    method: "Credit Card",
-    channel: "Online Portal",
-    member: {
-      id: "M-002315",
-      name: "Akira Yamada",
-      email: "akira.yamada@email.com",
-    },
-    membershipType: "Premium",
-    covering: "Annual renewal (2021-2022)",
-    processedBy: "Stripe",
-    transactionFee: 0.0,
-    reference: "STRP-18493271",
-    remarks: "Insufficient funds.",
-    invoice: null,
-  },
-  {
-    id: "TXN-202106171152",
-    date: "2021-06-17",
-    time: "11:52 AM",
-    amount: 109.0,
-    currency: "USD",
-    status: "Paid",
-    method: "PayPal",
-    channel: "Online Portal",
-    member: {
-      id: "M-002315",
-      name: "Akira Yamada",
-      email: "akira.yamada@email.com",
-    },
-    membershipType: "Premium",
-    covering: "Annual renewal (2021-2022)",
-    processedBy: "PayPal",
-    transactionFee: 3.60,
-    reference: "PYPL-8923419",
-    remarks: "",
-    invoice: "https://domain.com/invoice/TXN-202106171152",
-  },
-];
+// UTILITIES
 
-// Utility
 function StatusTag({ status }: { status: string }) {
   const meta = STATUS[status] || { label: status, color: "#767676", bg: "#f4f6fa" };
   return (
@@ -185,12 +72,87 @@ function StatusTag({ status }: { status: string }) {
   );
 }
 
+type PaymentHistoryEntry = {
+  id: string,
+  date: string,
+  time: string,
+  amount: number,
+  currency: string,
+  status: string,
+  method: string,
+  channel?: string,
+  member: {
+    id: string,
+    name: string,
+    email: string
+  },
+  membershipType: string,
+  covering?: string,
+  processedBy: string,
+  transactionFee: number,
+  reference: string,
+  remarks: string,
+  invoice: string | null
+};
+
+function downloadFileFromUrl(url: string, filename: string) {
+  // Use fetch to request file and download as blob
+  fetch(url, { credentials: "include" }) // credentials in case it's behind auth
+    .then(resp => {
+      if (!resp.ok) throw new Error("Network response was not ok");
+      return resp.blob();
+    })
+    .then(blob => {
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.style.display = "none";
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
+    })
+    .catch(() => {
+      alert("Could not download invoice. Please try again later.");
+    });
+}
+
+function InvoiceDownloadButton({ url, id }: { url: string; id: string }) {
+  return (
+    <button
+      type="button"
+      onClick={e => {
+        e.stopPropagation();
+        const filename = id ? `invoice-${id}.pdf` : "invoice.pdf";
+        downloadFileFromUrl(url, filename);
+      }}
+      style={{
+        color: "#1976d2",
+        fontWeight: 600,
+        textDecoration: "underline",
+        fontSize: 13.5,
+        background: "none",
+        border: "none",
+        padding: 0,
+        margin: 0,
+        cursor: "pointer",
+        transition: "color 0.18s"
+      }}
+      title="Download invoice PDF"
+      aria-label="Download invoice"
+    >
+      Invoice
+    </button>
+  );
+}
+
 function PaymentHistoryRow({
   entry,
   highlight,
   index,
 }: {
-  entry: typeof paymentHistory[0];
+  entry: PaymentHistoryEntry;
   highlight: boolean;
   index: number;
 }) {
@@ -251,20 +213,7 @@ function PaymentHistoryRow({
       </div>
       <div style={{ textAlign: "right", paddingRight: 4 }}>
         {entry.invoice ? (
-          <a
-            href={entry.invoice}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: "#1976d2",
-              fontWeight: 600,
-              textDecoration: "underline",
-              fontSize: 13.5,
-              transition: "color 0.18s"
-            }}
-          >
-            Invoice
-          </a>
+          <InvoiceDownloadButton url={entry.invoice} id={entry.id} />
         ) : (
           <span style={{ color: "#adbdd7", fontWeight: 500, fontSize: 13.5 }}>N/A</span>
         )}
@@ -278,7 +227,7 @@ function PaymentDetail({
   open,
   onClose,
 }: {
-  entry: typeof paymentHistory[0];
+  entry: PaymentHistoryEntry;
   open: boolean;
   onClose: () => void;
 }) {
@@ -382,9 +331,7 @@ function PaymentDetail({
             label="Invoice"
             value={
               entry.invoice ? (
-                <a href={entry.invoice} rel="noopener noreferrer" target="_blank" style={{ color: "#1867b4" }}>
-                  View PDF
-                </a>
+                <InvoiceDownloadButton url={entry.invoice} id={entry.id} />
               ) : (
                 <span style={{ color: "#afb7c2" }}>N/A</span>
               )
@@ -433,8 +380,16 @@ function Detail({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-const PaymentHistory: React.FC = () => {
+interface PaymentHistoryProps {
+  data?: PaymentHistoryEntry[];
+  memberName?: string;
+}
+
+const PaymentHistory: React.FC<PaymentHistoryProps> = ({ data, memberName }) => {
   const [detailOpenIdx, setDetailOpenIdx] = React.useState<number | null>(null);
+
+  // Defensive: default empty array if data is undefined or not an array
+  const safeData = Array.isArray(data) ? data : [];
 
   return (
     <>
@@ -475,7 +430,9 @@ const PaymentHistory: React.FC = () => {
             animation: "label-appear 0.67s cubic-bezier(.41,1.3,.64,1) both"
           }}
         >
-          All recent membership payment records for <span style={{ color: "#233671", fontWeight: 700 }}>Akira Yamada</span>
+          All recent membership payment records{memberName && (
+            <> for <span style={{ color: "#233671", fontWeight: 700 }}>{memberName}</span></>
+          )}
         </div>
         <div
           style={{
@@ -509,7 +466,7 @@ const PaymentHistory: React.FC = () => {
             <div style={{ textAlign: "right", paddingRight: 10 }}>Invoice</div>
           </div>
           {/* Table rows */}
-          {paymentHistory.map((entry, idx) => (
+          {safeData.map((entry, idx) => (
             <div
               tabIndex={0}
               role="button"
@@ -532,12 +489,12 @@ const PaymentHistory: React.FC = () => {
           ))}
         </div>
         <div style={{ color: "#96a0b8", fontSize: 13, marginLeft: 2, marginTop: 8 }}>
-          Showing last {paymentHistory.length} payments. For earlier transactions contact finance.
+          Showing last {safeData.length} payments. For earlier transactions contact finance.
         </div>
         {/* Modal for payment detail */}
-        {detailOpenIdx != null && (
+        {detailOpenIdx != null && safeData[detailOpenIdx] && (
           <PaymentDetail
-            entry={paymentHistory[detailOpenIdx]}
+            entry={safeData[detailOpenIdx]}
             open={true}
             onClose={() => setDetailOpenIdx(null)}
           />
