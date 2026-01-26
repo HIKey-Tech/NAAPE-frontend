@@ -1,5 +1,3 @@
-
-
 import PublicationDetail from "@/components/member/component/publication.detail";
 
 
