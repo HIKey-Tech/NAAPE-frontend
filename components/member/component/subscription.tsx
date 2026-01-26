@@ -9,17 +9,13 @@ import {
 import { useAuth } from "@/context/authcontext";
 import { toast } from "sonner";
 
-/* -------------------------------------------------------------------------- */
-/*                               HELPERS                                      */
-/* -------------------------------------------------------------------------- */
+
 
 function getTierFromPlan(plan: SubscriptionPlan): "basic" | "premium" {
   return plan.name.toLowerCase().includes("basic") ? "basic" : "premium";
 }
 
-/* -------------------------------------------------------------------------- */
-/*                              COMPONENT                                     */
-/* -------------------------------------------------------------------------- */
+
 
 export default function MembershipSubscription() {
   const { user } = useAuth();

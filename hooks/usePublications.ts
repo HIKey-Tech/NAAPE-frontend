@@ -28,12 +28,13 @@ export function useMyPublications(status?: string) {
 }
 
 
-export const useGetSinglePublication = (id: string) => {
-    return useQuery<IPublication>({
+export const useGetSinglePublication = (id?: string) => {
+    return useQuery({
         queryKey: ['single_publication', id],
-        queryFn: () => getSinglePublication(id)
-    })
-}
+        queryFn: () => getSinglePublication(id!),
+        enabled: !!id,
+    });
+};
 
 export const useApprovePublication = () => {
     const queryClient = useQueryClient();

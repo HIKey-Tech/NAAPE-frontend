@@ -12,6 +12,8 @@ import {
 } from "@/hooks/usePublications";
 
 import { useAuth } from "@/context/authcontext";
+import { getAuthorLabel, isOwner, normalizeArray } from "@/lib/utils";
+import { parseAppSegmentConfig } from "next/dist/build/segment-config/app/app-segment-config";
 
 /* -------------------------------------------------------------------------- */
 /*                                   CONFIG                                   */
@@ -59,32 +61,6 @@ type PublicationStatus = keyof typeof STATUS_CONFIG;
 const FallbackImage =
     "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=1200&q=80";
 
-/* -------------------------------------------------------------------------- */
-/*                               HELPER UTILS                                 */
-/* -------------------------------------------------------------------------- */
-
-function normalizeArray(input?: string | string[]) {
-    if (!input) return [];
-    if (Array.isArray(input)) return input;
-    return input
-        .split(/[,;]+/)
-        .map((v) => v.trim())
-        .filter(Boolean);
-}
-
-function getAuthorLabel(author: any) {
-    if (!author) return "Unknown";
-    return author?.name || author?.email || author?._id || "Unknown";
-}
-
-function isOwner(user: any, author: any) {
-    if (!user || !author) return false;
-    return (
-        String(user?._id) === String(author?._id) ||
-        String(user?.email).toLowerCase() ===
-        String(author?.email).toLowerCase()
-    );
-}
 
 /* -------------------------------------------------------------------------- */
 /*                               COMMENTS BLOCK                               */
@@ -95,6 +71,8 @@ const PublicationComments = ({ publicationId }: { publicationId: string }) => {
     const { data = [], isPending, refetch } = useComments(publicationId);
     const addComment = useAddComment();
 
+    console.log("The comments", data)
+
     const comments = Array.isArray(data) ? data : [];
 
     const submit = (e: React.FormEvent) => {
@@ -103,7 +81,7 @@ const PublicationComments = ({ publicationId }: { publicationId: string }) => {
 
         addComment.mutate(
             { publicationId, text: text.trim() },
-            { onSuccess: () => (setText(""), refetch()) }
+            { onSuccess: () => (setText("")) }
         );
     };
 
@@ -133,7 +111,7 @@ const PublicationComments = ({ publicationId }: { publicationId: string }) => {
             )}
 
             <ul className="space-y-2">
-                {comments.map((c: any) => (
+                {comments.map((c) => (
                     <li
                         key={c._id}
                         className="bg-gray-50 border rounded px-3 py-2"
@@ -168,6 +146,11 @@ const PublicationActions = ({
     const [title, setTitle] = useState(publication.title);
     const [content, setContent] = useState(publication.content);
 
+    useEffect(() => {
+        setTitle(publication.title);
+        setContent(publication.content);
+    }, [publication.title, publication.content]);
+
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         edit.mutate(
@@ -179,7 +162,10 @@ const PublicationActions = ({
     const remove = () => {
         if (!confirm("Delete this publication?")) return;
         del.mutate(publication._id!, {
-            onSuccess: () => (onDeleted(), router.back()),
+            onSuccess: () => {
+                onDeleted();
+                router.back();
+            },
         });
     };
 
@@ -231,40 +217,44 @@ const PublicationActions = ({
     );
 };
 
+
 /* -------------------------------------------------------------------------- */
 /*                              MAIN COMPONENT                                */
 /* -------------------------------------------------------------------------- */
 
 export default function PublicationDetail() {
-    const { slug, id } = useParams() as any;
-    const publicationId = slug || id;
+    const params = useParams<{ publicationId: string }>();
+    const publicationId = params.publicationId;
 
     const { user } = useAuth();
     const router = useRouter();
 
-    const { data, isPending, error, refetch } =
-        useGetSinglePublication(publicationId);
+    const {
+        data: publication,
+        isPending,
+        error,
+        refetch,
+    } = useGetSinglePublication(publicationId as any);
 
     if (isPending)
         return <div className="text-center py-20">Loading…</div>;
 
-    if (error || !data)
+    if (error || !publication)
         return <div className="text-center py-20">Not found</div>;
-
-    const publication = data as IPublication;
 
     const canEdit = isOwner(user, publication.author);
 
-    const tags = normalizeArray(publication.status);
-    const refs = normalizeArray((publication as any).references);
-    const files = Array.isArray((publication as any).attachments)
-        ? (publication as any).attachments
-        : [];
-
     const status =
-        STATUS_CONFIG[
-        (publication.status as PublicationStatus) || "pending"
-        ];
+        STATUS_CONFIG[publication.status as PublicationStatus] ??
+        STATUS_CONFIG.pending;
+
+    // const refs = Array.isArray(publication.references)
+    //     ? publication.
+    //     : [];
+
+    // const files = Array.isArray(publication.attachments)
+    //     ? publication.attachments
+    //     : [];
 
     return (
         <article className="max-w-3xl mx-auto bg-white border rounded-xl overflow-hidden mt-10">
@@ -296,20 +286,7 @@ export default function PublicationDetail() {
                     {publication.content}
                 </p>
 
-                {tags.length > 0 && (
-                    <div className="flex gap-2 flex-wrap">
-                        {tags.map((t) => (
-                            <span
-                                key={t}
-                                className="bg-blue-50 border px-3 py-1 rounded-full text-sm"
-                            >
-                                #{t}
-                            </span>
-                        ))}
-                    </div>
-                )}
-
-                {refs.length > 0 && (
+                {/* {refs.length > 0 && (
                     <ul className="list-disc ml-6">
                         {refs.map((r) => (
                             <li key={r}>
@@ -336,10 +313,11 @@ export default function PublicationDetail() {
                             </li>
                         ))}
                     </ul>
-                )}
+                )} */}
 
                 <PublicationComments publicationId={publication._id!} />
             </div>
         </article>
     );
 }
+

@@ -114,11 +114,7 @@ export const verifyPayment = async (transactionId: string) => {
     }
 };
 
-/**
- * Get payment status for event + userEmail (GET /v1/payments/events/status?eventId=...&email=...)
- * @param eventId string
- * @param email string
- */
+
 export const getStatus = async (eventId: string, email: string) => {
     if (!eventId || !email) {
         throw new Error("Event ID and email are required to get payment status.");

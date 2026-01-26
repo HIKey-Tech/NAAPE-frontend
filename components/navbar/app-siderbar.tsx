@@ -71,7 +71,7 @@ const newsPublicationsLinks: NavLink[] = [
 
 const navLinksMain: NavLink[] = [
   { label: "Home", icon: FaHome, href: "/dashboard" },
-  { label: "Training & Certifications", icon: FaChalkboardTeacher, href: "/training" },
+  // { label: "Training & Certifications", icon: FaChalkboardTeacher, href: "/training" },
   { label: "Events", icon: FaCalendarAlt, href: "/member/events" },
   { label: "Forum", icon: FaComments, href: "/forum" },
 ];
