@@ -1,9 +1,9 @@
 "use client";
 
-import { verifyEventPayment } from "@/app/api/events/events";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { verifyPayment } from "@/app/api/events/events";
 
 type State = "loading" | "success" | "failed" | "pending";
 
@@ -19,42 +19,31 @@ export default function PaymentComplete() {
             return;
         }
 
-        verifyEventPayment(transactionId)
+        verifyPayment(transactionId)
             .then((res) => {
-                if (res.status === "success") setState("success");
-                else if (res.status === "pending") setState("pending");
-                else setState("failed");
+                setState(res.status);
             })
-            .catch(() => setState("failed"));
+            .catch(() => setState("pending"));
     }, [transactionId]);
 
     const icons = {
-        loading: <Loader2 className="animate-spin text-blue-500" size={56} />,
-        success: <CheckCircle2 className="text-green-600" size={72} />,
-        failed: <XCircle className="text-red-600" size={72} />,
-        pending: <Loader2 className="animate-spin text-yellow-500" size={56} />,
+        loading: <Loader2 className="animate-spin text-blue-500" size={60} />,
+        pending: <Loader2 className="animate-spin text-yellow-500" size={60} />,
+        success: <CheckCircle2 className="text-green-600" size={74} />,
+        failed: <XCircle className="text-red-600" size={74} />,
     };
 
     const messages = {
-        loading: "Verifying your payment…",
-        success: "Payment successful! You’re registered 🎉",
+        loading: "Verifying your payment...",
+        pending: "Payment is being confirmed. Please wait...",
+        success: "Payment successful! You're registered 🎉",
         failed: "Payment failed or was cancelled.",
-        pending: "Payment is still processing. Please refresh shortly.",
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
             {icons[state]}
-            <h2 className="text-2xl font-bold mt-5">{messages[state]}</h2>
-
-            {state === "failed" && (
-                <a
-                    href="/dashboard/events"
-                    className="mt-6 px-6 py-2 bg-primary text-white rounded-lg"
-                >
-                    Try Again
-                </a>
-            )}
+            <h2 className="text-2xl font-bold mt-4">{messages[state]}</h2>
         </div>
     );
 }
