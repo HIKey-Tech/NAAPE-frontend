@@ -223,10 +223,8 @@ const PublicationActions = ({
 /* -------------------------------------------------------------------------- */
 
 export default function PublicationDetail() {
-    const params = useParams();
-    const publicationId = Array.isArray(params.id)
-        ? params.id[0]
-        : params.id;
+    const params = useParams<{ publicationId: string }>();
+    const publicationId = params.publicationId;
 
     const { user } = useAuth();
     const router = useRouter();

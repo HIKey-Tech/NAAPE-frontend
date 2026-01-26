@@ -146,7 +146,7 @@ export default function TopNavbar() {
         }
     }
 
-   
+
 
     async function handleLogout() {
         setShowUserDropdown(false);
@@ -272,10 +272,10 @@ export default function TopNavbar() {
                                                 hover:bg-[#e5f0ff] transition
                                                 ${!notif.read ? "bg-[#e9f0fd] border-l-4 border-[#143161]" : ""}
                                             `}
-                                            key={notif.id}
+                                            key={notif._id}
                                             onClick={() => {
                                                 if (!notif.read && !markNotificationRead.isPending) {
-                                                    markNotificationRead.mutate(notif.id);
+                                                    markNotificationRead.mutate(notif._id);
                                                 }
                                             }}
                                         >
@@ -293,7 +293,7 @@ export default function TopNavbar() {
                                                     className="opacity-80 hover:opacity-100 p-2 text-[#bf112b] hover:bg-[#ffdbe6] rounded-full transition-colors focus:outline-none"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        deleteNotification.mutate(notif.id);
+                                                        deleteNotification.mutate(notif._id);
                                                     }}
                                                     disabled={deleteNotification.isPending}
                                                 >
