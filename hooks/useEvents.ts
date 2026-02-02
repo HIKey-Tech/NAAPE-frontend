@@ -4,7 +4,8 @@ import {
     fetchEvents,
     getSingleEvent,
     verifyPayment,
-    getStatus
+    getStatus,
+    getUserEvents
 } from "@/app/api/events/events";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -23,31 +24,32 @@ export const useSingleEvent = (id?: string) =>
         enabled: !!id,
     });
 
+// Fetch user's registered events
+export const useUserEvents = () =>
+    useQuery({
+        queryKey: ["user-events"],
+        queryFn: getUserEvents,
+    });
+
 // Create an event
 export const useCreateEvent = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: createEventApi,
         onSuccess: () => {
-            // Optionally re-fetch events after a successful creation
-            // queryClient.invalidateQueries({ queryKey: ["events"] });
+            queryClient.invalidateQueries({ queryKey: ["events"] });
         },
     });
 };
 
 /**
- * Pay/register for an event.
- * Handles both guest and user-based registration, depending on which args you supply.
- * 
- * Example usage:
- *   payForEvent({ eventId, user }) // for logged-in user
- *   payForEvent({ eventId, guest }) // for guest
+ * Pay/register for an event (authenticated users only)
  */
 export const usePayForEvent = () => {
     return useMutation({
         mutationFn: payForEvent,
         onSuccess: () => {
-            // You may want to refetch payment or event status after success
+            // Refetch events after successful payment
         },
     });
 };
@@ -62,10 +64,10 @@ export const useVerifyPayment = () => {
     });
 };
 
-// Get payment status for an event and email (query)
-export const useGetStatus = (eventId?: string, email?: string) =>
+// Get payment status for an event (authenticated users only)
+export const useGetStatus = (eventId?: string) =>
     useQuery({
-        queryKey: ["event-payment-status", eventId, email],
-        queryFn: () => getStatus(eventId as string, email as string),
-        enabled: !!eventId && !!email,
+        queryKey: ["event-payment-status", eventId],
+        queryFn: () => getStatus(eventId as string),
+        enabled: !!eventId,
     });

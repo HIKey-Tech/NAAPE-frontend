@@ -1,8 +1,9 @@
 "use client";
-import { useSingleEvent, usePayForEvent } from "@/hooks/useEvents";
+import { useSingleEvent, usePayForEvent, useGetStatus } from "@/hooks/useEvents";
 import { useParams, useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/authcontext";
+import { CheckCircle2 } from "lucide-react";
 
 // Animation and formatting logic inspired by EventCard
 const EVENT_ANIM_CLASS = "event-card-anim";
@@ -80,9 +81,14 @@ export default function AdminEventDetailsPage() {
     const router = useRouter();
     const id = Array.isArray(params.id) ? params.id[0] : params.id;
     const { data: event, isLoading, isError } = useSingleEvent(id);
+    const { data: paymentStatus } = useGetStatus(id);
     const payForEventMutation = usePayForEvent();
     const [showImageError, setShowImageError] = useState(false);
     const { user } = useAuth();
+
+    // Check if user has already paid
+    const hasPaid = paymentStatus?.paid || false;
+    const isRegistered = paymentStatus?.registered || false;
 
     // Animation: fade-in on mount, like EventCard
     const cardRef = useRef<HTMLDivElement | null>(null);
@@ -163,34 +169,30 @@ export default function AdminEventDetailsPage() {
         if (e) e.stopPropagation();
         if (!id) return false;
         
-        // Validate user is authenticated and has required fields
-        if (!user || !user.name || !user.email) {
-            // Redirect to login if not authenticated
+        // Check if already paid
+        if (hasPaid) {
+            return false;
+        }
+        
+        // Validate user is authenticated
+        if (!user || !user._id) {
             router.push("/login?redirect=/events/" + id);
             return false;
         }
         
-        payForEventMutation.mutate(
-            {
-                eventId: id,
-                user: {
-                    id: user._id,
-                    name: user.name,
-                    email: user.email,
-                },
-            },
-            {
-                onSuccess: (result: any) => {
-                    if (typeof result === "string") {
-                        window.location.href = result;
-                    } else if (result && typeof result.url === "string") {
-                        window.location.href = result.url;
-                    } else {
-                        window.location.href = `/events/${id}/payment-complete`;
-                    }
+        payForEventMutation.mutate(id, {
+            onSuccess: (result: any) => {
+                if (result.message) {
+                    // Free event registration
+                    window.location.reload();
+                } else if (result.link) {
+                    // Paid event - redirect to payment
+                    window.location.href = result.link;
+                } else {
+                    window.location.href = `/events/${id}/payment-complete`;
                 }
             }
-        );
+        });
         return true;
     };
 
@@ -223,7 +225,20 @@ export default function AdminEventDetailsPage() {
             </div>
 
             {/* Main Title */}
-            <div className="text-3xl font-extrabold text-[#222F43] mb-2 break-words">{truncate(event.title, 64)}</div>
+            <div className="text-3xl font-extrabold text-[#222F43] mb-2 wrap-break-word flex items-center gap-3">
+                {truncate(event.title, 64)}
+                {hasPaid && (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 border border-green-200 rounded-full text-sm font-semibold text-green-700">
+                        <CheckCircle2 size={16} />
+                        Paid
+                    </span>
+                )}
+                {!hasPaid && isRegistered && (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-sm font-semibold text-blue-700">
+                        Registered
+                    </span>
+                )}
+            </div>
 
             {/* Date & Location row */}
             <div className="flex flex-col sm:flex-row sm:space-x-6 text-base mb-2">
@@ -277,9 +292,19 @@ export default function AdminEventDetailsPage() {
 
             {/* Registration/Pay Button */}
             <div className="mt-6 flex flex-col items-stretch gap-3">
+                {hasPaid && (
+                    <div className="text-green-700 bg-green-50 border border-green-200 rounded py-3 px-4 text-center font-medium shadow-sm">
+                        ✓ You have already registered and paid for this event
+                    </div>
+                )}
+                {!hasPaid && isRegistered && (
+                    <div className="text-blue-700 bg-blue-50 border border-blue-200 rounded py-3 px-4 text-center font-medium shadow-sm">
+                        You are registered for this free event
+                    </div>
+                )}
                 {payForEventMutation.isSuccess && (
                     <span className="text-green-700 bg-green-50 border border-green-200 rounded py-2 px-4 text-center font-medium shadow-sm transition-all">
-                        Payment/Registration successful! Redirecting...
+                        Registration successful! Redirecting...
                     </span>
                 )}
                 {payForEventMutation.isError && (
@@ -289,23 +314,25 @@ export default function AdminEventDetailsPage() {
                             : "Failed to register/pay for this event."}
                     </span>
                 )}
-                <button
-                    onClick={handleRegister}
-                    disabled={!id || payForEventMutation.isPending}
-                    className={`mt-2 px-7 py-2.5 border border-[#D5E3F7] rounded-md text-[#4267E7] bg-white font-medium text-[15px] transition-colors hover:bg-[#F2F7FF] focus:outline-none focus:ring-2 focus:ring-[#B2D7EF] active:bg-[#E7F1FF] shadow ${(!id || payForEventMutation.isPending) ? "opacity-60 cursor-not-allowed" : ""}`}
-                    aria-label={`View details and register for ${event.title}`}
-                >
-                    {payForEventMutation.isPending ? (
-                        <span className="flex items-center justify-center gap-2">
-                            <span className="animate-spin h-5 w-5 border-t-2 border-b-2 border-[#4267E7] rounded-full inline-block" />
-                            Processing...
-                        </span>
-                    ) : event.isPaid && event.price > 0 ? (
-                        `Pay and Register (${event.currency === "NGN" ? "₦" : event.currency}${event.price})`
-                    ) : (
-                        "Register for Event"
-                    )}
-                </button>
+                {!hasPaid && !isRegistered && (
+                    <button
+                        onClick={handleRegister}
+                        disabled={!id || payForEventMutation.isPending || hasPaid}
+                        className={`mt-2 px-7 py-2.5 border border-[#D5E3F7] rounded-md text-[#4267E7] bg-white font-medium text-[15px] transition-colors hover:bg-[#F2F7FF] focus:outline-none focus:ring-2 focus:ring-[#B2D7EF] active:bg-[#E7F1FF] shadow ${(!id || payForEventMutation.isPending || hasPaid) ? "opacity-60 cursor-not-allowed" : ""}`}
+                        aria-label={`View details and register for ${event.title}`}
+                    >
+                        {payForEventMutation.isPending ? (
+                            <span className="flex items-center justify-center gap-2">
+                                <span className="animate-spin h-5 w-5 border-t-2 border-b-2 border-[#4267E7] rounded-full inline-block" />
+                                Processing...
+                            </span>
+                        ) : event.isPaid && event.price > 0 ? (
+                            `Pay and Register (${event.currency === "NGN" ? "₦" : event.currency}${event.price})`
+                        ) : (
+                            "Register for Event"
+                        )}
+                    </button>
+                )}
             </div>
         </div>
     );
