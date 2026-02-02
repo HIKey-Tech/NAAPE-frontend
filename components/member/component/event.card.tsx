@@ -122,11 +122,11 @@ const EventCard: React.FC<EventCardProps> = ({
     // Payment Status (now local call)
     // -------------------------------
     const fetchPaymentStatus = async () => {
-        if (!id || !user?.email) return;
+        if (!id) return;
         setCheckingStatus(true);
         setStatusError(null);
         try {
-            const status = await getStatus(id, user.email);
+            const status = await getStatus(id);
             setPaymentStatus(status);
         } catch (err: any) {
             setPaymentStatus(null);
@@ -140,11 +140,11 @@ const EventCard: React.FC<EventCardProps> = ({
     const refetchStatus = fetchPaymentStatus;
 
     useEffect(() => {
-        if (id && user?.email) {
+        if (id && user) {
             fetchPaymentStatus();
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id, user?.email]);
+    }, [id, user]);
 
     // -------------------------------
     // Animation CSS
@@ -186,7 +186,7 @@ const EventCard: React.FC<EventCardProps> = ({
             router.push(`/register?event=${id}`);
             return;
         }
-        if (!user?.name || !user?.email) {
+        if (!user?._id) {
             router.push("/login?redirect=/events/" + id);
             return;
         }
@@ -194,16 +194,9 @@ const EventCard: React.FC<EventCardProps> = ({
 
         setShowRegisterLoading(true);
         try {
-            const data = await payForEvent({
-                eventId: id,
-                user: {
-                    id: user._id,
-                    name: user.name,
-                    email: user.email
-                }
-            });
+            const data = await payForEvent(id);
             setShowRegisterLoading(false);
-            const link = data?.paymentLink || data?.link || data?.url;
+            const link = data?.link;
             if (link) {
                 setPaymentLinkOpened(true);
                 setShowVerify(true);
