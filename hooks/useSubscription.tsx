@@ -14,6 +14,18 @@ export interface SubscriptionPlan {
     isActive: boolean;
 }
 
+export interface SubscriptionStatus {
+    hasSubscription: boolean;
+    status: "active" | "pending" | "cancelled" | "expired" | "none";
+    tier: "basic" | "premium" | null;
+    planName?: string;
+    startDate?: string;
+    endDate?: string;
+    features?: string[];
+    interval?: string;
+    message?: string;
+}
+
 /* ----------------------------- FETCH PLANS ----------------------------- */
 
 export const fetchSubscriptionPlansRequest = async (): Promise<SubscriptionPlan[]> => {
@@ -49,6 +61,23 @@ export const initializeSubscriptionPaymentRequest = async ({
 
     return res.data.checkoutUrl as string;
 };
+
+/* ---------------------- FETCH SUBSCRIPTION STATUS ---------------------- */
+
+export const fetchSubscriptionStatusRequest = async (): Promise<SubscriptionStatus> => {
+    const res = await api.get("/payments/subscription/status");
+    return res.data;
+};
+
+export function useSubscriptionStatus(enabled = true) {
+    return useQuery({
+        queryKey: ["subscription-status"],
+        queryFn: fetchSubscriptionStatusRequest,
+        enabled,
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        retry: 1,
+    });
+}
 
 /* ----------------------------- MAIN HOOK ------------------------------- */
 

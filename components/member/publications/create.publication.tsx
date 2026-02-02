@@ -26,6 +26,9 @@ import {
 } from "@/components/ui/select";
 import { useCreatePublication } from "@/hooks/usePublications";
 import { toast } from "sonner";
+import { SubscriptionBanner } from "@/components/member/component/subscription.banner";
+import { useSubscriptionStatus } from "@/hooks/useSubscription";
+import { useAuthStore } from "@/hook/store/useAuthStore";
 
 const publicationSchema = z.object({
   title: z
@@ -63,6 +66,13 @@ const categories = [
 
 // Main Form Component
 const CreatePublicationComponent: React.FC = () => {
+  const { data: subscriptionStatus, isLoading: subscriptionLoading } = useSubscriptionStatus();
+  const { user } = useAuthStore();
+  
+  // Check if user has active subscription or is admin/editor
+  const isAdmin = user?.role === "admin" || user?.role === "editor";
+  const hasActiveSubscription = isAdmin || subscriptionStatus?.hasSubscription;
+
   const form = useForm<PublicationInput>({
     resolver: zodResolver(publicationSchema),
     defaultValues: {
@@ -160,18 +170,29 @@ const CreatePublicationComponent: React.FC = () => {
       aria-labelledby="create-publication-heading"
       tabIndex={-1}
     >
-      <header className="mb-7">
-        <h1
-          id="create-publication-heading"
-          tabIndex={-1}
-          className="text-3xl md:text-4xl font-extrabold text-[#16355D] mb-2 leading-tight"
-        >
-          Create a New Publication
-        </h1>
-        <p className="text-base md:text-lg text-[#486186] font-medium">
-          Submit your article to share expertise and ideas with NAAPE members.
-        </p>
-      </header>
+      {/* Subscription Status Banner */}
+      {!subscriptionLoading && (
+        <SubscriptionBanner 
+          showUpgradePrompt={!hasActiveSubscription}
+          feature="create publications"
+        />
+      )}
+
+      {/* Only show form if user has subscription or is admin */}
+      {hasActiveSubscription ? (
+        <>
+          <header className="mb-7">
+            <h1
+              id="create-publication-heading"
+              tabIndex={-1}
+              className="text-3xl md:text-4xl font-extrabold text-[#16355D] mb-2 leading-tight"
+            >
+              Create a New Publication
+            </h1>
+            <p className="text-base md:text-lg text-[#486186] font-medium">
+              Submit your article to share expertise and ideas with NAAPE members.
+            </p>
+          </header>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -347,7 +368,7 @@ const CreatePublicationComponent: React.FC = () => {
             <NaapButton
               type="button"
               variant="ghost"
-              className="!rounded-lg !h-11 !px-8 border border-[#357AA8] text-[#357AA8] hover:bg-[#ecf3f9] font-semibold outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#357AA8]"
+              className="rounded-lg h-11 px-8 border border-[#357AA8] text-[#357AA8] hover:bg-[#ecf3f9] font-semibold outline-offset-2 focus-visible:outline-[#357AA8] focus-visible:outline-2"
               style={{ minWidth: 130 }}
               onClick={handleDraft}
               disabled={submitting}
@@ -359,7 +380,7 @@ const CreatePublicationComponent: React.FC = () => {
             <NaapButton
               type="submit"
               variant="primary"
-              className="!rounded-lg !h-11 !px-8 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#357AA8]"
+              className="rounded-lg h-11 px-8 focus-visible:outline-[#357AA8] focus-visible:outline-2"
               style={{ minWidth: 100 }}
               loading={submitting}
               data-testid="submit-btn"
@@ -370,6 +391,14 @@ const CreatePublicationComponent: React.FC = () => {
           </section>
         </form>
       </Form>
+      </>
+      ) : (
+        <div className="text-center py-8">
+          <p className="text-gray-600">
+            Please subscribe to create publications.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

@@ -5,6 +5,8 @@ import { FilterHeader } from "../component/header";
 import { useMyPublications } from "@/hooks/usePublications";
 import { IPublication } from "@/app/api/publication/types";
 import { FaBookOpen, FaLayerGroup, FaEdit, FaHourglassHalf, FaTimesCircle } from "react-icons/fa";
+import { SubscriptionBanner } from "../component/subscription.banner";
+import { useSubscriptionStatus } from "@/hooks/useSubscription";
 
 // No change to statuses
 const PUBLICATION_STATUSES: { label: string; value?: string; icon?: React.ReactNode; highlight?: string }[] = [
@@ -26,6 +28,10 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
     const [status, setStatus] = useState<string | undefined>();
 
     const { data: publications = [], isLoading, isError } = useMyPublications(status);
+    const { data: subscriptionStatus, isLoading: subscriptionLoading } = useSubscriptionStatus();
+
+    // Check if user has active subscription (admins/editors bypass this)
+    const hasActiveSubscription = isAdmin || subscriptionStatus?.hasSubscription;
 
     // Utility to normalize search target (handles missing values, case folding, etc)
     const normalize = (v: unknown) =>
@@ -87,8 +93,6 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
                         "flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full border",
                         "transition-all duration-200 font-semibold text-base sm:text-[15px]",
                         "focus:outline-none",
-                        // micro-animations: use focus-visible:ring & transform and color transitions
-                        "transition-transform transition-colors",
                         status === s.value || (!status && !s.value)
                             ? s.highlight +
                               " border-[#2C6ED4] text-[#194287] ring-2 ring-[#2c6ed4]/30 scale-105"
@@ -121,7 +125,7 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
             {(search || dateRange.from || dateRange.to || status) && (
                 <button
                     type="button"
-                    className="flex items-center gap-2 px-4 py-2 rounded-full border text-sm bg-gradient-to-r from-gray-50 to-[#f5f7fa] text-gray-500 hover:bg-gray-100 border-gray-200 ml-1 transition-all duration-200 active:scale-98"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full border text-sm bg-linear-to-r from-gray-50 to-[#f5f7fa] text-gray-500 hover:bg-gray-100 border-gray-200 ml-1 transition-all duration-200 active:scale-98"
                     // Remove shadow
                     style={{ marginTop: 1.5 }}
                     onClick={() => {
@@ -142,7 +146,7 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
         if (isLoading) {
             return (
                 <div className="col-span-full flex justify-center items-center py-20 sm:py-28">
-                    <div className="inline-flex items-center gap-3 px-7 py-4 bg-gradient-to-r from-[#f7faff] to-[#e7f4ff] rounded-xl border border-blue-100 animate-pulse transition-all duration-200">
+                    <div className="inline-flex items-center gap-3 px-7 py-4 bg-linear-to-r from-[#f7faff] to-[#e7f4ff] rounded-xl border border-blue-100 animate-pulse transition-all duration-200">
                         <FaHourglassHalf className="text-2xl text-blue-300 animate-spin-slow" />
                         <span className="text-[#86a3ce] text-lg font-semibold tracking-wide text-center animate-fade-in">Loading publications...</span>
                     </div>
@@ -163,7 +167,7 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
         if (!filteredPublications.length) {
             return (
                 <div className="col-span-full flex justify-center items-center py-20">
-                    <div className="inline-flex flex-col items-center px-8 py-8 bg-gradient-to-br from-[#f1f5fe] to-[#fcfcfd] border border-[#e1e9f7] rounded-xl gap-2 transition-all duration-200">
+                    <div className="inline-flex flex-col items-center px-8 py-8 bg-linear-to-br from-[#f1f5fe] to-[#fcfcfd] border border-[#e1e9f7] rounded-xl gap-2 transition-all duration-200">
                         <FaBookOpen className="text-4xl text-[#bdd3f2] animate-bounce-slow" />
                         <span className="font-bold text-lg text-[#8ca4cd] text-center animate-fade-in">No publications found.</span>
                         <span className="text-xs text-gray-400 max-w-[260px] leading-relaxed mt-1 text-center animate-fade-in">
@@ -187,7 +191,7 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
                         }}
                     >
                         <div
-                            className="absolute inset-0 z-[-1] bg-gradient-to-br from-[#eaf1fb] to-white rounded-3xl opacity-80 group-hover:opacity-100 scale-[1.02] blur-[2.5px] pointer-events-none transition-all duration-200"
+                            className="absolute inset-0 z-[-1] bg-linear-to-br from-[#eaf1fb] to-white rounded-3xl opacity-80 group-hover:opacity-100 scale-[1.02] blur-[2.5px] pointer-events-none transition-all duration-200"
                             aria-hidden="true"
                             // Removed shadow-2xl
                         />
@@ -204,8 +208,18 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
     };
 
     return (
-        <div className="w-full min-h-[75vh] bg-gradient-to-b from-[#f7faff] to-[#fcfcff] pt-0 pb-28 sm:pb-12 relative flex flex-col">
+        <div className="w-full min-h-[75vh] bg-linear-to-b from-[#f7faff] to-[#fcfcff] pt-0 pb-28 sm:pb-12 relative flex flex-col">
             <div className="max-w-7xl mx-auto px-2 sm:px-7 w-full">
+                {/* Subscription Status Banner */}
+                {!subscriptionLoading && (
+                    <div className="mt-4">
+                        <SubscriptionBanner 
+                            showUpgradePrompt={!hasActiveSubscription}
+                            feature="view and create publications"
+                        />
+                    </div>
+                )}
+
                 {/* Hero / Showcase header */}
                 <div className="pt-2 pb-3 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-y-2">
                     <div className="w-full sm:w-auto flex flex-col items-center sm:items-start text-center sm:text-left">
@@ -216,27 +230,37 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
                             Discover and manage your scholarly work.
                         </p>
                     </div>
-                    <div className="flex-shrink-0 mt-2 sm:mt-0 sm:ml-4 flex items-center">
+                    <div className="shrink-0 mt-2 sm:mt-0 sm:ml-4 flex items-center">
                         <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#e9f1ff] text-[#3074e5] border border-[#cfe2fc] transition-all duration-200">
                             {filteredPublications?.length ?? 0} shown
                         </span>
                     </div>
                 </div>
-                <div className="mb-4 sm:mb-6">
-                    <FilterHeader
-                        title={undefined}
-                        search={search}
-                        setSearch={setSearch}
-                        filterOpen={filterOpen}
-                        setFilterOpen={setFilterOpen}
-                        dateRange={dateRange}
-                        setDateRange={setDateRange}
-                        searchPlaceholder="Search by title, author, or summary..."
-                        sortLabel="Newest"
-                        extraFilters={renderStatusFilters()}
-                    />
-                </div>
-                {renderContent()}
+                
+                {/* Only show content if user has subscription or is admin */}
+                {hasActiveSubscription ? (
+                    <>
+                        <div className="mb-4 sm:mb-6">
+                            <FilterHeader
+                                title={undefined}
+                                search={search}
+                                setSearch={setSearch}
+                                filterOpen={filterOpen}
+                                setFilterOpen={setFilterOpen}
+                                dateRange={dateRange}
+                                setDateRange={setDateRange}
+                                searchPlaceholder="Search by title, author, or summary..."
+                                sortLabel="Newest"
+                                extraFilters={renderStatusFilters()}
+                            />
+                        </div>
+                        {renderContent()}
+                    </>
+                ) : (
+                    <div className="mt-8">
+                        {/* Content is blocked - upgrade prompt already shown above */}
+                    </div>
+                )}
             </div>
         </div>
     );
