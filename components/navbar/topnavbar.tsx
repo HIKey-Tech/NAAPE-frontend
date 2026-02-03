@@ -153,21 +153,6 @@ export default function TopNavbar() {
         }
     }
 
-
-
-    async function handleLogout() {
-        setShowUserDropdown(false);
-        try {
-
-            checkUser.logout()
-            router.push("/login");
-        } catch (err) {
-            // handle error option (e.g. toast or alert)
-            alert("Logout failed. Please try again.");
-        }
-    }
-    // --- End: Implement logout ---
-
     return (
         <nav
             className="w-full h-[76px] sm:h-[94px] min-h-[76px] sm:min-h-[94px] flex items-center justify-between px-2 sm:px-10 border-b border-[#43618b] bg-gradient-to-b from-[#fafcff] to-[#f4f8fd] sticky top-0 z-30"
