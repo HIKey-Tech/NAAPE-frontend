@@ -213,6 +213,7 @@ export default function UpcomingEvents() {
 
     // Handle event card click - open modal
     const handleEventClick = async (event: EventCardProps) => {
+        console.log("Event clicked:", event.title); // Debug log
         setSelectedEvent(event);
         setIsModalOpen(true);
         setShowVerify(false);
@@ -220,8 +221,10 @@ export default function UpcomingEvents() {
         // Fetch payment status for this event
         try {
             const status = await getStatus(event.id || event._id || "");
+            console.log("Payment status:", status); // Debug log
             setPaymentStatus(status);
         } catch (err) {
+            console.error("Error fetching status:", err); // Debug log
             setPaymentStatus(null);
         }
     };
@@ -344,6 +347,12 @@ export default function UpcomingEvents() {
             </motion.div>
 
             {/* Event Details Modal */}
+            {/* Debug indicator */}
+            {isModalOpen && (
+                <div className="fixed top-4 right-4 z-[10000] bg-red-500 text-white px-4 py-2 rounded">
+                    Modal should be open!
+                </div>
+            )}
             <EventDetailsModal
                 event={selectedEvent}
                 isOpen={isModalOpen}
