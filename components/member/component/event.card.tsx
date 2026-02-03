@@ -232,10 +232,14 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void }> = ({
     };
 
     const handleCardClick = () => {
+        console.log("Card clicked! Disabled:", disabled, "onCardClick exists:", !!onCardClick); // Debug
         if (disabled) return;
         // Trigger modal open via callback prop
         if (onCardClick) {
+            console.log("Calling onCardClick"); // Debug
             onCardClick();
+        } else {
+            console.log("No onCardClick callback provided!"); // Debug
         }
     };
 
@@ -246,6 +250,15 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void }> = ({
 
     const isPaymentPending = paymentStatus?.status === "pending";
     const isCardClickable = !!id && !disabled;
+
+    // Debug log
+    console.log("EventCard render:", { 
+        id, 
+        title: title?.substring(0, 20), 
+        disabled, 
+        isCardClickable,
+        hasOnCardClick: !!onCardClick 
+    });
 
     // -------------------------------
     // UI
