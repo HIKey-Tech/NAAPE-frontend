@@ -11,14 +11,12 @@ export default function DashboardLayout({
     return (
         <SidebarProvider>
             <AppSidebar />
-            <main className="w-full h-full flex-row ">
+            <main className="w-full min-h-screen flex flex-col">
                 <TopNavbar />
-
-                {children}
+                <div className="flex-1 w-full">
+                    {children}
+                </div>
             </main>
-
         </SidebarProvider>
-
-
     );
 }
