@@ -137,9 +137,9 @@ export default function AdminEventDetailsPage() {
     }, [mounted]);
 
     // Loading state
-    if (isLoading) {
+    if (isLoading || !mounted) {
         return (
-            <div className="flex justify-center items-center min-h-[300px]">
+            <div className="flex justify-center items-center min-h-[300px] p-8">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
             </div>
         );
@@ -148,8 +148,11 @@ export default function AdminEventDetailsPage() {
     // Error/fallback
     if (isError || !event) {
         return (
-            <div className="flex justify-center items-center min-h-[300px] text-red-600">
-                Unable to load event.
+            <div className="flex justify-center items-center min-h-[300px] text-red-600 p-8">
+                <div className="text-center">
+                    <p className="text-xl font-bold mb-2">Unable to load event</p>
+                    <p className="text-sm">Event ID: {id}</p>
+                </div>
             </div>
         );
     }
@@ -202,16 +205,17 @@ export default function AdminEventDetailsPage() {
     };
 
     return (
-        <div
-            ref={cardRef}
-            className={`
-                ${EVENT_ANIM_CLASS}
-                bg-white border border-[#E5EAF2] max-w-2xl mx-auto px-6 py-10 rounded-2xl shadow-md
-                overflow-hidden flex flex-col items-stretch min-h-[380px]
-                transition-shadow hover:shadow-md duration-200
-            `}
-            style={{ boxShadow: "0 1px 13px rgba(34,47,67,0.09)" }}
-        >
+        <div className="w-full min-h-screen bg-gray-50 p-4 sm:p-8">
+            <div
+                ref={cardRef}
+                className={`
+                    ${EVENT_ANIM_CLASS}
+                    bg-white border border-[#E5EAF2] max-w-2xl mx-auto px-6 py-10 my-8 rounded-2xl shadow-md
+                    overflow-hidden flex flex-col items-stretch min-h-[380px]
+                    transition-shadow hover:shadow-md duration-200
+                `}
+                style={{ boxShadow: "0 1px 13px rgba(34,47,67,0.09)" }}
+            >
             {/* Banner/Event Image */}
             <div className="relative w-full h-56 bg-[#F3F6FA] flex items-center justify-center overflow-hidden group mb-6 rounded-xl">
                 {event.imageUrl && !showImageError ? (
@@ -338,6 +342,7 @@ export default function AdminEventDetailsPage() {
                         )}
                     </button>
                 )}
+            </div>
             </div>
         </div>
     );
