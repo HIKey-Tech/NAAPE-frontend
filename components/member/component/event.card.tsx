@@ -27,17 +27,13 @@ const truncate = (text: string, max = 40) =>
 const EVENT_ANIM_CLASS = "event-card-anim";
 
 // -------------------------------
-// CSS Injection (unchanged)
+// CSS Injection - DISABLED ANIMATION
 // -------------------------------
 const MICRO_ANIMS_CSS = `
-/* animation CSS */
+/* animation CSS - ALWAYS VISIBLE */
 .${EVENT_ANIM_CLASS} {
-    opacity: 0;
-    transform: translateY(28px) scale(0.97);
-    transition:
-        opacity 0.72s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0.53s cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow 0.20s cubic-bezier(.42,0,.58,1);
+    opacity: 1;
+    transform: translateY(0) scale(1);
 }
 .${EVENT_ANIM_CLASS}.visible {
     opacity: 1;
