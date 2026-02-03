@@ -20,29 +20,38 @@ export default function EventsIdLayout({ children }: { children: React.ReactNode
 
     useEffect(() => {
         setMounted(true);
+        console.log("Layout mounted");
     }, []);
 
     // Determine layout type once mounted and auth is loaded
     useEffect(() => {
         if (!mounted || session.loading) return;
         
+        console.log("Determining layout type. User role:", session.user?.role);
+        
         if (session.user?.role === "admin") {
+            console.log("Setting layout to admin");
             setLayoutType('admin');
         } else if (session.user?.role === "member") {
+            console.log("Setting layout to member");
             setLayoutType('member');
         } else {
+            console.log("Setting layout to public");
             setLayoutType('public');
         }
     }, [mounted, session.loading, session.user?.role]);
 
     // Prevent flash by waiting for mount and auth
     if (!mounted || session.loading) {
+        console.log("Layout loading...", { mounted, sessionLoading: session.loading });
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
             </div>
         );
     }
+
+    console.log("Rendering layout type:", layoutType);
 
     // Render based on stable layout type
     if (layoutType === 'admin') {

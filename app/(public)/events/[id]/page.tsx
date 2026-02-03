@@ -89,7 +89,18 @@ export default function AdminEventDetailsPage() {
 
     useEffect(() => {
         setMounted(true);
-    }, []);
+        console.log("Event detail page mounted, ID:", id);
+        
+        return () => {
+            console.log("Event detail page unmounting!");
+        };
+    }, [id]);
+
+    useEffect(() => {
+        console.log("Event data:", event);
+        console.log("Payment status:", paymentStatus);
+        console.log("User:", user);
+    }, [event, paymentStatus, user]);
 
     // Check if user has already paid
     const hasPaid = paymentStatus?.paid || false;
