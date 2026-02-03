@@ -9,12 +9,12 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { NaapButton } from "@/components/ui/custom/button.naap";
 import Link from "next/link";
 import Image from "next/image";
 import api from "@/lib/axios";
@@ -22,26 +22,10 @@ import logo from "@/public/logo.png";
 import google from "@/public/images/google.png";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
-
+import { motion } from "framer-motion";
 import { Eye, EyeOff, User, Mail, Lock, ShieldCheck } from "lucide-react";
 
-function useMembers() {
-    // In reality, you might fetch this, but here it's hardcoded as per instructions
-    return {
-        members: [
-            {
-                name: "Lottana Chika",
-                avatarUrl: "/images/leader.png",
-                testimonial:
-                    'With NAAPE, your customer relationship can be as enjoyable as your product. When it\'s this easy, customers keep on coming back.',
-                role: "Member, NAAPE",
-            },
-        ],
-    };
-}
-
-const signupSchema = z
+const formSchema = z
     .object({
         name: z
             .string()
@@ -52,7 +36,7 @@ const signupSchema = z
             }),
         email: z
             .string()
-            .email("Enter a valid email")
+            .email("Please enter a valid email address")
             .min(1, "Email is required"),
         password: z
             .string()
@@ -68,26 +52,24 @@ const signupSchema = z
         path: ["confirmPassword"],
     });
 
-type SignupFormValues = z.infer<typeof signupSchema>;
-
 export default function RegisterPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const { members } = useMembers();
-
-    const form = useForm<SignupFormValues>({
-        resolver: zodResolver(signupSchema),
+    const form = useForm({
+        resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
             email: "",
             password: "",
             confirmPassword: "",
-        }
+        },
+        mode: "onBlur",
     });
 
-    async function onSubmit(values: SignupFormValues) {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
         setLoading(true);
         try {
             await api.post("/auth/register", {
@@ -95,449 +77,403 @@ export default function RegisterPage() {
                 email: values.email.trim(),
                 password: values.password,
             });
-            toast.success(
-                <div>
-                    <div className="font-semibold">Registration Successful 🎉</div>
-                    <div className="text-sm mt-1">Welcome to NAAPE!</div>
-                </div>,
-                {
-                    duration: 4000,
-                    position: "top-center",
-                    icon: "👏",
-                    className: "bg-green-50 border border-green-200 text-green-700"
-                }
-            );
+            
+            toast.success("🎉 Registration successful! Welcome to NAAPE.", {
+                description: (
+                    <p className="text-sm text-green-700 font-medium">
+                        Your account has been created successfully!
+                    </p>
+                ),
+                duration: 3500,
+                position: "top-center",
+            });
+            
             router.replace("/dashboard");
         } catch (error: any) {
-            toast.error(
-                <div>
-                    <div className="font-semibold">Registration Failed</div>
-                    <div className="text-sm mt-1">
-                        {error?.response?.data?.message ?? "Registration Failed."}
-                    </div>
-                </div>,
-                {
-                    duration: 5000,
-                    position: "top-center",
-                    icon: "❌",
-                    className: "bg-red-50 border border-red-200 text-red-700"
-                }
-            );
+            if (error?.response?.data?.message) {
+                toast("Registration Failed", { 
+                    description: error.response.data.message 
+                });
+            } else {
+                toast("Registration Failed", { 
+                    description: "An error occurred during registration" 
+                });
+            }
         } finally {
             setLoading(false);
         }
     }
 
+    function handleGoogleSignUp() {
+        alert("Google sign-up coming soon");
+    }
+
+    // Framer motion variants
+    const parentVariants = {
+        hidden: { opacity: 0, y: 35 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                type: "spring",
+                stiffness: 70,
+                damping: 17,
+                staggerChildren: 0.12,
+            },
+        },
+        exit: { opacity: 0, y: 35, transition: { duration: 0.32 } }
+    };
+
+    const childVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 60, damping: 15 } },
+        exit: { opacity: 0, y: 20, transition: { duration: 0.22 } }
+    };
+
     return (
-        <main className="min-h-full w-full py-10 flex items-center justify-center bg-[#EDF1F9]">
+        <main className="min-h-full w-full py-10 px-6 flex items-center justify-center bg-gradient-to-tr from-[#d6e1f8] via-[#eff3fa] to-[#e3ecfb]">
             <motion.div
-                className="flex flex-col md:flex-row w-full max-w-6xl h-full rounded-2xl bg-white border-2 border-[#123976] overflow-hidden"
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: "easeOut" }}
-                style={{ boxShadow: "none" }}
+                className="flex flex-col md:flex-row w-full max-w-6xl h-full shadow-2xl rounded-2xl bg-white border border-[#d8e0f0]"
+                variants={parentVariants as any}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
             >
-                {/* Left (Form) */}
+                {/* Left: Register form */}
                 <motion.div
-                    className="w-full md:w-full h-full py-14 px-6 md:px-16 flex flex-col justify-center border-0 md:border-r-2 border-[#DBE5F8] bg-white"
-                    initial={{ opacity: 0, x: -38 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.85, delay: 0.1, ease: "easeOut" }}
+                    className="w-full md:w-full h-full py-12 px-6 md:px-14 flex flex-col justify-center bg-white/95 rounded-l-2xl"
+                    variants={childVariants as any}
                 >
-                    {/* Logo and Login CTA */}
+                    {/* Top NAAPE logo */}
                     <motion.div
-                        className="flex items-center justify-between mb-9 relative min-h-full w-full"
-                        initial={{ opacity: 0, y: -14 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+                        className="flex items-start justify-between mb-8 relative w-full"
+                        variants={childVariants as any}
                     >
-                        <motion.div
-                            initial={{ rotate: -12, scale: 0.88 }}
-                            animate={{ rotate: 0, scale: 1 }}
-                            transition={{ duration: 0.7, delay: 0.27, type: "spring" }}
-                        >
+                        <div className="flex items-center gap-2">
                             <Image
                                 src={logo}
-                                alt="NAAPE Logo"
-                                width={52}
-                                height={52}
-                                className="rounded border-2 border-[#174ee7] bg-white transition-all"
+                                alt="NAAPE logo"
+                                width={55}
+                                height={55}
+                                className="drop-shadow"
                                 priority
                             />
-                        </motion.div>
-                        <span className="text-sm absolute right-0 top-0 font-medium text-[#5680cb] bg-[#f0f4fe] rounded px-3 py-1 border border-[#d8e5fa]">
-                            Already a member?{" "}
+                            <span className="ml-1 text-xl md:text-2xl font-extrabold tracking-tight text-[#2347a0] hover:text-[#2852b4]">
+                                NAAPE
+                            </span>
+                        </div>
+                        <div className="flex flex-col md:flex-row justify-end items-end gap-0 md:gap-1 text-[15px] font-normal">
+                            <span className="text-xs text-[#586078] mb-1 md:mb-0">
+                                Already a member?
+                            </span>
                             <Link
                                 href="/login"
-                                className="text-[#103176] font-extrabold underline underline-offset-2 hover:text-[#174ee7] ml-1 transition-all"
+                                className="text-[#2852B4] font-semibold hover:underline transition duration-150 text-[14.5px]"
                             >
                                 Login
                             </Link>
+                        </div>
+                    </motion.div>
+
+                    {/* Welcome / Card */}
+                    <motion.div variants={childVariants as any}>
+                        <h1 className="text-2xl md:text-3xl leading-[1.12] font-extrabold text-slate-900 mb-2 text-left">
+                            Join <span className="text-[#2852B4]">NAAPE</span>
+                        </h1>
+                        <span className="block mb-8 text-[15px] text-[#3d4770] font-medium">
+                            Best app for <span className="font-semibold text-[#3970D8]">Pilots</span> and <span className="font-semibold text-[#e65d15]">Engineers</span>
                         </span>
                     </motion.div>
-                    {/* Heading & subtitle */}
-                    <motion.h1
-                        className="text-[2.2rem] text-center font-black text-[#133574] mb-1 mt-7 tracking-tight leading-tight uppercase"
-                        initial={{ opacity: 0, y: 8, scale: 1.04 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        transition={{ duration: 0.5, delay: 0.33, ease: "easeOut" }}
-                        style={{
-                            letterSpacing: "0.01em",
-                            textShadow: "0 2px 0 #f0f4fe",
-                        }}
-                    >
-                        Join NAAPE
-                    </motion.h1>
-                    <motion.p
-                        className="text-center text-base md:text-lg font-medium leading-6 mt-2 mb-8 text-[#385ecb]"
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.37, ease: "easeOut" }}
-                    >
-                        <span className="block font-bold text-[#1a3482] mb-1 text-lg md:text-xl uppercase tracking-wide">National Association of Aircraft Pilots & Engineers</span>
-                        <span className="block text-[#4b689d] font-medium tracking-wide">
-                            The home of aviation professionals in Nigeria
-                        </span>
-                    </motion.p>
-
-                    {/* Google signup */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 18 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.41, ease: "easeOut" }}
-                    >
-                        <NaapButton
-                            fullWidth
-                            className="mb-5 border-2 border-[#174ee7] hover:bg-[#174ee7]/10 focus:bg-[#174ee7]/15 transition font-extrabold text-[#174ee7] rounded-lg"
-                            icon={
-                                <motion.span
-                                    whileHover={{ scale: 1.13, rotate: -8 }}
-                                    whileTap={{ scale: 0.95, rotate: 4 }}
-                                    className="mr-1"
+                    <Form {...form}>
+                        <motion.form
+                            onSubmit={form.handleSubmit(onSubmit)}
+                            className="space-y-8"
+                            autoComplete="on"
+                            variants={parentVariants as any}
+                            initial={false}
+                            animate="visible"
+                        >
+                            {/* Google sign up */}
+                            <motion.div variants={childVariants as any}>
+                                <Button
+                                    type="button"
+                                    onClick={handleGoogleSignUp}
+                                    variant="outline"
+                                    className="mb-3 w-full h-[41px] rounded-md gap-3 border border-[#DADFF2] bg-white text-[#2347a0] font-semibold text-[15.3px] shadow-none hover:bg-[#f3f6fa] transition-colors duration-150"
                                 >
                                     <Image
                                         src={google}
                                         alt="Google"
-                                        width={20}
-                                        height={20}
-                                        priority
+                                        width={24}
+                                        height={24}
+                                        className="-ml-2"
                                     />
-                                </motion.span>
-                            }
-                            iconPosition="left"
-                            disabled={loading}
-                            onClick={() => {
-                                toast.info("Google signup is coming soon!");
-                            }}
-                        >
-                            <span className="w-full font-bold text-[#174ee7]">Sign up with Google</span>
-                        </NaapButton>
-                    </motion.div>
+                                    <span className="font-semibold">Sign up with Google</span>
+                                </Button>
+                            </motion.div>
 
-                    {/* OR separator */}
-                    <motion.div
-                        className="flex items-center mb-6 mt-1"
-                        initial={{ opacity: 0, scale: 0.96 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.35, delay: 0.44, ease: "easeOut" }}
-                    >
-                        <Separator className="flex-1 bg-[#cee5fb]" />
-                        <span className="mx-4 text-xs text-[#174ee7] font-black uppercase tracking-widest">
-                            OR
-                        </span>
-                        <Separator className="flex-1 bg-[#cee5fb]" />
-                    </motion.div>
+                            {/* OR separator */}
+                            <motion.div className="flex items-center gap-4 mb-2" variants={childVariants as any}>
+                                <Separator className="flex-1 bg-[#DADFF2] h-[2px]" />
+                                <span className="text-xs/relaxed text-slate-600 font-semibold tracking-[0.08em] mx-1 uppercase">
+                                    or
+                                </span>
+                                <Separator className="flex-1 bg-[#DADFF2] h-[2px]" />
+                            </motion.div>
 
-                    {/* Signup Form */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 24 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.68, delay: 0.52, ease: "easeOut" }}
-                        className="pt-2"
-                    >
-                        <Form {...form}>
-                            <form
-                                onSubmit={form.handleSubmit(onSubmit)}
-                                className="flex flex-col gap-4"
-                                autoComplete="off"
-                            >
+                            {/* Full Name with icon */}
+                            <motion.div variants={childVariants as any}>
                                 <FormField
                                     control={form.control}
                                     name="name"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-[#123976] text-base font-bold mb-1 tracking-wide">
+                                            <FormLabel
+                                                htmlFor="register-name"
+                                                className="text-[#1e2c50] text-[15.3px] font-semibold mb-1"
+                                            >
                                                 Full Name
                                             </FormLabel>
                                             <FormControl>
                                                 <div className="relative">
-                                                    <motion.span
-                                                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#174ee7]"
-                                                        initial={false}
-                                                        whileFocus={{ scale: 1.32, color: "#0b1854" }}
-                                                    >
+                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3970D8]">
                                                         <User size={19} />
-                                                    </motion.span>
+                                                    </span>
                                                     <Input
                                                         {...field}
+                                                        id="register-name"
                                                         type="text"
                                                         placeholder="Enter your full name"
                                                         autoComplete="name"
-                                                        className="h-[46px] rounded-lg border-2 border-[#C3D0F5] bg-[#F6FAFF] text-base placeholder:text-[#a2badf] focus:border-[#174ee7] pl-10 font-semibold text-[#18346A] ring-0 transition-colors"
-                                                        maxLength={48}
-                                                        disabled={loading}
+                                                        aria-label="Full Name"
+                                                        aria-required="true"
                                                         spellCheck={false}
-                                                        autoFocus
+                                                        maxLength={48}
+                                                        className={`h-[44px] rounded-md border border-[#CBD6F1] bg-white text-base font-medium placeholder:text-[#A4B2D5] pl-11 focus:ring-2 focus:ring-[#2852B4] focus:border-[#2852B4] transition-colors duration-150 ${form.formState.errors.name ? "border-[#e65d15] focus:ring-[#e65d15]" : ""}`}
+                                                        disabled={loading}
                                                     />
                                                 </div>
                                             </FormControl>
-                                            <FormMessage className="text-xs font-semibold text-[#dc2c34] mt-1" />
+                                            <FormMessage className="text-xs text-[#e65d15] mt-1" />
                                         </FormItem>
                                     )}
                                 />
+                            </motion.div>
+
+                            {/* Email with icon */}
+                            <motion.div variants={childVariants as any}>
                                 <FormField
                                     control={form.control}
                                     name="email"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-[#123976] text-base font-bold mb-1 tracking-wide">
+                                            <FormLabel
+                                                htmlFor="register-email"
+                                                className="text-[#1e2c50] text-[15.3px] font-semibold mb-1"
+                                            >
                                                 Email Address
                                             </FormLabel>
                                             <FormControl>
                                                 <div className="relative">
-                                                    <motion.span
-                                                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#174ee7]"
-                                                        initial={false}
-                                                        whileFocus={{ scale: 1.32, color: "#0b1854" }}
-                                                    >
+                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3970D8]">
                                                         <Mail size={19} />
-                                                    </motion.span>
+                                                    </span>
                                                     <Input
                                                         {...field}
+                                                        id="register-email"
                                                         type="email"
-                                                        placeholder="your@email.com"
-                                                        autoComplete="email"
                                                         inputMode="email"
-                                                        className="h-[46px] rounded-lg border-2 border-[#C3D0F5] bg-[#F6FAFF] text-base placeholder:text-[#a2badf] focus:border-[#174ee7] pl-10 font-semibold text-[#18346A] ring-0 transition-colors"
+                                                        placeholder="you@email.com"
+                                                        autoComplete="email"
+                                                        aria-label="Email"
+                                                        aria-required="true"
+                                                        spellCheck={false}
+                                                        className={`h-[44px] rounded-md border border-[#CBD6F1] bg-white text-base font-medium placeholder:text-[#A4B2D5] pl-11 focus:ring-2 focus:ring-[#2852B4] focus:border-[#2852B4] transition-colors duration-150 ${form.formState.errors.email ? "border-[#e65d15] focus:ring-[#e65d15]" : ""}`}
                                                         disabled={loading}
                                                     />
                                                 </div>
                                             </FormControl>
-                                            <FormMessage className="text-xs font-semibold text-[#dc2c34] mt-1" />
+                                            <FormMessage className="text-xs text-[#e65d15] mt-1" />
                                         </FormItem>
                                     )}
                                 />
+                            </motion.div>
+
+                            {/* Password with icon and visibility toggle */}
+                            <motion.div variants={childVariants as any}>
                                 <FormField
                                     control={form.control}
                                     name="password"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-[#123976] text-base font-bold mb-1 flex items-center gap-2">
+                                            <FormLabel
+                                                htmlFor="register-password"
+                                                className="text-[#1e2c50] text-[15.3px] font-semibold mb-1"
+                                            >
                                                 Password
-                                                <span className="ml-2 text-xs text-[#7fa1ec] font-medium">(minimum 8 characters, upper &amp; lower-case, number)</span>
+                                                <span className="ml-2 text-xs text-[#7A88C7] font-normal">(minimum 8 characters, upper & lower-case, number)</span>
                                             </FormLabel>
                                             <FormControl>
                                                 <div className="relative">
-                                                    <motion.span
-                                                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#174ee7]"
-                                                        initial={false}
-                                                        whileFocus={{ scale: 1.32, color: "#174ee7" }}
-                                                    >
+                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3970D8]">
                                                         <Lock size={19} />
-                                                    </motion.span>
+                                                    </span>
                                                     <Input
                                                         {...field}
+                                                        id="register-password"
                                                         type={showPassword ? "text" : "password"}
                                                         placeholder="Create a password"
                                                         autoComplete="new-password"
-                                                        className="h-[46px] rounded-lg border-2 border-[#C3D0F5] bg-[#F6FAFF] text-base placeholder:text-[#a2badf] focus:border-[#174ee7] pr-10 pl-10 font-semibold text-[#18346A] ring-0 transition-colors"
+                                                        aria-label="Password"
+                                                        aria-required="true"
                                                         minLength={8}
                                                         maxLength={32}
+                                                        spellCheck={false}
+                                                        className={`h-[44px] rounded-md border border-[#CBD6F1] bg-white text-base font-medium placeholder:text-[#A4B2D5] pr-11 pl-11 focus:ring-2 focus:ring-[#2852B4] focus:border-[#2852B4] transition-colors duration-150 ${form.formState.errors.password ? "border-[#e65d15] focus:ring-[#e65d15]" : ""}`}
                                                         disabled={loading}
                                                     />
-                                                    <motion.button
+                                                    <button
                                                         type="button"
-                                                        tabIndex={-1}
                                                         aria-label={showPassword ? "Hide password" : "Show password"}
-                                                        className="absolute right-2 top-2 text-[#7fa1ec] hover:text-[#174ee7] p-1 rounded focus:outline-none duration-150"
-                                                        whileHover={{ scale: 1.13, color: "#103176" }}
-                                                        onClick={() => setShowPassword((v) => !v)}
+                                                        className="absolute right-2 top-0 bottom-0 flex items-center"
+                                                        tabIndex={-1}
+                                                        onClick={() => setShowPassword((p) => !p)}
                                                         disabled={loading}
                                                     >
-                                                        {showPassword ? (
-                                                            <EyeOff size={19} />
-                                                        ) : (
-                                                            <Eye size={19} />
-                                                        )}
-                                                    </motion.button>
+                                                        {showPassword
+                                                            ? <EyeOff size={18} className="text-[#7A88C7]" />
+                                                            : <Eye size={18} className="text-[#7A88C7]" />
+                                                        }
+                                                    </button>
                                                 </div>
                                             </FormControl>
-                                            <FormMessage className="text-xs font-semibold text-[#dc2c34] mt-1" />
+                                            <FormMessage className="text-xs text-[#e65d15] mt-1" />
                                         </FormItem>
                                     )}
                                 />
+                            </motion.div>
+
+                            {/* Confirm Password with icon and visibility toggle */}
+                            <motion.div variants={childVariants as any}>
                                 <FormField
                                     control={form.control}
                                     name="confirmPassword"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-[#123976] text-base font-bold mb-1 flex items-center gap-1">
+                                            <FormLabel
+                                                htmlFor="register-confirm-password"
+                                                className="text-[#1e2c50] text-[15.3px] font-semibold mb-1"
+                                            >
                                                 Confirm Password
                                             </FormLabel>
                                             <FormControl>
                                                 <div className="relative">
-                                                    <motion.span
-                                                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#174ee7]"
-                                                        initial={false}
-                                                        whileFocus={{ scale: 1.16, color: "#103176" }}
-                                                    >
+                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3970D8]">
                                                         <ShieldCheck size={19} />
-                                                    </motion.span>
+                                                    </span>
                                                     <Input
                                                         {...field}
-                                                        type="password"
+                                                        id="register-confirm-password"
+                                                        type={showConfirmPassword ? "text" : "password"}
                                                         placeholder="Confirm password"
                                                         autoComplete="new-password"
-                                                        className="h-[46px] rounded-lg border-2 border-[#C3D0F5] bg-[#F6FAFF] text-base placeholder:text-[#a2badf] focus:border-[#174ee7] pl-10 font-semibold text-[#18346A] ring-0 transition-colors"
+                                                        aria-label="Confirm Password"
+                                                        aria-required="true"
+                                                        spellCheck={false}
+                                                        className={`h-[44px] rounded-md border border-[#CBD6F1] bg-white text-base font-medium placeholder:text-[#A4B2D5] pr-11 pl-11 focus:ring-2 focus:ring-[#2852B4] focus:border-[#2852B4] transition-colors duration-150 ${form.formState.errors.confirmPassword ? "border-[#e65d15] focus:ring-[#e65d15]" : ""}`}
                                                         disabled={loading}
                                                     />
+                                                    <button
+                                                        type="button"
+                                                        aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                                                        className="absolute right-2 top-0 bottom-0 flex items-center"
+                                                        tabIndex={-1}
+                                                        onClick={() => setShowConfirmPassword((p) => !p)}
+                                                        disabled={loading}
+                                                    >
+                                                        {showConfirmPassword
+                                                            ? <EyeOff size={18} className="text-[#7A88C7]" />
+                                                            : <Eye size={18} className="text-[#7A88C7]" />
+                                                        }
+                                                    </button>
                                                 </div>
                                             </FormControl>
-                                            <FormMessage className="text-xs font-semibold text-[#dc2c34] mt-1" />
+                                            <FormMessage className="text-xs text-[#e65d15] mt-1" />
                                         </FormItem>
                                     )}
                                 />
-                                <NaapButton
+                            </motion.div>
+
+                            {/* Terms and Privacy */}
+                            <motion.div className="text-center text-xs text-[#7A88C7] mt-0 mb-2" variants={childVariants as any}>
+                                By clicking Sign up, you agree to NAAPE's{" "}
+                                <Link href="/terms-of-service" className="text-[#2852B4] font-semibold hover:underline">
+                                    Terms of Service
+                                </Link>
+                                {" "}and{" "}
+                                <Link href="/privacy-policy" className="text-[#2852B4] font-semibold hover:underline">
+                                    Privacy Policy
+                                </Link>
+                            </motion.div>
+
+                            {/* Sign Up button */}
+                            <motion.div variants={childVariants as any}>
+                                <Button
                                     type="submit"
-                                    fullWidth
-                                    variant="primary"
-                                    loading={loading}
-                                    loadingText="Signing up..."
-                                    className="mt-4 py-3 text-lg rounded-lg bg-gradient-to-b from-[#174ee7] to-[#123976] hover:from-[#123976] hover:to-[#174ee7] duration-200 font-extrabold border-2 border-[#103176] text-white transition-all shadow-none"
+                                    disabled={loading}
+                                    className="w-full h-[50px] mt-1 rounded-lg bg-gradient-to-r from-[#2852B4] to-[#3970d8] hover:from-[#2347A0] hover:to-[#2852B4] text-white text-[17px] font-extrabold tracking-wide shadow-lg flex items-center justify-center transition-all duration-150"
                                 >
-                                    <motion.span
-                                        initial={false}
-                                        whileHover={{ scale: 1.032, letterSpacing: "0.06em" }}
-                                        whileTap={{ scale: 0.97 }}
-                                        className="flex items-center justify-center gap-2"
-                                    >
-                                        <svg width={24} height={24} fill="none" className="inline mr-1" aria-hidden focusable="false">
-                                            <circle cx={12} cy={12} r={12} fill="#fff" fillOpacity={0.09}/>
-                                            <path d="M6.8 12.5l2.75 2.7 6-6.2" stroke="#fff" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"/>
-                                        </svg>
-                                        Sign up
-                                    </motion.span>
-                                </NaapButton>
-                                <div className="text-center text-xs text-[#8ea6da] mt-3 font-medium leading-tight pt-2">
-                                    By clicking <span className="font-bold text-[#123976]">Sign up</span>, you agree to NAAPE's{" "}
-                                    <Link href="/terms-of-service" className="text-[#174ee7] font-bold underline underline-offset-2 hover:text-[#123976]">
-                                        Terms of Service
-                                    </Link>
-                                    {" "}and{" "}
-                                    <Link href="/privacy-policy" className="text-[#174ee7] font-bold underline underline-offset-2 hover:text-[#123976]">
-                                        Privacy Policy
-                                    </Link>
-                                </div>
-                            </form>
-                        </Form>
-                    </motion.div>
+                                    {loading ? (
+                                        <>
+                                            <span className="mr-2 animate-spin flex items-center">
+                                                <svg viewBox="0 0 20 20" fill="none" width={20} height={20}>
+                                                    <path
+                                                        d="M2 10l16-4-2 5-9 3-1 4-2-5z"
+                                                        fill="#fff"
+                                                        stroke="#fff"
+                                                        strokeWidth={1}
+                                                    />
+                                                </svg>
+                                            </span>
+                                            Signing Up...
+                                        </>
+                                    ) : (
+                                        "Sign up"
+                                    )}
+                                </Button>
+                            </motion.div>
+                        </motion.form>
+                    </Form>
                 </motion.div>
 
                 {/* Right Side Illustration */}
                 <motion.div
-                    className="bg-[#123976] w-full flex justify-center items-center relative rounded-r-2xl overflow-hidden"
-                    initial={{ opacity: 0, x: 80 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.9, delay: 0.22, ease: "easeOut" }}
+                    className="bg-transparent w-full justify-center items-center relative rounded-r-2xl overflow-hidden"
+                    initial={{ opacity: 0, x: 70 }}
+                    animate={{ opacity: 1, x: 0, transition: { type: "spring", delay: 0.28, stiffness: 46, damping: 12 } }}
+                    exit={{ opacity: 0, x: 70, transition: { duration: 0.25 } }}
                 >
-                    <motion.div
-                        className="rounded-2xl border-0 w-full h-full flex items-center justify-center relative overflow-hidden"
-                        initial={{ scale: 0.97, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 0.7, delay: 0.35, ease: "easeOut" }}
-                    >
-                        <motion.div
+                    <div className="absolute inset-0 shadow-lg rounded-r-2xl overflow-hidden">
+                        <Image
+                            src="/images/plane.jpg"
+                            alt="Cockpit interior with a panoramic view"
+                            fill
+                            quality={90}
                             style={{
-                                height: "100%",
-                                width: "100%",
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                zIndex: 1,
+                                objectFit: "cover",
+                                objectPosition: "center",
+                                transition: "opacity 0.7s ease",
+                                opacity: 0.98,
+                                filter: "brightness(0.86) saturate(1.09) contrast(1.07)",
+                                borderTopRightRadius: "16px",
+                                borderBottomRightRadius: "16px",
                             }}
-                            initial={{ opacity: 0, scale: 1.02 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.7, delay: 0.52 }}
-                        >
-                            <Image
-                                src="/images/plane.jpg"
-                                className="w-full h-full object-cover object-center grayscale-[12%] contrast-105"
-                                alt="Cockpit interior with a panoramic view"
-                                width={470}
-                                height={470}
-                                style={{
-                                    transition: "opacity 0.8s, filter 0.3s",
-                                    opacity: 0.88,
-                                    filter: "brightness(0.77) saturate(1.18) contrast(1.08)",
-                                    borderTopRightRadius: "16px",
-                                    borderBottomRightRadius: "16px",
-                                    borderLeft: "6px solid #174ee7"
-                                }}
-                                priority
-                            />
-                        </motion.div>
-                        {/* No gradient - use a crisp border instead for separation */}
-                        {/* Testimonial Card */}
-                        {members && members.length > 0 && (
-                            <AnimatePresence>
-                                <motion.div
-                                    className="absolute bottom-10 left-14 right-10 bg-[#f6f6fb] rounded-xl p-5 pt-6 flex flex-col gap-2 max-w-[380px] z-20 border-2 border-[#174ee7]"
-                                    initial={{ opacity: 0, y: 18, scale: 0.97 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: 14, scale: 0.97 }}
-                                    transition={{ duration: 0.63, delay: 0.7, ease: "easeOut" }}
-                                >
-                                    <blockquote className="text-[#1a308c] text-[15.5px] font-bold italic leading-[1.68] mb-2">
-                                        <motion.span
-                                            initial={false}
-                                            whileHover={{ color: "#174ee7", scale: 1.045 }}
-                                        >
-                                            &quot;{members[0].testimonial}&quot;
-                                        </motion.span>
-                                    </blockquote>
-                                    <div className="flex items-center gap-3 mt-2">
-                                        <div className="h-10 w-10 rounded-full overflow-hidden bg-[#e3e8f5] flex items-center justify-center border-2 border-[#174ee7]">
-                                            <motion.div
-                                                initial={{ scale: 0.93 }}
-                                                animate={{ scale: 1 }}
-                                                whileHover={{ scale: 1.13, rotate: -6 }}
-                                                transition={{ type: "spring", stiffness: 210 }}
-                                            >
-                                                <Image
-                                                    src={members[0].avatarUrl}
-                                                    alt="Member profile"
-                                                    width={38}
-                                                    height={38}
-                                                    className="object-cover"
-                                                    priority
-                                                />
-                                            </motion.div>
-                                        </div>
-                                        <div className="flex flex-col pl-2">
-                                            <span className="font-extrabold text-sm text-[#174ee7] leading-tight">
-                                                {members[0].name}
-                                            </span>
-                                            <span className="text-xs text-[#395671] font-semibold leading-tight">
-                                                {members[0].role}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            </AnimatePresence>
-                        )}
-                        {/* Bottom border to reinforce strong separation */}
-                        <div className="absolute bottom-0 left-0 right-0 h-2 bg-[#174ee7] z-30 rounded-b-xl" />
-                    </motion.div>
+                            sizes="(max-width: 900px) 0vw, 53vw"
+                            priority
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#1b284cdd] via-transparent to-transparent h-36 rounded-b-[16px] pointer-events-none" />
+                        <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-[#2a325066] via-transparent to-transparent h-28 rounded-tr-[16px] pointer-events-none" />
+                    </div>
                 </motion.div>
             </motion.div>
         </main>
