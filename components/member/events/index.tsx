@@ -1,12 +1,15 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import EventCard from "../component/event.card"; // @file_context_0 -- this import stays the same
+import EventCard from "../component/event.card";
+import { EventDetailsModal } from "@/components/ui/custom/event.details.modal";
 import { FilterHeader } from "../component/header";
 import { useEvents } from "@/hooks/useEvents";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { useRouter } from "next/navigation";
 import { parseJwt } from "@/proxy";
+import { payForEvent, verifyPayment, getStatus } from "@/app/api/events/events";
+import type { EventCardProps } from "@/app/api/events/type";
 
 // Utility to normalize events array structure
 function getArrayFromEvents(events: any): any[] {
@@ -19,6 +22,13 @@ function getArrayFromEvents(events: any): any[] {
 export default function EventsComponent() {
     const [user, setUser] = useState<any>(null);
     const [role, setRole] = useState<string | null>(null);
+
+    // Modal state
+    const [selectedEvent, setSelectedEvent] = useState<EventCardProps | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isRegistering, setIsRegistering] = useState(false);
+    const [paymentStatus, setPaymentStatus] = useState<any>(null);
+    const [showVerify, setShowVerify] = useState(false);
 
     useEffect(() => {
         if (typeof window === "undefined") return;
@@ -57,6 +67,72 @@ export default function EventsComponent() {
             window.location.href = "/admin/events/new";
         }
     }, []);
+
+    // Handle event card click - open modal
+    const handleEventClick = async (event: any) => {
+        console.log("Event clicked:", event.title);
+        
+        // For admins, navigate to manage page instead of modal
+        if (isAdmin) {
+            const evId = event.id ?? event._id;
+            router.push(`/admin/events/${evId}`);
+            return;
+        }
+        
+        // For members, show modal
+        setSelectedEvent(event);
+        setIsModalOpen(true);
+        setShowVerify(false);
+        
+        // Fetch payment status
+        try {
+            const status = await getStatus(event.id || event._id || "");
+            setPaymentStatus(status);
+        } catch (err) {
+            setPaymentStatus(null);
+        }
+    };
+
+    // Handle registration from modal
+    const handleRegister = async (eventId: string) => {
+        setIsRegistering(true);
+        try {
+            const result = await payForEvent(eventId);
+            if (result?.link) {
+                setShowVerify(true);
+                window.open(result.link, "_blank");
+            } else {
+                const status = await getStatus(eventId);
+                setPaymentStatus(status);
+            }
+        } catch (error) {
+            console.error("Registration error:", error);
+        } finally {
+            setIsRegistering(false);
+        }
+    };
+
+    // Handle payment verification
+    const handleVerifyPayment = async (txId: string) => {
+        try {
+            await verifyPayment(txId);
+            if (selectedEvent) {
+                const status = await getStatus(selectedEvent.id || selectedEvent._id || "");
+                setPaymentStatus(status);
+                setShowVerify(false);
+            }
+        } catch (error) {
+            console.error("Verification error:", error);
+        }
+    };
+
+    // Close modal
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedEvent(null);
+        setPaymentStatus(null);
+        setShowVerify(false);
+    };
 
     // Render early exit if user role isn't known
     if (user?.role === null) return null;
@@ -151,22 +227,23 @@ export default function EventsComponent() {
                             registeredUsers={event.registeredUsers}
                             createdBy={event.createdBy}
                             payments={event.payments}
-                            // Only admins/members get navigation shortcut on card click
-                            {...((isAdmin || isMember)
-                                ? {
-                                      onClick: () => {
-                                          if (!event.id && !event._id) return;
-                                          const evId = event.id ?? event._id;
-                                          if (isAdmin)
-                                              router.push(`/admin/events/${evId}`);
-                                          else router.push(`/events/${evId}`);
-                                      },
-                                  }
-                                : {})}
+                            onCardClick={() => handleEventClick(event)}
                         />
                     ))
                 )}
             </div>
+
+            {/* Event Details Modal */}
+            <EventDetailsModal
+                event={selectedEvent}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                onRegister={handleRegister}
+                isRegistering={isRegistering}
+                paymentStatus={paymentStatus}
+                showVerify={showVerify}
+                onVerifyPayment={handleVerifyPayment}
+            />
         </div>
     );
 }
