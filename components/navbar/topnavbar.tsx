@@ -90,10 +90,10 @@ export default function TopNavbar() {
     const role =
         checkUser.user?.role && checkUser.user?.role !== "Loading"
             ? getRoleLabel(checkUser.user?.role)
-            : "Loading";
+            : "User";
     const user = {
-        name: checkUser.user?.name || "Loading",
-        rawRole: checkUser.user?.role || "Loading",
+        name: checkUser.user?.name || "User",
+        rawRole: checkUser.user?.role || "user",
         role,
     };
 
@@ -143,6 +143,13 @@ export default function TopNavbar() {
             router.push("/admin/profile");
         } else {
             router.push("/profile");
+        }
+    }
+
+    function handleLogout() {
+        setShowUserDropdown(false);
+        if (typeof window !== "undefined" && window.confirm("Are you sure you want to logout?")) {
+            checkUser.logout();
         }
     }
 

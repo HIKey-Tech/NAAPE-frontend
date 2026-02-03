@@ -347,7 +347,11 @@ export default function TopNavbar() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={logout}
+                      onClick={() => {
+                        if (window.confirm("Are you sure you want to logout?")) {
+                          logout();
+                        }
+                      }}
                       className="!text-red-600 cursor-pointer font-bold text-[13px] flex items-center gap-2 py-2 hover:bg-red-50 transition-all text-center w-full justify-center"
                     >
                       <LogOut className="w-4 h-4" />
@@ -553,8 +557,10 @@ export default function TopNavbar() {
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => {
-                        logout();
-                        setMobileOpen(false);
+                        if (window.confirm("Are you sure you want to logout?")) {
+                          logout();
+                          setMobileOpen(false);
+                        }
                       }}
                       className="!text-red-600 cursor-pointer font-bold text-[13px] flex items-center gap-2 py-1.5 hover:bg-red-50 transition-all uppercase text-center w-full justify-center"
                     >
