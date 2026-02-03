@@ -235,6 +235,7 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void }> = ({
         paymentStatus?.status === "completed" ||
         paymentStatus?.status === "success";
 
+    const isRegisteredFree = paymentStatus?.registered === true && !isPaid;
     const isPaymentPending = paymentStatus?.status === "pending";
     const isCardClickable = !!id && !disabled;
 
@@ -318,11 +319,15 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void }> = ({
 
                     {/* Button / Status */}
                     {isPaidByUser ? (
-                        <div className="flex items-center gap-2 px-5 py-1.5 rounded-full bg-green-50 border border-green-200 text-green-700 font-semibold">
-                            <CheckCircle2 size={15} /> Paid
+                        <div className="flex items-center gap-2 px-5 py-1.5 rounded-full bg-green-50 border border-green-200 text-green-700 font-semibold text-sm">
+                            <CheckCircle2 size={15} /> Registered
+                        </div>
+                    ) : isRegisteredFree ? (
+                        <div className="flex items-center gap-2 px-5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-semibold text-sm">
+                            <CheckCircle2 size={15} /> Registered
                         </div>
                     ) : isPaymentPending ? (
-                        <div className="flex items-center gap=2 px-5 py-1.5 rounded-full bg-yellow-50 border border-yellow-200 text-yellow-700 font-semibold">
+                        <div className="flex items-center gap-2 px-5 py-1.5 rounded-full bg-yellow-50 border border-yellow-200 text-yellow-700 font-semibold text-sm">
                             <Loader2 size={15} className="animate-spin" /> Pending
                         </div>
                     ) : (
@@ -333,7 +338,7 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void }> = ({
                                 handleRegister();
                             }}
                             disabled={disabled || showRegisterLoading}
-                            className="px-4 py-2 rounded-full bg-[#f7f8fc] border border-[#bfd6f5] text-[#2049a2] hover:bg-[#eff4fd]"
+                            className="px-4 py-2 rounded-full bg-[#f7f8fc] border border-[#bfd6f5] text-[#2049a2] hover:bg-[#eff4fd] text-sm"
                         >
                             {showRegisterLoading ? "Loading..." : registerLabel}
                         </button>
