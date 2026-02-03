@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { useAuth } from "@/context/authcontext";
+import { LogoutDialog } from "@/components/ui/logout-dialog";
 
 // Utility: Responsive width padding class for max screen support
 const NAVBAR_MAX_WIDTH = "max-w-[1440px]"; // change this if your layout is wider/smaller
@@ -27,6 +28,8 @@ export default function TopNavbar() {
   const { user, logout, isAuthenticated } = useAuth();
   const router = useRouter();
   const [loginLoading, setLoginLoading] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -82,6 +85,22 @@ export default function TopNavbar() {
       router.push("/login");
     }
   };
+
+  const handleLogoutClick = () => {
+    setShowLogoutDialog(true);
+  };
+
+  const confirmLogout = () => {
+    setIsLoggingOut(true);
+    setShowLogoutDialog(false);
+    setMobileOpen(false);
+    logout();
+  };
+
+  // Don't render if logging out
+  if (isLoggingOut) {
+    return null;
+  }
 
   return (
     <nav className="w-full sticky top-0 left-0 z-40 bg-white border-b-2 border-[color:var(--primary)] flex items-center justify-center relative py-0">
@@ -347,11 +366,7 @@ export default function TopNavbar() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => {
-                        if (window.confirm("Are you sure you want to logout?")) {
-                          logout();
-                        }
-                      }}
+                      onClick={handleLogoutClick}
                       className="!text-red-600 cursor-pointer font-bold text-[13px] flex items-center gap-2 py-2 hover:bg-red-50 transition-all text-center w-full justify-center"
                     >
                       <LogOut className="w-4 h-4" />
@@ -556,12 +571,7 @@ export default function TopNavbar() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => {
-                        if (window.confirm("Are you sure you want to logout?")) {
-                          logout();
-                          setMobileOpen(false);
-                        }
-                      }}
+                      onClick={handleLogoutClick}
                       className="!text-red-600 cursor-pointer font-bold text-[13px] flex items-center gap-2 py-1.5 hover:bg-red-50 transition-all uppercase text-center w-full justify-center"
                     >
                       <LogOut className="w-4 h-4" />
@@ -574,6 +584,11 @@ export default function TopNavbar() {
           </div>
         </div>
       )}
+      <LogoutDialog 
+        open={showLogoutDialog} 
+        onOpenChange={setShowLogoutDialog}
+        onConfirm={confirmLogout}
+      />
     </nav>
   );
 }

@@ -21,6 +21,7 @@ import Image from "next/image";
 import React, { useCallback, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/authcontext";
+import { LogoutDialog } from "@/components/ui/logout-dialog";
 
 /** --- Enhanced Style constants for better hierarchy --- */
 const SIDEBAR_WIDTH = 300;
@@ -214,6 +215,8 @@ export function AppSidebar() {
   const { logout, user } = useAuth();
 
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Close sidebar when navigating to a new path (improves UX)
   React.useEffect(() => {
@@ -221,13 +224,19 @@ export function AppSidebar() {
   }, [pathname]);
 
   const handleSignOut = useCallback(() => {
-    if (
-      typeof window !== "undefined" &&
-      window.confirm("Are you sure you want to sign out?")
-    ) {
-      logout();
-    }
+    setShowLogoutDialog(true);
+  }, []);
+
+  const confirmLogout = useCallback(() => {
+    setIsLoggingOut(true);
+    setShowLogoutDialog(false);
+    logout();
   }, [logout]);
+
+  // Don't render if logging out
+  if (isLoggingOut) {
+    return null;
+  }
 
   // Memoized NavItems generation
   const navItemsMain = useMemo(
@@ -492,6 +501,11 @@ export function AppSidebar() {
           100% { transform: none; opacity: 1; }
         }
       `}</style>
+      <LogoutDialog 
+        open={showLogoutDialog} 
+        onOpenChange={setShowLogoutDialog}
+        onConfirm={confirmLogout}
+      />
     </>
   );
 }

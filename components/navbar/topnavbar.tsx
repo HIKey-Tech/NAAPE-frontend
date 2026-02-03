@@ -11,6 +11,7 @@ import {
     useMarkAllNotificationsRead,
     useDeleteNotification,
 } from "@/hooks/useNotification";
+import { LogoutDialog } from "@/components/ui/logout-dialog";
 
 // Utility: Extract initials from user's name
 function getInitials(name: string | undefined) {
@@ -106,6 +107,8 @@ export default function TopNavbar() {
         notifications?.filter((n: { read: boolean }) => !n.read).length || 0;
     const [showUserDropdown, setShowUserDropdown] = useState(false);
     const [showNotificationsDropdown, setShowNotificationsDropdown] = useState(false);
+    const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     const userDropdownRef = useRef<HTMLDivElement>(null);
     const notificationsDropdownRef = useRef<HTMLDivElement>(null);
@@ -148,9 +151,18 @@ export default function TopNavbar() {
 
     function handleLogout() {
         setShowUserDropdown(false);
-        if (typeof window !== "undefined" && window.confirm("Are you sure you want to logout?")) {
-            checkUser.logout();
-        }
+        setShowLogoutDialog(true);
+    }
+
+    function confirmLogout() {
+        setIsLoggingOut(true);
+        setShowLogoutDialog(false);
+        checkUser.logout();
+    }
+
+    // Don't render if logging out to prevent showing "U"
+    if (isLoggingOut) {
+        return null;
     }
 
     return (
@@ -416,6 +428,11 @@ export default function TopNavbar() {
                     )}
                 </div>
             </div>
+            <LogoutDialog 
+                open={showLogoutDialog} 
+                onOpenChange={setShowLogoutDialog}
+                onConfirm={confirmLogout}
+            />
         </nav>
     );
 }
