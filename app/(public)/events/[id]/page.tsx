@@ -81,7 +81,7 @@ export default function AdminEventDetailsPage() {
     const router = useRouter();
     const id = Array.isArray(params.id) ? params.id[0] : params.id;
     const { data: event, isLoading, isError } = useSingleEvent(id);
-    const { data: paymentStatus, isLoading: statusLoading } = useGetStatus(id);
+    const { data: paymentStatus } = useGetStatus(id);
     const payForEventMutation = usePayForEvent();
     const [showImageError, setShowImageError] = useState(false);
     const [mounted, setMounted] = useState(false);
@@ -89,18 +89,7 @@ export default function AdminEventDetailsPage() {
 
     useEffect(() => {
         setMounted(true);
-        console.log("Event detail page mounted, ID:", id);
-        
-        return () => {
-            console.log("Event detail page unmounting!");
-        };
-    }, [id]);
-
-    useEffect(() => {
-        console.log("Event data:", event);
-        console.log("Payment status:", paymentStatus);
-        console.log("User:", user);
-    }, [event, paymentStatus, user]);
+    }, []);
 
     // Check if user has already paid
     const hasPaid = paymentStatus?.paid || false;
