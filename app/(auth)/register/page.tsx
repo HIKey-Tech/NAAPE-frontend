@@ -107,7 +107,7 @@ export default function RegisterPage() {
                     className: "bg-green-50 border border-green-200 text-green-700"
                 }
             );
-            router.push("/dashboard");
+            router.replace("/dashboard");
         } catch (error: any) {
             toast.error(
                 <div>

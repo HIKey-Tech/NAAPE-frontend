@@ -59,38 +59,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
     }, []);
 
-    // Keep token in sync when it changes
-    useEffect(() => {
-        if (typeof window === "undefined") return;
-
-        if (token) {
-            Cookies.set("token", token, {
-                expires: 7,
-                secure: true,
-                sameSite: "Lax",
-            });
-            localStorage.setItem("token", token);
-        } else {
-            Cookies.remove("token");
-            localStorage.removeItem("token");
-        }
-    }, [token]);
+    // Removed redundant useEffect - storage is now handled directly in login/logout functions
 
     // ============ LOGIN ============
     const login = useCallback((loginUser: User, loginToken: string) => {
-        setUser(loginUser);
-        setToken(loginToken);
-
+        // Write to storage FIRST (synchronously) before updating state
         if (typeof window !== "undefined") {
             Cookies.set("token", loginToken, {
                 expires: 7,
                 secure: true,
                 sameSite: "Lax",
             });
-
             localStorage.setItem("token", loginToken);
             localStorage.setItem("user", JSON.stringify(loginUser));
         }
+        
+        // Then update React state
+        setUser(loginUser);
+        setToken(loginToken);
     }, []);
 
     // ============ LOGOUT ============

@@ -63,8 +63,8 @@ export default function LoginPage() {
 
             login(userData, res.data.token);
 
-
-            router.push("/dashboard");
+            // Use replace instead of push for cleaner navigation
+            router.replace("/dashboard");
             toast.success("🎉 Logged in! Welcome back.", {
                 description: (
                     <p className="text-sm  text-green-700 font-medium">
