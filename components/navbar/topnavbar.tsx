@@ -174,7 +174,7 @@ export default function TopNavbar() {
 
     return (
         <nav
-            className="w-full h-[76px] sm:h-[94px] min-h-[76px] sm:min-h-[94px] flex items-center justify-between px-2 sm:px-10 border-b border-[#43618b] bg-gradient-to-b from-[#fafcff] to-[#f4f8fd] sticky top-0 z-30"
+            className="w-full h-[76px] sm:h-[94px] min-h-[76px] sm:min-h-[94px] flex items-center justify-between px-2 sm:px-10 border-b border-[#43618b] bg-gradient-to-b from-[#fafcff] to-[#f4f8fd] sticky top-0 z-50"
             style={{
                 WebkitBackdropFilter: "blur(8px)",
                 backdropFilter: "blur(8px)",
@@ -365,7 +365,7 @@ export default function TopNavbar() {
                     {showUserDropdown && (
                         <>
                             <div
-                                className="fixed inset-0 z-30"
+                                className="fixed inset-0 z-[100]"
                                 tabIndex={-1}
                                 aria-hidden="true"
                                 onClick={() => setShowUserDropdown(false)}
@@ -373,7 +373,7 @@ export default function TopNavbar() {
                             <div
                                 className="
                                     absolute top-1 right-0 mt-12 sm:mt-14 w-[93vw] sm:w-72 min-w-[244px] max-w-xs sm:max-w-none
-                                    bg-white rounded-lg border border-[#43618b] py-6 sm:py-8 z-40 animate-fade-in flex flex-col items-stretch shadow-2xl
+                                    bg-white rounded-lg border border-[#43618b] py-6 sm:py-8 z-[110] animate-fade-in flex flex-col items-stretch shadow-2xl
                                 "
                                 role="menu"
                                 aria-label="User menu"
