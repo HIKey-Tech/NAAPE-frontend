@@ -4,9 +4,11 @@
 import { useState, useEffect, useRef } from "react";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import EventCard from "@/components/member/component/event.card";
+import { EventDetailsModal } from "@/components/ui/custom/event.details.modal";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useEvents, usePayForEvent, useVerifyPayment } from "@/hooks/useEvents";
+import { payForEvent, verifyPayment, getStatus } from "@/app/api/events/events";
 import type { EventCardProps } from "@/app/api/events/type";
 
 const containerVariants = {
@@ -46,8 +48,8 @@ const fadeCardVariants = {
 
 // --- MOBILE SLIDER COMPONENT ---
 
-function EventsMobileSlider(props: { events: EventCardProps[] }) {
-    const { events } = props;
+function EventsMobileSlider(props: { events: EventCardProps[]; onEventClick: (event: EventCardProps) => void }) {
+    const { events, onEventClick } = props;
     const [active, setActive] = useState(0);
     const [direction, setDirection] = useState(0);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -139,7 +141,7 @@ function EventsMobileSlider(props: { events: EventCardProps[] }) {
                     transition={{ type: "spring", stiffness: 80, damping: 19 }}
                     className="w-full flex justify-center"
                 >
-                    <EventCard {...events[active]} />
+                    <EventCard {...events[active]} onCardClick={() => onEventClick(events[active])} />
                 </motion.div>
             </div>
             <button
@@ -172,8 +174,15 @@ function EventsMobileSlider(props: { events: EventCardProps[] }) {
 export default function UpcomingEvents() {
     // Fetch events via react-query hook
     const { data, isLoading, isError } = useEvents();
-    const payForEvent = usePayForEvent();
-    const verifyPayment = useVerifyPayment();
+    const payForEventMutation = usePayForEvent();
+    const verifyPaymentMutation = useVerifyPayment();
+
+    // Modal state
+    const [selectedEvent, setSelectedEvent] = useState<EventCardProps | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isRegistering, setIsRegistering] = useState(false);
+    const [paymentStatus, setPaymentStatus] = useState<any>(null);
+    const [showVerify, setShowVerify] = useState(false);
 
     // Normalization: Ensure data is an array and matches EventCardProps shape
     let eventsList: EventCardProps[] = [];
@@ -202,6 +211,65 @@ export default function UpcomingEvents() {
         }));
     }
 
+    // Handle event card click - open modal
+    const handleEventClick = async (event: EventCardProps) => {
+        setSelectedEvent(event);
+        setIsModalOpen(true);
+        setShowVerify(false);
+        
+        // Fetch payment status for this event
+        try {
+            const status = await getStatus(event.id || event._id || "");
+            setPaymentStatus(status);
+        } catch (err) {
+            setPaymentStatus(null);
+        }
+    };
+
+    // Handle registration from modal
+    const handleRegister = async (eventId: string) => {
+        setIsRegistering(true);
+        try {
+            const result = await payForEvent(eventId);
+            if (result?.link) {
+                // Paid event - open payment link
+                setShowVerify(true);
+                window.open(result.link, "_blank");
+            } else {
+                // Free event - refresh status
+                const status = await getStatus(eventId);
+                setPaymentStatus(status);
+            }
+        } catch (error) {
+            console.error("Registration error:", error);
+        } finally {
+            setIsRegistering(false);
+        }
+    };
+
+    // Handle payment verification
+    const handleVerifyPayment = async (txId: string) => {
+        try {
+            await verifyPayment(txId);
+            // Refresh payment status
+            if (selectedEvent) {
+                const status = await getStatus(selectedEvent.id || selectedEvent._id || "");
+                setPaymentStatus(status);
+                setShowVerify(false);
+            }
+        } catch (error) {
+            console.error("Verification error:", error);
+        }
+    };
+
+    // Close modal
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedEvent(null);
+        setPaymentStatus(null);
+        setShowVerify(false);
+    };
+
     return (
         <motion.section
             className="relative w-full max-w-full mx-auto min-h-full p-6 my-6"
@@ -229,7 +297,7 @@ export default function UpcomingEvents() {
                     Failed to load events.
                 </div>
             ) : (
-                <EventsMobileSlider events={eventsList} />
+                <EventsMobileSlider events={eventsList} onEventClick={handleEventClick} />
             )}
 
             {/* Desktop: Grid */}
@@ -259,7 +327,7 @@ export default function UpcomingEvents() {
                             whileInView="show"
                             viewport={{ once: true, margin: "-60px" }}
                         >
-                            <EventCard {...event} />
+                            <EventCard {...event} onCardClick={() => handleEventClick(event)} />
                         </motion.div>
                     ))
                 )}
@@ -274,6 +342,18 @@ export default function UpcomingEvents() {
                     </NaapButton>
                 </a>
             </motion.div>
+
+            {/* Event Details Modal */}
+            <EventDetailsModal
+                event={selectedEvent}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                onRegister={handleRegister}
+                isRegistering={isRegistering}
+                paymentStatus={paymentStatus}
+                showVerify={showVerify}
+                onVerifyPayment={handleVerifyPayment}
+            />
         </motion.section>
     );
 }

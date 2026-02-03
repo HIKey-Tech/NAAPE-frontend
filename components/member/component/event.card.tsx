@@ -84,7 +84,7 @@ function formatEventTime(date: string | Date) {
         .toLowerCase();
 }
 
-const EventCard: React.FC<EventCardProps> = ({
+const EventCard: React.FC<EventCardProps & { onCardClick?: () => void }> = ({
     _id,
     id,
     title,
@@ -103,6 +103,7 @@ const EventCard: React.FC<EventCardProps> = ({
     className = "",
     registerLabel = "Register",
     disabled = false,
+    onCardClick,
 }) => {
     const cardRef = useRef<HTMLDivElement | null>(null);
     const [pressing, setPressing] = useState(false);
@@ -232,7 +233,10 @@ const EventCard: React.FC<EventCardProps> = ({
 
     const handleCardClick = () => {
         if (disabled) return;
-        router.push(`/events/${id}`);
+        // Trigger modal open via callback prop
+        if (onCardClick) {
+            onCardClick();
+        }
     };
 
     const isPaidByUser =
