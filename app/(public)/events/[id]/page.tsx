@@ -81,10 +81,15 @@ export default function AdminEventDetailsPage() {
     const router = useRouter();
     const id = Array.isArray(params.id) ? params.id[0] : params.id;
     const { data: event, isLoading, isError } = useSingleEvent(id);
-    const { data: paymentStatus } = useGetStatus(id);
+    const { data: paymentStatus, isLoading: statusLoading } = useGetStatus(id);
     const payForEventMutation = usePayForEvent();
     const [showImageError, setShowImageError] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const { user } = useAuth();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Check if user has already paid
     const hasPaid = paymentStatus?.paid || false;
@@ -95,7 +100,7 @@ export default function AdminEventDetailsPage() {
     useEffect(() => {
         injectEventAnimCSS();
         const card = cardRef.current;
-        if (!card) return;
+        if (!card || !mounted) return;
 
         const prefersReducedMotion =
             typeof window !== "undefined" &&
@@ -129,7 +134,7 @@ export default function AdminEventDetailsPage() {
             if (observer) observer.disconnect();
             if (timer) clearTimeout(timer);
         };
-    }, []);
+    }, [mounted]);
 
     // Loading state
     if (isLoading) {
