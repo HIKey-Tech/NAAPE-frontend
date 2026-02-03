@@ -21,7 +21,6 @@ import Image from "next/image";
 import React, { useCallback, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/authcontext";
-import { toast } from "sonner";
 
 /** --- Enhanced Style constants for better hierarchy --- */
 const SIDEBAR_WIDTH = 300;
@@ -226,19 +225,7 @@ export function AppSidebar() {
       typeof window !== "undefined" &&
       window.confirm("Are you sure you want to sign out?")
     ) {
-      toast.promise(
-        (async () => {
-          await logout();
-        })(),
-        {
-          loading: "Signing out...",
-          success: "Signed out successfully.",
-          error: (err) =>
-            err?.message
-              ? `Failed to sign out: ${err.message}`
-              : "An error occurred signing out.",
-        }
-      );
+      logout();
     }
   }, [logout]);
 
