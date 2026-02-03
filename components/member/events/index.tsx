@@ -109,7 +109,7 @@ export default function EventsComponent() {
             setIsRegistering(false);
         }
     };
-
+    //check
     // Handle payment verification
     const handleVerifyPayment = async (txId: string) => {
         try {
