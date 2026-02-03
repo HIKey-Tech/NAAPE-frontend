@@ -54,11 +54,6 @@ export function EventDetailsModal({
     const { user } = useAuth();
     const router = useRouter();
 
-    // Debug log
-    useEffect(() => {
-        console.log("Modal state changed:", { isOpen, event: event?.title });
-    }, [isOpen, event]);
-
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = "hidden";

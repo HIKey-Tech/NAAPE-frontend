@@ -213,7 +213,6 @@ export default function UpcomingEvents() {
 
     // Handle event card click - open modal
     const handleEventClick = async (event: EventCardProps) => {
-        console.log("Event clicked:", event.title); // Debug log
         setSelectedEvent(event);
         setIsModalOpen(true);
         setShowVerify(false);
@@ -221,10 +220,8 @@ export default function UpcomingEvents() {
         // Fetch payment status for this event
         try {
             const status = await getStatus(event.id || event._id || "");
-            console.log("Payment status:", status); // Debug log
             setPaymentStatus(status);
         } catch (err) {
-            console.error("Error fetching status:", err); // Debug log
             setPaymentStatus(null);
         }
     };

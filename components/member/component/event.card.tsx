@@ -148,30 +148,16 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void }> = ({
     }, [id, user]);
 
     // -------------------------------
-    // Animation CSS
+    // Animation CSS - Simplified to always show visible
     // -------------------------------
     useEffect(() => {
         injectEventAnimCSS();
         const card = cardRef.current;
         if (!card) return;
 
-        // If already visible, don't re-animate
-        if (card.classList.contains("visible")) return;
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        card.classList.add("visible");
-                    }
-                });
-            },
-            { threshold: 0.17 }
-        );
-
-        observer.observe(card);
-        return () => observer.disconnect();
-    }, []); // Remove isPaid dependency
+        // Immediately add visible class, no animation delay
+        card.classList.add("visible");
+    }, []); // Run once on mount
 
     // Separate effect for badge ping
     useEffect(() => {
@@ -241,14 +227,10 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void }> = ({
     };
 
     const handleCardClick = () => {
-        console.log("Card clicked! Disabled:", disabled, "onCardClick exists:", !!onCardClick); // Debug
         if (disabled) return;
         // Trigger modal open via callback prop
         if (onCardClick) {
-            console.log("Calling onCardClick"); // Debug
             onCardClick();
-        } else {
-            console.log("No onCardClick callback provided!"); // Debug
         }
     };
 
@@ -259,15 +241,6 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void }> = ({
 
     const isPaymentPending = paymentStatus?.status === "pending";
     const isCardClickable = !!id && !disabled;
-
-    // Debug log
-    console.log("EventCard render:", { 
-        id, 
-        title: title?.substring(0, 20), 
-        disabled, 
-        isCardClickable,
-        hasOnCardClick: !!onCardClick 
-    });
 
     // -------------------------------
     // UI

@@ -70,8 +70,6 @@ export default function EventsComponent() {
 
     // Handle event card click - open modal
     const handleEventClick = async (event: any) => {
-        console.log("Event clicked:", event.title);
-        
         // For admins, navigate to manage page instead of modal
         if (isAdmin) {
             const evId = event.id ?? event._id;
