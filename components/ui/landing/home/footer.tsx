@@ -33,7 +33,7 @@ export default function Footer() {
                             <Link href="/" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">Home</Link>
                         </li>
                         <li>
-                            <Link href="/about" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">About Us</Link>
+                            <Link href="/about/about-us" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">About Us</Link>
                         </li>
                         <li>
                             <Link href="/news/naape" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">News</Link>

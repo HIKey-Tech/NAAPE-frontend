@@ -6,26 +6,13 @@ import AdminDashboardLayout from "@/app/(private)/(admin)/layout";
 import TopNavbar from '@/components/ui/landing/home/navbar';
 import Footer from '@/components/ui/landing/home/footer';
 import WhatsAppFloat from '@/components/ui/custom/whatsapp';
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-/**
- * NOTE:
- * - This component must be a Client Component, since useAuth() is a client hook.
- * - "use client" is at the top to mark it as a client component.
- */
 export default function EventsIdLayout({ children }: { children: React.ReactNode }) {
-    const session = useAuth();
-    const [isReady, setIsReady] = useState(false);
+    const { user, loading } = useAuth();
 
-    // Wait for auth to be fully loaded before rendering anything
-    useEffect(() => {
-        if (!session.loading) {
-            setIsReady(true);
-        }
-    }, [session.loading]);
-
-    // Show loading state until auth is ready
-    if (!isReady || session.loading) {
+    // Show loading while auth is being determined
+    if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
@@ -33,26 +20,25 @@ export default function EventsIdLayout({ children }: { children: React.ReactNode
         );
     }
 
-    // Now that auth is loaded, render the appropriate layout ONCE
-    // Admin layout
-    if (session.user?.role === "admin") {
+    // Admin users get admin layout
+    if (user?.role === "admin") {
         return <AdminDashboardLayout>{children}</AdminDashboardLayout>;
     }
 
-    // Member layout
-    if (session.user?.role === "member") {
+    // Member users get member layout
+    if (user?.role === "member") {
         return <DashboardLayout>{children}</DashboardLayout>;
     }
 
-    // Public layout (for unauthenticated or other roles)
+    // Public/unauthenticated users get public layout
     return (
-        <div className="min-h-screen w-full flex flex-col">
+        <>
             <TopNavbar />
-            <main className="flex-1">
+            <main className="min-h-screen">
                 {children}
             </main>
             <Footer />
             <WhatsAppFloat />
-        </div>
+        </>
     );
 }
