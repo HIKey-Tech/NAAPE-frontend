@@ -155,12 +155,14 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void }> = ({
         const card = cardRef.current;
         if (!card) return;
 
+        // If already visible, don't re-animate
+        if (card.classList.contains("visible")) return;
+
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         card.classList.add("visible");
-                        if (isPaid) setBadgePing(true);
                     }
                 });
             },
@@ -169,6 +171,13 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void }> = ({
 
         observer.observe(card);
         return () => observer.disconnect();
+    }, []); // Remove isPaid dependency
+
+    // Separate effect for badge ping
+    useEffect(() => {
+        if (isPaid) {
+            setBadgePing(true);
+        }
     }, [isPaid]);
 
     useEffect(() => {
