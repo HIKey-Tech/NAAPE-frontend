@@ -21,7 +21,7 @@ export const usePaymentHistory = (userId: string | null | undefined) => {
         }
         // Network fetch fallback
         try {
-            const res = await api.get(`/payment/history/${userId}`);
+            const res = await api.get(`/payments/history/${userId}`);
             if (
                 !res ||
                 !res.data ||
