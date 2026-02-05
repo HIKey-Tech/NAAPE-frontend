@@ -17,6 +17,24 @@ export default function ResetPassword({ token }: ResetPasswordProps) {
 
     const { mutate: resetPassword, isPending, isSuccess } = useResetPassword();
 
+    // Check if token is valid
+    if (!token || token === "undefined") {
+        return (
+            <div className="max-w-md mx-auto bg-white shadow-lg rounded-xl p-8 mt-12">
+                <h2 className="text-2xl font-bold mb-1 text-center text-red-600">Invalid Reset Link</h2>
+                <p className="text-gray-600 text-center mb-7 text-sm">
+                    This password reset link is invalid. Please request a new one.
+                </p>
+                <button
+                    onClick={() => router.push("/forgot-password")}
+                    className="w-full bg-primary text-white py-2 font-semibold text-base rounded-md hover:bg-primary/90 transition-shadow shadow"
+                >
+                    Request New Link
+                </button>
+            </div>
+        );
+    }
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setLocalError("");
