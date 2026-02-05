@@ -39,7 +39,7 @@ export default function Footer() {
                             <Link href="/news/naape" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">News</Link>
                         </li>
                         <li>
-                            <Link href="/publications/naape" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">Publications</Link>
+                            <Link href="/publication" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">Publications</Link>
                         </li>
                         <li>
                             <Link href="/events" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">Events</Link>
