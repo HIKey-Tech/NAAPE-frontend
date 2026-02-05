@@ -4,7 +4,7 @@ import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import Cookies from "js-cookie";
+import { useAuth } from "@/context/authcontext";
 
 interface GoogleSignInButtonProps {
     onSuccess?: () => void;
@@ -16,6 +16,7 @@ export default function GoogleSignInButton({
     text = "signin_with" 
 }: GoogleSignInButtonProps) {
     const router = useRouter();
+    const { login } = useAuth();
 
     const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
         try {
@@ -26,9 +27,8 @@ export default function GoogleSignInButton({
             });
 
             if (response.data.success) {
-                // Store token
-                Cookies.set("token", response.data.token, { expires: 30 });
-                localStorage.setItem("user", JSON.stringify(response.data.user));
+                // Use the auth context login function to update state
+                login(response.data.user, response.data.token);
 
                 toast.success("Successfully signed in with Google!");
 
