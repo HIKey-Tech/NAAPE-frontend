@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, User, Mail, Lock, ShieldCheck } from "lucide-react";
+import GoogleSignInButton from "@/components/ui/custom/google.signin.button";
 
 const formSchema = z
     .object({
@@ -195,21 +196,7 @@ export default function RegisterPage() {
                         >
                             {/* Google sign up */}
                             <motion.div variants={childVariants as any}>
-                                <Button
-                                    type="button"
-                                    onClick={handleGoogleSignUp}
-                                    variant="outline"
-                                    className="mb-3 w-full h-[41px] rounded-md gap-3 border border-[#DADFF2] bg-white text-[#2347a0] font-semibold text-[15.3px] shadow-none hover:bg-[#f3f6fa] transition-colors duration-150"
-                                >
-                                    <Image
-                                        src={google}
-                                        alt="Google"
-                                        width={24}
-                                        height={24}
-                                        className="-ml-2"
-                                    />
-                                    <span className="font-semibold">Sign up with Google</span>
-                                </Button>
+                                <GoogleSignInButton text="signup_with" />
                             </motion.div>
 
                             {/* OR separator */}

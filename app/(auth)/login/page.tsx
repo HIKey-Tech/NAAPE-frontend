@@ -26,6 +26,8 @@ import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth, User } from "@/context/authcontext";
 
+import GoogleSignInButton from "@/components/ui/custom/google.signin.button";
+
 const formSchema = z.object({
     email: z.email({ message: "Please enter a valid email address" }),
     password: z
@@ -181,21 +183,7 @@ export default function LoginPage() {
                         >
                             {/* Google sign in */}
                             <motion.div variants={childVariants as any}>
-                                <Button
-                                    type="button"
-                                    onClick={handleGoogleSignIn}
-                                    variant="outline"
-                                    className="mb-3 w-full h-[41px] rounded-md gap-3 border border-[#DADFF2] bg-white text-[#2347a0] font-semibold text-[15.3px] shadow-none hover:bg-[#f3f6fa] transition-colors duration-150"
-                                >
-                                    <Image
-                                        src={google}
-                                        alt="Google"
-                                        width={24}
-                                        height={24}
-                                        className="-ml-2"
-                                    />
-                                    <span className="font-semibold">Sign in with Google</span>
-                                </Button>
+                                <GoogleSignInButton text="signin_with" />
                             </motion.div>
 
                             {/* OR separator */}
