@@ -196,16 +196,31 @@ interface ForumThreadDetailProps {
 const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
     const router = useRouter();
     const [replyContent, setReplyContent] = useState("");
+    const [hasTrackedView, setHasTrackedView] = useState(false);
     
     const { data: thread, isPending: threadLoading, error: threadError } = useForumThread(threadId);
     const { data: repliesData, isPending: repliesLoading } = useThreadReplies(threadId);
     const createReply = useCreateForumReply();
     const { user } = useAuth();
 
-    // Debug logging
-    console.log("Forum Thread Detail - User:", user);
-    console.log("Forum Thread Detail - Thread:", thread);
-    console.log("Forum Thread Detail - Is Locked:", thread?.isLocked);
+    // Track view only once per thread per browser session
+    React.useEffect(() => {
+        if (thread && !hasTrackedView) {
+            const viewedThreads = JSON.parse(localStorage.getItem('viewedThreads') || '[]');
+            
+            if (!viewedThreads.includes(threadId)) {
+                // This is a new view, track it
+                setHasTrackedView(true);
+                viewedThreads.push(threadId);
+                localStorage.setItem('viewedThreads', JSON.stringify(viewedThreads));
+                
+                // The view will be counted by the backend on the initial API call
+            } else {
+                // Already viewed, don't count again
+                setHasTrackedView(true);
+            }
+        }
+    }, [thread, threadId, hasTrackedView]);
 
     const handleReply = () => {
         if (!replyContent.trim()) {
