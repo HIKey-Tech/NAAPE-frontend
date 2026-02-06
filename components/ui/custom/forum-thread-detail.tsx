@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { MdPushPin, MdLock, MdVisibility, MdComment, MdSend, MdEdit, MdDelete, MdReply } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
-import { useAuthStore } from "@/hook/store/useAuthStore";
+import { useAuth } from "@/context/authcontext";
 import { toast } from "sonner";
 
 const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: boolean }> = ({ reply, threadId, isNested = false }) => {
@@ -15,7 +15,7 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [replyContent, setReplyContent] = useState("");
     
-    const user = useAuthStore((state) => state.user);
+    const { user } = useAuth();
     const isAuthor = user?._id === reply.author._id;
     const isAdmin = user?.role === "admin";
     
@@ -200,7 +200,7 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
     const { data: thread, isPending: threadLoading, error: threadError } = useForumThread(threadId);
     const { data: repliesData, isPending: repliesLoading } = useThreadReplies(threadId);
     const createReply = useCreateForumReply();
-    const user = useAuthStore((state) => state.user);
+    const { user } = useAuth();
 
     // Debug logging
     console.log("Forum Thread Detail - User:", user);
