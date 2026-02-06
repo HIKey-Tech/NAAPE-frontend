@@ -208,6 +208,11 @@ const PaymentHistory: React.FC = () => {
   const { user } = useAuth();
   const userId = user?._id;
 
+  console.log("\n=== PAYMENT HISTORY COMPONENT ===");
+  console.log("Timestamp:", new Date().toISOString());
+  console.log("User object:", user);
+  console.log("User ID:", userId);
+
   const {
     history,
     loading,
@@ -215,14 +220,31 @@ const PaymentHistory: React.FC = () => {
     hasError,
     refetch,
   } = usePaymentHistory(userId);
+  
+  console.log("Hook state:", {
+    historyCount: history?.length,
+    loading,
+    error,
+    hasError,
+    historyData: history
+  });
+  
   const [selectedTab, setSelectedTab] = useState<PaymentType>("event");
 
   const filtered = useMemo(() => {
     if (!Array.isArray(history)) return [];
-    return history.filter((item: PaymentHistoryItem) => item.type === selectedTab);
+    const result = history.filter((item: PaymentHistoryItem) => item.type === selectedTab);
+    console.log(`Filtered ${selectedTab} payments:`, result.length, "records");
+    return result;
   }, [history, selectedTab]);
 
   const hasAny = Array.isArray(history) && history.length > 0;
+  
+  console.log("Component state:", {
+    selectedTab,
+    filteredCount: filtered.length,
+    hasAny
+  });
 
   return (
     <div style={{
