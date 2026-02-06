@@ -734,13 +734,14 @@ export function AdminSidebar() {
         setShowLogoutDialog(true);
     }, []);
 
-    const confirmLogout = useCallback(async () => {
+    const confirmLogout = useCallback(() => {
         setShowLogoutDialog(false);
         setIsLoggingOut(true);
         
-        // Small delay to ensure state updates before navigation
-        await new Promise(resolve => setTimeout(resolve, 100));
-        logout();
+        // Use requestAnimationFrame to ensure DOM updates complete before logout
+        requestAnimationFrame(() => {
+            logout();
+        });
     }, [logout]);
 
     // Desktop nav sections reused for desktop sidebar

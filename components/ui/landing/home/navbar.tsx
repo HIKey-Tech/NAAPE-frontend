@@ -90,14 +90,15 @@ export default function TopNavbar() {
     setShowLogoutDialog(true);
   };
 
-  const confirmLogout = async () => {
+  const confirmLogout = () => {
     setShowLogoutDialog(false);
     setMobileOpen(false);
     setIsLoggingOut(true);
     
-    // Small delay to ensure state updates before navigation
-    await new Promise(resolve => setTimeout(resolve, 100));
-    logout();
+    // Use requestAnimationFrame to ensure DOM updates complete before logout
+    requestAnimationFrame(() => {
+      logout();
+    });
   };
 
   // Show loading spinner when logging out
