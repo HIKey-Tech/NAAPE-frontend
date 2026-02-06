@@ -55,14 +55,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 
                 // Migration: Handle old user objects that might have 'id' instead of '_id'
                 if (parsedUser && !parsedUser._id && parsedUser.id) {
-                    console.warn("Migrating user object: 'id' -> '_id'");
                     parsedUser._id = parsedUser.id;
                     // Save the migrated user back to localStorage
                     localStorage.setItem("user", JSON.stringify(parsedUser));
                 }
-                
-                console.log("Auth context loaded user:", parsedUser);
-                console.log("User _id:", parsedUser?._id);
                 
                 setUser(parsedUser);
             } catch (error) {

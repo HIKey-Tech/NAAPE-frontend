@@ -209,15 +209,6 @@ const PaymentHistory: React.FC = () => {
   // Handle both _id and id properties for backwards compatibility
   const userId = user?._id || (user as any)?.id;
 
-  console.log("\n=== PAYMENT HISTORY COMPONENT ===");
-  console.log("Timestamp:", new Date().toISOString());
-  console.log("User object:", user);
-  console.log("User ID from _id:", user?._id);
-  console.log("User ID from id:", (user as any)?.id);
-  console.log("Final userId:", userId);
-  console.log("User object keys:", user ? Object.keys(user) : "null");
-  console.log("localStorage user:", typeof window !== "undefined" ? localStorage.getItem("user") : "N/A");
-
   const {
     history,
     loading,
@@ -226,30 +217,14 @@ const PaymentHistory: React.FC = () => {
     refetch,
   } = usePaymentHistory(userId);
   
-  console.log("Hook state:", {
-    historyCount: history?.length,
-    loading,
-    error,
-    hasError,
-    historyData: history
-  });
-  
   const [selectedTab, setSelectedTab] = useState<PaymentType>("event");
 
   const filtered = useMemo(() => {
     if (!Array.isArray(history)) return [];
-    const result = history.filter((item: PaymentHistoryItem) => item.type === selectedTab);
-    console.log(`Filtered ${selectedTab} payments:`, result.length, "records");
-    return result;
+    return history.filter((item: PaymentHistoryItem) => item.type === selectedTab);
   }, [history, selectedTab]);
 
   const hasAny = Array.isArray(history) && history.length > 0;
-  
-  console.log("Component state:", {
-    selectedTab,
-    filteredCount: filtered.length,
-    hasAny
-  });
 
   return (
     <div style={{
