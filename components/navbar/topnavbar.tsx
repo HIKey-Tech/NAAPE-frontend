@@ -154,9 +154,12 @@ export default function TopNavbar() {
         setShowLogoutDialog(true);
     }
 
-    function confirmLogout() {
-        setIsLoggingOut(true);
+    async function confirmLogout() {
         setShowLogoutDialog(false);
+        setIsLoggingOut(true);
+        
+        // Small delay to ensure state updates before navigation
+        await new Promise(resolve => setTimeout(resolve, 100));
         checkUser.logout();
     }
 

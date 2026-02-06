@@ -90,10 +90,13 @@ export default function TopNavbar() {
     setShowLogoutDialog(true);
   };
 
-  const confirmLogout = () => {
-    setIsLoggingOut(true);
+  const confirmLogout = async () => {
     setShowLogoutDialog(false);
     setMobileOpen(false);
+    setIsLoggingOut(true);
+    
+    // Small delay to ensure state updates before navigation
+    await new Promise(resolve => setTimeout(resolve, 100));
     logout();
   };
 

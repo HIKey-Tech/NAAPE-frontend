@@ -32,6 +32,7 @@ import Image from "next/image";
 import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/authcontext";
+import { LogoutDialog } from "@/components/ui/logout-dialog";
 
 // Improved and more detailed hierarchy: Group/category definitions ===================
 
@@ -718,6 +719,9 @@ export function AdminSidebar() {
     const pathname = usePathname();
     const { user, loading, logout } = useAuth();
 
+    const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-screen bg-[#FAFCFE] text-primary text-lg font-bold" style={{ color: "var(--color-primary)" }}>
@@ -727,9 +731,16 @@ export function AdminSidebar() {
     }
 
     const handleSignOut = useCallback(() => {
-        if (typeof window !== "undefined" && window.confirm("Are you sure you want to sign out?")) {
-            logout();
-        }
+        setShowLogoutDialog(true);
+    }, []);
+
+    const confirmLogout = useCallback(async () => {
+        setShowLogoutDialog(false);
+        setIsLoggingOut(true);
+        
+        // Small delay to ensure state updates before navigation
+        await new Promise(resolve => setTimeout(resolve, 100));
+        logout();
     }, [logout]);
 
     // Desktop nav sections reused for desktop sidebar
@@ -887,6 +898,20 @@ export function AdminSidebar() {
                 user={user}
                 onSignOut={handleSignOut}
             />
+            <LogoutDialog 
+                open={showLogoutDialog} 
+                onOpenChange={setShowLogoutDialog}
+                onConfirm={confirmLogout}
+            />
+            {/* Show loading spinner when logging out */}
+            {isLoggingOut && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-12 h-12 border-4 border-[#15407c] border-t-transparent rounded-full animate-spin"></div>
+                        <p className="text-[#15407c] font-semibold text-lg">Logging out...</p>
+                    </div>
+                </div>
+            )}
         </>
     );
 }

@@ -227,9 +227,12 @@ export function AppSidebar() {
     setShowLogoutDialog(true);
   }, []);
 
-  const confirmLogout = useCallback(() => {
-    setIsLoggingOut(true);
+  const confirmLogout = useCallback(async () => {
     setShowLogoutDialog(false);
+    setIsLoggingOut(true);
+    
+    // Small delay to ensure state updates before navigation
+    await new Promise(resolve => setTimeout(resolve, 100));
     logout();
   }, [logout]);
 
