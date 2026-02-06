@@ -50,7 +50,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (tokenVal && userVal) {
             setToken(tokenVal);
-            setUser(JSON.parse(userVal));
+            try {
+                const parsedUser = JSON.parse(userVal);
+                
+                // Migration: Handle old user objects that might have 'id' instead of '_id'
+                if (parsedUser && !parsedUser._id && parsedUser.id) {
+                    console.warn("Migrating user object: 'id' -> '_id'");
+                    parsedUser._id = parsedUser.id;
+                    // Save the migrated user back to localStorage
+                    localStorage.setItem("user", JSON.stringify(parsedUser));
+                }
+                
+                console.log("Auth context loaded user:", parsedUser);
+                console.log("User _id:", parsedUser?._id);
+                
+                setUser(parsedUser);
+            } catch (error) {
+                console.error("Failed to parse user from localStorage:", error);
+                // Clear invalid data
+                localStorage.removeItem("user");
+                localStorage.removeItem("token");
+                Cookies.remove("token");
+                setUser(null);
+                setToken(null);
+            }
         } else {
             setToken(null);
             setUser(null);

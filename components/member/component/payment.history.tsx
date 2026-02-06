@@ -206,12 +206,17 @@ const PaymentRow: React.FC<{ item: PaymentHistoryItem }> = ({ item }) => {
 
 const PaymentHistory: React.FC = () => {
   const { user } = useAuth();
-  const userId = user?._id;
+  // Handle both _id and id properties for backwards compatibility
+  const userId = user?._id || (user as any)?.id;
 
   console.log("\n=== PAYMENT HISTORY COMPONENT ===");
   console.log("Timestamp:", new Date().toISOString());
   console.log("User object:", user);
-  console.log("User ID:", userId);
+  console.log("User ID from _id:", user?._id);
+  console.log("User ID from id:", (user as any)?.id);
+  console.log("Final userId:", userId);
+  console.log("User object keys:", user ? Object.keys(user) : "null");
+  console.log("localStorage user:", typeof window !== "undefined" ? localStorage.getItem("user") : "N/A");
 
   const {
     history,
