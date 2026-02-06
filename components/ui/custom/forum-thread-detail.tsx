@@ -202,6 +202,11 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
     const createReply = useCreateForumReply();
     const user = useAuthStore((state) => state.user);
 
+    // Debug logging
+    console.log("Forum Thread Detail - User:", user);
+    console.log("Forum Thread Detail - Thread:", thread);
+    console.log("Forum Thread Detail - Is Locked:", thread?.isLocked);
+
     const handleReply = () => {
         if (!replyContent.trim()) {
             toast.error("Reply cannot be empty");
@@ -326,31 +331,35 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
             </motion.div>
 
             {/* Reply Form */}
-            {!thread.isLocked && user && (
-                <div className="bg-white rounded-xl border-2 border-[#dde7f3] p-6 mb-6 shadow-sm">
-                    <h3 className="text-xl font-bold text-[#15407c] mb-4 flex items-center gap-2">
-                        <MdComment className="text-[#2C6ED4]" />
-                        Post a Reply
-                    </h3>
-                    <textarea
-                        value={replyContent}
-                        onChange={(e) => setReplyContent(e.target.value)}
-                        placeholder="Share your thoughts..."
-                        className="w-full border-2 border-[#e4ecf7] rounded-lg p-4 focus:border-[#2C6ED4] focus:ring-2 focus:ring-[#2C6ED4]/20 outline-none mb-4 text-[#16355D]"
-                        rows={5}
-                    />
-                    <button
-                        onClick={handleReply}
-                        disabled={createReply.isPending || !replyContent.trim()}
-                        className="bg-[#2C6ED4] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#15407c] hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                        <MdSend />
-                        {createReply.isPending ? "Posting..." : "Post Reply"}
-                    </button>
-                </div>
-            )}
-
-            {thread.isLocked && (
+            {!thread.isLocked ? (
+                user ? (
+                    <div className="bg-white rounded-xl border-2 border-[#dde7f3] p-6 mb-6 shadow-sm">
+                        <h3 className="text-xl font-bold text-[#15407c] mb-4 flex items-center gap-2">
+                            <MdComment className="text-[#2C6ED4]" />
+                            Post a Reply
+                        </h3>
+                        <textarea
+                            value={replyContent}
+                            onChange={(e) => setReplyContent(e.target.value)}
+                            placeholder="Share your thoughts..."
+                            className="w-full border-2 border-[#e4ecf7] rounded-lg p-4 focus:border-[#2C6ED4] focus:ring-2 focus:ring-[#2C6ED4]/20 outline-none mb-4 text-[#16355D]"
+                            rows={5}
+                        />
+                        <button
+                            onClick={handleReply}
+                            disabled={createReply.isPending || !replyContent.trim()}
+                            className="bg-[#2C6ED4] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#15407c] hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        >
+                            <MdSend />
+                            {createReply.isPending ? "Posting..." : "Post Reply"}
+                        </button>
+                    </div>
+                ) : (
+                    <div className="bg-[#e8f0fb] border-2 border-[#c9daf9] rounded-xl p-6 mb-6 text-center">
+                        <p className="text-[#15407c] font-semibold">Please log in to reply to this thread.</p>
+                    </div>
+                )
+            ) : (
                 <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6 mb-6 text-center">
                     <MdLock className="mx-auto text-red-600 mb-2" size={32} />
                     <p className="text-red-700 font-semibold">This thread is locked. No new replies can be posted.</p>
