@@ -65,8 +65,10 @@ export default function LoginPage() {
 
             login(userData, res.data.token);
 
-            // Use replace instead of push for cleaner navigation
-            router.replace("/dashboard");
+            // Redirect based on user role
+            const dashboardPath = userData.role === "admin" ? "/admin/dashboard" : "/dashboard";
+            router.replace(dashboardPath);
+            
             toast.success("🎉 Logged in! Welcome back.", {
                 description: (
                     <p className="text-sm  text-green-700 font-medium">

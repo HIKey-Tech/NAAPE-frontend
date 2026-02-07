@@ -730,11 +730,11 @@ export function AdminSidebar() {
         );
     }
 
-    const handleSignOut = useCallback(() => {
+    const handleSignOut = () => {
         setShowLogoutDialog(true);
-    }, []);
+    };
 
-    const confirmLogout = useCallback(() => {
+    const confirmLogout = () => {
         setShowLogoutDialog(false);
         setIsLoggingOut(true);
         
@@ -742,7 +742,7 @@ export function AdminSidebar() {
         requestAnimationFrame(() => {
             logout();
         });
-    }, [logout]);
+    };
 
     // Desktop nav sections reused for desktop sidebar
     const navSectionDashboard = useMemo(() =>

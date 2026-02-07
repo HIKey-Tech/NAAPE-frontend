@@ -10,11 +10,17 @@ export default function Dashboard() {
     const { user, loading, isAuthenticated } = useAuth();
 
     useEffect(() => {
+        // Redirect admin users to admin dashboard
+        if (!loading && user?.role === "admin") {
+            router.replace("/admin/dashboard");
+            return;
+        }
+        
         // Only redirect if finished loading and NOT authenticated
         if (!loading && !isAuthenticated) {
             router.replace("/login");
         }
-    }, [loading, isAuthenticated, router]);
+    }, [loading, isAuthenticated, user, router]);
 
     // Block rendering until auth is resolved to avoid changing hook order
     if (loading) {

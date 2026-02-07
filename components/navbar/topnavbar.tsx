@@ -86,15 +86,15 @@ function UserAvatar({
 }
 
 export default function TopNavbar() {
-    const checkUser = useAuth();
+    const { user: authUser, logout } = useAuth();
     const router = useRouter();
     const role =
-        checkUser.user?.role && checkUser.user?.role !== "Loading"
-            ? getRoleLabel(checkUser.user?.role)
+        authUser?.role && authUser?.role !== "Loading"
+            ? getRoleLabel(authUser?.role)
             : "User";
     const user = {
-        name: checkUser.user?.name || "User",
-        rawRole: checkUser.user?.role || "user",
+        name: authUser?.name || "User",
+        rawRole: authUser?.role || "user",
         role,
     };
 
@@ -160,7 +160,7 @@ export default function TopNavbar() {
         
         // Use requestAnimationFrame to ensure DOM updates complete before logout
         requestAnimationFrame(() => {
-            checkUser.logout();
+            logout();
         });
     }
 
