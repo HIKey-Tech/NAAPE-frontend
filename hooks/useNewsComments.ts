@@ -24,7 +24,7 @@ export const useNewsComments = (newsId: string) => {
         
         setLoading(true);
         try {
-            const response = await axiosInstance.get(`/api/v1/news/${newsId}/comments`);
+            const response = await axiosInstance.get(`/news/${newsId}/comments`);
             setComments(response.data.data || []);
         } catch (error: any) {
             console.error("Failed to fetch comments:", error);
@@ -42,7 +42,7 @@ export const useNewsComments = (newsId: string) => {
 
         setSubmitting(true);
         try {
-            const response = await axiosInstance.post(`/api/v1/news/${newsId}/comments`, { text });
+            const response = await axiosInstance.post(`/news/${newsId}/comments`, { text });
             const newComment = response.data.data;
             
             setComments((prev) => [newComment, ...prev]);
@@ -59,7 +59,7 @@ export const useNewsComments = (newsId: string) => {
 
     const deleteComment = async (commentId: string) => {
         try {
-            await axiosInstance.delete(`/api/v1/news/comments/${commentId}`);
+            await axiosInstance.delete(`/news/comments/${commentId}`);
             setComments((prev) => prev.filter((c) => c._id !== commentId));
             toast.success("Comment deleted");
             return true;
