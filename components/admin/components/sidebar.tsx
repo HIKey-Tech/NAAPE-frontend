@@ -644,7 +644,7 @@ function MobileTopbarHamburger({
                 ) : (
                     <div className="w-8 h-8 rounded-full border-2 border-[#bbc9dc] bg-gradient-to-tr from-blue-800 via-blue-400 to-pink-400 flex items-center justify-center">
                         <span className="text-white font-extrabold text-xs">
-                            {user?.name?.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0]?.toUpperCase() || "").join("") || "U"}
+                            {user?.name?.split(" ").filter(Boolean).slice(0, 2).map((n: string) => n[0]?.toUpperCase() || "").join("") || "U"}
                         </span>
                     </div>
                 )}
