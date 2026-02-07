@@ -11,6 +11,7 @@ import {
 } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/hook/store/useAuthStore";
 
 // ============ TYPES ============
 export type User = {
@@ -40,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     const router = useRouter();
+    const zustandStore = useAuthStore();
 
     // Load auth state on initial page load
     useEffect(() => {
@@ -61,6 +63,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 }
                 
                 setUser(parsedUser);
+                // Sync with Zustand store
+                zustandStore.login(parsedUser, tokenVal);
             } catch (error) {
                 console.error("Failed to parse user from localStorage:", error);
                 // Clear invalid data
@@ -69,13 +73,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 Cookies.remove("token");
                 setUser(null);
                 setToken(null);
+                zustandStore.logout();
             }
         } else {
             setToken(null);
             setUser(null);
+            zustandStore.logout();
         }
 
         setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Removed redundant useEffect - storage is now handled directly in login/logout functions
@@ -96,7 +103,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Then update React state
         setUser(loginUser);
         setToken(loginToken);
-    }, []);
+        
+        // Sync with Zustand store
+        zustandStore.login(loginUser, loginToken);
+    }, [zustandStore]);
 
     // ============ LOGOUT ============
     const logout = useCallback(() => {
@@ -110,12 +120,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Clear state
         setUser(null);
         setToken(null);
+        
+        // Sync with Zustand store
+        zustandStore.logout();
 
         // Use setTimeout to defer navigation until after React finishes current render cycle
         setTimeout(() => {
             router.push("/login");
         }, 0);
-    }, [router]);
+    }, [router, zustandStore]);
 
     // ============ MANUAL AUTH SET ============
     const setAuthenticatedUser = useCallback((newUser: User | null, newToken: string | null) => {
@@ -137,7 +150,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 localStorage.removeItem("user");
             }
         }
-    }, []);
+        
+        // Sync with Zustand store
+        if (newUser && newToken) {
+            zustandStore.login(newUser, newToken);
+        } else {
+            zustandStore.logout();
+        }
+    }, [zustandStore]);
 
     // ============ MEMOIZED VALUE ============
     const value = useMemo(
@@ -150,7 +170,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             logout,
             setAuthenticatedUser,
         }),
-        [user, token, loading]
+        [user, token, loading, login, logout, setAuthenticatedUser]
     );
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
