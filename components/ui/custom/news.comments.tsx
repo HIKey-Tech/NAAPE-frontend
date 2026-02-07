@@ -14,14 +14,14 @@ interface NewsCommentsProps {
 const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
     const router = useRouter();
     const { comments, loading, submitting, fetchComments, addComment, deleteComment } = useNewsComments(newsId);
-    const { user } = useAuthStore();
+    const { user, hydrated } = useAuthStore();
     const [commentText, setCommentText] = useState("");
 
     useEffect(() => {
-        if (newsId && user) {
+        if (newsId && user && hydrated) {
             fetchComments();
         }
-    }, [newsId, user]);
+    }, [newsId, user, hydrated]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -79,6 +79,14 @@ const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
     const handleLoginRedirect = () => {
         router.push("/login");
     };
+
+    if (!hydrated) {
+        return (
+            <div className="mt-8 text-center py-8">
+                <p className="text-gray-500">Loading...</p>
+            </div>
+        );
+    }
 
     if (!user) {
         return (
