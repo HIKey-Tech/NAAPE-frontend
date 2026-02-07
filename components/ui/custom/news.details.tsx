@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import NewsComments from "./news.comments";
 
 export interface NewsDetailsProps {
     imageUrl: string;
@@ -17,6 +18,8 @@ export interface NewsDetailsProps {
     category?: string;
     backHref?: string;
     className?: string;
+    newsId?: string;
+    showComments?: boolean;
 }
 
 /**
@@ -24,6 +27,7 @@ export interface NewsDetailsProps {
  * - News image with category badge
  * - Title, date, author
  * - Body/content
+ * - Comments section (if newsId provided)
  * - Back button
  */
 const NewsDetails: React.FC<NewsDetailsProps> = ({
@@ -35,6 +39,8 @@ const NewsDetails: React.FC<NewsDetailsProps> = ({
     category,
     backHref = "/news",
     className = "",
+    newsId,
+    showComments = true,
 }) => {
     // Format date for display
     let displayDate = "";
@@ -188,6 +194,13 @@ const NewsDetails: React.FC<NewsDetailsProps> = ({
                         content
                     )}
                 </section>
+
+                {/* Comments Section */}
+                {showComments && newsId && (
+                    <div className="px-0 pb-0">
+                        <NewsComments newsId={newsId} />
+                    </div>
+                )}
             </div>
             {/* Footer / Back */}
             <footer className="px-7 pt-0 pb-6 flex items-center justify-between border-t border-neutral-200 mt-0">

@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useMemo } from "react";
+import NewsComments from "@/components/ui/custom/news.comments";
 
 const newsList = [
     {
@@ -183,6 +184,11 @@ export default function LatestNewsDetailsPage() {
                         dangerouslySetInnerHTML={{ __html: news.content }}
                     />
                 </section>
+
+                {/* Comments Section - Will show login prompt for non-authenticated users */}
+                <div className="px-6 pb-6">
+                    <NewsComments newsId={id || ""} />
+                </div>
 
                 {/* Back link */}
                 <nav className="border-t border-[#E5E7EB] p-6 pt-4 flex">

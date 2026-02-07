@@ -82,7 +82,7 @@ export default function NewsCpmponent() {
                     filteredPublications.map((news: any, idx: number) => (
                         <NewsCard
                             key={news.id ?? news._id ?? idx}
-                            imageUrl={news.imageUrl || "/images/plane.jpg"}
+                            imageUrl={news.image || news.imageUrl || "/images/plane.jpg"}
                             title={news.title}
                             summary={
                                 (typeof news.summary === "string" && news.summary) || 

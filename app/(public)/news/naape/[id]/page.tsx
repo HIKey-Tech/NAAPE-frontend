@@ -124,6 +124,8 @@ export default function NaapeNewsDetailsPage() {
           avatarUrl: "/images/logos/naape.svg"
         }}
         backHref="/news/naape"
+        newsId={news.id}
+        showComments={true}
       />
     </main>
   );
