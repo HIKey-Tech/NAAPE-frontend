@@ -11,6 +11,8 @@ export interface NewsComment {
         email: string;
         role: string;
     };
+    parentComment?: string;
+    replies?: NewsComment[];
     createdAt: string;
 }
 
@@ -34,7 +36,7 @@ export const useNewsComments = (newsId: string) => {
         }
     };
 
-    const addComment = async (text: string) => {
+    const addComment = async (text: string, parentCommentId?: string) => {
         if (!text.trim()) {
             toast.error("Comment cannot be empty");
             return false;
@@ -42,11 +44,14 @@ export const useNewsComments = (newsId: string) => {
 
         setSubmitting(true);
         try {
-            const response = await axiosInstance.post(`/news/${newsId}/comments`, { text });
-            const newComment = response.data.data;
+            const response = await axiosInstance.post(`/news/${newsId}/comments`, { 
+                text,
+                parentCommentId 
+            });
             
-            setComments((prev) => [newComment, ...prev]);
-            toast.success("Comment added successfully");
+            // Refresh comments to get updated tree structure
+            await fetchComments();
+            toast.success(parentCommentId ? "Reply added successfully" : "Comment added successfully");
             return true;
         } catch (error: any) {
             console.error("Failed to add comment:", error);

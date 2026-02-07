@@ -6,45 +6,44 @@ import { useNewsComments, NewsComment } from "@/hooks/useNewsComments";
 import { useAuthStore } from "@/hook/store/useAuthStore";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Reply, Trash2 } from "lucide-react";
 
 interface NewsCommentsProps {
     newsId: string;
 }
 
-const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
-    const router = useRouter();
-    const { comments, loading, submitting, fetchComments, addComment, deleteComment } = useNewsComments(newsId);
-    const { user, hydrated } = useAuthStore();
-    const [commentText, setCommentText] = useState("");
+interface CommentItemProps {
+    comment: NewsComment;
+    onDelete: (id: string) => void;
+    onReply: (commentId: string, text: string) => Promise<void>;
+    currentUserId: string;
+    currentUserRole: string;
+    depth?: number;
+}
 
-    useEffect(() => {
-        if (newsId && user && hydrated) {
-            fetchComments();
-        }
-    }, [newsId, user, hydrated]);
+const CommentItem: React.FC<CommentItemProps> = ({ 
+    comment, 
+    onDelete, 
+    onReply, 
+    currentUserId, 
+    currentUserRole, 
+    depth = 0 
+}) => {
+    const [showReplyBox, setShowReplyBox] = useState(false);
+    const [replyText, setReplyText] = useState("");
+    const [submitting, setSubmitting] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!user) {
-            router.push("/login");
-            return;
-        }
-        const success = await addComment(commentText);
-        if (success) {
-            setCommentText("");
-        }
-    };
+    const canDelete = currentUserId === comment.user._id || currentUserRole === "admin";
+    const maxDepth = 3; // Limit nesting depth
 
-    const handleTextareaFocus = () => {
-        if (!user) {
-            router.push("/login");
-        }
-    };
-
-    const handleDelete = async (commentId: string) => {
-        if (confirm("Are you sure you want to delete this comment?")) {
-            await deleteComment(commentId);
-        }
+    const handleReply = async () => {
+        if (!replyText.trim()) return;
+        
+        setSubmitting(true);
+        await onReply(comment._id, replyText);
+        setReplyText("");
+        setShowReplyBox(false);
+        setSubmitting(false);
     };
 
     const formatDate = (dateString: string) => {
@@ -76,6 +75,149 @@ const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
             .slice(0, 2);
     };
 
+    return (
+        <div className={`${depth > 0 ? 'ml-8 mt-3' : 'mt-4'}`}>
+            <div className={`bg-white border ${depth > 0 ? 'border-l-4 border-l-blue-300' : 'border-gray-200'} rounded-lg p-4 hover:shadow-sm transition-shadow`}>
+                <div className="flex items-start gap-3">
+                    {/* Avatar */}
+                    <div className="shrink-0 w-10 h-10 rounded-full bg-[#193B7A] text-white flex items-center justify-center font-semibold text-sm">
+                        {getInitials(comment.user.name)}
+                    </div>
+
+                    {/* Comment Content */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            <span className="font-semibold text-gray-900">
+                                {comment.user.name}
+                            </span>
+                            <span className="text-xs text-gray-500 uppercase px-2 py-0.5 bg-gray-100 rounded">
+                                {comment.user.role}
+                            </span>
+                            <span className="text-sm text-gray-500">
+                                {formatDate(comment.createdAt)}
+                            </span>
+                        </div>
+                        <p className="text-gray-700 whitespace-pre-wrap break-words mb-2">
+                            {comment.text}
+                        </p>
+
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-3 mt-2">
+                            {depth < maxDepth && (
+                                <button
+                                    onClick={() => setShowReplyBox(!showReplyBox)}
+                                    className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                >
+                                    <Reply className="h-3.5 w-3.5" />
+                                    Reply
+                                </button>
+                            )}
+                            {canDelete && (
+                                <button
+                                    onClick={() => onDelete(comment._id)}
+                                    className="flex items-center gap-1 text-sm text-red-500 hover:text-red-700 font-medium"
+                                >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                    Delete
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Reply Box */}
+                        {showReplyBox && (
+                            <div className="mt-3 space-y-2 bg-gray-50 p-3 rounded-lg">
+                                <Textarea
+                                    value={replyText}
+                                    onChange={(e) => setReplyText(e.target.value)}
+                                    placeholder={`Reply to ${comment.user.name}...`}
+                                    className="min-h-[80px] resize-none"
+                                />
+                                <div className="flex gap-2">
+                                    <Button
+                                        onClick={handleReply}
+                                        disabled={submitting || !replyText.trim()}
+                                        size="sm"
+                                        className="bg-[#193B7A] hover:bg-[#154075]"
+                                    >
+                                        {submitting ? "Posting..." : "Post Reply"}
+                                    </Button>
+                                    <Button
+                                        onClick={() => {
+                                            setShowReplyBox(false);
+                                            setReplyText("");
+                                        }}
+                                        variant="outline"
+                                        size="sm"
+                                    >
+                                        Cancel
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Render nested replies */}
+            {comment.replies && comment.replies.length > 0 && (
+                <div className="mt-2">
+                    {comment.replies.map((reply) => (
+                        <CommentItem
+                            key={reply._id}
+                            comment={reply}
+                            onDelete={onDelete}
+                            onReply={onReply}
+                            currentUserId={currentUserId}
+                            currentUserRole={currentUserRole}
+                            depth={depth + 1}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
+const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
+    const router = useRouter();
+    const { comments, loading, submitting, fetchComments, addComment, deleteComment } = useNewsComments(newsId);
+    const { user, hydrated } = useAuthStore();
+    const [commentText, setCommentText] = useState("");
+
+    useEffect(() => {
+        if (newsId && user && hydrated) {
+            fetchComments();
+        }
+    }, [newsId, user, hydrated]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!user) {
+            router.push("/login");
+            return;
+        }
+        const success = await addComment(commentText);
+        if (success) {
+            setCommentText("");
+        }
+    };
+
+    const handleTextareaFocus = () => {
+        if (!user) {
+            router.push("/login");
+        }
+    };
+
+    const handleReply = async (parentCommentId: string, text: string) => {
+        await addComment(text, parentCommentId);
+    };
+
+    const handleDelete = async (commentId: string) => {
+        if (confirm("Are you sure you want to delete this comment?")) {
+            await deleteComment(commentId);
+        }
+    };
+
     const handleLoginRedirect = () => {
         router.push("/login");
     };
@@ -90,7 +232,7 @@ const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
 
     if (!user) {
         return (
-            <div className="mt-8 p-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border-2 border-[#193B7A]/20 text-center">
+            <div className="mt-8 p-8 bg-linear-to-br from-blue-50 to-indigo-50 rounded-lg border-2 border-[#193B7A]/20 text-center">
                 <div className="max-w-md mx-auto">
                     <svg
                         className="w-16 h-16 mx-auto mb-4 text-[#193B7A]"
@@ -159,46 +301,14 @@ const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
             ) : (
                 <div className="space-y-4">
                     {comments.map((comment) => (
-                        <div
+                        <CommentItem
                             key={comment._id}
-                            className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow"
-                        >
-                            <div className="flex items-start gap-3">
-                                {/* Avatar */}
-                                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#193B7A] text-white flex items-center justify-center font-semibold">
-                                    {getInitials(comment.user.name)}
-                                </div>
-
-                                {/* Comment Content */}
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <span className="font-semibold text-gray-900">
-                                            {comment.user.name}
-                                        </span>
-                                        <span className="text-xs text-gray-500 uppercase px-2 py-0.5 bg-gray-100 rounded">
-                                            {comment.user.role}
-                                        </span>
-                                        <span className="text-sm text-gray-500">
-                                            {formatDate(comment.createdAt)}
-                                        </span>
-                                    </div>
-                                    <p className="text-gray-700 whitespace-pre-wrap break-words">
-                                        {comment.text}
-                                    </p>
-                                </div>
-
-                                {/* Delete Button */}
-                                {(user._id === comment.user._id || user.role === "admin") && (
-                                    <button
-                                        onClick={() => handleDelete(comment._id)}
-                                        className="flex-shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
-                                        title="Delete comment"
-                                    >
-                                        Delete
-                                    </button>
-                                )}
-                            </div>
-                        </div>
+                            comment={comment}
+                            onDelete={handleDelete}
+                            onReply={handleReply}
+                            currentUserId={user._id}
+                            currentUserRole={user.role}
+                        />
                     ))}
                 </div>
             )}
