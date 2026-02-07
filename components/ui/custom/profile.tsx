@@ -95,6 +95,16 @@ export default function ProfilePage() {
         return undefined;
     }
 
+    function getInitials(name?: string) {
+        if (!name) return "U";
+        const parts = name.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0]?.toUpperCase() || "");
+        return parts.length ? parts.join("") : "U";
+    }
+
+    function generateAvatarSVG(initials: string) {
+        return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%231e40af;stop-opacity:1' /%3E%3Cstop offset='50%25' style='stop-color:%233b82f6;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23ec4899;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23grad)' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='80' font-weight='bold' fill='white'%3E${encodeURIComponent(initials)}%3C/text%3E%3C/svg%3E`;
+    }
+
     function startEditing() {
         setForm({
             name: profile?.name ?? "",
@@ -339,7 +349,7 @@ export default function ProfilePage() {
                             src={
                                 picPreview ||
                                 getProfileImage(profile as ProfileData) ||
-                                "/default-avatar.png"
+                                generateAvatarSVG(getInitials(profile?.name))
                             }
                             alt="Profile"
                             className="w-36 h-36 rounded-full object-cover border-[5px] shadow"

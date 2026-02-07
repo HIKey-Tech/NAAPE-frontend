@@ -187,17 +187,31 @@ const navLinksSecondary: NavLink[] = [
 ];
 
 function UserAvatar({ user }: { user: { name?: string, email?: string, avatarUrl?: string } }) {
+    const getInitials = (name?: string) => {
+        if (!name) return "U";
+        const parts = name.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0]?.toUpperCase() || "");
+        return parts.length ? parts.join("") : "U";
+    };
+
+    const initials = getInitials(user.name);
+
     return (
         <div className="flex items-center gap-3 px-3 py-3">
-            <Image
-                src={user.avatarUrl || "/default-avatar.png"}
-                alt={user.name || "User"}
-                width={32}
-                height={32}
-                className="w-8 h-8 rounded-full border-2 border-[#bbc9dc] object-cover"
-                style={{ background: "#eaf0f7" }}
-                priority
-            />
+            {user.avatarUrl ? (
+                <Image
+                    src={user.avatarUrl}
+                    alt={user.name || "User"}
+                    width={32}
+                    height={32}
+                    className="w-8 h-8 rounded-full border-2 border-[#bbc9dc] object-cover"
+                    style={{ background: "#eaf0f7" }}
+                    priority
+                />
+            ) : (
+                <div className="w-8 h-8 rounded-full border-2 border-[#bbc9dc] bg-gradient-to-tr from-blue-800 via-blue-400 to-pink-400 flex items-center justify-center">
+                    <span className="text-white font-extrabold text-sm">{initials}</span>
+                </div>
+            )}
             <div className="flex flex-col min-w-0 leading-tight">
                 <span className="text-[14px] font-semibold text-[#16355D] truncate">{user.name ?? "-"}</span>
                 <span className="text-xs text-[#8094bb] truncate">{user.email ?? ""}</span>
@@ -618,14 +632,22 @@ function MobileTopbarHamburger({
                 <span className="text-[12px] font-semibold text-[#16355D] leading-tight truncate max-w-[110px] tracking-wide" style={{ textTransform: "uppercase", color: "#14203c" }}>
                     NAAPE
                 </span>
-                <Image
-                    src={user?.avatarUrl || "/default-avatar.png"}
-                    alt="User"
-                    width={31}
-                    height={31}
-                    className="w-8 h-8 rounded-full border-2 border-[#bbc9dc] object-cover"
-                    style={{ background: "#eaf0f7" }}
-                />
+                {user?.avatarUrl ? (
+                    <Image
+                        src={user.avatarUrl}
+                        alt="User"
+                        width={31}
+                        height={31}
+                        className="w-8 h-8 rounded-full border-2 border-[#bbc9dc] object-cover"
+                        style={{ background: "#eaf0f7" }}
+                    />
+                ) : (
+                    <div className="w-8 h-8 rounded-full border-2 border-[#bbc9dc] bg-gradient-to-tr from-blue-800 via-blue-400 to-pink-400 flex items-center justify-center">
+                        <span className="text-white font-extrabold text-xs">
+                            {user?.name?.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0]?.toUpperCase() || "").join("") || "U"}
+                        </span>
+                    </div>
+                )}
             </div>
             <HamburgerDrawer
                 open={drawerOpen}
