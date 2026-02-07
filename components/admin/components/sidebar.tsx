@@ -29,7 +29,7 @@ import {
 } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
-import { useCallback, useMemo, useState, useRef, useEffect } from "react";
+import { useCallback, useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/authcontext";
 import { LogoutDialog } from "@/components/ui/logout-dialog";
@@ -767,66 +767,61 @@ export function AdminSidebar() {
     };
 
     // Desktop nav sections reused for desktop sidebar
-    const navSectionDashboard = useMemo(() =>
-        homeLinks.map(link => {
-            const isActive = link.href ? pathname === link.href : false;
-            return (
-                <NavItem
-                    key={link.label}
-                    icon={link.icon}
-                    label={link.label}
-                    href={link.href}
-                    description={link.description}
-                    active={isActive}
-                />
-            );
-        }), [pathname]
-    );
-    const navSectionUserManagement = useMemo(() =>
-        userManagementLinks.map(link => {
-            const isActive = link.href ? pathname === link.href : false;
-            return (
-                <NavItem
-                    key={link.label}
-                    icon={link.icon}
-                    label={link.label}
-                    href={link.href}
-                    description={link.description}
-                    active={isActive}
-                />
-            );
-        }), [pathname]
-    );
-    const navSectionContent = useMemo(() =>
-        contentLinks.map(link => {
-            const isActive = link.href ? pathname === link.href : false;
-            return (
-                <NavItem
-                    key={link.label}
-                    icon={link.icon}
-                    label={link.label}
-                    href={link.href}
-                    description={link.description}
-                    active={isActive}
-                />
-            );
-        }), [pathname]
-    );
-    const navSectionUtility = useMemo(() =>
-        navLinksSecondary.map(link => {
-            const isActive = link.href ? pathname === link.href : false;
-            return (
-                <NavItem
-                    key={link.label}
-                    icon={link.icon}
-                    label={link.label}
-                    href={link.href}
-                    description={link.description}
-                    active={isActive}
-                />
-            );
-        }), [pathname]
-    );
+    const navSectionDashboard = homeLinks.map(link => {
+        const isActive = link.href ? pathname === link.href : false;
+        return (
+            <NavItem
+                key={link.label}
+                icon={link.icon}
+                label={link.label}
+                href={link.href}
+                description={link.description}
+                active={isActive}
+            />
+        );
+    });
+    
+    const navSectionUserManagement = userManagementLinks.map(link => {
+        const isActive = link.href ? pathname === link.href : false;
+        return (
+            <NavItem
+                key={link.label}
+                icon={link.icon}
+                label={link.label}
+                href={link.href}
+                description={link.description}
+                active={isActive}
+            />
+        );
+    });
+    
+    const navSectionContent = contentLinks.map(link => {
+        const isActive = link.href ? pathname === link.href : false;
+        return (
+            <NavItem
+                key={link.label}
+                icon={link.icon}
+                label={link.label}
+                href={link.href}
+                description={link.description}
+                active={isActive}
+            />
+        );
+    });
+    
+    const navSectionUtility = navLinksSecondary.map(link => {
+        const isActive = link.href ? pathname === link.href : false;
+        return (
+            <NavItem
+                key={link.label}
+                icon={link.icon}
+                label={link.label}
+                href={link.href}
+                description={link.description}
+                active={isActive}
+            />
+        );
+    });
 
     const SidebarContent = (
         <>
