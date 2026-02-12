@@ -54,12 +54,8 @@ export default function Dashboard() {
     }
 
     if (!isAuthenticated) {
-        // Optionally, you can show a message while redirecting
-        return (
-            <div className="flex items-center justify-center h-screen text-[#5161ab] text-lg font-medium">
-                <span>You are not authenticated. Redirecting to login...</span>
-            </div>
-        );
+        // Don't render anything - just let the redirect happen
+        return null;
     }
 
     return (
