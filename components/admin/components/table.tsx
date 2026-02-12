@@ -9,6 +9,12 @@ export interface PublicationTableProps {
 }
 
 const STATUS_LABELS: Record<IPublication["status"], { label: string; className: string; dotColor: string; borderClass: string }> = {
+    draft: {
+        label: "Draft",
+        className: "text-gray-800 bg-gray-50",
+        dotColor: "#6B7280",
+        borderClass: "border-gray-200"
+    },
     pending: {
         label: "Pending",
         className: "text-yellow-800 bg-yellow-50",

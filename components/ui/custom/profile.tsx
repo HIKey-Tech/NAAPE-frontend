@@ -6,6 +6,7 @@ import {
     useUpdateMyProfile,
     useUpdateMyPassword,
 } from "@/hooks/useProfile";
+import { useSubscriptionStatus } from "@/hooks/useSubscription";
 import {
     MdEdit,
     MdSave,
@@ -25,6 +26,7 @@ import {
     MdOutlineVisibility,
     MdOutlineVisibilityOff,
 } from "react-icons/md";
+import { FaStar, FaCrown } from "react-icons/fa";
 import { NaapButton } from "./button.naap";
 import { toast } from "sonner";
 
@@ -63,6 +65,7 @@ export interface ProfileData {
 
 export default function ProfilePage() {
     const { data: profile, isLoading, error } = useMyProfile();
+    const { data: subscriptionStatus } = useSubscriptionStatus();
     const updateProfile = useUpdateMyProfile();
     const updatePassword = useUpdateMyPassword();
 
@@ -405,12 +408,21 @@ export default function ProfilePage() {
                                 {showEmail ? "Hide" : "Show"}
                             </button>
                         </div>
-                        <span
-                            className="inline-flex mt-2 items-center gap-2 bg-[var(--primary-50,#f0f5ff)] text-[var(--primary)] rounded-2xl px-3 py-0.5 text-base capitalize font-semibold"
-                        >
-                            <MdBadge />
-                            {profile.role}
-                        </span>
+                        <div className="flex items-center gap-2 mt-2">
+                            <span
+                                className="inline-flex items-center gap-2 bg-[var(--primary-50,#f0f5ff)] text-[var(--primary)] rounded-2xl px-3 py-0.5 text-base capitalize font-semibold"
+                            >
+                                <MdBadge />
+                                {profile.role}
+                            </span>
+                            {/* Premium Badge */}
+                            {(profile.role === "admin" || profile.role === "editor" || subscriptionStatus?.hasSubscription) && (
+                                <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-700 rounded-2xl px-3 py-0.5 text-sm font-bold border border-amber-200">
+                                    <FaCrown className="text-amber-500" />
+                                    Premium
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
                 {/* Action bar at top right - always consistently aligned */}

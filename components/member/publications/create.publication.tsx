@@ -121,6 +121,7 @@ const CreatePublicationComponent: React.FC = () => {
       title: values.title.trim(),
       content: values.content.trim(),
       category: values.category,
+      status: "pending",
     };
 
     try {
@@ -128,6 +129,7 @@ const CreatePublicationComponent: React.FC = () => {
       formData.append("title", payload.title);
       formData.append("content", payload.content);
       formData.append("category", payload.category);
+      formData.append("status", payload.status);
 
       if (file instanceof File) {
         formData.append("image", file);
@@ -157,9 +159,59 @@ const CreatePublicationComponent: React.FC = () => {
     }
   };
 
-  // Draft handler, can later implement draft-saving logic here
-  const handleDraft = () => {
-    toast.info("Save as draft functionality coming soon!");
+  // Draft handler
+  const handleDraft = async () => {
+    const values = form.getValues();
+    
+    // Validate required fields for draft
+    if (!values.title.trim() || !values.content.trim() || !values.category) {
+      toast.error("Please fill in title, category, and content before saving as draft.");
+      return;
+    }
+
+    setSubmitting(true);
+
+    const file = values.imageFile as File | null;
+    const payload = {
+      title: values.title.trim(),
+      content: values.content.trim(),
+      category: values.category,
+      status: "draft",
+    };
+
+    try {
+      const formData = new FormData();
+      formData.append("title", payload.title);
+      formData.append("content", payload.content);
+      formData.append("category", payload.category);
+      formData.append("status", payload.status);
+
+      if (file instanceof File) {
+        formData.append("image", file);
+      }
+
+      await createPublication.mutateAsync(formData, {});
+
+      toast.success(
+        <div>
+          <div className="font-bold mb-1">Publication saved as draft!</div>
+          <div className="text-sm text-[#244]">
+            You can edit and submit it later from My Publications.
+          </div>
+        </div>
+      );
+
+      form.reset();
+      setImagePreviewUrl(null);
+    } catch (error: any) {
+      toast.error(
+        <span>
+          Failed to save draft: {error?.message || "Unknown error. Please try again."}
+        </span>
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // Accessibility: Provide clear heading, relationships, aria attributes, focus styles, improved hierarchy

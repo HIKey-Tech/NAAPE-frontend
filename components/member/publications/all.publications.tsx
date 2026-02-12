@@ -11,7 +11,7 @@ import { useSubscriptionStatus } from "@/hooks/useSubscription";
 // No change to statuses
 const PUBLICATION_STATUSES: { label: string; value?: string; icon?: React.ReactNode; highlight?: string }[] = [
     { label: "All", value: undefined, icon: <FaLayerGroup className="inline mr-1" />, highlight: "bg-gradient-to-r from-[#FAFBFF] to-[#F2F7FB]" },
-    { label: "Published", value: "published", icon: <FaBookOpen className="inline mr-1 text-[#2c6ed4]" />, highlight: "bg-[#eaf4ff]" },
+    { label: "Published", value: "approved", icon: <FaBookOpen className="inline mr-1 text-[#2c6ed4]" />, highlight: "bg-[#eaf4ff]" },
     { label: "Draft", value: "draft", icon: <FaEdit className="inline mr-1 text-[#9E63C3]" />, highlight: "bg-[#f3e9fb]" },
     { label: "Pending Review", value: "pending", icon: <FaHourglassHalf className="inline mr-1 text-[#E8B900]" />, highlight: "bg-[#fff9e5]" },
     { label: "Rejected", value: "rejected", icon: <FaTimesCircle className="inline mr-1 text-[#D33A2C]" />, highlight: "bg-[#fdeaea]" },

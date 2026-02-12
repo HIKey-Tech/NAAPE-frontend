@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   useFetchSubscriptionPlans,
   useFlutterwaveSubscription,
@@ -17,9 +18,12 @@ function getTierFromPlan(plan: SubscriptionPlan): "basic" | "premium" {
 
 
 
-export default function MembershipSubscription() {
+function MembershipSubscriptionContent() {
   const { user } = useAuth();
   const userId = user?._id;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const redirectUrl = searchParams.get("redirect");
 
   const { data: plans = [], isPending, error } = useFetchSubscriptionPlans();
 
@@ -46,6 +50,11 @@ export default function MembershipSubscription() {
 
     try {
       const tier = getTierFromPlan(selectedPlan);
+
+      // Store redirect URL in localStorage before payment
+      if (redirectUrl) {
+        localStorage.setItem("postSubscriptionRedirect", redirectUrl);
+      }
 
       const checkoutUrl = await initializeSubscriptionPayment({ tier });
 
@@ -140,5 +149,17 @@ export default function MembershipSubscription() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function MembershipSubscription() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#fafaff] flex justify-center items-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-[#15407c] border-t-transparent" />
+      </div>
+    }>
+      <MembershipSubscriptionContent />
+    </Suspense>
   );
 }

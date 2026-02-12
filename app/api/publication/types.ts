@@ -10,7 +10,7 @@ export interface IPublication {
         email: string;
         role: string;
     };
-    status: "pending" | "approved" | "rejected";
+    status: "draft" | "pending" | "approved" | "rejected";
     createdAt: string;
     updatedAt: string;
 }

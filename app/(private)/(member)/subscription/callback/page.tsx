@@ -31,12 +31,18 @@ export default function SubscriptionCallback() {
           setStatus("success");
           setMessage(
             response.data.alreadyProcessed 
-              ? "Payment already processed. Redirecting to dashboard..." 
+              ? "Payment already processed. Redirecting..." 
               : "Payment successful! Your subscription is now active. Redirecting..."
           );
           
-          // Redirect to dashboard after 2 seconds
-          setTimeout(() => router.replace("/dashboard"), 2000);
+          // Check for stored redirect URL
+          const redirectUrl = localStorage.getItem("postSubscriptionRedirect");
+          if (redirectUrl) {
+            localStorage.removeItem("postSubscriptionRedirect");
+            setTimeout(() => router.replace(redirectUrl), 2000);
+          } else {
+            setTimeout(() => router.replace("/dashboard"), 2000);
+          }
         } else {
           setStatus("failed");
           setMessage("Payment verification failed. Please contact support.");

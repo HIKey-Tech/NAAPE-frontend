@@ -9,6 +9,13 @@ export const usePublications = (status?: string) => {
     })
 }
 
+export const useAllPublications = (status?: string) => {
+    return useQuery<IPublication[]>({
+        queryKey: ['all_publications', status],
+        queryFn: () => fetchAllPublications(status)
+    })
+}
+
 export const useCreatePublication = () => {
     const queryClient = useQueryClient();
 

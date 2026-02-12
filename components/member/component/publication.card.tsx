@@ -6,6 +6,17 @@ import { usePublicationUIStore } from "@/store/usePublicationStore";
 
 // STATUS_CONFIG: unchanged
 const STATUS_CONFIG = {
+  draft: {
+    label: "Draft",
+    bg: "bg-gray-50 border-gray-300",
+    text: "text-gray-900",
+    icon: (
+      <svg className="inline-block mr-2" width="22" height="22" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+        <circle cx="10" cy="10" r="8" stroke="#9CA3AF" strokeWidth="2.5" fill="#F9FAFB" />
+        <path d="M7 10h6M10 7v6" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+  },
   pending: {
     label: "Pending",
     bg: "bg-yellow-50 border-yellow-300",

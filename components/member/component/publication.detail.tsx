@@ -12,6 +12,7 @@ import {
 } from "@/hooks/usePublications";
 
 import { useAuth } from "@/context/authcontext";
+import { useSubscriptionStatus } from "@/hooks/useSubscription";
 import { getAuthorLabel, isOwner, normalizeArray } from "@/lib/utils";
 import { parseAppSegmentConfig } from "next/dist/build/segment-config/app/app-segment-config";
 
@@ -20,6 +21,17 @@ import { parseAppSegmentConfig } from "next/dist/build/segment-config/app/app-se
 /* -------------------------------------------------------------------------- */
 
 const STATUS_CONFIG = {
+    draft: {
+        label: "Draft",
+        bg: "bg-gray-50 border-gray-300",
+        text: "text-gray-900",
+        icon: (
+            <svg width="20" height="20" viewBox="0 0 20 20">
+                <circle cx="10" cy="10" r="8" stroke="#9CA3AF" strokeWidth="2" />
+                <path d="M7 10h6M10 7v6" stroke="#6B7280" strokeWidth="2" />
+            </svg>
+        ),
+    },
     pending: {
         label: "Pending",
         bg: "bg-yellow-50 border-yellow-300",
@@ -228,6 +240,7 @@ export default function PublicationDetail() {
 
     const { user } = useAuth();
     const router = useRouter();
+    const { data: subscriptionStatus, isLoading: subscriptionLoading } = useSubscriptionStatus();
 
     const {
         data: publication,
@@ -236,7 +249,21 @@ export default function PublicationDetail() {
         refetch,
     } = useGetSinglePublication(publicationId as any);
 
-    if (isPending)
+    // Check subscription status and redirect if needed
+    useEffect(() => {
+        if (!subscriptionLoading && publication && user) {
+            const isAdmin = user.role === "admin" || user.role === "editor";
+            const hasActiveSubscription = subscriptionStatus?.hasSubscription;
+            const isAuthor = isOwner(user, publication.author);
+            
+            // Allow access if: admin, has subscription, or is the author
+            if (!isAdmin && !hasActiveSubscription && !isAuthor) {
+                router.push(`/subscription?redirect=/publications/${publicationId}`);
+            }
+        }
+    }, [subscriptionStatus, subscriptionLoading, publication, user, router, publicationId]);
+
+    if (isPending || subscriptionLoading)
         return <div className="text-center py-20">Loading…</div>;
 
     if (error || !publication)
