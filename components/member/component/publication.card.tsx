@@ -242,6 +242,13 @@ export const PublicationCard: React.FC<PublicationCardProps> = ({
     category,
   } = publication;
 
+  console.log("🔵 [CARD] Raw publication object:", {
+    _id,
+    title,
+    status,
+    fullPublication: publication
+  });
+
   /** ✅ Zustand state */
   const showComments = usePublicationUIStore(
     (s) => s.openComments[_id ?? ""] ?? false
@@ -249,11 +256,14 @@ export const PublicationCard: React.FC<PublicationCardProps> = ({
   const toggleComments = usePublicationUIStore((s) => s.toggleComments);
 
   // status handling
+  console.log("🔵 [CARD] Publication status:", status, "for publication:", title);
   let statusValue: PublicationStatus;
-  if (status === "approved") statusValue = "approved";
+  if (status === "draft") statusValue = "draft";
   else if (status === "pending") statusValue = "pending";
+  else if (status === "approved") statusValue = "approved";
   else if (status === "rejected") statusValue = "rejected";
   else statusValue = "pending";
+  console.log("🔵 [CARD] Resolved statusValue:", statusValue);
 
   function getAuthorString(author: any) {
     if (!author) return "";
@@ -325,7 +335,10 @@ export const PublicationCard: React.FC<PublicationCardProps> = ({
           className={`absolute top-3 right-3 px-3 py-1 rounded-full text-sm font-semibold border ${STATUS_CONFIG[statusValue].bg} ${STATUS_CONFIG[statusValue].text}`}
         >
           {STATUS_CONFIG[statusValue].icon}
-          {STATUS_CONFIG[statusValue].label}
+          {(() => {
+            console.log("🔵 [BADGE] Rendering badge with statusValue:", statusValue, "label:", STATUS_CONFIG[statusValue].label);
+            return STATUS_CONFIG[statusValue].label;
+          })()}
         </span>
 
         {category && (
