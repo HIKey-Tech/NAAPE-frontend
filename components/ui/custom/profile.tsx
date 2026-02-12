@@ -237,7 +237,9 @@ export default function ProfilePage() {
         }
 
         if (form.profile) {
-            formData.append("profile", JSON.stringify(form.profile));
+            // Clean the profile object - remove image field to avoid conflicts
+            const { image, ...cleanProfile } = form.profile as any;
+            formData.append("profile", JSON.stringify(cleanProfile));
         }
 
         if (form.professional) {
