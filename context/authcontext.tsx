@@ -31,6 +31,7 @@ type AuthContextType = {
     token: string | null;
     isAuthenticated: boolean;
     loading: boolean;
+    loggingOut: boolean;
     login: (user: User, token: string) => void;
     logout: () => void;
     setAuthenticatedUser: (user: User | null, token: string | null) => void;
@@ -44,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [loggingOut, setLoggingOut] = useState(false);
 
     const router = useRouter();
 
@@ -106,10 +108,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // ============ LOGOUT ============
     const logout = useCallback(() => {
-        // Navigate first to avoid showing intermediate states
-        router.replace("/login");
+        // Set logging out state immediately to prevent any rendering
+        setLoggingOut(true);
         
-        // Then clear storage and state
+        // Clear storage and state
         if (typeof window !== "undefined") {
             Cookies.remove("token");
             localStorage.removeItem("token");
@@ -119,6 +121,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Clear state
         setUser(null);
         setToken(null);
+        
+        // Navigate to login
+        router.replace("/login");
     }, [router]);
 
     // ============ MANUAL AUTH SET ============
@@ -150,11 +155,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             token,
             isAuthenticated: Boolean(user && token),
             loading,
+            loggingOut,
             login,
             logout,
             setAuthenticatedUser,
         }),
-        [user, token, loading]
+        [user, token, loading, loggingOut, login, logout, setAuthenticatedUser]
     );
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

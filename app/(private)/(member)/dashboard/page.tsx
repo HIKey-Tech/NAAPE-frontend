@@ -7,7 +7,7 @@ import { useEffect } from "react";
 
 export default function Dashboard() {
     const router = useRouter();
-    const { user, loading, isAuthenticated } = useAuth();
+    const { user, loading, isAuthenticated, loggingOut } = useAuth();
 
     useEffect(() => {
         // Redirect admin users to admin dashboard
@@ -21,6 +21,11 @@ export default function Dashboard() {
             router.replace("/login");
         }
     }, [loading, isAuthenticated, user, router]);
+
+    // Don't render anything during logout
+    if (loggingOut) {
+        return null;
+    }
 
     // Block rendering until auth is resolved to avoid changing hook order
     if (loading) {

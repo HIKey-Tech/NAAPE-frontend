@@ -1,6 +1,9 @@
+"use client";
+
 import { AppSidebar } from '@/components/navbar/app-siderbar';
 import TopNavbar from '@/components/navbar/topnavbar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { useAuth } from '@/context/authcontext';
 import React from 'react';
 
 export default function DashboardLayout({
@@ -8,6 +11,13 @@ export default function DashboardLayout({
 }: {
     children: React.ReactNode
 }) {
+    const { loggingOut } = useAuth();
+    
+    // Don't render layout during logout
+    if (loggingOut) {
+        return null;
+    }
+    
     return (
         <SidebarProvider>
             <AppSidebar />
