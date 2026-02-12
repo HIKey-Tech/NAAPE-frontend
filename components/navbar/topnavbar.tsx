@@ -96,6 +96,7 @@ export default function TopNavbar() {
         name: authUser?.name || "User",
         rawRole: authUser?.role || "user",
         role,
+        avatarUrl: authUser?.profile?.image?.url,
     };
 
     const { data: notifications, isPending: notificationsLoading } = useNotifications();
@@ -332,7 +333,7 @@ export default function TopNavbar() {
                     >
                         <span className="relative flex items-center">
                             <UserAvatar
-                                src={''}
+                                src={user.avatarUrl}
                                 alt={user.name}
                                 fallback={initials}
                                 size={44}
@@ -368,7 +369,7 @@ export default function TopNavbar() {
                             >
                                 <div className="flex flex-col items-center mb-5 sm:mb-7 px-2">
                                     <UserAvatar
-                                        src={''}
+                                        src={user.avatarUrl}
                                         alt={user.name}
                                         fallback={initials}
                                         size={64}

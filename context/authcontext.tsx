@@ -18,6 +18,12 @@ export type User = {
     name: string;
     email: string;
     role: string;
+    profile?: {
+        image?: {
+            url: string;
+            publicId: string;
+        };
+    };
 };
 
 type AuthContextType = {

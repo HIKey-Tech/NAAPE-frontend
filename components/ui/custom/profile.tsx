@@ -7,6 +7,7 @@ import {
     useUpdateMyPassword,
 } from "@/hooks/useProfile";
 import { useSubscriptionStatus } from "@/hooks/useSubscription";
+import { useAuth } from "@/context/authcontext";
 import {
     MdEdit,
     MdSave,
@@ -68,6 +69,7 @@ export default function ProfilePage() {
     const { data: subscriptionStatus } = useSubscriptionStatus();
     const updateProfile = useUpdateMyProfile();
     const updatePassword = useUpdateMyPassword();
+    const { setAuthenticatedUser, user: authUser, token } = useAuth();
 
     const [editMode, setEditMode] = useState(false);
     const [form, setForm] = useState<Partial<ProfileData>>({});
@@ -277,9 +279,19 @@ export default function ProfilePage() {
         });
 
         updateProfile.mutate(profileData, {
-            onSuccess: () => {
+            onSuccess: (response) => {
                 setEditMode(false);
                 toast.success("Profile updated!");
+                
+                // Update auth context with new profile data
+                if (response?.data && authUser && token) {
+                    const updatedUser = {
+                        ...authUser,
+                        name: response.data.name || authUser.name,
+                        profile: response.data.profile,
+                    };
+                    setAuthenticatedUser(updatedUser, token);
+                }
             },
             onError: (err: any) => {
                 toast.error(err?.message || "Profile update failed");
