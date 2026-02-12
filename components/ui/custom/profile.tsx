@@ -237,19 +237,33 @@ export default function ProfilePage() {
         }
 
         if (form.profile) {
-            // Clean the profile object - remove image field to avoid conflicts
+            // Clean the profile object - remove image field and any undefined values
             const { image, ...cleanProfile } = form.profile as any;
-            formData.append("profile", JSON.stringify(cleanProfile));
+            
+            // Remove undefined/null values
+            const sanitizedProfile = Object.fromEntries(
+                Object.entries(cleanProfile).filter(([_, value]) => value !== undefined && value !== null && value !== "")
+            );
+            
+            if (Object.keys(sanitizedProfile).length > 0) {
+                formData.append("profile", JSON.stringify(sanitizedProfile));
+            }
         }
 
         if (form.professional) {
-            formData.append(
-                "professional",
-                JSON.stringify({
-                    ...form.professional,
-                    certifications: form.professional.certifications?.filter(Boolean) || [],
-                })
+            const sanitizedProfessional = {
+                ...form.professional,
+                certifications: form.professional.certifications?.filter(Boolean) || [],
+            };
+            
+            // Remove undefined/null values
+            const cleanProfessional = Object.fromEntries(
+                Object.entries(sanitizedProfessional).filter(([_, value]) => value !== undefined && value !== null && value !== "")
             );
+            
+            if (Object.keys(cleanProfessional).length > 0) {
+                formData.append("professional", JSON.stringify(cleanProfessional));
+            }
         }
 
         if (imageFile) {
