@@ -163,6 +163,8 @@ const CreatePublicationComponent: React.FC = () => {
   const handleDraft = async () => {
     const values = form.getValues();
     
+    console.log("🔵 [DRAFT] Form values:", values);
+    
     // Validate required fields for draft
     if (!values.title.trim() || !values.content.trim() || !values.category) {
       toast.error("Please fill in title, category, and content before saving as draft.");
@@ -179,6 +181,8 @@ const CreatePublicationComponent: React.FC = () => {
       status: "draft",
     };
 
+    console.log("🔵 [DRAFT] Payload:", payload);
+
     try {
       const formData = new FormData();
       formData.append("title", payload.title);
@@ -190,7 +194,13 @@ const CreatePublicationComponent: React.FC = () => {
         formData.append("image", file);
       }
 
-      await createPublication.mutateAsync(formData, {});
+      console.log("🔵 [DRAFT] FormData entries:");
+      for (let pair of formData.entries()) {
+        console.log(`  ${pair[0]}: ${pair[1]}`);
+      }
+
+      const result = await createPublication.mutateAsync(formData, {});
+      console.log("🔵 [DRAFT] Backend response:", result);
 
       toast.success(
         <div>
@@ -204,6 +214,7 @@ const CreatePublicationComponent: React.FC = () => {
       form.reset();
       setImagePreviewUrl(null);
     } catch (error: any) {
+      console.error("🔴 [DRAFT] Error:", error);
       toast.error(
         <span>
           Failed to save draft: {error?.message || "Unknown error. Please try again."}
