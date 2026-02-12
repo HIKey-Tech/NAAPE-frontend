@@ -739,9 +739,16 @@ function MobileNavSections({ pathname }: { pathname: string | null }) {
 // Main Sidebar (desktop) + Hamburger (mobile)
 export function AdminSidebar() {
     const pathname = usePathname();
-    const { user, loading, logout } = useAuth();
+    const { user: authUser, loading, logout } = useAuth();
 
     const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+
+    // Map auth user to sidebar format
+    const user = authUser ? {
+        name: authUser.name,
+        email: authUser.email,
+        avatarUrl: authUser.profile?.image?.url,
+    } : null;
 
     if (loading) {
         return (

@@ -212,10 +212,17 @@ function SidebarProfileCard({ user }: { user: User }) {
 /** --- Responsive Sidebar --- */
 export function AppSidebar() {
   const pathname = usePathname();
-  const { logout, user } = useAuth();
+  const { logout, user: authUser } = useAuth();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+
+  // Map auth user to sidebar user format
+  const user: User = {
+    name: authUser?.name,
+    email: authUser?.email,
+    avatarUrl: authUser?.profile?.image?.url,
+  };
 
   // Close sidebar when navigating to a new path (improves UX)
   React.useEffect(() => {

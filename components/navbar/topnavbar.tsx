@@ -49,6 +49,12 @@ function UserAvatar({
     size?: number;
 }) {
     const [imageLoaded, setImageLoaded] = useState(!!src);
+    
+    // Update imageLoaded when src changes
+    useEffect(() => {
+        setImageLoaded(!!src);
+    }, [src]);
+    
     return (
         <span
             className={`relative flex items-center justify-center ${className}`}

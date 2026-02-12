@@ -61,6 +61,7 @@ export default function LoginPage() {
                 name: res.data.name,
                 email: res.data.email,
                 role: res.data.role ?? "member",
+                profile: res.data.profile, // ✅ Include profile data
             };
 
             login(userData, res.data.token);
