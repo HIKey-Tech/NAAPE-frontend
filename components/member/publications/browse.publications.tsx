@@ -116,6 +116,7 @@ export default function BrowsePublicationsPage() {
                             <PublicationCard
                                 publication={pub}
                                 isAdmin={false}
+                                baseRoute="/publications/browse"
                             />
                         </div>
                     </div>

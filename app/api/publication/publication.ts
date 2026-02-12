@@ -24,7 +24,7 @@ export const getMyPublications = async (status?: string) => {
 export async function getSinglePublication(id: string) {
     try {
         const response = await api.get(`/publications/${id}`)
-        return response.data;
+        return response.data.data;
 
     } catch (error) {
         throw error;

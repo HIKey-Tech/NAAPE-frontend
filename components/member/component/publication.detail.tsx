@@ -234,7 +234,7 @@ const PublicationActions = ({
 /*                              MAIN COMPONENT                                */
 /* -------------------------------------------------------------------------- */
 
-export default function PublicationDetail() {
+export default function PublicationDetail({ hideStatus = false }: { hideStatus?: boolean }) {
     const params = useParams<{ publicationId: string }>();
     const publicationId = params.publicationId;
 
@@ -294,11 +294,13 @@ export default function PublicationDetail() {
             <div className="p-8 space-y-6">
                 <div className="flex justify-between items-center">
                     <h1 className="text-3xl font-bold">{publication.title}</h1>
-                    <span
-                        className={`px-4 py-1 rounded-full border ${status.bg} ${status.text}`}
-                    >
-                        {status.label}
-                    </span>
+                    {!hideStatus && (
+                        <span
+                            className={`px-4 py-1 rounded-full border ${status.bg} ${status.text}`}
+                        >
+                            {status.label}
+                        </span>
+                    )}
                 </div>
 
                 {canEdit && (

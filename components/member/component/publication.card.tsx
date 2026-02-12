@@ -62,6 +62,7 @@ type PublicationCardProps = {
   onAccept?: () => void;
   onReject?: () => void;
   onDelete?: (id: string) => void;
+  baseRoute?: string; // Add baseRoute prop for navigation
 };
 
 // Utility for comment author name extraction
@@ -217,6 +218,7 @@ export const PublicationCard: React.FC<PublicationCardProps> = ({
   isAdmin = false,
   onAccept,
   onReject,
+  baseRoute = "/publications", // Default to /publications
   onDelete,
 }) => {
   const router = useRouter();
@@ -282,7 +284,7 @@ export const PublicationCard: React.FC<PublicationCardProps> = ({
     ) {
       return;
     }
-    router.push(`/publications/${_id}`);
+    router.push(`${baseRoute}/${_id}`);
   }
 
   return (
