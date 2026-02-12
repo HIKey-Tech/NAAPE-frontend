@@ -284,7 +284,13 @@ export const PublicationCard: React.FC<PublicationCardProps> = ({
     ) {
       return;
     }
-    router.push(`${baseRoute}/${_id}`);
+    
+    // If publication is a draft, redirect to edit page instead of detail page
+    if (publication?.status === "draft") {
+      router.push(`/publications/edit/${_id}`);
+    } else {
+      router.push(`${baseRoute}/${_id}`);
+    }
   }
 
   return (
