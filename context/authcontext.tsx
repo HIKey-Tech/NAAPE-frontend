@@ -111,10 +111,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
         setToken(null);
 
-        // Use setTimeout to defer navigation until after React finishes current render cycle
-        setTimeout(() => {
-            router.push("/login");
-        }, 0);
+        // Navigate immediately - no need for setTimeout
+        router.push("/login");
     }, [router]);
 
     // ============ MANUAL AUTH SET ============

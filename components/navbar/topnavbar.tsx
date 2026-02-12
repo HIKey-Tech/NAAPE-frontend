@@ -108,7 +108,6 @@ export default function TopNavbar() {
     const [showUserDropdown, setShowUserDropdown] = useState(false);
     const [showNotificationsDropdown, setShowNotificationsDropdown] = useState(false);
     const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     const userDropdownRef = useRef<HTMLDivElement>(null);
     const notificationsDropdownRef = useRef<HTMLDivElement>(null);
@@ -156,24 +155,8 @@ export default function TopNavbar() {
 
     function confirmLogout() {
         setShowLogoutDialog(false);
-        setIsLoggingOut(true);
-        
-        // Use requestAnimationFrame to ensure DOM updates complete before logout
-        requestAnimationFrame(() => {
-            logout();
-        });
-    }
-
-    // Show loading spinner when logging out
-    if (isLoggingOut) {
-        return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-[#15407c] border-t-transparent rounded-full animate-spin"></div>
-                    <p className="text-[#15407c] font-semibold text-lg">Logging out...</p>
-                </div>
-            </div>
-        );
+        setShowUserDropdown(false);
+        logout();
     }
 
     return (

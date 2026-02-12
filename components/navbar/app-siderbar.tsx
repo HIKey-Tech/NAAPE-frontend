@@ -216,7 +216,6 @@ export function AppSidebar() {
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Close sidebar when navigating to a new path (improves UX)
   React.useEffect(() => {
@@ -229,25 +228,8 @@ export function AppSidebar() {
 
   const confirmLogout = useCallback(() => {
     setShowLogoutDialog(false);
-    setIsLoggingOut(true);
-    
-    // Use requestAnimationFrame to ensure DOM updates complete before logout
-    requestAnimationFrame(() => {
-      logout();
-    });
+    logout();
   }, [logout]);
-
-  // Show loading spinner when logging out
-  if (isLoggingOut) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-[#15407c] border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-[#15407c] font-semibold text-lg">Logging out...</p>
-        </div>
-      </div>
-    );
-  }
 
   // Memoized NavItems generation
   const navItemsMain = useMemo(

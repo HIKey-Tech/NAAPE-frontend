@@ -29,7 +29,6 @@ export default function TopNavbar() {
   const router = useRouter();
   const [loginLoading, setLoginLoading] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -93,25 +92,8 @@ export default function TopNavbar() {
   const confirmLogout = () => {
     setShowLogoutDialog(false);
     setMobileOpen(false);
-    setIsLoggingOut(true);
-    
-    // Use requestAnimationFrame to ensure DOM updates complete before logout
-    requestAnimationFrame(() => {
-      logout();
-    });
+    logout();
   };
-
-  // Show loading spinner when logging out
-  if (isLoggingOut) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-[#15407c] border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-[#15407c] font-semibold text-lg">Logging out...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <nav className="w-full sticky top-0 left-0 z-40 bg-white border-b-2 border-[color:var(--primary)] flex items-center justify-center relative py-0">

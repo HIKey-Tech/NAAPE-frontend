@@ -742,7 +742,6 @@ export function AdminSidebar() {
     const { user, loading, logout } = useAuth();
 
     const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     if (loading) {
         return (
@@ -758,12 +757,7 @@ export function AdminSidebar() {
 
     const confirmLogout = () => {
         setShowLogoutDialog(false);
-        setIsLoggingOut(true);
-        
-        // Use requestAnimationFrame to ensure DOM updates complete before logout
-        requestAnimationFrame(() => {
-            logout();
-        });
+        logout();
     };
 
     // Desktop nav sections reused for desktop sidebar
@@ -921,15 +915,6 @@ export function AdminSidebar() {
                 onOpenChange={setShowLogoutDialog}
                 onConfirm={confirmLogout}
             />
-            {/* Show loading spinner when logging out */}
-            {isLoggingOut && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
-                    <div className="flex flex-col items-center gap-4">
-                        <div className="w-12 h-12 border-4 border-[#15407c] border-t-transparent rounded-full animate-spin"></div>
-                        <p className="text-[#15407c] font-semibold text-lg">Logging out...</p>
-                    </div>
-                </div>
-            )}
         </>
     );
 }
