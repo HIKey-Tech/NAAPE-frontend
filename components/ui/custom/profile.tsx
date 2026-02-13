@@ -71,10 +71,6 @@ export default function ProfilePage() {
     const updatePassword = useUpdateMyPassword();
     const { setAuthenticatedUser, user: authUser, token } = useAuth();
 
-    // Debug logging
-    console.log("Profile - Subscription Status:", subscriptionStatus);
-    console.log("Profile - User Role:", profile?.role);
-
     const [editMode, setEditMode] = useState(false);
     const [form, setForm] = useState<Partial<ProfileData>>({});
     const [picPreview, setPicPreview] = useState<string | undefined>();
