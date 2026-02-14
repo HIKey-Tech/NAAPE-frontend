@@ -319,6 +319,7 @@ export default function ProfilePage() {
             {
                 oldPassword: passwordFields.oldPassword,
                 newPassword: passwordFields.newPassword,
+                confirmPassword: passwordFields.confirmPassword,
             },
             {
                 onSuccess: () => {
@@ -330,8 +331,9 @@ export default function ProfilePage() {
                     setPasswordStatus("success");
                     setTimeout(() => setShowPasswordFields(false), 1500);
                 },
-                onError: () => {
+                onError: (error: any) => {
                     setPasswordStatus("error");
+                    toast.error(error?.message || "Failed to update password");
                 },
             }
         );

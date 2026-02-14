@@ -56,7 +56,7 @@ export const updateMyProfile = async (data: ProfileData) => {
 
 export const updateMyPassword = async (data: any) => {
     try {
-        const response = await api.put("/users/change-password", data);
+        const response = await api.patch("/users/change-password", data);
         const { message } = response.data;
 
         // Custom messages based on backend response
