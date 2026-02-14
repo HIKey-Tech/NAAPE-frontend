@@ -90,6 +90,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // ============ LOGIN ============
     const login = useCallback((loginUser: User, loginToken: string) => {
+        // Clear any logout state first
+        setLoggingOut(false);
+        
         // Write to storage FIRST (synchronously) before updating state
         if (typeof window !== "undefined") {
             Cookies.set("token", loginToken, {
@@ -122,8 +125,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
         setToken(null);
         
-        // Navigate to login
+        // Navigate to login and reset logging out state
         router.replace("/login");
+        
+        // Reset logging out state after navigation
+        setTimeout(() => {
+            setLoggingOut(false);
+        }, 100);
     }, [router]);
 
     // ============ MANUAL AUTH SET ============

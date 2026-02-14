@@ -39,6 +39,7 @@ const formSchema = z.object({
 export default function LoginPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [signingIn, setSigningIn] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const { login } = useAuth();
 
@@ -64,12 +65,14 @@ export default function LoginPage() {
                 profile: res.data.profile, // ✅ Include profile data
             };
 
+            // Call login function which will clear any logout state
             login(userData, res.data.token);
 
-            // Redirect based on user role
-            const dashboardPath = userData.role === "admin" ? "/admin/dashboard" : "/dashboard";
-            router.replace(dashboardPath);
-            
+            // Show signing in screen
+            setSigningIn(true);
+            setLoading(false); // Hide form loading, show signing in screen
+
+            // Show success message
             toast.success("🎉 Logged in! Welcome back.", {
                 description: (
                     <p className="text-sm  text-green-700 font-medium">
@@ -79,6 +82,14 @@ export default function LoginPage() {
                 duration: 3500,
                 position: "top-center",
             });
+
+            // Small delay to show signing in screen, then navigate
+            setTimeout(() => {
+                // Redirect based on user role
+                const dashboardPath = userData.role === "admin" ? "/admin/dashboard" : "/dashboard";
+                window.location.href = dashboardPath; // Use window.location for full page navigation
+            }, 1500);
+            
         } catch (error: any) {
             if (error?.response?.data?.message?.toLowerCase().includes("password")) {
                 form.setError("password", {
@@ -122,7 +133,24 @@ export default function LoginPage() {
     };
 
     return (
-        <main className="min-h-full w-full py-10 px-6 flex items-center justify-center bg-gradient-to-tr from-[#d6e1f8] via-[#eff3fa] to-[#e3ecfb]">
+        <>
+            {/* Full-screen signing in loading overlay */}
+            {signingIn && (
+                <div className="fixed inset-0 z-[9999] bg-white/95 backdrop-blur-sm flex items-center justify-center">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="relative">
+                            <div className="w-16 h-16 border-4 border-blue-200 rounded-full"></div>
+                            <div className="w-16 h-16 border-4 border-[#2852B4] border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-lg font-semibold text-gray-800">Signing you in...</p>
+                            <p className="text-sm text-gray-500 mt-1">Please wait</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <main className="min-h-full w-full py-10 px-6 flex items-center justify-center bg-gradient-to-tr from-[#d6e1f8] via-[#eff3fa] to-[#e3ecfb]">
             <motion.div
                 className="flex flex-col md:flex-row w-full max-w-6xl h-full shadow-2xl rounded-2xl bg-white border border-[#d8e0f0]"
                 variants={parentVariants as any}
@@ -227,7 +255,7 @@ export default function LoginPage() {
                                                         aria-required="true"
                                                         spellCheck={false}
                                                         className={`h-[44px] rounded-md border border-[#CBD6F1] bg-white text-base font-medium placeholder:text-[#A4B2D5] pl-11 focus:ring-2 focus:ring-[#2852B4] focus:border-[#2852B4] transition-colors duration-150 ${form.formState.errors.email ? "border-[#e65d15] focus:ring-[#e65d15]" : ""}`}
-                                                        disabled={loading}
+                                                        disabled={loading || signingIn}
                                                     />
                                                 </div>
                                             </FormControl>
@@ -267,7 +295,7 @@ export default function LoginPage() {
                                                         maxLength={64}
                                                         spellCheck={false}
                                                         className={`h-[44px] rounded-md border border-[#CBD6F1] bg-white text-base font-medium placeholder:text-[#A4B2D5] pr-11 pl-11 focus:ring-2 focus:ring-[#2852B4] focus:border-[#2852B4] transition-colors duration-150 ${form.formState.errors.password ? "border-[#e65d15] focus:ring-[#e65d15]" : ""}`}
-                                                        disabled={loading}
+                                                        disabled={loading || signingIn}
                                                     />
                                                     <button
                                                         type="button"
@@ -275,7 +303,7 @@ export default function LoginPage() {
                                                         className="absolute right-2 top-0 bottom-0 flex items-center"
                                                         tabIndex={-1}
                                                         onClick={() => setShowPassword((p) => !p)}
-                                                        disabled={loading}
+                                                        disabled={loading || signingIn}
                                                     >
                                                         {showPassword
                                                             ? <EyeOff size={18} className="text-[#7A88C7]" />
@@ -304,7 +332,7 @@ export default function LoginPage() {
                             <motion.div variants={childVariants as any}>
                                 <Button
                                     type="submit"
-                                    disabled={loading}
+                                    disabled={loading || signingIn}
                                     className="w-full h-[50px] mt-1 rounded-lg bg-gradient-to-r from-[#2852B4] to-[#3970d8] hover:from-[#2347A0] hover:to-[#2852B4] text-white text-[17px] font-extrabold tracking-wide shadow-lg flex items-center justify-center transition-all duration-150"
                                 >
                                     {loading ? (
@@ -361,5 +389,6 @@ export default function LoginPage() {
                 </motion.div>
             </motion.div>
         </main>
+        </>
     );
 }
