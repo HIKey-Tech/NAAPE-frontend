@@ -15,12 +15,14 @@ import {
   FaChevronUp,
   FaBars,
   FaTimes,
+  FaCrown,
 } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
 import React, { useCallback, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/authcontext";
+import { useSubscriptionStatus } from "@/hooks/useSubscription";
 import { LogoutDialog } from "@/components/ui/logout-dialog";
 
 /** --- Enhanced Style constants for better hierarchy --- */
@@ -52,6 +54,7 @@ type User = {
   name?: string;
   email?: string;
   avatarUrl?: string;
+  role?: "admin" | "editor" | "member";
 };
 
 type NavLink = {
@@ -183,7 +186,19 @@ function NavItem({
 
 // Profile in sidebar footer with better layout/visual distinction
 function SidebarProfileCard({ user }: { user: User }) {
+  const { data: subscriptionStatus } = useSubscriptionStatus();
+  
   if (!user || (!user.name && !user.email)) return null;
+  
+  // Determine if user should show premium badge
+  const showPremiumBadge = user.role === "admin" || 
+                          user.role === "editor" || 
+                          (subscriptionStatus?.hasSubscription && subscriptionStatus?.status === "active");
+  
+  const premiumText = subscriptionStatus?.tier === "premium" ? "Premium" : 
+                     user.role === "admin" ? "Admin" :
+                     user.role === "editor" ? "Editor" : "Subscribed";
+  
   return (
     <div className="flex items-center gap-3 px-3 py-4 bg-[#e8f0fb] rounded-xl shadow-sm min-w-0">
       <div
@@ -201,8 +216,16 @@ function SidebarProfileCard({ user }: { user: User }) {
           <span>{getUserInitials(user)}</span>
         )}
       </div>
-      <div className="flex flex-col justify-center min-w-0">
-        <span className={PROFILE_NAME}>{user.name || "Loading..."}</span>
+      <div className="flex flex-col justify-center min-w-0 flex-1">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className={`${PROFILE_NAME} flex-shrink`}>{user.name || "Loading..."}</span>
+          {showPremiumBadge && (
+            <div className="inline-flex items-center gap-1 bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-700 rounded-full px-2 py-0.5 text-xs font-bold border border-amber-200 shadow-sm flex-shrink-0">
+              <FaCrown className="text-amber-500 text-xs" />
+              <span className="hidden sm:inline">{premiumText}</span>
+            </div>
+          )}
+        </div>
         <span className={PROFILE_EMAIL}>{user.email}</span>
       </div>
     </div>
@@ -222,6 +245,7 @@ export function AppSidebar() {
     name: authUser?.name,
     email: authUser?.email,
     avatarUrl: authUser?.profile?.image?.url,
+    role: authUser?.role as "admin" | "editor" | "member" | undefined,
   };
 
   // Close sidebar when navigating to a new path (improves UX)

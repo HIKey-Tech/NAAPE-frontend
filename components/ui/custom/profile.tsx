@@ -449,7 +449,9 @@ export default function ProfilePage() {
                               (subscriptionStatus?.hasSubscription && subscriptionStatus?.status === "active")) && (
                                 <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-700 rounded-2xl px-3 py-0.5 text-sm font-bold border border-amber-200 shadow-sm">
                                     <FaCrown className="text-amber-500" />
-                                    {subscriptionStatus?.tier === "premium" ? "Premium" : "Subscribed"}
+                                    {profile.role === "admin" ? "Admin" :
+                                     profile.role === "editor" ? "Editor" :
+                                     subscriptionStatus?.tier === "premium" ? "Premium Member" : "Subscribed Member"}
                                 </span>
                             )}
                         </div>
@@ -782,6 +784,70 @@ export default function ProfilePage() {
 
             {/* Membership and Stats */}
             <section className="grid md:grid-cols-2 gap-7 mb-8">
+                {/* Subscription Status Card */}
+                <div className="bg-white rounded-2xl border px-6 py-6 flex flex-col gap-4">
+                    <h3 className="font-bold text-lg text-[var(--primary)] flex items-center gap-2 mb-3">
+                        <FaCrown className="text-xl text-amber-500" />
+                        Subscription Status
+                    </h3>
+                    <div className="space-y-4">
+                        {(profile.role === "admin" || profile.role === "editor") ? (
+                            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-4">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <FaCrown className="text-purple-600 text-xl" />
+                                    <span className="font-bold text-purple-800 text-lg">
+                                        {profile.role === "admin" ? "Administrator" : "Editor"}
+                                    </span>
+                                </div>
+                                <p className="text-purple-700 text-sm">
+                                    You have full access to all platform features as a {profile.role}.
+                                </p>
+                            </div>
+                        ) : subscriptionStatus?.hasSubscription && subscriptionStatus?.status === "active" ? (
+                            <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-4">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <FaCrown className="text-amber-600 text-xl" />
+                                    <span className="font-bold text-amber-800 text-lg">
+                                        {subscriptionStatus.tier === "premium" ? "Premium Member" : "Subscribed Member"}
+                                    </span>
+                                </div>
+                                <div className="space-y-2 text-sm">
+                                    <p className="text-amber-700">
+                                        <strong>Plan:</strong> {subscriptionStatus.planName || subscriptionStatus.tier}
+                                    </p>
+                                    {subscriptionStatus.startDate && (
+                                        <p className="text-amber-700">
+                                            <strong>Since:</strong> {new Date(subscriptionStatus.startDate).toLocaleDateString()}
+                                        </p>
+                                    )}
+                                    {subscriptionStatus.endDate && (
+                                        <p className="text-amber-700">
+                                            <strong>Expires:</strong> {new Date(subscriptionStatus.endDate).toLocaleDateString()}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <MdBadge className="text-gray-500 text-xl" />
+                                    <span className="font-bold text-gray-700 text-lg">Basic Member</span>
+                                </div>
+                                <p className="text-gray-600 text-sm mb-3">
+                                    You have access to basic platform features.
+                                </p>
+                                <a 
+                                    href="/subscription" 
+                                    className="inline-flex items-center gap-2 bg-[var(--primary)] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity"
+                                >
+                                    <FaCrown />
+                                    Upgrade to Premium
+                                </a>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
                 <div className="bg-white rounded-2xl border px-6 py-6 flex flex-col gap-4">
                     <h3 className="font-bold text-lg text-[var(--primary)] flex items-center gap-2 mb-3">
                         <MdDateRange className="text-xl" />
@@ -794,7 +860,11 @@ export default function ProfilePage() {
                         <DetailPair label="Verified" value={profile.isVerified ? "Yes" : "No"} />
                     </div>
                 </div>
-                {profile.stats && (
+            </section>
+
+            {/* Publication Stats */}
+            {profile.stats && (
+                <section className="mb-8">
                     <div className="bg-white rounded-2xl border px-6 py-6">
                         <h3 className="font-bold text-lg text-[var(--primary)] flex items-center gap-2 mb-3">
                             My Publication Stats
@@ -805,8 +875,8 @@ export default function ProfilePage() {
                             <StatBox color="yellow" title="Pending" value={profile.stats.pending} />
                         </div>
                     </div>
-                )}
-            </section>
+                </section>
+            )}
 
             {/* Controls (now as a regular block at the end, not sticky, to prevent overlap) */}
             <section
