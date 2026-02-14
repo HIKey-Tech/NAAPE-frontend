@@ -30,6 +30,7 @@ import {
 import { FaStar, FaCrown } from "react-icons/fa";
 import { NaapButton } from "./button.naap";
 import { toast } from "sonner";
+import { LogoutDialog } from "@/components/ui/logout-dialog";
 
 const PRIMARY_TEXT = "text-primary";
 
@@ -69,7 +70,7 @@ export default function ProfilePage() {
     const { data: subscriptionStatus } = useSubscriptionStatus();
     const updateProfile = useUpdateMyProfile();
     const updatePassword = useUpdateMyPassword();
-    const { setAuthenticatedUser, user: authUser, token } = useAuth();
+    const { setAuthenticatedUser, user: authUser, token, logout } = useAuth();
 
     const [editMode, setEditMode] = useState(false);
     const [form, setForm] = useState<Partial<ProfileData>>({});
@@ -78,6 +79,7 @@ export default function ProfilePage() {
     const [showPasswordFields, setShowPasswordFields] = useState(false);
     const [showPersonalSettings, setShowPersonalSettings] = useState(false);
     const [showEmail, setShowEmail] = useState(false);
+    const [showLogoutDialog, setShowLogoutDialog] = useState(false);
     const [passwordFields, setPasswordFields] = useState({
         oldPassword: "",
         newPassword: "",
@@ -342,6 +344,16 @@ export default function ProfilePage() {
         }));
     }
 
+    function handleLogoutClick() {
+        setShowLogoutDialog(true);
+        setShowPersonalSettings(false);
+    }
+
+    function confirmLogout() {
+        setShowLogoutDialog(false);
+        logout();
+    }
+
     if (isLoading) {
         return (
             <div className="flex min-h-[60vh] items-center justify-center">
@@ -564,6 +576,7 @@ export default function ProfilePage() {
                                     variant="ghost"
                                     className="justify-start text-red-700"
                                     style={{ color: "var(--destructive)" }}
+                                    onClick={handleLogoutClick}
                                 >
                                     Logout
                                 </NaapButton>
@@ -906,6 +919,7 @@ export default function ProfilePage() {
                     }}
                     type="button"
                     icon={<MdLogout />}
+                    onClick={handleLogoutClick}
                 >
                     Logout
                 </NaapButton>
@@ -1059,6 +1073,13 @@ export default function ProfilePage() {
                     </div>
                 </form>
             )}
+
+            {/* Logout Confirmation Dialog */}
+            <LogoutDialog 
+                open={showLogoutDialog} 
+                onOpenChange={setShowLogoutDialog}
+                onConfirm={confirmLogout}
+            />
         </div>
     );
 }
