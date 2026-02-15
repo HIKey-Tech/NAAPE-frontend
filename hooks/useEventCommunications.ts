@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "@/lib/axios";
 
 // Types
@@ -84,14 +84,14 @@ export function useEventCommunications(): UseEventCommunicationsReturn {
     const [error, setError] = useState<string | null>(null);
 
     // Fetch attendees for a specific event
-    const fetchAttendees = async (eventId: string) => {
+    const fetchAttendees = useCallback(async (eventId: string) => {
         if (!eventId) return;
         
         setLoading(true);
         setError(null);
         
         try {
-            const response = await axios.get(`/api/admin/events/${eventId}/attendees`);
+            const response = await axios.get(`/api/v1/admin/events/${eventId}/attendees`);
             
             // Transform the response data to match our interface
             const transformedAttendees: AttendeeData[] = response.data.attendees.map((attendee: any) => ({
@@ -113,15 +113,15 @@ export function useEventCommunications(): UseEventCommunicationsReturn {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     // Fetch email templates
-    const fetchTemplates = async () => {
+    const fetchTemplates = useCallback(async () => {
         setLoading(true);
         setError(null);
         
         try {
-            const response = await axios.get('/api/admin/email-templates');
+            const response = await axios.get('/api/v1/admin/email-templates');
             setTemplates(response.data.templates || []);
         } catch (err: any) {
             console.error("Failed to fetch templates:", err);
@@ -130,17 +130,17 @@ export function useEventCommunications(): UseEventCommunicationsReturn {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     // Fetch communication history for a specific event
-    const fetchCommunicationHistory = async (eventId: string) => {
+    const fetchCommunicationHistory = useCallback(async (eventId: string) => {
         if (!eventId) return;
         
         setLoading(true);
         setError(null);
         
         try {
-            const response = await axios.get(`/api/admin/events/${eventId}/communications`);
+            const response = await axios.get(`/api/v1/admin/events/${eventId}/communications`);
             setCommunicationHistory(response.data.communications || []);
         } catch (err: any) {
             console.error("Failed to fetch communication history:", err);
@@ -149,7 +149,7 @@ export function useEventCommunications(): UseEventCommunicationsReturn {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     // Send bulk email
     const sendBulkEmail = async (emailData: BulkEmailData) => {
@@ -157,7 +157,7 @@ export function useEventCommunications(): UseEventCommunicationsReturn {
         setError(null);
         
         try {
-            const response = await axios.post('/api/admin/events/send-bulk-email', emailData);
+            const response = await axios.post('/api/v1/admin/events/send-bulk-email', emailData);
             
             // Refresh communication history after sending
             if (emailData.eventId) {
@@ -180,7 +180,7 @@ export function useEventCommunications(): UseEventCommunicationsReturn {
         setError(null);
         
         try {
-            const response = await axios.post('/api/admin/email-templates', template);
+            const response = await axios.post('/api/v1/admin/email-templates', template);
             
             // Add the new template to the list
             setTemplates(prev => [...prev, response.data.template]);
@@ -201,7 +201,7 @@ export function useEventCommunications(): UseEventCommunicationsReturn {
         setError(null);
         
         try {
-            const response = await axios.put(`/api/admin/email-templates/${id}`, template);
+            const response = await axios.put(`/api/v1/admin/email-templates/${id}`, template);
             
             // Update the template in the list
             setTemplates(prev => prev.map(t => t.id === id ? { ...t, ...response.data.template } : t));
@@ -222,7 +222,7 @@ export function useEventCommunications(): UseEventCommunicationsReturn {
         setError(null);
         
         try {
-            await axios.delete(`/api/admin/email-templates/${id}`);
+            await axios.delete(`/api/v1/admin/email-templates/${id}`);
             
             // Remove the template from the list
             setTemplates(prev => prev.filter(t => t.id !== id));

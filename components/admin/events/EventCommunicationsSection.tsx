@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -131,17 +131,19 @@ export function EventCommunicationsSection({
     const [sending, setSending] = useState(false);
 
     // Filter attendees based on current filters
-    const filteredAttendees = attendees.filter(attendee => {
-        if (recipientFilters.paymentStatus?.length && 
-            !recipientFilters.paymentStatus.includes(attendee.paymentStatus)) {
-            return false;
-        }
-        if (recipientFilters.attendanceStatus?.length && 
-            !recipientFilters.attendanceStatus.includes(attendee.attendanceStatus)) {
-            return false;
-        }
-        return true;
-    });
+    const filteredAttendees = useMemo(() => {
+        return attendees.filter(attendee => {
+            if (recipientFilters.paymentStatus?.length && 
+                !recipientFilters.paymentStatus.includes(attendee.paymentStatus)) {
+                return false;
+            }
+            if (recipientFilters.attendanceStatus?.length && 
+                !recipientFilters.attendanceStatus.includes(attendee.attendanceStatus)) {
+                return false;
+            }
+            return true;
+        });
+    }, [attendees, recipientFilters]);
 
     // Update recipients when filters change
     useEffect(() => {
@@ -290,7 +292,7 @@ export function EventCommunicationsSection({
                 </Card>
             ) : (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                    <TabsList className="grid w-full grid-cols-4">
+                    <TabsList className="grid w-full grid-cols-5">
                         <TabsTrigger value="compose" className="flex items-center gap-2">
                             <FaEnvelope className="h-4 w-4" />
                             Compose
@@ -298,6 +300,10 @@ export function EventCommunicationsSection({
                         <TabsTrigger value="templates" className="flex items-center gap-2">
                             <FaFileAlt className="h-4 w-4" />
                             Templates
+                        </TabsTrigger>
+                        <TabsTrigger value="new-template" className="flex items-center gap-2">
+                            <FaPlus className="h-4 w-4" />
+                            New Template
                         </TabsTrigger>
                         <TabsTrigger value="recipients" className="flex items-center gap-2">
                             <FaUsers className="h-4 w-4" />
@@ -573,6 +579,89 @@ export function EventCommunicationsSection({
                                 </CardContent>
                             </Card>
                         )}
+                    </TabsContent>
+
+                    {/* New Template Tab */}
+                    <TabsContent value="new-template" className="space-y-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Create New Template</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Template Name</label>
+                                        <Input
+                                            value={newTemplate.name || ""}
+                                            onChange={(e) => setNewTemplate(prev => ({ ...prev, name: e.target.value }))}
+                                            placeholder="Enter template name"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Template Type</label>
+                                        <Select 
+                                            value={newTemplate.type} 
+                                            onValueChange={(value) => setNewTemplate(prev => ({ ...prev, type: value as TemplateType }))}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value={TemplateType.REMINDER}>Reminder</SelectItem>
+                                                <SelectItem value={TemplateType.UPDATE}>Update</SelectItem>
+                                                <SelectItem value={TemplateType.CONFIRMATION}>Confirmation</SelectItem>
+                                                <SelectItem value={TemplateType.CANCELLATION}>Cancellation</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Subject</label>
+                                    <Input
+                                        value={newTemplate.subject || ""}
+                                        onChange={(e) => setNewTemplate(prev => ({ ...prev, subject: e.target.value }))}
+                                        placeholder="Enter email subject"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Content</label>
+                                    <Textarea
+                                        value={newTemplate.content || ""}
+                                        onChange={(e) => setNewTemplate(prev => ({ ...prev, content: e.target.value }))}
+                                        placeholder="Enter template content. Use double braces for variables like eventTitle, eventDate, userName."
+                                        rows={6}
+                                    />
+                                </div>
+
+                                <div className="flex justify-end gap-2">
+                                    <Button 
+                                        variant="outline" 
+                                        onClick={() => {
+                                            setActiveTab("templates");
+                                            setNewTemplate({
+                                                name: "",
+                                                subject: "",
+                                                content: "",
+                                                type: TemplateType.REMINDER,
+                                                variables: []
+                                            });
+                                        }}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button 
+                                        onClick={handleSaveTemplate}
+                                        disabled={!newTemplate.name || !newTemplate.subject || !newTemplate.content}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <FaSave className="h-4 w-4" />
+                                        Save Template
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
                     </TabsContent>
 
                     {/* Recipients Tab */}
