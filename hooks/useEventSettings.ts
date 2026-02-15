@@ -21,24 +21,18 @@ export function useEventSettings() {
 
     // Load events list
     const loadEvents = useCallback(async () => {
-        console.log('loadEvents called');
         setLoading(true);
         setError(null);
         try {
-            console.log('Calling getEventsForAttendeeManagement...');
             const response = await getEventsForAttendeeManagement();
-            console.log('Events API response:', response);
             
             if (response.success) {
                 const eventsData = response.data || [];
-                console.log('Setting events:', eventsData);
                 setEvents(eventsData);
             } else {
-                console.error('API response not successful:', response);
                 throw new Error(response.message || 'Failed to load events');
             }
         } catch (err: any) {
-            console.error('Error in loadEvents:', err);
             setError(err.message || 'Failed to load events');
         } finally {
             setLoading(false);

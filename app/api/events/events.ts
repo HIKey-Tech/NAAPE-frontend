@@ -174,9 +174,6 @@ export const getEventsForAttendeeManagement = async () => {
     }
 
     try {
-        console.log('Making request to:', `${BASE_URL}/v1/events/admin/events-summary`);
-        console.log('With token:', token ? 'Present' : 'Missing');
-        
         const response = await axios.get(`${BASE_URL}/v1/events/admin/events-summary`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -184,13 +181,8 @@ export const getEventsForAttendeeManagement = async () => {
             withCredentials: true,
         });
         
-        console.log('API Response:', response.data);
         return response.data;
     } catch (error: any) {
-        console.error('API Error:', error);
-        console.error('Error response:', error.response?.data);
-        console.error('Error status:', error.response?.status);
-        
         const message =
             error?.response?.data?.message ||
             error?.message ||
