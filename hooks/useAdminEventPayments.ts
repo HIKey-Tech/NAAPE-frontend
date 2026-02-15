@@ -58,7 +58,7 @@ export const useAdminEventPayments = (eventId?: string) => {
       setError(null);
       
       const params = eventId ? { eventId } : {};
-      const response = await axios.get("/v1/payments/admin/events/payments", {
+      const response = await axios.get("/payments/admin/events/payments", {
         headers: { Authorization: `Bearer ${token}` },
         params,
       });
@@ -78,7 +78,7 @@ export const useAdminEventPayments = (eventId?: string) => {
 
   const fetchEventStats = async () => {
     try {
-      const response = await axios.get("/v1/payments/admin/events/stats", {
+      const response = await axios.get("/payments/admin/events/stats", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
