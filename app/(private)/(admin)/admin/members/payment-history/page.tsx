@@ -1,6 +1,6 @@
 "use client";
-import PaymentHistory from "@/components/admin/members.mgt/payment.history";
+import AdminMemberPayments from "@/components/admin/members/member.payments";
 
 export default function PaymentHistoryPage() {
-  return <PaymentHistory />;
+  return <AdminMemberPayments />;
 }
