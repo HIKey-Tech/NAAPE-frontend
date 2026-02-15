@@ -10,6 +10,14 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 export const fetchEvents = async () => {
     try {
         const response = await api.get(`/events`);
+        console.log("Events API response:", response.data);
+        
+        // Check if response.data is an array
+        if (!Array.isArray(response.data)) {
+            console.error("Events API returned non-array data:", response.data);
+            return [];
+        }
+        
         // Normalize the data to ensure both _id and id are available
         const events = response.data.map((event: any) => ({
             ...event,
@@ -17,6 +25,7 @@ export const fetchEvents = async () => {
         }));
         return events;
     } catch (error: any) {
+        console.error("Events API error:", error);
         throw new Error(error?.response?.data?.message || error.message || "Failed to fetch events.");
     }
 };

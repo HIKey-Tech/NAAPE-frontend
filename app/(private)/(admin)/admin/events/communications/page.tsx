@@ -25,7 +25,12 @@ export default function EventCommunicationsPage() {
     } = useEventCommunications();
     
     const eventsQuery = useEvents();
-    const events = eventsQuery.data?.events || [];
+    const events = eventsQuery.data || [];
+
+    // Log any errors with events loading
+    if (eventsQuery.error) {
+        console.error("Failed to load events:", eventsQuery.error);
+    }
 
     // Load events on mount - they're automatically loaded by the query
 
