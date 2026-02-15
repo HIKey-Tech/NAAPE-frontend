@@ -1,7 +1,18 @@
 "use client";
 
-import AdminEventPayments from "@/components/admin/event/event.payments";
+import { AdminEventsLayout, EventSection } from "@/components/admin/events/AdminEventsLayout";
+import PaymentOversightSection from "@/components/admin/events/PaymentOversightSection";
+import { useState } from "react";
 
 export default function EventPaymentsPage() {
-  return <AdminEventPayments />;
+    const [activeSection, setActiveSection] = useState<EventSection>(EventSection.PAYMENTS);
+
+    return (
+        <AdminEventsLayout 
+            activeSection={activeSection} 
+            onSectionChange={setActiveSection}
+        >
+            <PaymentOversightSection />
+        </AdminEventsLayout>
+    );
 }

@@ -62,18 +62,11 @@ export default function EventsComponent() {
     // For navigation purpose
     const isMember = user?.role === "member";
 
-    const handleCreateEvent = useCallback(() => {
-        if (typeof window !== "undefined") {
-            window.location.href = "/admin/events/new";
-        }
-    }, []);
-
     // Handle event card click - open modal
     const handleEventClick = async (event: any) => {
-        // For admins, navigate to manage page instead of modal
+        // For admins, navigate to management interface instead of modal
         if (isAdmin) {
-            const evId = event.id ?? event._id;
-            router.push(`/admin/events/${evId}`);
+            router.push("/admin/events/management");
             return;
         }
         
@@ -149,21 +142,6 @@ export default function EventsComponent() {
                 sortLabel="Newest"
             />
 
-            {/* Only admin can see the create event button */}
-            {isAdmin && (
-                <div className="flex justify-end px-6 mt-1 mb-4">
-                    <NaapButton
-                        variant="primary"
-                        onClick={handleCreateEvent}
-                        iconPosition="left"
-                        icon={<span className="text-lg font-bold leading-none">+</span>}
-                        type="button"
-                    >
-                        Create an event
-                    </NaapButton>
-                </div>
-            )}
-
             <div className="grid gap-6 px-6 sm:grid-cols-2 lg:grid-cols-3">
                 {isLoading ? (
                     <div className="col-span-full text-center text-[#96A6BF] text-[16px] py-16 font-medium">
@@ -214,9 +192,7 @@ export default function EventsComponent() {
                                     : false
                             }
                             registerLabel={
-                                isAdmin
-                                    ? "Manage"
-                                    : isMember
+                                isMember
                                     ? "View & Register"
                                     : "View & Register"
                             }
@@ -225,6 +201,7 @@ export default function EventsComponent() {
                             registeredUsers={event.registeredUsers}
                             createdBy={event.createdBy}
                             payments={event.payments}
+                            isAdmin={isAdmin}
                             onCardClick={() => handleEventClick(event)}
                         />
                     ))

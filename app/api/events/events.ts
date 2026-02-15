@@ -155,3 +155,216 @@ export const getUserEvents = async () => {
         throw new Error(message);
     }
 };
+
+// Admin-only: Get events summary for attendee management
+export const getEventsForAttendeeManagement = async () => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : undefined;
+    if (!token) {
+        throw new Error("Authentication required.");
+    }
+
+    try {
+        const response = await axios.get(`${BASE_URL}/v1/events/admin/events-summary`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error: any) {
+        const message =
+            error?.response?.data?.message ||
+            error?.message ||
+            "Failed to fetch events summary.";
+        throw new Error(message);
+    }
+};
+
+// Admin-only: Get event attendees
+export const getEventAttendees = async (eventId: string) => {
+    if (!eventId) {
+        throw new Error("Event ID is required.");
+    }
+
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : undefined;
+    if (!token) {
+        throw new Error("Authentication required.");
+    }
+
+    try {
+        const response = await axios.get(`${BASE_URL}/v1/events/${eventId}/attendees`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error: any) {
+        const message =
+            error?.response?.data?.message ||
+            error?.message ||
+            "Failed to fetch event attendees.";
+        throw new Error(message);
+    }
+};
+
+// Admin-only: Update attendee attendance status
+export const updateAttendeeAttendance = async (eventId: string, userId: string, attendanceStatus: string) => {
+    if (!eventId || !userId || !attendanceStatus) {
+        throw new Error("Event ID, User ID, and attendance status are required.");
+    }
+
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : undefined;
+    if (!token) {
+        throw new Error("Authentication required.");
+    }
+
+    try {
+        const response = await axios.put(
+            `${BASE_URL}/v1/events/${eventId}/attendees/${userId}/attendance`,
+            { attendanceStatus },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                withCredentials: true,
+            }
+        );
+        return response.data;
+    } catch (error: any) {
+        const message =
+            error?.response?.data?.message ||
+            error?.message ||
+            "Failed to update attendance status.";
+        throw new Error(message);
+    }
+};
+
+// Admin-only: Export event attendees
+export const exportEventAttendees = async (
+    eventId: string, 
+    format: 'csv' | 'excel' = 'csv',
+    filters?: {
+        paymentStatus?: string;
+        attendanceStatus?: string;
+        search?: string;
+    }
+) => {
+    if (!eventId) {
+        throw new Error("Event ID is required.");
+    }
+
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : undefined;
+    if (!token) {
+        throw new Error("Authentication required.");
+    }
+
+    try {
+        const params: any = { format };
+        if (filters?.paymentStatus && filters.paymentStatus !== 'all') {
+            params.paymentStatus = filters.paymentStatus;
+        }
+        if (filters?.attendanceStatus && filters.attendanceStatus !== 'all') {
+            params.attendanceStatus = filters.attendanceStatus;
+        }
+        if (filters?.search) {
+            params.search = filters.search;
+        }
+
+        const response = await axios.get(
+            `${BASE_URL}/v1/events/${eventId}/attendees/export`,
+            {
+                params,
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                withCredentials: true,
+                responseType: format === 'csv' ? 'blob' : 'json'
+            }
+        );
+
+        if (format === 'csv') {
+            // Handle CSV download
+            const blob = new Blob([response.data], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `attendees_${eventId}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            return { success: true, message: 'CSV downloaded successfully' };
+        } else {
+            // Handle Excel format (return data for frontend processing)
+            return response.data;
+        }
+    } catch (error: any) {
+        const message =
+            error?.response?.data?.message ||
+            error?.message ||
+            "Failed to export attendees.";
+        throw new Error(message);
+    }
+};
+
+// Admin-only: Get event settings
+export const getEventSettings = async (eventId: string) => {
+    if (!eventId) {
+        throw new Error("Event ID is required.");
+    }
+
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : undefined;
+    if (!token) {
+        throw new Error("Authentication required.");
+    }
+
+    try {
+        const response = await axios.get(`${BASE_URL}/v1/events/${eventId}/settings`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error: any) {
+        const message =
+            error?.response?.data?.message ||
+            error?.message ||
+            "Failed to fetch event settings.";
+        throw new Error(message);
+    }
+};
+
+// Admin-only: Update event settings
+export const updateEventSettings = async (eventId: string, settings: any) => {
+    if (!eventId) {
+        throw new Error("Event ID is required.");
+    }
+
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : undefined;
+    if (!token) {
+        throw new Error("Authentication required.");
+    }
+
+    try {
+        const response = await axios.put(
+            `${BASE_URL}/v1/events/${eventId}/settings`,
+            settings,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                withCredentials: true,
+            }
+        );
+        return response.data;
+    } catch (error: any) {
+        const message =
+            error?.response?.data?.message ||
+            error?.message ||
+            "Failed to update event settings.";
+        throw new Error(message);
+    }
+};

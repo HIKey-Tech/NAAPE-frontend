@@ -182,7 +182,7 @@ const CreateEvent: React.FC = () => {
           toast.success("🎉 Event created!");
           form.reset(DEFAULT_VALUES);
           setImagePreviewUrl("");
-          setTimeout(() => router.push("/admin/events"), 900);
+          setTimeout(() => router.push("/admin/events/management"), 900);
         },
         onError: (err: any) => {
           toast.error(

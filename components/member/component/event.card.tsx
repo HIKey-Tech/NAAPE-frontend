@@ -80,7 +80,7 @@ function formatEventTime(date: string | Date) {
         .toLowerCase();
 }
 
-const EventCard: React.FC<EventCardProps & { onCardClick?: () => void }> = ({
+const EventCard: React.FC<EventCardProps & { onCardClick?: () => void; isAdmin?: boolean }> = ({
     _id,
     id,
     title,
@@ -100,6 +100,7 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void }> = ({
     registerLabel = "Register",
     disabled = false,
     onCardClick,
+    isAdmin = false,
 }) => {
     const cardRef = useRef<HTMLDivElement | null>(null);
     const [pressing, setPressing] = useState(false);
@@ -330,7 +331,7 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void }> = ({
                         <div className="flex items-center gap-2 px-5 py-1.5 rounded-full bg-yellow-50 border border-yellow-200 text-yellow-700 font-semibold text-sm">
                             <Loader2 size={15} className="animate-spin" /> Pending
                         </div>
-                    ) : (
+                    ) : !isAdmin ? (
                         <button
                             type="button"
                             onClick={(e) => {
@@ -342,7 +343,7 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void }> = ({
                         >
                             {showRegisterLoading ? "Loading..." : registerLabel}
                         </button>
-                    )}
+                    ) : null}
                 </div>
 
                 {showVerify && (

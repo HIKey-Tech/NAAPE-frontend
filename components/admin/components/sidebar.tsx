@@ -33,6 +33,7 @@ import { useCallback, useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/authcontext";
 import { LogoutDialog } from "@/components/ui/logout-dialog";
+import { EventsDropdown, EventSection } from "@/components/admin/events/AdminEventsLayout";
 
 // Improved and more detailed hierarchy: Group/category definitions ===================
 
@@ -117,22 +118,6 @@ const userManagementLinks: NavLink[] = [
 
 ];
 const contentLinks: NavLink[] = [
-    {
-        label: "Events",
-        icon: FaCalendarAlt,
-        href: "/admin/events",
-        group: "Content",
-        subcategory: "Activities",
-        description: "All association events"
-    },
-    {
-        label: "Event Payments",
-        icon: FaMoneyBillAlt,
-        href: "/admin/events/payments",
-        group: "Content",
-        subcategory: "Activities",
-        description: "Event payment tracking"
-    },
     {
         label: "Forum",
         icon: FaComments,
@@ -680,6 +665,23 @@ function GroupLabel({ label }: { label: string }) {
 
 // MobileNavSections: The full navigation structure for the hamburger drawer
 function MobileNavSections({ pathname }: { pathname: string | null }) {
+    const [activeEventSection, setActiveEventSection] = useState<EventSection>(EventSection.MANAGEMENT);
+
+    // Determine active event section based on pathname
+    useEffect(() => {
+        if (pathname?.includes('/admin/events/payments')) {
+            setActiveEventSection(EventSection.PAYMENTS);
+        } else if (pathname?.includes('/admin/events/attendees')) {
+            setActiveEventSection(EventSection.ATTENDEES);
+        } else if (pathname?.includes('/admin/events/settings')) {
+            setActiveEventSection(EventSection.SETTINGS);
+        } else if (pathname?.includes('/admin/events/communications')) {
+            setActiveEventSection(EventSection.COMMUNICATIONS);
+        } else if (pathname?.includes('/admin/events')) {
+            setActiveEventSection(EventSection.MANAGEMENT);
+        }
+    }, [pathname]);
+
     return (
         <ul className="flex flex-col py-2 px-0 gap-2">
             {/* Dashboard */}
@@ -728,6 +730,11 @@ function MobileNavSections({ pathname }: { pathname: string | null }) {
                         href="/admin/news"
                         active={pathname === "/admin/news"}
                     />
+                    <EventsDropdown 
+                        pathname={pathname} 
+                        activeSection={activeEventSection}
+                        onSectionChange={setActiveEventSection}
+                    />
                     {contentLinks.map(link => (
                         <NavItem
                             key={link.label}
@@ -750,6 +757,22 @@ export function AdminSidebar() {
     const { user: authUser, loading, logout } = useAuth();
 
     const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+    const [activeEventSection, setActiveEventSection] = useState<EventSection>(EventSection.MANAGEMENT);
+
+    // Determine active event section based on pathname
+    useEffect(() => {
+        if (pathname?.includes('/admin/events/payments')) {
+            setActiveEventSection(EventSection.PAYMENTS);
+        } else if (pathname?.includes('/admin/events/attendees')) {
+            setActiveEventSection(EventSection.ATTENDEES);
+        } else if (pathname?.includes('/admin/events/settings')) {
+            setActiveEventSection(EventSection.SETTINGS);
+        } else if (pathname?.includes('/admin/events/communications')) {
+            setActiveEventSection(EventSection.COMMUNICATIONS);
+        } else if (pathname?.includes('/admin/events')) {
+            setActiveEventSection(EventSection.MANAGEMENT);
+        }
+    }, [pathname]);
 
     // Map auth user to sidebar format
     const user = authUser ? {
@@ -886,6 +909,11 @@ export function AdminSidebar() {
                         <ul className="flex flex-col">
                             <PublicationsDropdown pathname={pathname} />
                             <NewsDropdown pathname={pathname} />
+                            <EventsDropdown 
+                                pathname={pathname} 
+                                activeSection={activeEventSection}
+                                onSectionChange={setActiveEventSection}
+                            />
                             {navSectionContent}
                         </ul>
                     </li>
