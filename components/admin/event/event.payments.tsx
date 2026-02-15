@@ -39,10 +39,16 @@ interface EventStats {
 
 const STATUS_COLORS = {
   success: { bg: "#e7faf0", color: "#187c49", label: "Paid" },
+  successful: { bg: "#e7faf0", color: "#187c49", label: "Paid" },
   completed: { bg: "#e7faf0", color: "#187c49", label: "Completed" },
   pending: { bg: "#fffbe2", color: "#b88712", label: "Pending" },
   failed: { bg: "#fbeaec", color: "#af272e", label: "Failed" },
   cancelled: { bg: "#fbeaec", color: "#af272e", label: "Cancelled" },
+};
+
+// Helper function to check if payment is successful
+const isSuccessfulPayment = (status: string) => {
+  return status === "success" || status === "successful" || status === "completed";
 };
 
 export default function AdminEventPayments() {
@@ -94,11 +100,11 @@ export default function AdminEventPayments() {
   );
 
   const totalRevenue = filteredPayments
-    .filter((p: EventPayment) => p.status === "success" || p.status === "completed")
+    .filter((p: EventPayment) => isSuccessfulPayment(p.status))
     .reduce((sum: number, p: EventPayment) => sum + p.amount, 0);
 
   const successfulPayments = filteredPayments.filter(
-    (p: EventPayment) => p.status === "success" || p.status === "completed"
+    (p: EventPayment) => isSuccessfulPayment(p.status)
   ).length;
 
   return (
