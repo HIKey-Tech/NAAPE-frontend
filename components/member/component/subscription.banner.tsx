@@ -114,7 +114,7 @@ export function SubscriptionBadge() {
     }
 
     const tierColors = {
-        basic: "bg-blue-500",
+        free: "bg-green-500",
         premium: "bg-purple-600",
     };
 
