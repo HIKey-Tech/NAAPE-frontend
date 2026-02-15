@@ -85,6 +85,9 @@ function EventsDropdown({ pathname, activeSection, onSectionChange }: {
     const isEventsActive = pathname?.startsWith("/admin/events") || false;
     const activeItem = eventNavItems.find(item => item.section === activeSection);
 
+    // Debug logging
+    console.log('EventsDropdown rendering:', { pathname, activeSection, isEventsActive, activeItem });
+
     useEffect(() => { 
         setOpen(false); 
     }, [pathname]);
@@ -107,6 +110,10 @@ function EventsDropdown({ pathname, activeSection, onSectionChange }: {
 
     return (
         <li className="relative">
+            {/* Debug indicator */}
+            <div style={{ background: 'red', color: 'white', padding: '2px', fontSize: '10px' }}>
+                Events Dropdown Debug: {isEventsActive ? 'Active' : 'Inactive'}
+            </div>
             <button
                 type="button"
                 className={`sidebar-navitem flex items-center w-full px-5 py-2.5 rounded-lg text-[15px] font-medium gap-3 mb-0.5 transition-colors whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-primary ${

@@ -113,9 +113,8 @@ const userManagementLinks: NavLink[] = [
         icon: FaMoneyCheckAlt,
         href: "/admin/members/payment-history",
         group: "User Management",
-        description: "Payments & transactions"
+        description: "Member payments & transactions"
     },
-
 ];
 const contentLinks: NavLink[] = [
     {
