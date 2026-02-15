@@ -1,7 +1,7 @@
 import api from "@/lib/axios";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
-export type SubscriptionTier = "basic" | "premium";
+export type SubscriptionTier = "free" | "premium";
 
 export interface SubscriptionPlan {
     _id: string;
@@ -17,7 +17,7 @@ export interface SubscriptionPlan {
 export interface SubscriptionStatus {
     hasSubscription: boolean;
     status: "active" | "pending" | "cancelled" | "expired" | "none";
-    tier: "basic" | "premium" | null;
+    tier: "free" | "premium" | null;
     planName?: string;
     startDate?: string;
     endDate?: string;
