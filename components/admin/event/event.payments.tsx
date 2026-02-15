@@ -49,7 +49,7 @@ export default function AdminEventPayments() {
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
   
-  const { payments, eventStats, paymentStats, loading, error } = useAdminEventPayments(selectedEvent);
+  const { payments = [], eventStats = [], paymentStats = [], loading, error } = useAdminEventPayments(selectedEvent);
 
   const formatAmount = (amount: number, currency: string = "NGN") => {
     return new Intl.NumberFormat("en-NG", {
@@ -87,10 +87,10 @@ export default function AdminEventPayments() {
 
   const filteredPayments = payments.filter(
     (payment: EventPayment) =>
-      payment.user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      payment.user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      payment.user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      payment.metadata.eventTitle.toLowerCase().includes(searchTerm.toLowerCase())
+      (payment.user?.firstName?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (payment.user?.lastName?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (payment.user?.email?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (payment.metadata?.eventTitle?.toLowerCase() || "").includes(searchTerm.toLowerCase())
   );
 
   const totalRevenue = filteredPayments
@@ -251,29 +251,29 @@ export default function AdminEventPayments() {
                             color: "#64748b",
                           }}
                         >
-                          {payment.user.profilePicture ? (
+                          {payment.user?.profilePicture ? (
                             <img
                               src={payment.user.profilePicture}
                               alt=""
                               style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }}
                             />
                           ) : (
-                            `${payment.user.firstName[0]}${payment.user.lastName[0]}`
+                            `${payment.user?.firstName?.[0] || ""}${payment.user?.lastName?.[0] || ""}`
                           )}
                         </div>
                         <div>
                           <div style={{ fontSize: "14px", fontWeight: "600", color: "#1e293b" }}>
-                            {payment.user.firstName} {payment.user.lastName}
+                            {payment.user?.firstName || ""} {payment.user?.lastName || ""}
                           </div>
                           <div style={{ fontSize: "12px", color: "#64748b" }}>
-                            {payment.user.email}
+                            {payment.user?.email || ""}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td style={{ padding: "16px" }}>
                       <div style={{ fontSize: "14px", fontWeight: "500", color: "#1e293b" }}>
-                        {payment.metadata.eventTitle}
+                        {payment.metadata?.eventTitle || "Unknown Event"}
                       </div>
                       {payment.eventDetails && (
                         <div style={{ fontSize: "12px", color: "#64748b" }}>

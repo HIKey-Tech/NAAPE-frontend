@@ -64,13 +64,15 @@ export const useAdminEventPayments = (eventId?: string) => {
       });
 
       if (response.data.success) {
-        setPayments(response.data.payments);
+        setPayments(response.data.payments || []);
       } else {
         setError(response.data.message || "Failed to fetch event payments");
+        setPayments([]);
       }
     } catch (err: any) {
       console.error("Error fetching event payments:", err);
       setError(err.response?.data?.message || "Failed to fetch event payments");
+      setPayments([]);
     } finally {
       setLoading(false);
     }
@@ -83,8 +85,8 @@ export const useAdminEventPayments = (eventId?: string) => {
       });
 
       if (response.data.success) {
-        setEventStats(response.data.eventStats);
-        setPaymentStats(response.data.paymentStats);
+        setEventStats(response.data.eventStats || []);
+        setPaymentStats(response.data.paymentStats || []);
       }
     } catch (err: any) {
       console.error("Error fetching event stats:", err);
