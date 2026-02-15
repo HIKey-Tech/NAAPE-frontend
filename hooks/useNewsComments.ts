@@ -10,6 +10,12 @@ export interface NewsComment {
         name: string;
         email: string;
         role: string;
+        profile?: {
+            image?: {
+                url: string;
+                publicId: string;
+            };
+        };
     };
     parentComment?: string;
     replies?: NewsComment[];

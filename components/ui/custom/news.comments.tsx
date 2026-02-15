@@ -6,6 +6,7 @@ import { useNewsComments, NewsComment } from "@/hooks/useNewsComments";
 import { useAuthStore } from "@/hook/store/useAuthStore";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Reply, Trash2 } from "lucide-react";
 
 interface NewsCommentsProps {
@@ -80,9 +81,18 @@ const CommentItem: React.FC<CommentItemProps> = ({
             <div className={`bg-white border ${depth > 0 ? 'border-l-4 border-l-blue-300' : 'border-gray-200'} rounded-lg p-4 hover:shadow-sm transition-shadow`}>
                 <div className="flex items-start gap-3">
                     {/* Avatar */}
-                    <div className="shrink-0 w-10 h-10 rounded-full bg-[#193B7A] text-white flex items-center justify-center font-semibold text-sm">
-                        {getInitials(comment.user.name)}
-                    </div>
+                    <Avatar className="w-10 h-10 shrink-0">
+                        {comment.user.profile?.image?.url ? (
+                            <AvatarImage 
+                                src={comment.user.profile.image.url} 
+                                alt={comment.user.name}
+                                className="object-cover"
+                            />
+                        ) : null}
+                        <AvatarFallback className="bg-[#193B7A] text-white font-semibold text-sm">
+                            {getInitials(comment.user.name)}
+                        </AvatarFallback>
+                    </Avatar>
 
                     {/* Comment Content */}
                     <div className="flex-1 min-w-0">
