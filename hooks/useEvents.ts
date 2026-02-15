@@ -5,7 +5,9 @@ import {
     getSingleEvent,
     verifyPayment,
     getStatus,
-    getUserEvents
+    getUserEvents,
+    updateEvent,
+    deleteEvent
 } from "@/app/api/events/events";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -36,6 +38,29 @@ export const useCreateEvent = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: createEventApi,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["events"] });
+        },
+    });
+};
+
+// Update an event
+export const useUpdateEvent = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ eventId, data }: { eventId: string; data: FormData }) => 
+            updateEvent(eventId, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["events"] });
+        },
+    });
+};
+
+// Delete an event
+export const useDeleteEvent = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: deleteEvent,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["events"] });
         },

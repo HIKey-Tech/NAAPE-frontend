@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useMemo, useCallback } from "react";
-import { useEvents, useCreateEvent } from "@/hooks/useEvents";
+import { useEvents, useDeleteEvent } from "@/hooks/useEvents";
 import { EventCardProps } from "@/app/api/events/type";
+import EditEventModal from "./EditEventModal";
 import { 
     FaPlus, 
     FaSearch, 
@@ -51,6 +52,7 @@ interface EventFilters {
 
 const EventManagementSection: React.FC<EventManagementSectionProps> = ({ onCreateEvent }) => {
     const { data: events = [], isLoading, error, refetch } = useEvents();
+    const deleteEventMutation = useDeleteEvent();
     const [filters, setFilters] = useState<EventFilters>({
         search: '',
         status: 'all',
@@ -165,12 +167,17 @@ const EventManagementSection: React.FC<EventManagementSectionProps> = ({ onCreat
         }
 
         try {
-            // TODO: Implement delete event API call
+            await deleteEventMutation.mutateAsync(eventId);
             toast.success('Event deleted successfully');
-            refetch();
-        } catch (error) {
-            toast.error('Failed to delete event');
+        } catch (error: any) {
+            console.error('Delete event error:', error);
+            toast.error(error.message || 'Failed to delete event');
         }
+    };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setSelectedEvent(null);
     };
 
     const getStatusBadge = (status: EventStatus) => {
@@ -366,10 +373,20 @@ const EventManagementSection: React.FC<EventManagementSectionProps> = ({ onCreat
                             onEdit={() => handleEditEvent(event)}
                             onDelete={() => handleDeleteEvent(event.id)}
                             getStatusBadge={getStatusBadge}
+                            isDeleting={deleteEventMutation.isPending}
                         />
                     ))
                 )}
             </div>
+
+            {/* Edit Event Modal */}
+            {selectedEvent && (
+                <EditEventModal
+                    event={selectedEvent}
+                    isOpen={isEditModalOpen}
+                    onClose={handleCloseEditModal}
+                />
+            )}
         </div>
     );
 };
@@ -380,9 +397,10 @@ interface EventCardComponentProps {
     onEdit: () => void;
     onDelete: () => void;
     getStatusBadge: (status: EventStatus) => React.JSX.Element;
+    isDeleting?: boolean;
 }
 
-const EventCard: React.FC<EventCardComponentProps> = ({ event, onEdit, onDelete, getStatusBadge }) => {
+const EventCard: React.FC<EventCardComponentProps> = ({ event, onEdit, onDelete, getStatusBadge, isDeleting = false }) => {
     const eventDate = new Date(event.date);
     const registeredCount = event.registeredUsers?.length || 0;
     const revenue = event.payments?.reduce((sum, payment) => {
@@ -420,9 +438,15 @@ const EventCard: React.FC<EventCardComponentProps> = ({ event, onEdit, onDelete,
                                     <FaEdit className="w-4 h-4 mr-1" />
                                     Edit
                                 </Button>
-                                <Button variant="outline" size="sm" onClick={onDelete} className="text-red-600 hover:text-red-700">
+                                <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    onClick={onDelete} 
+                                    className="text-red-600 hover:text-red-700"
+                                    disabled={isDeleting}
+                                >
                                     <FaTrash className="w-4 h-4 mr-1" />
-                                    Delete
+                                    {isDeleting ? 'Deleting...' : 'Delete'}
                                 </Button>
                             </div>
                         </div>

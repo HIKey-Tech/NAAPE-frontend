@@ -368,3 +368,64 @@ export const updateEventSettings = async (eventId: string, settings: any) => {
         throw new Error(message);
     }
 };
+
+// Admin-only: Update event
+export const updateEvent = async (eventId: string, data: FormData) => {
+    if (!eventId) {
+        throw new Error("Event ID is required.");
+    }
+
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : undefined;
+    if (!token) {
+        throw new Error("Authentication required.");
+    }
+
+    try {
+        const response = await axios.put(
+            `${BASE_URL}/v1/events/${eventId}`,
+            data,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`
+                },
+                withCredentials: true,
+            }
+        );
+        return response.data;
+    } catch (error: any) {
+        const message =
+            error?.response?.data?.message ||
+            error?.message ||
+            "Failed to update event.";
+        throw new Error(message);
+    }
+};
+
+// Admin-only: Delete event
+export const deleteEvent = async (eventId: string) => {
+    if (!eventId) {
+        throw new Error("Event ID is required.");
+    }
+
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : undefined;
+    if (!token) {
+        throw new Error("Authentication required.");
+    }
+
+    try {
+        const response = await axios.delete(`${BASE_URL}/v1/events/${eventId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error: any) {
+        const message =
+            error?.response?.data?.message ||
+            error?.message ||
+            "Failed to delete event.";
+        throw new Error(message);
+    }
+};
