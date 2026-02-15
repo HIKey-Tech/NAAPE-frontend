@@ -126,6 +126,14 @@ const contentLinks: NavLink[] = [
         description: "All association events"
     },
     {
+        label: "Event Payments",
+        icon: FaMoneyBillAlt,
+        href: "/admin/events/payments",
+        group: "Content",
+        subcategory: "Activities",
+        description: "Event payment tracking"
+    },
+    {
         label: "Forum",
         icon: FaComments,
         href: "/admin/forum",
