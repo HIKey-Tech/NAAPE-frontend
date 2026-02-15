@@ -10,7 +10,12 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 export const fetchEvents = async () => {
     try {
         const response = await api.get(`/events`);
-        return response.data;
+        // Normalize the data to ensure both _id and id are available
+        const events = response.data.map((event: any) => ({
+            ...event,
+            id: event._id || event.id, // Ensure id field exists
+        }));
+        return events;
     } catch (error: any) {
         throw new Error(error?.response?.data?.message || error.message || "Failed to fetch events.");
     }
@@ -36,7 +41,12 @@ export const createEventApi = async (data: FormData) => {
 export const getSingleEvent = async (id: string) => {
     try {
         const response = await api.get(`/events/${id}`);
-        return response.data;
+        // Normalize the data to ensure both _id and id are available
+        const event = {
+            ...response.data,
+            id: response.data._id || response.data.id, // Ensure id field exists
+        };
+        return event;
     } catch (error: any) {
         throw new Error(error?.response?.data?.message || error.message || "Failed to fetch event.");
     }
