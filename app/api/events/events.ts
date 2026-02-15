@@ -361,7 +361,7 @@ export const updateEventSettings = async (eventId: string, settings: any) => {
     try {
         const response = await axios.put(
             `${BASE_URL}/v1/events/${eventId}/settings`,
-            settings,
+            { settings },
             {
                 headers: {
                     Authorization: `Bearer ${token}`,

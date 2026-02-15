@@ -111,7 +111,9 @@ export function useEventSettings() {
         setSaving(true);
         setError(null);
         try {
-            const response = await updateEventSettings(settings.eventId, settings);
+            // Extract eventId and remove it from settings data
+            const { eventId, ...settingsData } = settings;
+            const response = await updateEventSettings(eventId, settingsData);
             if (response.success) {
                 setEventSettings(settings);
                 return response;
