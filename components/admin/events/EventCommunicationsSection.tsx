@@ -10,6 +10,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { 
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { 
     FaEnvelope, 
     FaPaperPlane, 
     FaUsers, 
@@ -193,6 +204,12 @@ export function EventCommunicationsSection({
             });
             setSelectedTemplate("");
             setRecipientFilters({});
+            
+            // Switch to history tab to show the sent email
+            setTimeout(() => {
+                setActiveTab("history");
+            }, 1000);
+            
         } catch (error) {
             console.error("Failed to send email:", error);
         } finally {
@@ -215,7 +232,7 @@ export function EventCommunicationsSection({
                 variables: extractVariables(newTemplate.content || "")
             });
             
-            // Reset form
+            // Reset form and switch back to templates tab
             setNewTemplate({
                 name: "",
                 subject: "",
@@ -223,6 +240,12 @@ export function EventCommunicationsSection({
                 type: TemplateType.REMINDER,
                 variables: []
             });
+            
+            // Switch back to templates tab
+            setTimeout(() => {
+                setActiveTab("templates");
+            }, 500);
+            
         } catch (error) {
             console.error("Failed to save template:", error);
         }
@@ -469,13 +492,33 @@ export function EventCommunicationsSection({
                                                         >
                                                             <FaEdit className="h-4 w-4" />
                                                         </Button>
-                                                        <Button
-                                                            size="sm"
-                                                            variant="outline"
-                                                            onClick={() => onDeleteTemplate(template.id)}
-                                                        >
-                                                            <FaTrash className="h-4 w-4" />
-                                                        </Button>
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger asChild>
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                >
+                                                                    <FaTrash className="h-4 w-4" />
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>Delete Template</AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        Are you sure you want to delete "{template.name}"? This action cannot be undone.
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                    <AlertDialogAction
+                                                                        onClick={() => onDeleteTemplate(template.id)}
+                                                                        className="bg-red-600 hover:bg-red-700"
+                                                                    >
+                                                                        Delete
+                                                                    </AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
                                                     </div>
                                                 </div>
                                                 <p className="text-sm text-gray-600 mb-2">{template.subject}</p>

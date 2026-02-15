@@ -5,6 +5,7 @@ import { EventCommunicationsSection } from "@/components/admin/events/EventCommu
 import { useEventCommunications } from "@/hooks/useEventCommunications";
 import { useEvents } from "@/hooks/useEvents";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 export default function EventCommunicationsPage() {
     const [activeSection, setActiveSection] = useState<EventSection>(EventSection.COMMUNICATIONS);
@@ -49,9 +50,15 @@ export default function EventCommunicationsPage() {
     const handleSendEmail = async (emailData: any) => {
         try {
             await sendBulkEmail(emailData);
-            // Show success message or notification here
-        } catch (error) {
-            // Show error message or notification here
+            toast.success("Email sent successfully!", {
+                description: `Email sent to ${emailData.sendToAll ? 'all attendees' : `${emailData.recipients?.length || 0} recipients`}`,
+                duration: 5000,
+            });
+        } catch (error: any) {
+            toast.error("Failed to send email", {
+                description: error.message || "An error occurred while sending the email",
+                duration: 5000,
+            });
             console.error("Failed to send email:", error);
         }
     };
@@ -59,9 +66,15 @@ export default function EventCommunicationsPage() {
     const handleSaveTemplate = async (template: any) => {
         try {
             await saveTemplate(template);
-            // Show success message or notification here
-        } catch (error) {
-            // Show error message or notification here
+            toast.success("Template saved successfully!", {
+                description: `Template "${template.name}" has been created`,
+                duration: 4000,
+            });
+        } catch (error: any) {
+            toast.error("Failed to save template", {
+                description: error.message || "An error occurred while saving the template",
+                duration: 5000,
+            });
             console.error("Failed to save template:", error);
         }
     };
@@ -69,9 +82,15 @@ export default function EventCommunicationsPage() {
     const handleUpdateTemplate = async (id: string, template: any) => {
         try {
             await updateTemplate(id, template);
-            // Show success message or notification here
-        } catch (error) {
-            // Show error message or notification here
+            toast.success("Template updated successfully!", {
+                description: `Template has been updated`,
+                duration: 4000,
+            });
+        } catch (error: any) {
+            toast.error("Failed to update template", {
+                description: error.message || "An error occurred while updating the template",
+                duration: 5000,
+            });
             console.error("Failed to update template:", error);
         }
     };
@@ -79,9 +98,15 @@ export default function EventCommunicationsPage() {
     const handleDeleteTemplate = async (id: string) => {
         try {
             await deleteTemplate(id);
-            // Show success message or notification here
-        } catch (error) {
-            // Show error message or notification here
+            toast.success("Template deleted successfully!", {
+                description: "The template has been removed",
+                duration: 4000,
+            });
+        } catch (error: any) {
+            toast.error("Failed to delete template", {
+                description: error.message || "An error occurred while deleting the template",
+                duration: 5000,
+            });
             console.error("Failed to delete template:", error);
         }
     };
