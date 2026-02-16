@@ -1,12 +1,9 @@
-
-import AllPublicationsPage from "@/components/member/publications/all.publications";
+import { AdminPublicationsLayout } from "@/components/admin/publications/AdminPublicationsLayout";
 
 export default function PublicationPage() {
-
-
     return (
-        <main className="">
-            < AllPublicationsPage isAdmin={true} />
+        <main>
+            <AdminPublicationsLayout />
         </main>
     );
 }
