@@ -14,11 +14,13 @@ import {
     updateReplyAdmin,
     deleteReplyAdmin,
     bulkReplyActions,
+    getAllCategoriesAdmin,
     AdminForumThread,
     AdminForumReply,
     BulkActionData,
     BulkReplyActionData
 } from "@/app/api/admin/forum";
+import { ForumCategory } from "@/app/api/forum/forum";
 
 // ============ THREAD QUERIES ============
 
@@ -234,5 +236,15 @@ export const useBulkReplyActions = () => {
         onError: (error: any) => {
             toast.error(error.response?.data?.message || "Failed to perform bulk reply action");
         },
+    });
+};
+
+// ============ ADMIN CATEGORIES ============
+
+export const useAdminForumCategories = () => {
+    return useQuery<ForumCategory[]>({
+        queryKey: ["admin-forum-categories"],
+        queryFn: getAllCategoriesAdmin,
+        staleTime: 60000, // 1 minute
     });
 };

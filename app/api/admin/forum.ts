@@ -114,6 +114,53 @@ export const rejectThread = async (
     return response.data.data;
 };
 
+// ============ ADMIN CATEGORY MANAGEMENT API ============
+
+export const getAllCategoriesAdmin = async (): Promise<ForumCategory[]> => {
+    const response = await axios.get("/admin/forum/categories");
+    return response.data.data;
+};
+
+export const createCategoryAdmin = async (data: {
+    name: string;
+    description: string;
+    slug: string;
+    icon?: string;
+    order?: number;
+}): Promise<ForumCategory> => {
+    const response = await axios.post("/admin/forum/categories", data);
+    return response.data.data;
+};
+
+export const updateCategoryAdmin = async (
+    categoryId: string,
+    data: {
+        name?: string;
+        description?: string;
+        slug?: string;
+        icon?: string;
+        order?: number;
+        isActive?: boolean;
+    }
+): Promise<ForumCategory> => {
+    const response = await axios.put(`/admin/forum/categories/${categoryId}`, data);
+    return response.data.data;
+};
+
+export const deleteCategoryAdmin = async (
+    categoryId: string,
+    data?: { migrateTo?: string; deleteThreads?: boolean }
+): Promise<void> => {
+    await axios.delete(`/admin/forum/categories/${categoryId}`, { data });
+};
+
+export const reorderCategoriesAdmin = async (data: {
+    categoryOrders: { id: string; order: number }[];
+}): Promise<ForumCategory[]> => {
+    const response = await axios.patch("/admin/forum/categories/reorder", data);
+    return response.data.data;
+};
+
 // ============ ADMIN REPLY MODERATION API ============
 
 export const getAllRepliesAdmin = async (params?: {

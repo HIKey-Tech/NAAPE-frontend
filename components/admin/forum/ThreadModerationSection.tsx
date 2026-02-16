@@ -46,9 +46,9 @@ import {
     useDeleteThread,
     useBulkThreadActions,
     useApproveThread,
-    useRejectThread
+    useRejectThread,
+    useAdminForumCategories
 } from "@/hooks/useThreadModeration";
-import { useForumCategories } from "@/hooks/useForum";
 import { AdminForumThread } from "@/app/api/admin/forum";
 import { ReplyModerationSection } from "./ReplyModerationSection";
 
@@ -74,7 +74,7 @@ export function ThreadModerationSection({ className }: ThreadModerationSectionPr
     const [activeTab, setActiveTab] = useState<'threads' | 'pending' | 'replies'>('threads');
 
     // Hooks
-    const { data: categories } = useForumCategories();
+    const { data: categories } = useAdminForumCategories();
     const { data: threadsData, isLoading: threadsLoading } = useAllThreadsAdmin({
         page: currentPage,
         limit: 20,
@@ -806,3 +806,4 @@ export function ThreadModerationSection({ className }: ThreadModerationSectionPr
         </div>
     );
 }
+export default ThreadModerationSection;
