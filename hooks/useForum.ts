@@ -13,9 +13,13 @@ import {
     createForumReply,
     updateForumReply,
     deleteForumReply,
+    reportThread,
+    reportReply,
+    reportUser,
     ForumCategory,
     ForumThread,
     ForumReply,
+    ReportData,
 } from "@/app/api/forum/forum";
 import { toast } from "sonner";
 
@@ -190,6 +194,38 @@ export const useDeleteForumReply = () => {
         },
         onError: (error: any) => {
             toast.error(error.response?.data?.message || "Failed to delete reply");
+        },
+    });
+};
+
+// ============ REPORTING ============
+
+export const useReportThread = () => {
+    return useMutation({
+        mutationFn: ({ threadId, data }: { threadId: string; data: ReportData }) =>
+            reportThread(threadId, data),
+        onError: (error: any) => {
+            toast.error(error.response?.data?.message || "Failed to submit report");
+        },
+    });
+};
+
+export const useReportReply = () => {
+    return useMutation({
+        mutationFn: ({ replyId, data }: { replyId: string; data: ReportData }) =>
+            reportReply(replyId, data),
+        onError: (error: any) => {
+            toast.error(error.response?.data?.message || "Failed to submit report");
+        },
+    });
+};
+
+export const useReportUser = () => {
+    return useMutation({
+        mutationFn: ({ userId, data }: { userId: string; data: ReportData }) =>
+            reportUser(userId, data),
+        onError: (error: any) => {
+            toast.error(error.response?.data?.message || "Failed to submit report");
         },
     });
 };

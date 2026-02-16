@@ -34,6 +34,7 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/authcontext";
 import { LogoutDialog } from "@/components/ui/logout-dialog";
 import { EventsDropdown, EventSection } from "@/components/admin/events/AdminEventsLayout";
+import { ForumDropdown, ForumSection } from "@/components/admin/forum/AdminForumLayout";
 
 // Improved and more detailed hierarchy: Group/category definitions ===================
 
@@ -117,14 +118,7 @@ const userManagementLinks: NavLink[] = [
     },
 ];
 const contentLinks: NavLink[] = [
-    {
-        label: "Forum",
-        icon: FaComments,
-        href: "/admin/forum",
-        group: "Content",
-        subcategory: "Community",
-        description: "Discussion board"
-    },
+    // Forum is now handled by ForumDropdown component
 ];
 const publicationsDropdownLinks: NavLink[] = [
     {
@@ -665,6 +659,7 @@ function GroupLabel({ label }: { label: string }) {
 // MobileNavSections: The full navigation structure for the hamburger drawer
 function MobileNavSections({ pathname }: { pathname: string | null }) {
     const [activeEventSection, setActiveEventSection] = useState<EventSection>(EventSection.MANAGEMENT);
+    const [activeForumSection, setActiveForumSection] = useState<ForumSection>(ForumSection.DASHBOARD);
 
     // Determine active event section based on pathname
     useEffect(() => {
@@ -678,6 +673,23 @@ function MobileNavSections({ pathname }: { pathname: string | null }) {
             setActiveEventSection(EventSection.COMMUNICATIONS);
         } else if (pathname?.includes('/admin/events')) {
             setActiveEventSection(EventSection.MANAGEMENT);
+        }
+    }, [pathname]);
+
+    // Determine active forum section based on pathname
+    useEffect(() => {
+        if (pathname?.includes('/admin/forum/categories')) {
+            setActiveForumSection(ForumSection.CATEGORIES);
+        } else if (pathname?.includes('/admin/forum/moderation')) {
+            setActiveForumSection(ForumSection.MODERATION);
+        } else if (pathname?.includes('/admin/forum/users')) {
+            setActiveForumSection(ForumSection.USERS);
+        } else if (pathname?.includes('/admin/forum/reports')) {
+            setActiveForumSection(ForumSection.REPORTS);
+        } else if (pathname?.includes('/admin/forum/analytics')) {
+            setActiveForumSection(ForumSection.ANALYTICS);
+        } else if (pathname?.includes('/admin/forum')) {
+            setActiveForumSection(ForumSection.DASHBOARD);
         }
     }, [pathname]);
 
@@ -734,6 +746,11 @@ function MobileNavSections({ pathname }: { pathname: string | null }) {
                         activeSection={activeEventSection}
                         onSectionChange={setActiveEventSection}
                     />
+                    <ForumDropdown 
+                        pathname={pathname} 
+                        activeSection={activeForumSection}
+                        onSectionChange={setActiveForumSection}
+                    />
                     {contentLinks.map(link => (
                         <NavItem
                             key={link.label}
@@ -757,6 +774,7 @@ export function AdminSidebar() {
 
     const [showLogoutDialog, setShowLogoutDialog] = useState(false);
     const [activeEventSection, setActiveEventSection] = useState<EventSection>(EventSection.MANAGEMENT);
+    const [activeForumSection, setActiveForumSection] = useState<ForumSection>(ForumSection.DASHBOARD);
 
     // Determine active event section based on pathname
     useEffect(() => {
@@ -770,6 +788,23 @@ export function AdminSidebar() {
             setActiveEventSection(EventSection.COMMUNICATIONS);
         } else if (pathname?.includes('/admin/events')) {
             setActiveEventSection(EventSection.MANAGEMENT);
+        }
+    }, [pathname]);
+
+    // Determine active forum section based on pathname
+    useEffect(() => {
+        if (pathname?.includes('/admin/forum/categories')) {
+            setActiveForumSection(ForumSection.CATEGORIES);
+        } else if (pathname?.includes('/admin/forum/moderation')) {
+            setActiveForumSection(ForumSection.MODERATION);
+        } else if (pathname?.includes('/admin/forum/users')) {
+            setActiveForumSection(ForumSection.USERS);
+        } else if (pathname?.includes('/admin/forum/reports')) {
+            setActiveForumSection(ForumSection.REPORTS);
+        } else if (pathname?.includes('/admin/forum/analytics')) {
+            setActiveForumSection(ForumSection.ANALYTICS);
+        } else if (pathname?.includes('/admin/forum')) {
+            setActiveForumSection(ForumSection.DASHBOARD);
         }
     }, [pathname]);
 
@@ -912,6 +947,11 @@ export function AdminSidebar() {
                                 pathname={pathname} 
                                 activeSection={activeEventSection}
                                 onSectionChange={setActiveEventSection}
+                            />
+                            <ForumDropdown 
+                                pathname={pathname} 
+                                activeSection={activeForumSection}
+                                onSectionChange={setActiveForumSection}
                             />
                             {navSectionContent}
                         </ul>

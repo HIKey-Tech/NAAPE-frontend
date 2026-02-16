@@ -157,3 +157,30 @@ export const updateForumReply = async (
 export const deleteForumReply = async (replyId: string): Promise<void> => {
     await axios.delete(`/forum/replies/${replyId}`);
 };
+
+// ============ REPORTING ============
+
+export interface ReportData {
+    reason: string;
+    description?: string;
+}
+
+export interface ReportResponse {
+    reportId: string;
+    status: string;
+}
+
+export const reportThread = async (threadId: string, data: ReportData): Promise<ReportResponse> => {
+    const response = await axios.post(`/forum/reports/thread/${threadId}`, data);
+    return response.data.data;
+};
+
+export const reportReply = async (replyId: string, data: ReportData): Promise<ReportResponse> => {
+    const response = await axios.post(`/forum/reports/reply/${replyId}`, data);
+    return response.data.data;
+};
+
+export const reportUser = async (userId: string, data: ReportData): Promise<ReportResponse> => {
+    const response = await axios.post(`/forum/reports/user/${userId}`, data);
+    return response.data.data;
+};

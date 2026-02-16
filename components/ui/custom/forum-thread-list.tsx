@@ -1,22 +1,35 @@
 "use client";
 import React, { useState } from "react";
-import { useThreadsByCategory, useTogglePinThread, useToggleLockThread, useDeleteForumThread } from "@/hooks/useForum";
+import { useThreadsByCategory, useTogglePinThread, useToggleLockThread, useDeleteForumThread, useReportThread, useReportUser } from "@/hooks/useForum";
 import { ForumThread } from "@/app/api/forum/forum";
 import { motion } from "framer-motion";
-import { MdPushPin, MdLock, MdVisibility, MdComment, MdMoreVert, MdEdit, MdDelete } from "react-icons/md";
+import { MdPushPin, MdLock, MdVisibility, MdComment, MdMoreVert, MdEdit, MdDelete, MdFlag } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { useAuthStore } from "@/hook/store/useAuthStore";
+import ReportModal from "./report-modal";
 
 const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ thread, isAdmin }) => {
     const router = useRouter();
     const [showMenu, setShowMenu] = useState(false);
+    const [showThreadReportModal, setShowThreadReportModal] = useState(false);
+    const [showUserReportModal, setShowUserReportModal] = useState(false);
     const togglePin = useTogglePinThread();
     const toggleLock = useToggleLockThread();
     const deleteThread = useDeleteForumThread();
+    const reportThreadMutation = useReportThread();
+    const reportUserMutation = useReportUser();
     const user = useAuthStore((state) => state.user);
 
     const isAuthor = user?._id === thread.author._id;
+
+    const handleReportThread = async (data: { reason: string; description?: string }) => {
+        await reportThreadMutation.mutateAsync({ threadId: thread._id, data });
+    };
+
+    const handleReportUser = async (data: { reason: string; description?: string }) => {
+        await reportUserMutation.mutateAsync({ userId: thread.author._id, data });
+    };
 
     return (
         <motion.div
@@ -77,6 +90,32 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
                 <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-500">
                     Last reply by <span className="font-semibold">{thread.lastReply.author.name}</span>{" "}
                     {formatDistanceToNow(new Date(thread.lastReply.createdAt), { addSuffix: true })}
+                </div>
+            )}
+
+            {/* Report Actions */}
+            {user && !isAuthor && (
+                <div className="mt-3 pt-3 border-t border-gray-200 flex gap-2">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowThreadReportModal(true);
+                        }}
+                        className="flex items-center gap-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors"
+                    >
+                        <MdFlag size={12} />
+                        Report Thread
+                    </button>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowUserReportModal(true);
+                        }}
+                        className="flex items-center gap-1 px-2 py-1 text-xs text-orange-600 hover:bg-orange-50 rounded transition-colors"
+                    >
+                        <MdFlag size={12} />
+                        Report User
+                    </button>
                 </div>
             )}
 
@@ -152,6 +191,24 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
                     )}
                 </div>
             )}
+
+            {/* Report Modals */}
+            <ReportModal
+                isOpen={showThreadReportModal}
+                onClose={() => setShowThreadReportModal(false)}
+                onSubmit={handleReportThread}
+                title={`Report Thread: ${thread.title}`}
+                contentType="thread"
+                contentPreview={thread.content}
+            />
+
+            <ReportModal
+                isOpen={showUserReportModal}
+                onClose={() => setShowUserReportModal(false)}
+                onSubmit={handleReportUser}
+                title={`Report User: ${thread.author.name}`}
+                contentType="user"
+            />
         </motion.div>
     );
 };

@@ -1,19 +1,22 @@
 "use client";
 import React, { useState } from "react";
-import { useForumThread, useThreadReplies, useCreateForumReply, useDeleteForumReply, useUpdateForumReply } from "@/hooks/useForum";
+import { useForumThread, useThreadReplies, useCreateForumReply, useDeleteForumReply, useUpdateForumReply, useReportThread, useReportReply, useReportUser } from "@/hooks/useForum";
 import { ForumReply } from "@/app/api/forum/forum";
 import { motion } from "framer-motion";
-import { MdPushPin, MdLock, MdVisibility, MdComment, MdSend, MdEdit, MdDelete, MdReply } from "react-icons/md";
+import { MdPushPin, MdLock, MdVisibility, MdComment, MdSend, MdEdit, MdDelete, MdReply, MdFlag } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/context/authcontext";
 import { toast } from "sonner";
+import ReportModal from "./report-modal";
 
 const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: boolean }> = ({ reply, threadId, isNested = false }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editContent, setEditContent] = useState(reply.content);
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [replyContent, setReplyContent] = useState("");
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [showUserReportModal, setShowUserReportModal] = useState(false);
     
     const { user } = useAuth();
     const isAuthor = user?._id === reply.author._id;
@@ -22,6 +25,8 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
     const updateReply = useUpdateForumReply();
     const deleteReply = useDeleteForumReply();
     const createReply = useCreateForumReply();
+    const reportReplyMutation = useReportReply();
+    const reportUserMutation = useReportUser();
 
     const handleUpdate = () => {
         if (!editContent.trim()) return;
@@ -52,6 +57,14 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
         );
     };
 
+    const handleReportReply = async (data: { reason: string; description?: string }) => {
+        await reportReplyMutation.mutateAsync({ replyId: reply._id, data });
+    };
+
+    const handleReportUser = async (data: { reason: string; description?: string }) => {
+        await reportUserMutation.mutateAsync({ userId: reply.author._id, data });
+    };
+
     return (
         <div className={`${isNested ? "ml-8 mt-4" : "mt-6"}`}>
             <div className="bg-[#f8fbff] rounded-lg border-2 border-[#e4ecf7] p-4 hover:border-[#c9daf9] transition-colors">
@@ -78,26 +91,48 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
                     </div>
 
                     {/* Actions */}
-                    {(isAuthor || isAdmin) && !isEditing && (
-                        <div className="flex gap-2">
-                            {isAuthor && (
+                    <div className="flex gap-2">
+                        {(isAuthor || isAdmin) && !isEditing && (
+                            <>
+                                {isAuthor && (
+                                    <button
+                                        onClick={() => setIsEditing(true)}
+                                        className="p-2 hover:bg-[#e8f0fb] rounded-full transition-colors"
+                                        title="Edit"
+                                    >
+                                        <MdEdit size={18} className="text-[#2C6ED4]" />
+                                    </button>
+                                )}
                                 <button
-                                    onClick={() => setIsEditing(true)}
-                                    className="p-2 hover:bg-[#e8f0fb] rounded-full transition-colors"
-                                    title="Edit"
+                                    onClick={handleDelete}
+                                    className="p-2 hover:bg-red-50 rounded-full transition-colors"
+                                    title="Delete"
                                 >
-                                    <MdEdit size={18} className="text-[#2C6ED4]" />
+                                    <MdDelete size={18} className="text-red-600" />
                                 </button>
-                            )}
-                            <button
-                                onClick={handleDelete}
-                                className="p-2 hover:bg-red-50 rounded-full transition-colors"
-                                title="Delete"
-                            >
-                                <MdDelete size={18} className="text-red-600" />
-                            </button>
-                        </div>
-                    )}
+                            </>
+                        )}
+                        
+                        {/* Report buttons for non-authors */}
+                        {user && !isAuthor && (
+                            <>
+                                <button
+                                    onClick={() => setShowReportModal(true)}
+                                    className="p-2 hover:bg-red-50 rounded-full transition-colors"
+                                    title="Report Reply"
+                                >
+                                    <MdFlag size={18} className="text-red-600" />
+                                </button>
+                                <button
+                                    onClick={() => setShowUserReportModal(true)}
+                                    className="p-2 hover:bg-orange-50 rounded-full transition-colors"
+                                    title="Report User"
+                                >
+                                    <MdFlag size={18} className="text-orange-600" />
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </div>
 
                 {/* Content */}
@@ -185,6 +220,24 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
                     ))}
                 </div>
             )}
+
+            {/* Report Modals */}
+            <ReportModal
+                isOpen={showReportModal}
+                onClose={() => setShowReportModal(false)}
+                onSubmit={handleReportReply}
+                title="Report Reply"
+                contentType="reply"
+                contentPreview={reply.content}
+            />
+
+            <ReportModal
+                isOpen={showUserReportModal}
+                onClose={() => setShowUserReportModal(false)}
+                onSubmit={handleReportUser}
+                title={`Report User: ${reply.author.name}`}
+                contentType="user"
+            />
         </div>
     );
 };
@@ -197,11 +250,27 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
     const router = useRouter();
     const [replyContent, setReplyContent] = useState("");
     const [hasTrackedView, setHasTrackedView] = useState(false);
+    const [showThreadReportModal, setShowThreadReportModal] = useState(false);
+    const [showUserReportModal, setShowUserReportModal] = useState(false);
     
     const { data: thread, isPending: threadLoading, error: threadError } = useForumThread(threadId);
     const { data: repliesData, isPending: repliesLoading } = useThreadReplies(threadId);
     const createReply = useCreateForumReply();
+    const reportThreadMutation = useReportThread();
+    const reportUserMutation = useReportUser();
     const { user } = useAuth();
+
+    const isAuthor = user?._id === thread?.author._id;
+
+    const handleReportThread = async (data: { reason: string; description?: string }) => {
+        await reportThreadMutation.mutateAsync({ threadId, data });
+    };
+
+    const handleReportUser = async (data: { reason: string; description?: string }) => {
+        if (thread?.author._id) {
+            await reportUserMutation.mutateAsync({ userId: thread.author._id, data });
+        }
+    };
 
     // Track view only once per thread per browser session
     React.useEffect(() => {
@@ -343,6 +412,26 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
                 <div className="prose max-w-none">
                     <p className="text-[#16355D] text-lg whitespace-pre-wrap leading-relaxed">{thread.content}</p>
                 </div>
+
+                {/* Report Actions */}
+                {user && !isAuthor && (
+                    <div className="flex gap-2 mt-6 pt-6 border-t border-[#e4ecf7]">
+                        <button
+                            onClick={() => setShowThreadReportModal(true)}
+                            className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                            <MdFlag size={16} />
+                            Report Thread
+                        </button>
+                        <button
+                            onClick={() => setShowUserReportModal(true)}
+                            className="flex items-center gap-2 px-3 py-2 text-sm text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                        >
+                            <MdFlag size={16} />
+                            Report User
+                        </button>
+                    </div>
+                )}
             </motion.div>
 
             {/* Reply Form */}
@@ -409,6 +498,24 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
                     </div>
                 )}
             </div>
+
+            {/* Report Modals */}
+            <ReportModal
+                isOpen={showThreadReportModal}
+                onClose={() => setShowThreadReportModal(false)}
+                onSubmit={handleReportThread}
+                title={`Report Thread: ${thread?.title}`}
+                contentType="thread"
+                contentPreview={thread?.content}
+            />
+
+            <ReportModal
+                isOpen={showUserReportModal}
+                onClose={() => setShowUserReportModal(false)}
+                onSubmit={handleReportUser}
+                title={`Report User: ${thread?.author.name}`}
+                contentType="user"
+            />
         </div>
     );
 };
