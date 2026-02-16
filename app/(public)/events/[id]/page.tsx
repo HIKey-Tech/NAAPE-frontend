@@ -94,6 +94,12 @@ export default function AdminEventDetailsPage() {
     // Check if user has already paid
     const hasPaid = paymentStatus?.paid || false;
     const isRegistered = paymentStatus?.registered || false;
+    
+    // Capacity information
+    const maxCapacity = event.maxCapacity || event.settings?.maxCapacity;
+    const currentCapacity = event.currentCapacity || event.registeredUsers?.length || 0;
+    const isFull = event.isFull || (maxCapacity ? currentCapacity >= maxCapacity : false);
+    const spotsRemaining = maxCapacity ? Math.max(0, maxCapacity - currentCapacity) : null;
 
     // Animation: fade-in on mount, like EventCard
     const cardRef = useRef<HTMLDivElement | null>(null);
@@ -290,17 +296,42 @@ export default function AdminEventDetailsPage() {
                 {renderPrice}
             </div>
 
-            {/* Registered users count */}
+            {/* Registered users count and capacity */}
             {event.registeredUsers && (
-                <div className="mt-2 text-xs text-[#8aa1cc] font-normal">
-                    {event.registeredUsers.length === 0
-                        ? "No registrations yet"
-                        : `${event.registeredUsers.length} registered`}
+                <div className="mt-2 flex items-center gap-3">
+                    <div className="text-xs text-[#8aa1cc] font-normal">
+                        {event.registeredUsers.length === 0
+                            ? "No registrations yet"
+                            : `${event.registeredUsers.length} registered`}
+                    </div>
+                    {maxCapacity && (
+                        <>
+                            <span className="text-[#d0d5dd]">•</span>
+                            <div className={`text-xs font-semibold ${isFull ? 'text-red-600' : spotsRemaining && spotsRemaining <= 5 ? 'text-orange-600' : 'text-[#6b7280]'}`}>
+                                {isFull ? (
+                                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-50 border border-red-200 rounded-full">
+                                        <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                            <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+                                        </svg>
+                                        Event Full
+                                    </span>
+                                ) : (
+                                    `${spotsRemaining} ${spotsRemaining === 1 ? 'spot' : 'spots'} remaining`
+                                )}
+                            </div>
+                        </>
+                    )}
                 </div>
             )}
 
             {/* Registration/Pay Button */}
             <div className="mt-6 flex flex-col items-stretch gap-3">
+                {isFull && !hasPaid && !isRegistered && (
+                    <div className="text-red-700 bg-red-50 border border-red-200 rounded py-3 px-4 text-center font-medium shadow-sm">
+                        ⚠️ Event is full. Maximum capacity reached.
+                    </div>
+                )}
                 {hasPaid && (
                     <div className="text-green-700 bg-green-50 border border-green-200 rounded py-3 px-4 text-center font-medium shadow-sm">
                         ✓ You have already registered and paid for this event
@@ -326,11 +357,13 @@ export default function AdminEventDetailsPage() {
                 {!hasPaid && !isRegistered && (
                     <button
                         onClick={handleRegister}
-                        disabled={!id || payForEventMutation.isPending || hasPaid}
-                        className={`mt-2 px-7 py-2.5 border border-[#D5E3F7] rounded-md text-[#4267E7] bg-white font-medium text-[15px] transition-colors hover:bg-[#F2F7FF] focus:outline-none focus:ring-2 focus:ring-[#B2D7EF] active:bg-[#E7F1FF] shadow ${(!id || payForEventMutation.isPending || hasPaid) ? "opacity-60 cursor-not-allowed" : ""}`}
+                        disabled={!id || payForEventMutation.isPending || hasPaid || isFull}
+                        className={`mt-2 px-7 py-2.5 border border-[#D5E3F7] rounded-md text-[#4267E7] bg-white font-medium text-[15px] transition-colors hover:bg-[#F2F7FF] focus:outline-none focus:ring-2 focus:ring-[#B2D7EF] active:bg-[#E7F1FF] shadow ${(!id || payForEventMutation.isPending || hasPaid || isFull) ? "opacity-60 cursor-not-allowed" : ""}`}
                         aria-label={`View details and register for ${event.title}`}
                     >
-                        {payForEventMutation.isPending ? (
+                        {isFull ? (
+                            "Event Full"
+                        ) : payForEventMutation.isPending ? (
                             <span className="flex items-center justify-center gap-2">
                                 <span className="animate-spin h-5 w-5 border-t-2 border-b-2 border-[#4267E7] rounded-full inline-block" />
                                 Processing...

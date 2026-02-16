@@ -96,6 +96,10 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void; isAdmin?:
     payments,
     createdAt,
     updatedAt,
+    maxCapacity,
+    currentCapacity,
+    isFull,
+    spotsRemaining,
     className = "",
     registerLabel = "Register",
     disabled = false,
@@ -305,6 +309,24 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void; isAdmin?:
                     </div>
                 )}
 
+                {/* Capacity Information */}
+                {maxCapacity && (
+                    <div className="flex items-center gap-2 mb-2 text-xs">
+                        <User2 size={14} className="stroke-gray-400" />
+                        <span className={`font-semibold ${isFull ? 'text-red-600' : spotsRemaining && spotsRemaining <= 5 ? 'text-orange-600' : 'text-gray-600'}`}>
+                            {isFull ? (
+                                <span className="inline-flex items-center gap-1">
+                                    <XCircle size={12} />
+                                    Event Full
+                                </span>
+                            ) : (
+                                `${spotsRemaining} ${spotsRemaining === 1 ? 'spot' : 'spots'} left`
+                            )}
+                        </span>
+                        <span className="text-gray-400">• {currentCapacity || registeredUsers?.length || 0}/{maxCapacity}</span>
+                    </div>
+                )}
+
                 <div className="flex justify-between mt-auto items-center">
                     {/* Price */}
                     <div>
@@ -319,7 +341,11 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void; isAdmin?:
                     </div>
 
                     {/* Button / Status */}
-                    {isPaidByUser ? (
+                    {isFull && !isPaidByUser && !isRegisteredFree ? (
+                        <div className="flex items-center gap-2 px-5 py-1.5 rounded-full bg-red-50 border border-red-200 text-red-700 font-semibold text-sm">
+                            <XCircle size={15} /> Full
+                        </div>
+                    ) : isPaidByUser ? (
                         <div className="flex items-center gap-2 px-5 py-1.5 rounded-full bg-green-50 border border-green-200 text-green-700 font-semibold text-sm">
                             <CheckCircle2 size={15} /> Registered
                         </div>
@@ -338,10 +364,10 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void; isAdmin?:
                                 e.stopPropagation();
                                 handleRegister();
                             }}
-                            disabled={disabled || showRegisterLoading}
-                            className="px-4 py-2 rounded-full bg-[#f7f8fc] border border-[#bfd6f5] text-[#2049a2] hover:bg-[#eff4fd] text-sm"
+                            disabled={disabled || showRegisterLoading || isFull}
+                            className={`px-4 py-2 rounded-full bg-[#f7f8fc] border border-[#bfd6f5] text-[#2049a2] hover:bg-[#eff4fd] text-sm ${(disabled || showRegisterLoading || isFull) ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
-                            {showRegisterLoading ? "Loading..." : registerLabel}
+                            {isFull ? "Full" : showRegisterLoading ? "Loading..." : registerLabel}
                         </button>
                     ) : null}
                 </div>

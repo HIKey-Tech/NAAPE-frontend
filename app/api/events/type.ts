@@ -15,6 +15,13 @@ export interface EventCardProps {
     payments?: IEventPayment[];
     createdAt?: string | Date;
     updatedAt?: string | Date;
+    
+    // Capacity fields
+    maxCapacity?: number;
+    currentCapacity?: number;
+    isFull?: boolean;
+    spotsRemaining?: number | null;
+    
     className?: string;
     registerLabel?: string;
     disabled?: boolean;
