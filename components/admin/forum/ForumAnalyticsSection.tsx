@@ -9,7 +9,6 @@ import {
     FaEye,
     FaDownload,
     FaSyncAlt,
-    FaCalendarAlt,
     FaFilter,
     FaTrophy,
     FaExclamationTriangle,
@@ -29,7 +28,6 @@ import { useAdminForumCategories } from "@/hooks/useAdminForumCategories";
 const ForumAnalyticsSection: React.FC = () => {
     const {
         analyticsOverview,
-        activityMetrics,
         userEngagement,
         isLoading,
         isRefreshing,
@@ -38,7 +36,6 @@ const ForumAnalyticsSection: React.FC = () => {
         fetchAnalyticsOverview,
         fetchActivityMetrics,
         fetchUserEngagement,
-        refreshAnalytics,
         exportAnalytics
     } = useForumAnalytics();
 
@@ -407,7 +404,7 @@ const ForumAnalyticsSection: React.FC = () => {
                                         {analyticsOverview.activityOverTime.slice(-10).reverse().map((activity, index) => (
                                             <div key={index} className="flex justify-between items-center p-2 bg-gray-50 rounded">
                                                 <span className="text-sm">
-                                                    {format(new Date(activity.date), 'MMM dd')}
+                                                    {activity.date ? format(new Date(activity.date), 'MMM dd') : 'Unknown date'}
                                                 </span>
                                                 <div className="flex gap-4 text-xs">
                                                     <span className="text-blue-600">
@@ -479,7 +476,7 @@ const ForumAnalyticsSection: React.FC = () => {
                                                     Last activity
                                                 </p>
                                                 <p className="text-xs text-gray-600">
-                                                    {format(new Date(category.lastActivity), 'MMM dd, yyyy')}
+                                                    {category.lastActivity ? format(new Date(category.lastActivity), 'MMM dd, yyyy') : 'No activity'}
                                                 </p>
                                             </div>
                                         )}
