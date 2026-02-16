@@ -28,7 +28,7 @@ import { useCreatePublication } from "@/hooks/usePublications";
 import { toast } from "sonner";
 import { SubscriptionBanner } from "@/components/member/component/subscription.banner";
 import { useSubscriptionStatus } from "@/hooks/useSubscription";
-import { useAuthStore } from "@/hook/store/useAuthStore";
+import { useAuth } from "@/context/authcontext";
 
 const publicationSchema = z.object({
   title: z
@@ -67,7 +67,7 @@ const categories = [
 // Main Form Component
 const CreatePublicationComponent: React.FC = () => {
   const { data: subscriptionStatus, isLoading: subscriptionLoading } = useSubscriptionStatus();
-  const { user, hydrated } = useAuthStore();
+  const { user, loading: authLoading } = useAuth();
   
   // Admins and editors bypass subscription check entirely
   const isAdmin = user?.role === "admin" || user?.role === "editor";
@@ -79,10 +79,10 @@ const CreatePublicationComponent: React.FC = () => {
   console.log("🔍 [CREATE PUBLICATION] Is admin:", isAdmin);
   console.log("🔍 [CREATE PUBLICATION] Has subscription:", subscriptionStatus?.hasSubscription);
   console.log("🔍 [CREATE PUBLICATION] Has active subscription:", hasActiveSubscription);
-  console.log("🔍 [CREATE PUBLICATION] Hydrated:", hydrated);
+  console.log("🔍 [CREATE PUBLICATION] Auth loading:", authLoading);
 
-  // Wait for auth to hydrate and subscription to load before showing banner
-  const showSubscriptionCheck = hydrated && !subscriptionLoading && !isAdmin;
+  // Wait for auth to load and subscription to load before showing banner
+  const showSubscriptionCheck = !authLoading && !subscriptionLoading && !isAdmin;
 
   const form = useForm<PublicationInput>({
     resolver: zodResolver(publicationSchema),
