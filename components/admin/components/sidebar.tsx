@@ -469,6 +469,74 @@ function NewsDropdown({ pathname }: { pathname: string | null }) {
     );
 }
 
+function UsersDropdown({ pathname }: { pathname: string | null }) {
+    const [open, setOpen] = useState(false);
+    const dropdownRef = useRef<HTMLUListElement>(null);
+
+    const isChildActive = userManagementLinks.some(
+        (link) => pathname === link.href || (link.href && pathname?.startsWith(link.href))
+    );
+
+    useEffect(() => { setOpen(false); }, [pathname]);
+
+    const handleBlur = (e: React.FocusEvent<HTMLButtonElement | HTMLUListElement>) => {
+        if (
+            dropdownRef.current &&
+            e.relatedTarget &&
+            !dropdownRef.current.contains(e.relatedTarget as Node)
+        ) {
+            setOpen(false);
+        }
+    };
+
+    const labelClass = "hidden sm:inline";
+
+    return (
+        <NavItem
+            icon={FaUsers}
+            label="Users"
+            active={isChildActive}
+            asButton
+            ariaExpanded={open}
+            onClick={() => setOpen(v => !v)}
+        >
+            <ul
+                ref={dropdownRef}
+                onBlur={handleBlur}
+                className={`${open ? "block" : "hidden"} absolute left-0 right-0 top-full z-40 bg-[#f5f8fa] border-2 border-[#b8d2f0] rounded mt-1 ml-3 mr-3 py-1 sm:min-w-[208px] max-w-xs`}
+                tabIndex={-1}
+                role="menu"
+                aria-label="Users submenu"
+                style={{ boxShadow: "none" }}
+            >
+                {userManagementLinks.map((sublink) => {
+                    const isActive = pathname === sublink.href;
+                    return (
+                        <li key={sublink.label} className={`dropdown-navitem${isActive ? " dropdown-active" : ""}`}>
+                            <Link
+                                href={sublink.href ?? "#"}
+                                className={`flex items-center gap-3 px-4 py-2 rounded text-[15px] font-medium transition-colors hover:bg-[#eaf3fd] ${isActive ? "font-bold bg-[#def0fc] text-primary border-l-4 border-primary" : "text-[#243050]"
+                                    }`}
+                                role="menuitem"
+                                tabIndex={0}
+                                onClick={() => setOpen(false)}
+                                style={isActive ? { color: "var(--color-primary)" } : undefined}
+                            >
+                                <sublink.icon className={`w-4 h-4 flex-shrink-0 animated-dropdown-icon${isActive ? " text-primary" : " text-[#7d8daa]"}`
+                                } style={isActive ? { color: "var(--color-primary)" } : undefined} aria-hidden="true" />
+                                <span className={labelClass}>{sublink.label}</span>
+                                {sublink.description && (
+                                    <span className="ml-auto text-xs text-[#9ca9c7] hidden sm:inline">{sublink.description}</span>
+                                )}
+                            </Link>
+                        </li>
+                    );
+                })}
+            </ul>
+        </NavItem>
+    );
+}
+
 // HamburgerDrawer for mobile
 function HamburgerDrawer({
     open,
@@ -715,16 +783,7 @@ function MobileNavSections({ pathname }: { pathname: string | null }) {
             <li>
                 <GroupLabel label="User Management" />
                 <ul className="flex flex-col">
-                    {userManagementLinks.map(link => (
-                        <NavItem
-                            key={link.label}
-                            icon={link.icon}
-                            label={link.label}
-                            href={link.href}
-                            description={link.description}
-                            active={pathname === link.href}
-                        />
-                    ))}
+                    <UsersDropdown pathname={pathname} />
                 </ul>
             </li>
             <li>
@@ -848,19 +907,7 @@ export function AdminSidebar() {
         );
     });
     
-    const navSectionUserManagement = userManagementLinks.map(link => {
-        const isActive = link.href ? pathname === link.href : false;
-        return (
-            <NavItem
-                key={link.label}
-                icon={link.icon}
-                label={link.label}
-                href={link.href}
-                description={link.description}
-                active={isActive}
-            />
-        );
-    });
+    const navSectionUserManagement = <UsersDropdown pathname={pathname} />;
     
     const navSectionContent = contentLinks.map(link => {
         const isActive = link.href ? pathname === link.href : false;
