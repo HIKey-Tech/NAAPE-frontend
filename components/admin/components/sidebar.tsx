@@ -122,18 +122,11 @@ const contentLinks: NavLink[] = [
 ];
 const publicationsDropdownLinks: NavLink[] = [
     {
-        label: "All Publications",
+        label: "Review Publications",
         icon: FaSearch,
-        href: "/admin/publications/all-publications",
-        group: "Publications",
-        description: "All publications"
-    },
-    {
-        label: "My Publications",
-        icon: FaBook,
         href: "/admin/publications",
         group: "Publications",
-        description: "My publications"
+        description: "Review & moderate all submissions"
     },
     {
         label: "Create Publication",
@@ -732,7 +725,7 @@ function MobileNavSections({ pathname }: { pathname: string | null }) {
                     <NavItem
                         icon={FaSearch}
                         label="Publications"
-                        href="/admin/publications/all-publications"
+                        href="/admin/publications"
                         active={pathname?.startsWith("/admin/publications")}
                     />
                     <NavItem

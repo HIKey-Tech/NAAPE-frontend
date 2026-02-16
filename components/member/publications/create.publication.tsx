@@ -67,11 +67,22 @@ const categories = [
 // Main Form Component
 const CreatePublicationComponent: React.FC = () => {
   const { data: subscriptionStatus, isLoading: subscriptionLoading } = useSubscriptionStatus();
-  const { user } = useAuthStore();
+  const { user, hydrated } = useAuthStore();
   
-  // Check if user has active subscription or is admin/editor
+  // Admins and editors bypass subscription check entirely
   const isAdmin = user?.role === "admin" || user?.role === "editor";
-  const hasActiveSubscription = isAdmin || subscriptionStatus?.hasSubscription;
+  
+  // For non-admins, check subscription status
+  const hasActiveSubscription = isAdmin ? true : (subscriptionStatus?.hasSubscription || false);
+
+  console.log("🔍 [CREATE PUBLICATION] User role:", user?.role);
+  console.log("🔍 [CREATE PUBLICATION] Is admin:", isAdmin);
+  console.log("🔍 [CREATE PUBLICATION] Has subscription:", subscriptionStatus?.hasSubscription);
+  console.log("🔍 [CREATE PUBLICATION] Has active subscription:", hasActiveSubscription);
+  console.log("🔍 [CREATE PUBLICATION] Hydrated:", hydrated);
+
+  // Wait for auth to hydrate and subscription to load before showing banner
+  const showSubscriptionCheck = hydrated && !subscriptionLoading && !isAdmin;
 
   const form = useForm<PublicationInput>({
     resolver: zodResolver(publicationSchema),
@@ -234,7 +245,7 @@ const CreatePublicationComponent: React.FC = () => {
       tabIndex={-1}
     >
       {/* Subscription Status Banner */}
-      {!subscriptionLoading && (
+      {showSubscriptionCheck && (
         <SubscriptionBanner 
           showUpgradePrompt={!hasActiveSubscription}
           feature="create publications"
