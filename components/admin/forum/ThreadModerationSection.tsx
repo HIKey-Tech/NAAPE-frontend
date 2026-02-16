@@ -268,21 +268,6 @@ function ThreadModerationSection({ className }: ThreadModerationSectionProps) {
                         All Threads
                     </button>
                     <button
-                        onClick={() => setActiveTab('pending')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                            activeTab === 'pending'
-                                ? 'bg-white text-blue-600 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
-                        }`}
-                    >
-                        Pending Approval
-                        {(pendingData?.pagination?.total ?? 0) > 0 && (
-                            <Badge variant="destructive" className="ml-2">
-                                {pendingData?.pagination?.total}
-                            </Badge>
-                        )}
-                    </button>
-                    <button
                         onClick={() => setActiveTab('replies')}
                         className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                             activeTab === 'replies'
