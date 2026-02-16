@@ -311,12 +311,12 @@ function ThreadModerationSection({ className }: ThreadModerationSectionProps) {
                                     />
                                 </div>
                             </div>
-                            <Select value={selectedCategory || ""} onValueChange={setSelectedCategory}>
+                            <Select value={selectedCategory || "all"} onValueChange={(value) => setSelectedCategory(value === "all" ? "" : value)}>
                                 <SelectTrigger className="w-full sm:w-48">
                                     <SelectValue placeholder="All Categories" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="">All Categories</SelectItem>
+                                    <SelectItem value="all">All Categories</SelectItem>
                                     {categories?.map((category) => (
                                         <SelectItem key={category._id} value={category._id}>
                                             {category.name}
@@ -324,12 +324,12 @@ function ThreadModerationSection({ className }: ThreadModerationSectionProps) {
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <Select value={statusFilter || ""} onValueChange={setStatusFilter}>
+                            <Select value={statusFilter || "all"} onValueChange={(value) => setStatusFilter(value === "all" ? "" : value)}>
                                 <SelectTrigger className="w-full sm:w-48">
                                     <SelectValue placeholder="All Status" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="">All Status</SelectItem>
+                                    <SelectItem value="all">All Status</SelectItem>
                                     <SelectItem value="pending">Pending Approval</SelectItem>
                                     <SelectItem value="approved">Approved</SelectItem>
                                     <SelectItem value="pinned">Pinned</SelectItem>
