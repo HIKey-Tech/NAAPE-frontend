@@ -46,16 +46,16 @@ import {
     useDeleteThread,
     useBulkThreadActions,
     useApproveThread,
-    useRejectThread,
-    useAdminForumCategories
+    useRejectThread
 } from "@/hooks/useThreadModeration";
+import { useAdminForumCategories } from "@/hooks/useAdminForumCategories";
 import { AdminForumThread } from "@/app/api/admin/forum";
 import { ReplyModerationSection } from "./ReplyModerationSection";
 
 interface ThreadModerationSectionProps {
     className?: string;
 }
-export function ThreadModerationSection({ className }: ThreadModerationSectionProps) {
+function ThreadModerationSection({ className }: ThreadModerationSectionProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [statusFilter, setStatusFilter] = useState<string>("");
@@ -80,7 +80,7 @@ export function ThreadModerationSection({ className }: ThreadModerationSectionPr
         limit: 20,
         search: searchTerm || undefined,
         category: selectedCategory || undefined,
-        status: statusFilter as any || undefined,
+        status: (statusFilter as 'pending' | 'approved' | 'pinned' | 'locked') || undefined,
     });
     const { data: pendingData, isLoading: pendingLoading } = usePendingApprovals({
         page: currentPage,
@@ -311,7 +311,7 @@ export function ThreadModerationSection({ className }: ThreadModerationSectionPr
                                     />
                                 </div>
                             </div>
-                            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                            <Select value={selectedCategory || ""} onValueChange={setSelectedCategory}>
                                 <SelectTrigger className="w-full sm:w-48">
                                     <SelectValue placeholder="All Categories" />
                                 </SelectTrigger>
@@ -324,7 +324,7 @@ export function ThreadModerationSection({ className }: ThreadModerationSectionPr
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <Select value={statusFilter} onValueChange={setStatusFilter}>
+                            <Select value={statusFilter || ""} onValueChange={setStatusFilter}>
                                 <SelectTrigger className="w-full sm:w-48">
                                     <SelectValue placeholder="All Status" />
                                 </SelectTrigger>

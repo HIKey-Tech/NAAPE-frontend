@@ -238,13 +238,3 @@ export const useBulkReplyActions = () => {
         },
     });
 };
-
-// ============ ADMIN CATEGORIES ============
-
-export const useAdminForumCategories = () => {
-    return useQuery<ForumCategory[]>({
-        queryKey: ["admin-forum-categories"],
-        queryFn: getAllCategoriesAdmin,
-        staleTime: 60000, // 1 minute
-    });
-};

@@ -94,7 +94,7 @@ export const getPendingApprovals = async (params?: {
     page?: number;
     limit?: number;
 }): Promise<{ data: AdminForumThread[]; pagination: any }> => {
-    const response = await axios.get("/admin/forum/threads/pending", { params });
+    const response = await axios.get("/admin/forum/threads/pending-approvals", { params });
     return response.data;
 };
 

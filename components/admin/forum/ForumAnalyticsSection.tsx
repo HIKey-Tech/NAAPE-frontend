@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { format, subDays } from "date-fns";
 import useForumAnalytics from "@/hooks/useForumAnalytics";
-import useCategoryManagement from "@/hooks/useCategoryManagement";
+import { useAdminForumCategories } from "@/hooks/useAdminForumCategories";
 
 const ForumAnalyticsSection: React.FC = () => {
     const {
@@ -42,7 +42,7 @@ const ForumAnalyticsSection: React.FC = () => {
         exportAnalytics
     } = useForumAnalytics();
 
-    const { categories } = useCategoryManagement();
+    const { data: categories } = useAdminForumCategories();
 
     // Filter states
     const [dateFrom, setDateFrom] = useState<string>("");
@@ -245,13 +245,13 @@ const ForumAnalyticsSection: React.FC = () => {
                             </div>
                             <div>
                                 <Label htmlFor="category">Category</Label>
-                                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                                <Select value={selectedCategory || ""} onValueChange={setSelectedCategory}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="All categories" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="">All categories</SelectItem>
-                                        {categories.map((category) => (
+                                        {(categories || []).map((category) => (
                                             <SelectItem key={category._id} value={category._id}>
                                                 {category.name}
                                             </SelectItem>
@@ -306,7 +306,7 @@ const ForumAnalyticsSection: React.FC = () => {
                                 )}
                                 {selectedCategory && (
                                     <Badge variant="secondary">
-                                        Category: {categories.find(c => c._id === selectedCategory)?.name}
+                                        Category: {(categories || []).find(c => c._id === selectedCategory)?.name}
                                     </Badge>
                                 )}
                             </div>
