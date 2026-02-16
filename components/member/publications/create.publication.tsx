@@ -126,7 +126,7 @@ const CreatePublicationComponent: React.FC = () => {
       title: values.title.trim(),
       content: values.content.trim(),
       category: values.category,
-      status: "pending",
+      // Don't send status - let backend determine based on user role
     };
 
     try {
@@ -134,7 +134,7 @@ const CreatePublicationComponent: React.FC = () => {
       formData.append("title", payload.title);
       formData.append("content", payload.content);
       formData.append("category", payload.category);
-      formData.append("status", payload.status);
+      // Don't append status - backend will set it based on user role
 
       if (file instanceof File) {
         formData.append("image", file);
@@ -146,7 +146,9 @@ const CreatePublicationComponent: React.FC = () => {
         <div>
           <div className="font-bold mb-1">Publication submitted!</div>
           <div className="text-sm text-[#244]">
-            Your publication has been submitted and is awaiting approval.
+            {isAdmin 
+              ? "Your publication has been published successfully."
+              : "Your publication has been submitted and is awaiting approval."}
           </div>
         </div>
       );
