@@ -49,7 +49,7 @@ const useCategoryManagement = () => {
         try {
             setIsLoading(true);
             setError(null);
-            const response = await axios.get("/api/v1/admin/forum/categories");
+            const response = await axios.get("/admin/forum/categories");
             setCategories(response.data.data);
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || "Failed to fetch categories";
@@ -65,7 +65,7 @@ const useCategoryManagement = () => {
         try {
             setIsCreating(true);
             setError(null);
-            const response = await axios.post("/api/v1/admin/forum/categories", categoryData);
+            const response = await axios.post("/admin/forum/categories", categoryData);
             const newCategory = response.data.data;
             setCategories(prev => [...prev, newCategory].sort((a, b) => a.order - b.order));
             toast.success("Category created successfully");
@@ -85,7 +85,7 @@ const useCategoryManagement = () => {
         try {
             setIsUpdating(true);
             setError(null);
-            const response = await axios.put(`/api/v1/admin/forum/categories/${categoryId}`, updateData);
+            const response = await axios.put(`/admin/forum/categories/${categoryId}`, updateData);
             const updatedCategory = response.data.data;
             setCategories(prev => 
                 prev.map(cat => cat._id === categoryId ? updatedCategory : cat)
@@ -108,7 +108,7 @@ const useCategoryManagement = () => {
         try {
             setIsDeleting(true);
             setError(null);
-            await axios.delete(`/api/v1/admin/forum/categories/${categoryId}`, {
+            await axios.delete(`/admin/forum/categories/${categoryId}`, {
                 data: options
             });
             setCategories(prev => prev.filter(cat => cat._id !== categoryId));
@@ -129,7 +129,7 @@ const useCategoryManagement = () => {
         try {
             setIsReordering(true);
             setError(null);
-            const response = await axios.patch("/api/v1/admin/forum/categories/reorder", {
+            const response = await axios.patch("/admin/forum/categories/reorder", {
                 categoryOrders
             });
             const updatedCategories = response.data.data;
