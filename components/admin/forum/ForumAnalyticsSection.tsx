@@ -84,7 +84,7 @@ const ForumAnalyticsSection: React.FC = () => {
         const filters = {
             dateFrom: dateFrom || undefined,
             dateTo: dateTo || undefined,
-            categoryId: selectedCategory || undefined,
+            categoryId: selectedCategory === "all" ? undefined : selectedCategory || undefined,
             period: selectedPeriod
         };
 
@@ -97,7 +97,7 @@ const ForumAnalyticsSection: React.FC = () => {
     const resetFilters = () => {
         setDateFrom("");
         setDateTo("");
-        setSelectedCategory("");
+        setSelectedCategory("all");
         setSelectedPeriod("30");
         setQuickDateRange("");
         
@@ -111,7 +111,7 @@ const ForumAnalyticsSection: React.FC = () => {
         const filters = {
             dateFrom: dateFrom || undefined,
             dateTo: dateTo || undefined,
-            categoryId: selectedCategory || undefined
+            categoryId: selectedCategory === "all" ? undefined : selectedCategory || undefined
         };
         
         exportAnalytics(exportFormat, filters);
@@ -242,12 +242,12 @@ const ForumAnalyticsSection: React.FC = () => {
                             </div>
                             <div>
                                 <Label htmlFor="category">Category</Label>
-                                <Select value={selectedCategory || ""} onValueChange={setSelectedCategory}>
+                                <Select value={selectedCategory || "all"} onValueChange={setSelectedCategory}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="All categories" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="">All categories</SelectItem>
+                                        <SelectItem value="all">All categories</SelectItem>
                                         {(categories || []).map((category) => (
                                             <SelectItem key={category._id} value={category._id}>
                                                 {category.name}
