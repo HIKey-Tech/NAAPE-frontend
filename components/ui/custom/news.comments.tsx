@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useNewsComments, NewsComment } from "@/hooks/useNewsComments";
-import { useAuthStore } from "@/hook/store/useAuthStore";
+import { useAuth } from "@/context/authcontext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -191,14 +191,14 @@ const CommentItem: React.FC<CommentItemProps> = ({
 const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
     const router = useRouter();
     const { comments, loading, submitting, fetchComments, addComment, deleteComment } = useNewsComments(newsId);
-    const { user, hydrated } = useAuthStore();
+    const { user, loading: authLoading } = useAuth();
     const [commentText, setCommentText] = useState("");
 
     useEffect(() => {
-        if (newsId && user && hydrated) {
+        if (newsId && user && !authLoading) {
             fetchComments();
         }
-    }, [newsId, user, hydrated]);
+    }, [newsId, user, authLoading]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -232,7 +232,7 @@ const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
         router.push("/login");
     };
 
-    if (!hydrated) {
+    if (authLoading) {
         return (
             <div className="mt-8 text-center py-8">
                 <p className="text-gray-500">Loading...</p>
