@@ -1,12 +1,9 @@
+import AdminNewsLayout from "@/components/admin/news/AdminNewsLayout";
 
-import NewsCpmponent from "@/components/member/news";
-
-export default function NewsPage() {
-
-
+export default function AdminNewsPage() {
     return (
-        <main className="">
-            < NewsCpmponent />
+        <main>
+            <AdminNewsLayout />
         </main>
     );
 }
