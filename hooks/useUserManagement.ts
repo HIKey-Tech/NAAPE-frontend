@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { getForumUsers, banUserAdmin, unbanUserAdmin } from "@/app/api/admin/forum";
+import { getForumUsers, getForumUserMetrics, banUserAdmin, unbanUserAdmin, ForumUserMetrics } from "@/app/api/admin/forum";
 
 export interface ForumUser {
     _id: string;
@@ -35,6 +35,7 @@ export interface BanUserData {
 
 const useUserManagement = () => {
     const [users, setUsers] = useState<ForumUser[]>([]);
+    const [metrics, setMetrics] = useState<ForumUserMetrics | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isRestricting, setIsRestricting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -50,6 +51,15 @@ const useUserManagement = () => {
     const [totalUsers, setTotalUsers] = useState(0);
     
     const USERS_PER_PAGE = 20;
+
+    const fetchMetrics = useCallback(async () => {
+        try {
+            const response = await getForumUserMetrics();
+            setMetrics(response.data);
+        } catch (error: any) {
+            console.error("Error fetching metrics:", error);
+        }
+    }, []);
 
     const fetchUsers = useCallback(async () => {
         try {
@@ -73,11 +83,15 @@ const useUserManagement = () => {
                 params.status = statusFilter;
             }
             
-            const response = await getForumUsers(params);
+            const [usersResponse, metricsResponse] = await Promise.all([
+                getForumUsers(params),
+                getForumUserMetrics()
+            ]);
             
-            setUsers(response.data);
-            setTotalPages(response.pagination.pages);
-            setTotalUsers(response.pagination.total);
+            setUsers(usersResponse.data);
+            setTotalPages(usersResponse.pagination.pages);
+            setTotalUsers(usersResponse.pagination.total);
+            setMetrics(metricsResponse.data);
         } catch (error: any) {
             console.error("Error fetching users:", error);
             setError(error.response?.data?.message || "Failed to fetch users");
@@ -142,6 +156,7 @@ const useUserManagement = () => {
         // Data
         users,
         totalUsers,
+        metrics,
         
         // Loading states
         isLoading,
@@ -163,6 +178,7 @@ const useUserManagement = () => {
         
         // Actions
         fetchUsers,
+        fetchMetrics,
         banUser,
         unbanUser
     };

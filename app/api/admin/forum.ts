@@ -232,6 +232,23 @@ export interface UserRestrictionData {
 
 // ============ USER MANAGEMENT API ============
 
+export interface ForumUserMetrics {
+    totalUsers: number;
+    activeUsers: number;
+    restrictedUsers: number;
+    totalPosts: number;
+    breakdown: {
+        permanent: number;
+        temporary: number;
+        mute: number;
+    };
+}
+
+export const getForumUserMetrics = async (): Promise<{ data: ForumUserMetrics }> => {
+    const response = await axios.get("/admin/forum/users/metrics");
+    return response.data;
+};
+
 export const getForumUsers = async (params?: {
     page?: number;
     limit?: number;
@@ -501,6 +518,7 @@ export const adminForumAPI = {
     bulkReplyActions,
     
     // User management
+    getForumUserMetrics,
     getForumUsers,
     banUserAdmin,
     unbanUserAdmin,

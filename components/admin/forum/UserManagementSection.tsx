@@ -24,48 +24,15 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { ForumUser, UserRestrictionData } from "@/app/api/admin/forum";
+import { UserRestrictionData } from "@/app/api/admin/forum";
 import UserRestrictionModal from "./UserRestrictionModal";
-
-// Mock hook for now - will be implemented properly
-const useUserManagement = () => {
-    const [users] = useState<ForumUser[]>([]);
-    const [isLoading] = useState(false);
-    const [isRestricting] = useState(false);
-    const [error] = useState<string | null>(null);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [roleFilter, setRoleFilter] = useState("");
-    const [statusFilter, setStatusFilter] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages] = useState(1);
-
-    const fetchUsers = async () => {};
-    const banUser = async (userId: string, data: any) => {};
-    const unbanUser = async (userId: string, reason?: string) => {};
-
-    return {
-        users,
-        isLoading,
-        isRestricting,
-        error,
-        searchTerm,
-        roleFilter,
-        statusFilter,
-        currentPage,
-        totalPages,
-        fetchUsers,
-        banUser,
-        unbanUser,
-        setSearchTerm,
-        setRoleFilter,
-        setStatusFilter,
-        setCurrentPage
-    };
-};
+import useUserManagement, { ForumUser } from "@/hooks/useUserManagement";
 
 const UserManagementSection: React.FC = () => {
     const {
         users,
+        totalUsers,
+        metrics,
         isLoading,
         isRestricting,
         error,
@@ -231,7 +198,7 @@ const UserManagementSection: React.FC = () => {
                         <FaUsers className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{users.length}</div>
+                        <div className="text-2xl font-bold">{metrics?.totalUsers || 0}</div>
                         <p className="text-xs text-muted-foreground">
                             Registered members
                         </p>
@@ -245,7 +212,7 @@ const UserManagementSection: React.FC = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-green-600">
-                            {users.filter((user: ForumUser) => !isUserRestricted(user)).length}
+                            {metrics?.activeUsers || 0}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             No restrictions
@@ -260,7 +227,7 @@ const UserManagementSection: React.FC = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-red-600">
-                            {users.filter((user: ForumUser) => isUserRestricted(user)).length}
+                            {metrics?.restrictedUsers || 0}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             Banned/suspended/muted
@@ -275,9 +242,7 @@ const UserManagementSection: React.FC = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {users.reduce((sum: number, user: ForumUser) => 
-                                sum + (user.forumActivity?.threadCount || 0) + (user.forumActivity?.replyCount || 0), 0
-                            )}
+                            {metrics?.totalPosts || 0}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             Threads + replies
