@@ -209,7 +209,9 @@ const useCategoryManagement = () => {
     const getCategoriesWithCounts = () => {
         return categories.map(category => ({
             ...category,
-            totalPosts: category.threadCount + category.replyCount
+            threadCount: category.threadCount || 0,
+            replyCount: category.replyCount || 0,
+            totalPosts: (category.threadCount || 0) + (category.replyCount || 0)
         }));
     };
 
