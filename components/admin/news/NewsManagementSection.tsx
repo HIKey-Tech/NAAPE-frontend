@@ -145,23 +145,29 @@ export function NewsManagementSection() {
                     />
                 </div>
 
-                <Select value={filters.status || ""} onValueChange={(v) => handleFilterChange("status", v)}>
+                <Select 
+                    value={filters.status || "all"} 
+                    onValueChange={(v) => handleFilterChange("status", v === "all" ? "" : v)}
+                >
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="All Status" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="">All Status</SelectItem>
+                        <SelectItem value="all">All Status</SelectItem>
                         <SelectItem value="published">Published</SelectItem>
                         <SelectItem value="draft">Draft</SelectItem>
                     </SelectContent>
                 </Select>
 
-                <Select value={filters.category || ""} onValueChange={(v) => handleFilterChange("category", v)}>
+                <Select 
+                    value={filters.category || "all"} 
+                    onValueChange={(v) => handleFilterChange("category", v === "all" ? "" : v)}
+                >
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="All Categories" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="">All Categories</SelectItem>
+                        <SelectItem value="all">All Categories</SelectItem>
                         <SelectItem value="Engineering">Engineering</SelectItem>
                         <SelectItem value="Pilot">Pilot</SelectItem>
                         <SelectItem value="General">General</SelectItem>
