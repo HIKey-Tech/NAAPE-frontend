@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreateCategoryData, UpdateCategoryData, Category } from "@/hooks/useCategoryManagement";
+import { CreateCategoryData, Category } from "@/hooks/useCategoryManagement";
 
 interface CategoryModalProps {
     isOpen: boolean;
@@ -29,12 +29,9 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        slug: '',
-        icon: '',
-        order: 0
+        icon: ''
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [isAutoSlug, setIsAutoSlug] = useState(true);
 
     // Initialize form data
     useEffect(() => {
@@ -42,48 +39,24 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
             setFormData({
                 name: initialData.name,
                 description: initialData.description,
-                slug: initialData.slug,
-                icon: initialData.icon || '',
-                order: initialData.order
+                icon: initialData.icon || ''
             });
-            setIsAutoSlug(false);
         } else {
             setFormData({
                 name: '',
                 description: '',
-                slug: '',
-                icon: '',
-                order: 0
+                icon: ''
             });
-            setIsAutoSlug(true);
         }
         setErrors({});
     }, [initialData, isOpen]);
 
-    // Auto-generate slug from name
-    useEffect(() => {
-        if (isAutoSlug && formData.name) {
-            const slug = formData.name
-                .toLowerCase()
-                .trim()
-                .replace(/[^\w\s-]/g, '')
-                .replace(/[\s_-]+/g, '-')
-                .replace(/^-+|-+$/g, '');
-            setFormData(prev => ({ ...prev, slug }));
-        }
-    }, [formData.name, isAutoSlug]);
-
-    const handleInputChange = (field: string, value: string | number) => {
+    const handleInputChange = (field: string, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
         
         // Clear error when user starts typing
         if (errors[field]) {
             setErrors(prev => ({ ...prev, [field]: '' }));
-        }
-
-        // Disable auto-slug if user manually edits slug
-        if (field === 'slug') {
-            setIsAutoSlug(false);
         }
     };
 
@@ -104,18 +77,6 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
             newErrors.description = 'Category description must be 500 characters or less';
         }
 
-        // Slug validation
-        if (!formData.slug.trim()) {
-            newErrors.slug = 'Category slug is required';
-        } else if (!/^[a-z0-9-]+$/.test(formData.slug)) {
-            newErrors.slug = 'Slug can only contain lowercase letters, numbers, and hyphens';
-        }
-
-        // Order validation
-        if (formData.order < 0) {
-            newErrors.order = 'Order must be a non-negative number';
-        }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -127,12 +88,20 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
             return;
         }
 
+        // Auto-generate slug from name
+        const slug = formData.name
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+
         const submitData = {
             name: formData.name.trim(),
             description: formData.description.trim(),
-            slug: formData.slug.trim(),
+            slug: slug,
             icon: formData.icon.trim() || undefined,
-            order: formData.order
+            order: initialData?.order || 0 // Keep existing order or default to 0
         };
 
         const result = await onSubmit(submitData);
@@ -203,27 +172,6 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
                             </p>
                         </div>
 
-                        {/* Category Slug */}
-                        <div className="space-y-2">
-                            <Label htmlFor="slug">URL Slug *</Label>
-                            <Input
-                                id="slug"
-                                type="text"
-                                value={formData.slug}
-                                onChange={(e) => handleInputChange('slug', e.target.value)}
-                                placeholder="category-url-slug"
-                                disabled={isLoading}
-                                className={errors.slug ? 'border-red-500' : ''}
-                            />
-                            {errors.slug && (
-                                <p className="text-sm text-red-600">{errors.slug}</p>
-                            )}
-                            <p className="text-xs text-gray-500">
-                                Used in URLs. Only lowercase letters, numbers, and hyphens allowed.
-                                {isAutoSlug && " (Auto-generated from name)"}
-                            </p>
-                        </div>
-
                         {/* Category Icon */}
                         <div className="space-y-2">
                             <Label htmlFor="icon">Icon (Optional)</Label>
@@ -238,27 +186,6 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
                             />
                             <p className="text-xs text-gray-500">
                                 Emoji or short icon text to display with the category
-                            </p>
-                        </div>
-
-                        {/* Display Order */}
-                        <div className="space-y-2">
-                            <Label htmlFor="order">Display Order</Label>
-                            <Input
-                                id="order"
-                                type="number"
-                                min="0"
-                                value={formData.order}
-                                onChange={(e) => handleInputChange('order', parseInt(e.target.value) || 0)}
-                                placeholder="0"
-                                disabled={isLoading}
-                                className={errors.order ? 'border-red-500' : ''}
-                            />
-                            {errors.order && (
-                                <p className="text-sm text-red-600">{errors.order}</p>
-                            )}
-                            <p className="text-xs text-gray-500">
-                                Lower numbers appear first. Leave as 0 to add at the end.
                             </p>
                         </div>
 

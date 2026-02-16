@@ -266,7 +266,7 @@ const CategoryManagementSection: React.FC = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {categoriesWithCounts.reduce((sum, cat) => sum + cat.threadCount, 0)}
+                            {categoriesWithCounts.reduce((sum, cat) => sum + (cat.threadCount || 0), 0)}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             Across all categories
@@ -281,7 +281,7 @@ const CategoryManagementSection: React.FC = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {categoriesWithCounts.reduce((sum, cat) => sum + cat.replyCount, 0)}
+                            {categoriesWithCounts.reduce((sum, cat) => sum + (cat.replyCount || 0), 0)}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             Across all categories
@@ -296,22 +296,22 @@ const CategoryManagementSection: React.FC = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {categoriesWithCounts.length > 0 
-                                ? categoriesWithCounts.reduce((max, cat) => 
-                                    cat.totalPosts > max.totalPosts ? cat : max
-                                  ).name.substring(0, 10) + (categoriesWithCounts.reduce((max, cat) => 
-                                    cat.totalPosts > max.totalPosts ? cat : max
-                                  ).name.length > 10 ? '...' : '')
-                                : 'None'
-                            }
+                            {(() => {
+                                const mostActive = categoriesWithCounts
+                                    .filter(cat => (cat.totalPosts || 0) > 0)
+                                    .sort((a, b) => (b.totalPosts || 0) - (a.totalPosts || 0))[0];
+                                return mostActive 
+                                    ? (mostActive.name.length > 12 ? mostActive.name.substring(0, 12) + '...' : mostActive.name)
+                                    : 'None';
+                            })()}
                         </div>
                         <p className="text-xs text-muted-foreground">
-                            {categoriesWithCounts.length > 0 
-                                ? `${categoriesWithCounts.reduce((max, cat) => 
-                                    cat.totalPosts > max.totalPosts ? cat : max
-                                  ).totalPosts} posts`
-                                : 'No activity'
-                            }
+                            {(() => {
+                                const mostActive = categoriesWithCounts
+                                    .filter(cat => (cat.totalPosts || 0) > 0)
+                                    .sort((a, b) => (b.totalPosts || 0) - (a.totalPosts || 0))[0];
+                                return mostActive ? `${mostActive.totalPosts || 0} posts` : 'No activity';
+                            })()}
                         </p>
                     </CardContent>
                 </Card>
