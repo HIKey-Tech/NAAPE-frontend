@@ -75,12 +75,6 @@ const CreatePublicationComponent: React.FC = () => {
   // For non-admins, check subscription status
   const hasActiveSubscription = isAdmin ? true : (subscriptionStatus?.hasSubscription || false);
 
-  console.log("🔍 [CREATE PUBLICATION] User role:", user?.role);
-  console.log("🔍 [CREATE PUBLICATION] Is admin:", isAdmin);
-  console.log("🔍 [CREATE PUBLICATION] Has subscription:", subscriptionStatus?.hasSubscription);
-  console.log("🔍 [CREATE PUBLICATION] Has active subscription:", hasActiveSubscription);
-  console.log("🔍 [CREATE PUBLICATION] Auth loading:", authLoading);
-
   // Wait for auth to load and subscription to load before showing banner
   const showSubscriptionCheck = !authLoading && !subscriptionLoading && !isAdmin;
 
