@@ -18,19 +18,9 @@ import { useCreateEvent } from "@/hooks/useEvents";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import DropImageDual from "@/components/member/component/drop.image";
 import { toast } from "sonner";
-import { MdSmartToy, MdAdd, MdImage, MdEvent, MdLocationOn, MdOutlineAttachMoney } from "react-icons/md";
+import { MdAdd, MdImage, MdEvent, MdLocationOn, MdOutlineAttachMoney } from "react-icons/md";
 import { FaRegMoneyBillAlt } from "react-icons/fa";
 import { AiOutlineCheckSquare } from "react-icons/ai";
-
-// --- AI Suggest Title function ---
-async function suggestTitles(content: string) {
-  const res = await fetch("/api/suggest-title", {
-    method: "POST",
-    body: JSON.stringify({ text: content }),
-  });
-  const data = await res.json();
-  return data.titles;
-}
 
 // --- Validation Schema ---
 const eventSchema = z.object({
@@ -97,11 +87,6 @@ const CreateEvent: React.FC = () => {
   const [imageLoading] = useState(false);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
 
-  // --- AI Suggest Title State ---
-  const [suggesting, setSuggesting] = useState(false);
-  const [suggestedTitles, setSuggestedTitles] = useState<string[]>([]);
-  const [suggestError, setSuggestError] = useState<string | null>(null);
-
   const router = useRouter();
 
   const form = useForm<EventFormValues>({
@@ -123,37 +108,6 @@ const CreateEvent: React.FC = () => {
     },
     [form]
   );
-
-  // Handle Suggest Title button click
-  const handleSuggestClick = async () => {
-    setSuggestError(null);
-    setSuggesting(true);
-    setSuggestedTitles([]);
-    try {
-      const description = form.watch("description")?.toString() || "";
-      if (!description || description.trim().length < 8) {
-        setSuggestError("Add some event description for creative title suggestions.");
-        setSuggesting(false);
-        return;
-      }
-      const titles = await suggestTitles(description);
-      if (!titles || !Array.isArray(titles) || titles.length === 0) {
-        setSuggestError("No suggestions found.");
-      } else {
-        setSuggestedTitles(titles);
-      }
-    } catch (e) {
-      setSuggestError("You're out of credit");
-    }
-    setSuggesting(false);
-  };
-
-  // Handle clicking a suggestion
-  const handleTitleSuggestion = (title: string) => {
-    form.setValue("title", title, { shouldValidate: true, shouldDirty: true });
-    setSuggestedTitles([]);
-    setSuggestError(null);
-  };
 
   const PRIMARY = "var(--primary)"
   // Handle submit
@@ -251,18 +205,6 @@ const CreateEvent: React.FC = () => {
               </div>
 
               <FormSection>
-                {/* AI SUGGESTION TOOL HIGHLIGHT */}
-                <div className="mb-1.5 select-none">
-                  <div className="flex items-center gap-2 mb-1 pl-0.5">
-                    <MdSmartToy className="text-xl text-[#7d47fa]" aria-label="AI" />
-                    <span className="font-bold text-base sm:text-lg text-[var(--primary-dark, #2d325a)] tracking-tight leading-tight">
-                      Creative spark: Name your event with AI!
-                    </span>
-                  </div>
-                  <div className="text-xs text-[#6e6aa0] mb-1 ml-8 italic bg-[#f8f6fc] px-3 py-1.5 border border-[#eee7fb] rounded">
-                    Describe your event below then tap <b className="text-[#895ee7] font-semibold">AI Suggest</b> for unique titles.
-                  </div>
-                </div>
                 <FormField
                   control={form.control}
                   name="title"
@@ -275,66 +217,15 @@ const CreateEvent: React.FC = () => {
                         </span>
                       </FormLabel>
                       <FormControl>
-                        <div className="flex items-stretch sm:items-center gap-1 sm:gap-2 border border-[var(--primary-a30,#efe3fe)] bg-white rounded-md overflow-hidden">
-                          <Input
-                            {...field}
-                            placeholder="e.g. Tech Summit 2024"
-                            maxLength={80}
-                            disabled={uploading}
-                            autoFocus
-                            className="text-[15px] px-4 py-2 bg-transparent border-0 focus:ring-0 text-[var(--primary-text, #211151)] font-semibold flex-1"
-                          />
-                          <button
-                            type="button"
-                            disabled={uploading || suggesting}
-                            onClick={handleSuggestClick}
-                            className={`
-                              inline-flex items-center px-3 py-2 text-xs sm:text-sm font-bold border-l border-[#E6D8FB]
-                              bg-[#f6f5fa]
-                              text-[#7d47fa] transition
-                              disabled:opacity-70 disabled:cursor-not-allowed
-                              focus:outline-none
-                            `}
-                            style={{
-                              minWidth: 110,
-                            }}
-                            title="Suggest titles with AI"
-                          >
-                            {suggesting ? (
-                              <>
-                                <span className="animate-spin mr-1">&#8635;</span>
-                                Suggesting...
-                              </>
-                            ) : (
-                              <>
-                                <MdSmartToy className="mr-1 text-base" aria-label="AI" />
-                                <span className="hidden xs:inline">AI Suggest</span>
-                                <span className="xs:hidden">AI</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
+                        <Input
+                          {...field}
+                          placeholder="e.g. Tech Summit 2024"
+                          maxLength={80}
+                          disabled={uploading}
+                          autoFocus
+                          className="text-[15px] px-4 py-2 rounded-md border border-[var(--primary-a30,#efe3fe)] focus:border-[var(--primary,#705cfa)] bg-white transition text-[var(--primary-text, #211151)] font-semibold"
+                        />
                       </FormControl>
-                      {suggestError && (
-                        <div className="text-xs text-[#c72732] bg-[#fff4f6] border border-[#fcced7] px-3 py-1.5 mt-2 rounded font-bold flex items-center gap-2">
-                          <span role="img" aria-label="warn">⚠️</span>
-                          {suggestError}
-                        </div>
-                      )}
-                      {suggestedTitles.length > 0 && (
-                        <div className="mt-4 flex flex-wrap gap-2 bg-[var(--primary-bg-light, #faf9ff)] border border-[var(--primary-a40,#e2dcfb)] rounded px-3 py-2">
-                          {suggestedTitles.slice(0, 5).map((title, idx) => (
-                            <button
-                              type="button"
-                              key={idx}
-                              onClick={() => handleTitleSuggestion(title)}
-                              className="transition border border-transparent bg-[var(--primary-a10,#f4f1fd)] hover:bg-[var(--primary-a20,#f9eafd)] text-[var(--primary-dark, #6244b2)] rounded px-3 py-1 text-xs font-bold"
-                            >
-                              <span className="truncate">{title}</span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
                       <FormMessage className="text-xs mt-1" />
                     </FormItem>
                   )}
@@ -345,8 +236,8 @@ const CreateEvent: React.FC = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <span className="text-[15px] font-bold text-[#5740c0] uppercase tracking-wide flex items-center gap-1">
-                          <MdSmartToy /> Description
+                        <span className="text-[15px] font-bold text-[#5740c0] uppercase tracking-wide">
+                          Description
                         </span>
                       </FormLabel>
                       <FormControl>
