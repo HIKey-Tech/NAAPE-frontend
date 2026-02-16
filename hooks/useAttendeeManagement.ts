@@ -34,7 +34,7 @@ export function useAttendeeManagement(): UseAttendeeManagementReturn {
                 setLoading(true);
                 setError(null);
                 const response = await getEventsForAttendeeManagement();
-                setEvents(response.events || []);
+                setEvents(response.data || response.events || []);
             } catch (err: any) {
                 setError(err.message || 'Failed to fetch events');
                 console.error('Error fetching events:', err);
