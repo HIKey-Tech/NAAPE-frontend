@@ -13,7 +13,8 @@ import {
     FaUserFriends,
     FaMoneyBillAlt,
     FaRegIdBadge,
-    FaNewspaper
+    FaNewspaper,
+    FaEnvelope
 } from "react-icons/fa";
 import {
     FaUsers,
@@ -119,6 +120,13 @@ const userManagementLinks: NavLink[] = [
 ];
 const contentLinks: NavLink[] = [
     // Forum is now handled by ForumDropdown component
+    {
+        label: "Communications",
+        icon: FaEnvelope,
+        href: "/admin/communications",
+        group: "Content",
+        description: "Send emails to all members"
+    },
 ];
 const publicationsDropdownLinks: NavLink[] = [
     {
