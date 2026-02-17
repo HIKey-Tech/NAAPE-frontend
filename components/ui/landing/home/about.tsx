@@ -26,14 +26,7 @@ export default function AboutSection() {
                             className="object-cover w-full h-full opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"
                         />
                         {/* Video play button overlay */}
-                        <button
-                            aria-label="Play Video"
-                            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-full p-5 flex items-center justify-center border border-white/40 transition-all duration-300 hover:scale-110 group-hover:shadow-[0_0_40px_rgba(255,255,255,0.3)]"
-                        >
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="white" className="ml-1">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                        </button>
+
                     </div>
                 </div>
 

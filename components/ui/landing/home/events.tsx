@@ -88,7 +88,7 @@ export default function UpcomingEvents() {
 
             <div className="flex justify-center mt-12">
                 <Link href="/events">
-                    <NaapButton className="bg-primary hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-full flex items-center gap-2 shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                    <NaapButton className="bg-primary border-2 border-transparent hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-full flex items-center gap-2 shadow-lg hover:shadow-xl transition-all hover:scale-105">
                         View All Events <ArrowRight size={18} />
                     </NaapButton>
                 </Link>

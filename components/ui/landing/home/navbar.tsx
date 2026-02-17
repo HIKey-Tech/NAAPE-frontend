@@ -100,7 +100,7 @@ export default function TopNavbar() {
   }
 
   return (
-    <nav className={`w-full sticky top-0 left-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white/95 backdrop-blur-md shadow-md py-2 min-h-[64px] sm:min-h-[72px]" : "bg-transparent py-4 min-h-[80px] sm:min-h-[90px]"}`}>
+    <nav className={`w-full fixed top-0 left-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white/95 backdrop-blur-md shadow-md py-2 min-h-[64px] sm:min-h-[72px]" : "bg-transparent py-4 min-h-[80px] sm:min-h-[90px]"}`}>
       <div className="w-full max-w-[1400px] mx-auto px-4 md:px-8 flex items-center justify-between relative">
 
         {/* Logo Section - Left Aligned */}

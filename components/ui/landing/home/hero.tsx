@@ -95,7 +95,7 @@ export default function Hero() {
             </div>
 
             <main className="relative z-10 w-full max-w-7xl mx-auto px-6 py-24 md:py-0 min-h-screen flex flex-col justify-center">
-                <div className="flex flex-col items-start justify-center text-left w-full pl-4 md:pl-16 lg:pl-24">
+                <div className="flex flex-col items-start justify-center text-left w-full">
                     {/* Left Aligned Content */}
                     <motion.div
                         className="flex flex-col items-start gap-6 max-w-5xl"
