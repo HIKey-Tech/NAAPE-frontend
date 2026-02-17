@@ -96,10 +96,10 @@ export default function Hero() {
             </div>
 
             <main className="relative z-10 w-full max-w-7xl mx-auto px-6 py-20 md:py-0 min-h-screen flex flex-col justify-center">
-                <div className="flex flex-col items-start text-left max-w-4xl mr-auto gap-8">
+                <div className="flex flex-col items-center text-center max-w-4xl mx-auto gap-8">
 
                     <motion.div
-                        className="flex flex-col items-start gap-6"
+                        className="flex flex-col items-center gap-6"
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
@@ -143,7 +143,7 @@ export default function Hero() {
                     </motion.div>
 
                     <motion.div
-                        className="flex flex-col sm:flex-row gap-4 w-full justify-start mt-4"
+                        className="flex flex-col sm:flex-row gap-4 w-full justify-center mt-4"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.7, duration: 0.5 }}
