@@ -53,6 +53,16 @@ export default function TopNavbar() {
     if (typeof window !== "undefined") setActive(window.location.pathname);
   }, []);
 
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   function getInitials(name?: string) {
     if (!name) return "U";
     const names = name.trim().split(" ");
@@ -60,11 +70,14 @@ export default function TopNavbar() {
     return initials.toUpperCase();
   }
 
-  // Modern reduced-noise link style
-  const baseMenuLink =
-    "px-3 py-2 text-[14px] font-bold text-gray-600 transition-all duration-300 hover:text-primary hover:bg-primary/5 rounded-full flex items-center justify-center h-full text-center tracking-tight min-w-0 truncate";
-  const activeMenuLink =
-    "text-primary bg-primary/10";
+  // Modern reduced-noise link style - Dynamic based on scroll
+  const getMenuLinkClass = (isActive: boolean) => {
+    const base = "px-3 py-2 text-[14px] font-bold transition-all duration-300 rounded-full flex items-center justify-center h-full text-center tracking-tight min-w-0 truncate";
+    const color = isScrolled
+      ? (isActive ? "text-primary bg-primary/10" : "text-gray-600 hover:text-primary hover:bg-primary/5")
+      : (isActive ? "text-white bg-white/20" : "text-white/90 hover:text-white hover:bg-white/10");
+    return `${base} ${color}`;
+  };
 
   // Improved Login Button Handler (for Desktop Nav)
   const handleLoginClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -96,7 +109,12 @@ export default function TopNavbar() {
   };
 
   return (
-    <nav className="w-full sticky top-0 left-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100 flex items-center justify-center relative transition-all duration-300 shadow-sm">
+    <nav
+      className={`w-full fixed top-0 left-0 z-50 flex items-center justify-center relative transition-all duration-300 ${isScrolled
+          ? "bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm"
+          : "bg-transparent border-b border-transparent"
+        }`}
+    >
       {/* Outer centered container, limit width */}
       <div className={`w-full flex flex-col items-center justify-center`}>
         {/* Main navbar row: set max-w and responsive px, hide overflow */}
@@ -125,23 +143,29 @@ export default function TopNavbar() {
                   className="object-contain h-[40px] w-[40px] xs:h-[46px] xs:w-[46px] sm:h-[48px] sm:w-[48px] drop-shadow-sm hover:scale-105 transition-transform duration-300"
                   priority
                 />
-                <span className="ml-2 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600 dark:to-blue-400 sm:ml-3 text-[16px] xs:text-[18px] sm:text-[20px] font-extrabold tracking-tight uppercase hidden sm:inline whitespace-nowrap leading-none group-hover:opacity-80 transition-opacity min-w-0 text-center">
+                <span className={`ml-2 sm:ml-3 text-[16px] xs:text-[18px] sm:text-[20px] font-extrabold tracking-tight uppercase hidden sm:inline whitespace-nowrap leading-none group-hover:opacity-80 transition-opacity min-w-0 text-center ${isScrolled
+                    ? "bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600 dark:to-blue-400"
+                    : "text-white"
+                  }`}>
                   NAAPE
                 </span>
               </Link>
             </div>
             {/* Hamburger for mobile only */}
             <button
-              className="md:hidden ml-2 p-2 flex items-center justify-center rounded-xl border-2 border-[color:var(--primary)] bg-white focus-visible:ring-2 focus-visible:ring-[color:var(--primary)]"
+              className={`md:hidden ml-2 p-2 flex items-center justify-center rounded-xl border-2 focus-visible:ring-2 ${isScrolled
+                  ? "border-[color:var(--primary)] bg-white focus-visible:ring-[color:var(--primary)] text-[color:var(--primary)]"
+                  : "border-white/30 bg-white/10 focus-visible:ring-white text-white hover:bg-white/20"
+                }`}
               aria-label="Open main menu"
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav"
               onClick={() => setMobileOpen((prev) => !prev)}
             >
               {mobileOpen ? (
-                <X size={25} className="text-[color:var(--primary)]" />
+                <X size={25} className="text-current" />
               ) : (
-                <Menu size={23} className="text-[color:var(--primary)]" />
+                <Menu size={23} className="text-current" />
               )}
             </button>
           </div>
@@ -162,7 +186,7 @@ export default function TopNavbar() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className={`${baseMenuLink} ${active.startsWith("/about") ? activeMenuLink : ""}`}
+                    className={getMenuLinkClass(active.startsWith("/about"))}
                     tabIndex={0}
                   >
                     <span className="flex items-center gap-1 mx-auto justify-center min-w-0 truncate text-center w-full">
@@ -198,7 +222,7 @@ export default function TopNavbar() {
               {/* Membership */}
               <Link
                 href="/membership"
-                className={`${baseMenuLink} ${active === "/membership" ? activeMenuLink : ""} text-center flex justify-center`}
+                className={`${getMenuLinkClass(active === "/membership")} text-center flex justify-center`}
                 tabIndex={0}
                 style={{ minWidth: 0, maxWidth: "140px", textAlign: "center" }}
               >
@@ -210,7 +234,7 @@ export default function TopNavbar() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className={`${baseMenuLink} ${active.startsWith("/news") ? activeMenuLink : ""}`}
+                    className={getMenuLinkClass(active.startsWith("/news"))}
                     tabIndex={0}
                   >
                     <span className="flex items-center gap-1 mx-auto justify-center min-w-0 truncate text-center w-full">
@@ -233,7 +257,7 @@ export default function TopNavbar() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className={`${baseMenuLink} ${active.startsWith("/publications") ? activeMenuLink : ""}`}
+                    className={getMenuLinkClass(active.startsWith("/publications"))}
                     tabIndex={0}
                   >
                     <span className="flex items-center gap-1 mx-auto justify-center min-w-0 truncate text-center w-full">
@@ -259,7 +283,7 @@ export default function TopNavbar() {
               {/* Advertisement */}
               <Link
                 href="/advertisement"
-                className={`${baseMenuLink} ${active === "/advertisement" ? activeMenuLink : ""} text-center flex justify-center`}
+                className={`${getMenuLinkClass(active === "/advertisement")} text-center flex justify-center`}
                 style={{ minWidth: 0, maxWidth: "160px", textAlign: "center" }}
                 tabIndex={0}
               >
@@ -269,7 +293,7 @@ export default function TopNavbar() {
               {/* Gallery */}
               <Link
                 href="/gallery"
-                className={`${baseMenuLink} ${active === "/gallery" ? activeMenuLink : ""} text-center flex justify-center`}
+                className={`${getMenuLinkClass(active === "/gallery")} text-center flex justify-center`}
                 style={{ minWidth: 0, maxWidth: "100px", textAlign: "center" }}
                 tabIndex={0}
               >
@@ -279,7 +303,7 @@ export default function TopNavbar() {
               {/* Contact */}
               <Link
                 href="/contact"
-                className={`${baseMenuLink} ${active === "/contact" ? activeMenuLink : ""} text-center flex justify-center`}
+                className={`${getMenuLinkClass(active === "/contact")} text-center flex justify-center`}
                 style={{
                   position: "relative",
                   zIndex: 1,
@@ -312,7 +336,10 @@ export default function TopNavbar() {
                 <div className="flex items-center gap-1.5 min-w-0">
                   {/* Use a real button for login for instant UI feedback/click handling */}
                   <NaapButton
-                    className="py-2 px-5 rounded-full border border-gray-200 bg-white text-gray-700 hover:text-primary hover:border-primary hover:bg-primary/5 text-[14px] font-bold min-w-[90px] transition-all duration-300 shadow-sm hover:shadow-md"
+                    className={`py-2 px-5 rounded-full border text-[14px] font-bold min-w-[90px] transition-all duration-300 shadow-sm hover:shadow-md ${isScrolled
+                        ? "border-gray-200 bg-white text-gray-700 hover:text-primary hover:border-primary hover:bg-primary/5"
+                        : "border-white/30 bg-white/10 text-white hover:bg-white/20 hover:border-white/50 backdrop-blur-sm"
+                      }`}
                     style={{ letterSpacing: "0.02em" }}
                     onClick={handleLoginClick}
                     disabled={loginLoading}
@@ -332,17 +359,20 @@ export default function TopNavbar() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
-                      className="flex items-center gap-2 sm:gap-2.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-2xl bg-white border-2 border-[color:var(--primary)] font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] min-w-[44px] sm:min-w-[50px] transition h-full justify-center text-center"
+                      className={`flex items-center gap-2 sm:gap-2.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-2xl border-2 font-bold focus:outline-none min-w-[44px] sm:min-w-[50px] transition h-full justify-center text-center ${isScrolled
+                          ? "bg-white border-[color:var(--primary)] focus-visible:ring-[color:var(--primary)]"
+                          : "bg-white/10 border-white/20 hover:bg-white/20 focus-visible:ring-white text-white"
+                        }`}
                       aria-label="Open account menu"
                       type="button"
                     >
                       <span className="inline-flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-[color:var(--primary)] text-white font-extrabold text-xs sm:text-sm uppercase border-4 border-white">
                         {getInitials(user?.name)}
                       </span>
-                      <span className="text-[12px] sm:text-[13px] text-[color:var(--primary)] font-black max-w-[100px] sm:max-w-[130px] truncate hidden sm:inline tracking-wide uppercase text-center">
+                      <span className={`text-[12px] sm:text-[13px] font-black max-w-[100px] sm:max-w-[130px] truncate hidden sm:inline tracking-wide uppercase text-center ${isScrolled ? "text-[color:var(--primary)]" : "text-white"}`}>
                         {user?.name}
                       </span>
-                      <ChevronDown size={16} className="text-[color:var(--primary)] sm:w-[17px] sm:h-[17px]" />
+                      <ChevronDown size={16} className={`sm:w-[17px] sm:h-[17px] ${isScrolled ? "text-[color:var(--primary)]" : "text-white"}`} />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
