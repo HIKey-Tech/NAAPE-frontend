@@ -4,30 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import { NaapButton } from "@/components/ui/custom/button.naap";
-import {
-    FaArrowRight,
-    FaShieldAlt,
-    FaRegClock,
-    FaChalkboardTeacher,
-    FaUserFriends,
-} from "react-icons/fa";
+import { ArrowRight, Shield, Clock, GraduationCap, Users } from "lucide-react";
 import { motion } from "framer-motion";
-import { LegacyStatCard } from "@/components/ui/custom/legacy.card";
 
-// --- Ultra-Stable Typewriter Effect Hook ---
+// --- Typewriter Effect Hook ---
 function useTypewriter(
     text: string,
-    options: {
-        speed?: number; // time between characters (ms)
-        punctuationPause?: number; // extra pause after punctuation
-        onDone?: () => void;
-    } = {}
+    options: { speed?: number; punctuationPause?: number; onDone?: () => void } = {}
 ) {
     const { speed = 28, punctuationPause = 320, onDone } = options;
-
     const [displayed, setDisplayed] = useState("");
     const [done, setDone] = useState(false);
-
     const frameRef = useRef(0);
     const lastTimeRef = useRef(0);
     const iRef = useRef(0);
@@ -36,7 +23,6 @@ function useTypewriter(
         setDisplayed("");
         setDone(false);
         iRef.current = 0;
-        frameRef.current = 0;
         lastTimeRef.current = performance.now();
 
         const loop = (now: number) => {
@@ -45,192 +31,44 @@ function useTypewriter(
                 if (onDone) onDone();
                 return;
             }
-
             const dt = now - lastTimeRef.current;
-
-            // Only advance character after enough time passes
             if (dt >= speed) {
                 const char = text[iRef.current];
-
                 setDisplayed((prev) => prev + char);
                 iRef.current++;
                 lastTimeRef.current = now;
-
-                // Punctuation smart pause
                 if ([",", ".", "!", "?", ";", ":"].includes(char)) {
                     lastTimeRef.current += punctuationPause;
                 }
             }
-
             frameRef.current = requestAnimationFrame(loop);
         };
-
         frameRef.current = requestAnimationFrame(loop);
-
         return () => cancelAnimationFrame(frameRef.current);
     }, [text, speed, punctuationPause]);
 
     return { displayed, done };
 }
 
-// Animation variants
-const containerVariants = {
-    hidden: {},
-    show: {
-        transition: {
-            staggerChildren: 0.18,
-            delayChildren: 0.09,
-        },
-    },
-};
-
-const leftVariants = {
-    hidden: { opacity: 0, x: -36 },
-    show: {
-        opacity: 1,
-        x: 0,
-        transition: {
-            type: "spring" as const,
-            stiffness: 65,
-            damping: 12,
-            duration: 0.5,
-        },
-    },
-};
-
-const rightVariants = {
-    hidden: { opacity: 0, x: 40, scale: 0.95 },
-    show: {
-        opacity: 1,
-        x: 0,
-        scale: 1,
-        transition: {
-            type: "spring" as const,
-            stiffness: 66,
-            damping: 14,
-            duration: 0.5,
-        },
-    },
-};
-
-const headingVariants = {
-    hidden: { opacity: 0, y: 22 },
-    show: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            type: "spring" as const,
-            stiffness: 80,
-            damping: 12,
-            duration: 0.44,
-        },
-    },
-};
-
-const paragraphVariants = {
-    hidden: { opacity: 0, y: 18 },
-    show: {
-        opacity: 1,
-        y: 0,
-        transition: { delay: 0.06, duration: 0.38 },
-    },
-};
-
-const ctaVariants = {
-    hidden: { opacity: 0, y: 14 },
-    show: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            delay: 0.12,
-            duration: 0.32,
-            type: "spring" as const,
-            stiffness: 60,
-            damping: 13,
-        },
-    },
-};
-
-// Gallery images (remove slider, modern grid gallery)
-const IMAGES = [
-    {
-        src: "/images/event1.jpg",
-        alt: "Nigerian pilots in cockpit",
-    },
-    {
-        src: "/images/plane.jpg",
-        alt: "Cockpit controls",
-    },
-    {
-        src: "/images/loginpic.jpg",
-        alt: "Nigerian aviation crew group photo",
-    },
-    {
-        src: "/images/event2.jpg",
-        alt: "Engineers at hangar",
-    },
-    {
-        src: "/images/handplane.jpg",
-        alt: "Aircraft parked on tarmac",
-    },
-];
-
-// Stats section
-const stats = [
-    {
-        value: "100%",
-        label: (
-            <>
-                Safety <span className="hidden sm:inline">&amp;</span>
-                <span className="inline sm:hidden">&amp;</span> Compliance Advocacy
-            </>
-        ),
-        icon: (
-            <FaShieldAlt size={28} className="text-[#CA9414] dark:text-[#CA9414]" />
-        ),
-    },
-    {
-        value: "39+",
-        label: <>Years of Aviation Leadership</>,
-        icon: (
-            <FaRegClock size={28} className="text-primary" />
-        ),
-    },
-    {
-        value: "50+",
-        label: <>Training &amp; Development Programs</>,
-        icon: (
-            <FaChalkboardTeacher size={28} className="text-[#3970D8]" />
-        ),
-    },
-    {
-        value: "1200+",
-        label: <>Pilots &amp; Engineers Represented</>,
-        icon: (
-            <FaUserFriends size={28} className="text-primary" />
-        ),
-    },
-];
-
-// The string to type out
 const heroTypewriteText =
     "NAAPE unites and elevates aircraft pilots and engineers across Nigeria—advocating standards, safety, and professional excellence for every member in our aviation community.";
+
+const stats = [
+    { icon: Shield, value: "100%", label: "Safety Advocacy" },
+    { icon: Clock, value: "39+", label: "Years Leading" },
+    { icon: GraduationCap, value: "50+", label: "Training Programs" },
+    { icon: Users, value: "1200+", label: "Members Strong" },
+];
 
 export default function Hero() {
     const [showCursor, setShowCursor] = useState(true);
 
-    // Flashing cursor interval (pauses when finished typing)
     useEffect(() => {
         let interval: NodeJS.Timeout | null = null;
         if (showCursor) {
-            interval = setInterval(() => {
-                setShowCursor((v) => !v);
-            }, 540);
+            interval = setInterval(() => setShowCursor((v) => !v), 540);
         }
-        return () => {
-            if (interval) clearInterval(interval);
-            setShowCursor(true);
-        };
+        return () => { if (interval) clearInterval(interval); setShowCursor(true); };
     }, [showCursor]);
 
     const { displayed, done } = useTypewriter(heroTypewriteText, {
@@ -239,108 +77,71 @@ export default function Hero() {
         onDone: () => setShowCursor(false),
     });
 
-    // For accessibility: expose the full sentence after typing for screen readers
     const [srText, setSrText] = useState("");
-    useEffect(() => {
-        if (done) setSrText(heroTypewriteText);
-        else setSrText("");
-    }, [done]);
+    useEffect(() => { if (done) setSrText(heroTypewriteText); else setSrText(""); }, [done]);
 
-    // This wrapper ensures full viewport height and vertical/horizontal centering (minus safe paddings)
     return (
-        <section className="relative w-full min-h-screen flex flex-col items-center justify-center bg-background overflow-hidden px-4 py-4 md:py-12">
-            {/* Decorative aviation-themed background */}
-            <div
-                aria-hidden
-                className="absolute inset-0 z-0 flex justify-center items-center pointer-events-none"
-            >
-                <Image
-                    src="/images/handplane.jpg"
-                    alt=""
-                    fill
-                    className="object-cover opacity-10 md:opacity-15"
-                    priority
-                    draggable={false}
-                />
-            </div>
+        <section className="relative w-full min-h-screen flex flex-col items-center justify-center bg-[#f8fafc] overflow-hidden">
+            {/* Subtle background pattern */}
+            <div className="absolute inset-0 opacity-[0.03]" style={{
+                backgroundImage: "radial-gradient(circle, #000 1px, transparent 1px)",
+                backgroundSize: "24px 24px"
+            }} />
 
-            <main className="relative z-10 flex flex-1 flex-col justify-center items-center w-full max-w-7xl mx-auto h-full min-h-[60vh] py-6">
-                <motion.div
-                    className="
-                        flex flex-col md:flex-row items-center justify-center
-                        w-full gap-7 md:gap-12
-                        max-w-7xl mx-auto
-                        px-0 sm:px-4
-                    "
-                    style={{ minHeight: "none" }}
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="show"
-                >
-                    {/* Left: Headline & CTA */}
+            <main className="relative z-10 w-full max-w-7xl mx-auto px-6 py-20 md:py-0 min-h-screen flex flex-col justify-center">
+                <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+                    {/* Left: Content */}
                     <motion.div
-                        className="
-                            flex-1
-                            max-w-xl
-                            text-center md:text-left
-                            flex flex-col items-center md:items-start
-                            gap-5 md:gap-9
-                            justify-center
-                        "
-                        variants={leftVariants as any}
+                        className="flex-1 text-center lg:text-left flex flex-col items-center lg:items-start gap-6 max-w-2xl"
+                        initial={{ opacity: 0, x: -30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6 }}
                     >
                         <motion.h1
-                            className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1] mb-4"
-                            variants={headingVariants as any}
+                            className="text-4xl sm:text-5xl md:text-[3.5rem] lg:text-6xl font-black tracking-tight leading-[1.08]"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1, duration: 0.5 }}
                         >
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-blue-700 to-indigo-600">The National Association of Aircraft Pilots &amp; Engineers</span>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-600 to-indigo-600">
+                                The National Association of Aircraft Pilots & Engineers
+                            </span>
                         </motion.h1>
 
                         <motion.p
-                            className="text-muted-foreground text-lg md:text-xl max-w-lg leading-relaxed font-medium"
-                            variants={paragraphVariants}
+                            className="text-slate-500 text-lg md:text-xl max-w-lg leading-relaxed font-medium"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.3 }}
                             aria-live="polite"
                         >
                             <span aria-hidden="true">
                                 {displayed}
-                                <span className="inline-block align-baseline w-4" aria-hidden>
-                                    {!done && showCursor && (
-                                        <span
-                                            className="ml-0.5 animate-blink font-mono text-[#232835] dark:text-white"
-                                            style={{
-                                                fontWeight: "bold",
-                                                letterSpacing: "0.01em",
-                                                opacity: 0.70,
-                                                fontSize: "1.04em",
-                                                position: "relative",
-                                                top: "1px",
-                                            }}
-                                        >
-                                            |
-                                        </span>
-                                    )}
-                                </span>
+                                {!done && showCursor && (
+                                    <span className="ml-0.5 font-mono text-slate-800 animate-blink" style={{ opacity: 0.7 }}>|</span>
+                                )}
                             </span>
-                            {done && (
-                                <span className="sr-only">{srText}</span>
-                            )}
+                            {done && <span className="sr-only">{srText}</span>}
                         </motion.p>
+
                         <motion.div
-                            className="flex flex-col sm:flex-row gap-4 mt-8 w-full max-w-md md:max-w-full justify-center md:justify-start"
-                            variants={ctaVariants as any}
+                            className="flex flex-col sm:flex-row gap-4 mt-2 w-full max-w-md lg:max-w-full justify-center lg:justify-start"
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4, duration: 0.4 }}
                         >
-                            <Link href="/membership" className="w-full sm:w-auto z-20" aria-label="Join NAAPE">
+                            <Link href="/membership" className="w-full sm:w-auto z-20">
                                 <NaapButton
-                                    className="bg-primary hover:bg-blue-700 w-full h-full sm:w-auto text-white text-base font-bold px-8 py-3.5 transition-all rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1"
-                                    icon={<FaArrowRight size={16} />}
+                                    className="bg-primary hover:bg-blue-700 w-full sm:w-auto text-white text-base font-bold px-8 py-3.5 transition-all rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5"
+                                    icon={<ArrowRight size={16} />}
                                     iconPosition="right"
                                 >
                                     Join NAAPE
                                 </NaapButton>
                             </Link>
-                            <Link href="/about/about-us" className="w-full sm:w-auto z-20" aria-label="Learn More about NAAPE">
+                            <Link href="/about/about-us" className="w-full sm:w-auto z-20">
                                 <NaapButton
-                                    className="border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 hover:text-primary text-base font-bold px-8 py-3.5 w-full sm:w-auto transition-all rounded-full shadow-sm hover:shadow-md"
+                                    className="border-2 border-slate-200 bg-white hover:bg-slate-50 text-slate-700 hover:text-primary text-base font-bold px-8 py-3.5 w-full sm:w-auto transition-all rounded-full"
                                 >
                                     Learn More
                                 </NaapButton>
@@ -348,93 +149,99 @@ export default function Hero() {
                         </motion.div>
                     </motion.div>
 
-                    {/* Right: Modern Image Gallery */}
+                    {/* Right: Single Hero Image with floating elements */}
                     <motion.div
-                        className="
-                            flex-1 flex w-full justify-center items-center
-                            max-w-xl
-                        "
-                        style={{ minWidth: "270px" }}
-                        variants={rightVariants as any}
+                        className="flex-1 w-full max-w-lg lg:max-w-xl relative"
+                        initial={{ opacity: 0, x: 30, scale: 0.95 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
                     >
-                        <div className="relative w-full flex items-center justify-center max-w-[420px] md:max-w-[520px] aspect-square pt-1 pb-1 md:py-0">
-                            <motion.div
-                                className="grid grid-cols-2 grid-rows-3 gap-4 md:gap-5 w-full h-full rounded-2xl overflow-hidden"
-                                initial={{ opacity: 0, y: 40 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.7, type: "spring" as const, stiffness: 70, damping: 15 }}
-                            >
-                                {IMAGES.map((img, idx) => (
-                                    <div
-                                        key={img.src}
-                                        className={`
-                                            ${idx === 0
-                                                ? "row-span-2 col-span-1"
-                                                : idx === 1
-                                                    ? "col-span-1 row-span-1"
-                                                    : idx === 2
-                                                        ? "col-span-1 row-span-2"
-                                                        : "col-span-1 row-span-1"}
-                                            relative rounded-xl overflow-hidden transition-[transform,box-shadow] duration-300 group border border-gray-300 dark:border-[#232C4F]
-                                        `}
-                                        style={
-                                            idx === 0 || idx === 2
-                                                ? { minHeight: "160px", minWidth: "0" }
-                                                : { minHeight: "90px", minWidth: "0" }
-                                        }
-                                    >
-                                        <Image
-                                            src={img.src}
-                                            alt={img.alt}
-                                            fill
-                                            className="object-cover object-center group-hover:scale-[1.035] transition-transform duration-300"
-                                            draggable={false}
-                                            sizes="(max-width: 520px) 100vw, 520px"
-                                        />
-                                        <span className="absolute left-0 bottom-0 w-full h-16 bg-gradient-to-t from-[#213765ad] to-transparent pointer-events-none"></span>
+                        {/* Main Image */}
+                        <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-slate-300/60 border-4 border-white aspect-[4/3]">
+                            <Image
+                                src="/images/event1.jpg"
+                                alt="NAAPE aviation professionals"
+                                fill
+                                className="object-cover"
+                                priority
+                                sizes="(max-width: 1024px) 100vw, 50vw"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent" />
+                            {/* Overlay badge */}
+                            <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3">
+                                <div className="bg-white/90 backdrop-blur-md rounded-2xl px-5 py-3 flex items-center gap-3 shadow-lg">
+                                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                                        <Image src="/logo.png" alt="NAAPE" width={24} height={24} />
                                     </div>
-                                ))}
-                            </motion.div>
+                                    <div>
+                                        <p className="text-sm font-black text-slate-900">NAAPE Nigeria</p>
+                                        <p className="text-xs text-slate-500 font-medium">Est. 1984 • Aviation Excellence</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
+                        {/* Secondary floating image */}
+                        <motion.div
+                            className="absolute -bottom-6 -left-6 w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden shadow-xl border-4 border-white hidden sm:block"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6 }}
+                        >
+                            <Image
+                                src="/images/loginpic.jpg"
+                                alt="Aviation crew"
+                                fill
+                                className="object-cover"
+                            />
+                        </motion.div>
+
+                        {/* Floating stat badge */}
+                        <motion.div
+                            className="absolute -top-4 -right-4 bg-white rounded-2xl px-5 py-4 shadow-xl border border-slate-100 hidden sm:flex items-center gap-3"
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.8 }}
+                        >
+                            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
+                                <Users size={20} className="text-accent" />
+                            </div>
+                            <div>
+                                <p className="text-lg font-black text-slate-900">1,200+</p>
+                                <p className="text-xs text-slate-500 font-medium">Active Members</p>
+                            </div>
+                        </motion.div>
                     </motion.div>
-                </motion.div>
+                </div>
 
                 {/* Stats Row */}
                 <motion.div
-                    className="w-full flex flex-col sm:flex-row gap-4 md:gap-7 justify-center items-center md:justify-between mt-8 md:mt-11"
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="show"
+                    className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 lg:mt-20"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5, duration: 0.5 }}
                 >
-                    {stats.map(({ icon, value, label }, idx) => (
-                        <motion.div
+                    {stats.map(({ icon: Icon, value, label }, idx) => (
+                        <div
                             key={idx}
-                            variants={leftVariants as any}
-                            whileHover={{ scale: 1.04 }}
-                            className="flex-1 flex justify-center md:justify-start"
+                            className="flex items-center gap-4 bg-white rounded-2xl px-5 py-5 border border-slate-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
                         >
-                            <LegacyStatCard
-                                icon={icon}
-                                value={value}
-                                label={
-                                    <span className="text-[1.03rem] md:text-base text-[#5E6792] dark:text-[#C1C8DC] font-semibold">
-                                        {label}
-                                    </span>
-                                }
-                                className="flex-1 bg-white min-w-[150px] h-auto max-w-xs rounded-xl border border-gray-200 dark:border-[#252c45] px-6 py-6 flex flex-col items-center"
-                            />
-                        </motion.div>
+                            <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center shrink-0">
+                                <Icon size={22} className="text-primary" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-black text-slate-900 leading-none">{value}</p>
+                                <p className="text-sm text-slate-500 font-semibold mt-0.5">{label}</p>
+                            </div>
+                        </div>
                     ))}
                 </motion.div>
             </main>
+
             <style jsx global>{`
                 @keyframes blink {
-                    0%, 100% {
-                        opacity: 0.70;
-                    }
-                    50% {
-                        opacity: 0;
-                    }
+                    0%, 100% { opacity: 0.70; }
+                    50% { opacity: 0; }
                 }
                 .animate-blink {
                     animation: blink 1.14s steps(2, start) infinite;
