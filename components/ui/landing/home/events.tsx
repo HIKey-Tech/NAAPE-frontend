@@ -48,7 +48,7 @@ export default function UpcomingEvents() {
     };
 
     return (
-        <section className="w-full max-w-7xl mx-auto py-24 px-6">
+        <section className="w-full max-w-6xl mx-auto py-24 px-6">
             <motion.div
                 className="text-center mb-16"
                 initial={{ opacity: 0, y: 20 }}
@@ -72,7 +72,7 @@ export default function UpcomingEvents() {
                 </div>
             ) : (
                 <motion.div
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
                     variants={containerVariants}
                     initial="hidden"
                     whileInView="show"

@@ -71,7 +71,7 @@ export default function TopNavbar() {
 
   // Styles
   const baseMenuLink = `px-3 py-2 text-[14px] font-bold transition-all duration-300 hover:text-primary hover:bg-primary/10 rounded-full flex items-center justify-center h-full text-center tracking-tight min-w-0 truncate ${isScrolled ? "text-gray-600" : "text-white/90 hover:text-white"}`;
-  const activeMenuLink = "text-primary bg-primary/10";
+  const activeMenuLink = "text-primary hover:text-primary bg-primary/10";
 
   // Handlers
   const handleLoginClick = (e: React.MouseEvent<HTMLButtonElement>) => {

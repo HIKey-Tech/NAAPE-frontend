@@ -36,7 +36,7 @@ export default function EventCard({
     return (
         <div
             onClick={onCardClick}
-            className={`group relative flex flex-col h-full bg-white rounded-3xl overflow-hidden cursor-pointer shadow-lg shadow-slate-200/50 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 border-0 ${className}`}
+            className={`group relative flex flex-col h-full bg-white rounded-3xl overflow-hidden cursor-pointer shadow-lg shadow-slate-200/50 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 border-0 max-w-sm mx-auto ${className}`}
         >
             {/* Image */}
             <div className="relative h-60 w-full overflow-hidden">
