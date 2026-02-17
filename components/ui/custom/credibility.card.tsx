@@ -8,54 +8,31 @@ export interface CredibilityStat {
 }
 
 interface CredibilityCardsProps {
-  stats?: CredibilityStat[]; // Make stats optional to handle undefined
+  stats?: CredibilityStat[];
   className?: string;
 }
 
 export default function CredibilityCards({ stats = [], className = "" }: CredibilityCardsProps) {
   return (
-    <div
-      className={`
-        grid 
-        grid-cols-1 
-        xs:grid-cols-2
-        sm:grid-cols-2
-        md:grid-cols-4 
-        gap-5 
-        sm:gap-6 
-        md:gap-8 
-        ${className}
-      `}
-    >
+    <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 ${className}`}>
       {stats.map((stat, idx) => (
         <div
           key={stat.value + "-" + idx}
-          className="
-            flex flex-col 
-            bg-[#fcf7ee]/90 
-            border border-[#dfcba7] 
-            rounded-lg 
-            px-4 py-5
-            sm:px-5 sm:py-7 
-            md:py-10 
-            items-center 
-            text-center
-            transition-shadow duration-150 hover:shadow-lg
-            w-full
-            min-w-0
-          "
+          className="flex flex-col items-center text-center bg-white/10 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/15 transition-all duration-300 group"
         >
-          <span className="mb-3 text-[2rem] sm:text-[2.3rem]">{stat.icon}</span>
-          <span className="text-[2rem] sm:text-[2.3rem] font-extrabold font-mono text-[#5c4725] mb-1 tracking-wide leading-none drop-shadow-none">
+          <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+            {stat.icon}
+          </div>
+          <span className="text-4xl md:text-5xl font-black text-white mb-2 tracking-tight">
             {stat.value}
           </span>
-          <div className="font-semibold text-[#6e572b] text-[1.04rem] sm:text-[1.17rem] leading-tight mb-0">
+          <h3 className="font-bold text-white text-base mb-3">
             {stat.label}
-          </div>
-          <hr className="w-8 sm:w-10 border-t-[1.5px] border-[#aea078] my-3 rounded-lg opacity-65" />
-          <div className="text-[#5f533a] text-[0.92rem] sm:text-[0.98rem] font-medium leading-snug opacity-90">
+          </h3>
+          <div className="w-8 h-0.5 bg-accent/50 rounded-full mb-4" />
+          <p className="text-slate-300 text-sm font-medium leading-relaxed">
             {stat.description}
-          </div>
+          </p>
         </div>
       ))}
     </div>

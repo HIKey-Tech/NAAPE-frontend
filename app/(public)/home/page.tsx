@@ -182,7 +182,7 @@ function PlaneTrail() {
             <motion.div
                 initial={false}
                 animate={{ top: planeTop }}
-                transition={{ type: "spring", stiffness: 70, damping: 20 }}
+                transition={{ type: "spring" as const, stiffness: 70, damping: 20 }}
                 style={{
                     left: "calc(50vw - 36px)", // Center-ish
                     position: "absolute",

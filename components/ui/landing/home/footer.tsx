@@ -1,125 +1,63 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { FaYoutube, FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
+import { FaYoutube, FaFacebookF, FaTwitter, FaLinkedinIn } from "react-icons/fa";
 
 export default function Footer() {
     return (
-        <footer className="bg-primary text-white text-sm w-full mt-auto pt-12 pb-4 px-4 md:px-16 transition-all">
+        <footer className="bg-[#1a1f36] text-white text-sm w-full mt-auto pt-16 pb-6 px-6 md:px-12 transition-all border-t border-slate-800">
             {/* Top Section */}
-            <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-10 md:gap-20 mb-10 relative">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-12 md:gap-24 mb-16 relative">
 
                 {/* Brand + Title */}
-                <div className="flex flex-row items-center gap-5 mb-7 md:mb-0">
-                    <Image
-                        src="/logo.png"
-                        alt="NAAPE Logo"
-                        height={56}
-                        width={56}
-                        priority
-                        className="h-14 w-14 bg-white rounded-lg object-contain border-2 border-[#FFD600]"
-                    />
-                    <span className="text-lg font-bold leading-tight text-white tracking-wide">
-                        <span className="block">The National Association of</span>
-                        <span className="block">Aircraft Pilots and Engineers</span>
+                <div className="flex flex-row items-center gap-4 mb-7 md:mb-0">
+                    <div className="bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/20">
+                        <Image
+                            src="/logo.png"
+                            alt="NAAPE Logo"
+                            height={48}
+                            width={48}
+                            className="h-12 w-12 object-contain brightness-0 invert opacity-90"
+                        />
+                    </div>
+                    <span className="text-xl font-bold leading-tight text-white tracking-tight">
+                        <span className="block text-accent">National Association of</span>
+                        <span className="block font-black">Aircraft Pilots & Engineers</span>
                     </span>
                 </div>
 
                 {/* Quick Links */}
                 <nav aria-label="Footer Quick Links">
-                    <span className="uppercase tracking-widest font-extrabold text-[#FFD600] mb-4 block text-base">Quick Links</span>
-                    <ul className="flex flex-col gap-2 text-base font-medium">
-                        <li>
-                            <Link href="/" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">Home</Link>
-                        </li>
-                        <li>
-                            <Link href="/about/about-us" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">About Us</Link>
-                        </li>
-                        <li>
-                            <Link href="/news/naape" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">News</Link>
-                        </li>
-                        <li>
-                            <Link href="/publication" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">Publications</Link>
-                        </li>
-                        <li>
-                            <Link href="/events" className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors">Events</Link>
-                        </li>
+                    <span className="text-sm uppercase tracking-widest font-bold text-accent mb-6 block opacity-90">Quick Links</span>
+                    <ul className="flex flex-col gap-3 text-sm text-gray-300 font-medium">
+                        <li><Link href="/" className="hover:text-accent transition-colors duration-200">Home</Link></li>
+                        <li><Link href="/about/about-us" className="hover:text-accent transition-colors duration-200">About Us</Link></li>
+                        <li><Link href="/news/naape" className="hover:text-accent transition-colors duration-200">News</Link></li>
+                        <li><Link href="/publication" className="hover:text-accent transition-colors duration-200">Publications</Link></li>
+                        <li><Link href="/events" className="hover:text-accent transition-colors duration-200">Events</Link></li>
                     </ul>
                 </nav>
 
                 {/* Connect / Socials */}
                 <div>
-                    <span className="uppercase tracking-widest font-extrabold text-[#FFD600] mb-4 block text-base">Connect With Us</span>
-                    <div className="flex gap-5 text-2xl mb-4">
-                        <a
-                            href="https://www.youtube.com/"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            aria-label="YouTube"
-                            className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors"
-                        >
-                            <FaYoutube />
-                        </a>
-                        <a
-                            href="https://www.facebook.com/NAAPEHQ/"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            aria-label="Facebook"
-                            className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors"
-                        >
-                            <FaFacebookF />
-                        </a>
-                        <a
-                            href="https://twitter.com/"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            aria-label="Twitter"
-                            className="hover:text-[#FFD600] focus:text-[#FFD600] transition-colors"
-                        >
-                            <FaTwitter />
-                        </a>
-                        {/*
-                        <a
-                            href="https://instagram.com"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            aria-label="Instagram"
-                            className="hover:text-[#FFD600] transition-colors"
-                        >
-                            <FaInstagram />
-                        </a>
-                        <a
-                            href="https://linkedin.com"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            aria-label="LinkedIn"
-                            className="hover:text-[#FFD600] transition-colors"
-                        >
-                            <FaLinkedinIn />
-                        </a>
-                        */}
+                    <span className="text-sm uppercase tracking-widest font-bold text-accent mb-6 block opacity-90">Connect</span>
+                    <div className="flex gap-4 mb-6">
+                        {[FaYoutube, FaFacebookF, FaTwitter, FaLinkedinIn].map((Icon, i) => (
+                            <a key={i} href="#" className="w-10 h-10 rounded-full bg-white/10 hover:bg-accent hover:text-primary flex items-center justify-center transition-all duration-300">
+                                <Icon size={18} />
+                            </a>
+                        ))}
                     </div>
-                    <Link
-                        href="/register"
-                        className="inline-block mt-2 px-6 py-2 rounded-md bg-[#FFD600] text-primary font-bold text-xs uppercase tracking-wider hover:bg-[#ffe066] focus:bg-[#ffe066] transition-colors outline-none"
-                    >
-                        Become a Member
-                    </Link>
                 </div>
             </div>
 
-            <hr className="border-t-2 border-[#FFD600] opacity-70 mb-4" />
-
-            {/* Bottom */}
-            <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2 text-xs md:text-sm font-medium tracking-tight text-[#DCE9FB]">
-                <div className="text-center w-full md:w-auto">
-                    &copy; {new Date().getFullYear()} <span className="font-semibold text-white">NAAPE</span>. All rights reserved.
-                </div>
-                <div className="w-full md:w-auto text-center">
-                    Made with <span className="text-[#FFD600] font-bold" aria-hidden="true">&hearts;</span> for the Nigerian aviation community.
+            <div className="max-w-7xl mx-auto border-t border-white/10 pt-8 mt-12 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-400 font-medium tracking-wide">
+                <div>&copy; {new Date().getFullYear()} NAAPE. All rights reserved.</div>
+                <div className="flex gap-6">
+                    <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+                    <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
                 </div>
             </div>
         </footer>
     );
 }
-

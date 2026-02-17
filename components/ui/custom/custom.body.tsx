@@ -30,7 +30,7 @@ const textBlockVariants = {
     opacity: 1,
     x: 0,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 70,
       damping: 18,
       duration: 0.55,
@@ -45,7 +45,7 @@ const imageVariants = {
     scale: 1,
     x: 0,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 65,
       damping: 16,
       duration: 0.55,
@@ -59,7 +59,7 @@ const fadeUpVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 60,
       damping: 18,
       duration: 0.5,
@@ -129,7 +129,7 @@ export default function CustomBodySection({
         <motion.div
           className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-gray-100"
           whileHover={{ scale: 1.03, boxShadow: "0 10px 32px 0 rgba(36,80,180,0.13)" }}
-          transition={{ type: "spring", stiffness: 210, damping: 18 }}
+          transition={{ type: "spring" as const, stiffness: 210, damping: 18 }}
         >
           <Image
             src={imageSrc}

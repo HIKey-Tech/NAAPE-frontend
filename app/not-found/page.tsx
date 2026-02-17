@@ -20,13 +20,13 @@ export default function NotFoundPage() {
                 className="max-w-md w-full text-center z-10"
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, type: "spring", stiffness: 70 }}
+                transition={{ duration: 0.55, type: "spring" as const, stiffness: 70 }}
             >
                 <motion.h1
                     className="text-8xl md:text-9xl font-extrabold text-[#21409a] mb-4 drop-shadow-xl tracking-tight"
                     initial={{ scale: 1.2, opacity: 0.7 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: "spring", delay: 0.15, stiffness: 120 }}
+                    transition={{ type: "spring" as const, delay: 0.15, stiffness: 120 }}
                 >
                     404
                 </motion.h1>
@@ -34,7 +34,7 @@ export default function NotFoundPage() {
                     className="text-2xl md:text-3xl font-semibold text-[#1b2232] mb-3"
                     initial={{ y: 16, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.27, duration: 0.55, type: "spring" }}
+                    transition={{ delay: 0.27, duration: 0.55, type: "spring" as const }}
                 >
                     Lost in the Skies
                 </motion.h2>
@@ -55,7 +55,7 @@ export default function NotFoundPage() {
                     className="flex flex-col items-center gap-3"
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.46, duration: 0.5, type: "spring" }}
+                    transition={{ delay: 0.46, duration: 0.5, type: "spring" as const }}
                 >
                     <Link
                         href="/"

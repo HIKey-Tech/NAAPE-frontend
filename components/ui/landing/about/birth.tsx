@@ -2,148 +2,114 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-
-// Remove shadow/gradient, emphasize story, historic feel, contrast, visual hierarchy
+import { Calendar } from "lucide-react";
 
 const containerVariants = {
     hidden: {},
-    show: {
-        transition: {
-            staggerChildren: 0.16,
-            delayChildren: 0.04,
-        },
-    },
-};
-
-const textBlockVariants = {
-    hidden: { opacity: 0, x: -36 },
-    show: {
-        opacity: 1,
-        x: 0,
-        transition: {
-            type: "spring",
-            stiffness: 68,
-            damping: 18,
-            duration: 0.5,
-        },
-    },
-};
-
-const imageVariants = {
-    hidden: { opacity: 0, scale: 0.97, x: 38 },
-    show: {
-        opacity: 1,
-        scale: 1,
-        x: 0,
-        transition: {
-            type: "spring",
-            stiffness: 63,
-            damping: 16,
-            duration: 0.55,
-        },
-    },
+    show: { transition: { staggerChildren: 0.1 } },
 };
 
 const fadeUpVariants = {
     hidden: { opacity: 0, y: 30 },
-    show: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            type: "spring", stiffness: 62, damping: 18, duration: 0.46,
-        },
-    },
+    show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 50 } },
 };
 
 export default function BirthSection() {
     return (
-        <motion.section
-            className="flex flex-col md:flex-row items-stretch md:items-start gap-16 w-full py-20 px-4 md:px-16 bg-neutral-50"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.34 }}
-        >
-            {/* Left: Historic Photo/Collage */}
-            <motion.div
-                className="flex-1 flex justify-center items-center md:items-start max-w-xl md:pr-6"
-                variants={imageVariants as any}
-            >
-                <figure className="relative w-full aspect-[4/3] rounded-xl overflow-hidden border-4 border-[#CA9414] bg-neutral-100 flex items-end">
-                    <Image
-                        src="/gallery/1.jpeg"
-                        alt="Historic photo: Early Nigerian pilots and engineers"
-                        fill
-                        style={{ objectFit: 'cover', filter: "saturate(0.46) contrast(1.22) brightness(0.98)" }}
-                        className="rounded-xl"
-                        priority
-                    />
-                    <figcaption className="absolute bottom-0 left-0 px-4 py-3 bg-[#CA9414]/95 text-white text-xs md:text-sm font-medium tracking-wide"
-                        style={{
-                            letterSpacing: '.03em',
-                            borderTopRightRadius: 8,
-                        }}
-                    >
-                        Delegates of APFEAN and NAAATE, Lagos, April 1984 <span className="hidden md:inline">– the merging of legacies.</span>
-                    </figcaption>
-                </figure>
-            </motion.div>
-            {/* Right: Visual Story & Timeline */}
-            <motion.div
-                className="flex-1 max-w-2xl"
-                variants={textBlockVariants as any}
-            >
-                <motion.h2
-                    className="mb-6"
-                    variants={fadeUpVariants as any}
-                >
-                    <span className="block text-[#CA9414] text-sm md:text-base uppercase tracking-widest font-semibold mb-2">
-                        Founding Milestone
-                    </span>
-                    <span className="block text-[2.05rem] md:text-[2.45rem] leading-tight font-black text-neutral-900">
-                        The Birth of NAAPE
-                    </span>
-                    <span className="block text-[1.16rem] md:text-[1.34rem] font-semibold text-neutral-700 mt-1">
-                        and Its First Leaders
-                    </span>
-                </motion.h2>
-                <motion.ol
-                    className="relative border-l-4 border-[#CA9414] pl-6 space-y-6 before:hidden mb-2"
-                    variants={fadeUpVariants as any}
-                    transition={{ delay: 0.10 }}
-                >
-                    <li>
-                        <div className="absolute -left-3 w-3 h-3 rounded-full bg-[#CA9414] border-2 border-white mt-1.5"></div>
-                        <div className="text-base md:text-lg font-medium text-neutral-800">
-                            <span className="font-bold text-[#CA9414]">April 16, 1984</span> — Leaders of <b>APFEAN</b> and <b>NAAATE</b> unite to form a single, new association.
-                        </div>
-                        <div className="text-sm md:text-base text-neutral-600 mt-1">
-                            An organizing committee is set to convene a major <b>delegates conference</b>.
-                        </div>
-                    </li>
-                    <li>
-                        <div className="absolute -left-3 w-3 h-3 rounded-full bg-[#CA9414] border-2 border-white mt-1.5"></div>
-                        <div className="text-base md:text-lg font-medium text-neutral-800">
-                            <span className="font-bold text-[#CA9414]">Adoption of NAAPE</span> — The name <b>National Association of Aircraft Pilots and Engineers</b> is officially adopted, signifying a new era in aviation professionalism in Nigeria.
-                        </div>
-                    </li>
-                    <li>
-                        <div className="absolute -left-3 w-3 h-3 rounded-full bg-[#CA9414] border-2 border-white mt-1.5"></div>
-                        <div className="text-base md:text-lg font-medium text-neutral-800">
-                            <span className="font-bold text-[#CA9414]">August 16, 1985</span> — NAAPE is formally registered as a trade union, in accordance with the Trade Unions (Amendment) Act No. 22 of 1978 (<span className="font-mono text-sm">certificate #008</span>).
-                        </div>
-                    </li>
-                </motion.ol>
+        <section className="py-24 px-6 md:px-12 bg-white w-full">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                {/* Left: Image */}
                 <motion.div
-                    className="mt-6 text-neutral-700 text-[1.06rem] md:text-lg leading-relaxed bg-[#fffdfa] border-l-4 border-[#CA9414]/70 pl-5 py-4 rounded-r-xl font-serif"
-                    variants={fadeUpVariants as any}
-                    transition={{ delay: 0.18 }}
+                    initial={{ opacity: 0, x: -50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="relative"
                 >
-                    <span>
-                        <span className="font-semibold text-[#CA9414]">NAAPE</span> was established exclusively for <b>Aircraft Pilots</b>, <b>Aircraft Maintenance Engineers</b>, and <b>Flight Engineers</b>, championing their distinct interests and the highest professional standards. For decades, this union has been a <span className="italic font-medium">beacon for unity, progress, and legacy</span> in the Nigerian aviation industry.
-                    </span>
+                    <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl shadow-slate-200 lg:rotate-2 hover:rotate-0 transition-transform duration-500">
+                        <Image
+                            src="/gallery/1.jpeg"
+                            alt="Historic photo: Early Nigerian pilots and engineers"
+                            fill
+                            className="object-cover"
+                        />
+                        <div className="absolute inset-0 bg-primary/10 mix-blend-multiply" />
+                    </div>
+                    {/* Floating Caption */}
+                    <div className="absolute -bottom-6 -right-6 md:right-10 bg-white p-4 rounded-xl shadow-xl border border-slate-100 max-w-xs">
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="p-2 bg-accent/10 rounded-full text-accent">
+                                <Calendar size={18} />
+                            </div>
+                            <span className="font-bold text-slate-900 text-sm">April 1984</span>
+                        </div>
+                        <p className="text-xs text-slate-500 font-medium">Delegates of APFEAN and NAAATE, Lagos – the merging of legacies.</p>
+                    </div>
                 </motion.div>
-            </motion.div>
-        </motion.section>
+
+                {/* Right: Content */}
+                <motion.div
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true }}
+                    variants={containerVariants}
+                    className="space-y-8"
+                >
+                    <motion.div variants={fadeUpVariants as any}>
+                        <span className="text-secondary font-bold tracking-widest uppercase text-sm mb-2 block">Founding Milestone</span>
+                        <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 leading-tight">
+                            The Birth of <span className="text-primary">NAAPE</span>
+                        </h2>
+                        <p className="text-lg text-slate-600 leading-relaxed font-medium">
+                            NAAPE was established exclusively to champion the interests of Aircraft Pilots and Engineers. For decades, it has been a beacon for unity and progress.
+                        </p>
+                    </motion.div>
+
+                    <motion.div variants={fadeUpVariants as any} className="space-y-6">
+                        <div className="flex gap-4">
+                            <div className="flex-col items-center hidden md:flex">
+                                <div className="w-4 h-4 rounded-full bg-accent ring-4 ring-white shadow-lg z-10" />
+                                <div className="w-0.5 h-full bg-slate-100 -mt-2" />
+                            </div>
+                            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex-1">
+                                <h4 className="flex items-center gap-2 font-bold text-slate-900 text-lg mb-2">
+                                    <span className="text-accent">April 16, 1984</span>
+                                    <span className="text-slate-300 mx-2">|</span>
+                                    The Union
+                                </h4>
+                                <p className="text-slate-500">Leaders of APFEAN and NAAATE unite to form a single, new association.</p>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-4">
+                            <div className="flex-col items-center hidden md:flex">
+                                <div className="w-4 h-4 rounded-full bg-primary ring-4 ring-white shadow-lg z-10" />
+                                <div className="w-0.5 h-full bg-slate-100 -mt-2" />
+                            </div>
+                            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex-1">
+                                <h4 className="flex items-center gap-2 font-bold text-slate-900 text-lg mb-2">
+                                    <span className="text-primary">Adoption of NAAPE</span>
+                                </h4>
+                                <p className="text-slate-500">The name "National Association of Aircraft Pilots and Engineers" is officially adopted.</p>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-4">
+                            <div className="flex-col items-center hidden md:flex">
+                                <div className="w-4 h-4 rounded-full bg-secondary ring-4 ring-white shadow-lg z-10" />
+                            </div>
+                            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex-1">
+                                <h4 className="flex items-center gap-2 font-bold text-slate-900 text-lg mb-2">
+                                    <span className="text-secondary">August 16, 1985</span>
+                                    <span className="text-slate-300 mx-2">|</span>
+                                    Official Registration
+                                </h4>
+                                <p className="text-slate-500">NAAPE is formally registered as a trade union (certificate #008).</p>
+                            </div>
+                        </div>
+                    </motion.div>
+                </motion.div>
+            </div>
+        </section>
     );
 }

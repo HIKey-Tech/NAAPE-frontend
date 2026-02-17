@@ -1,6 +1,5 @@
 import React from "react";
-import { NaapButton } from "./button.naap";
-import { Linkedin, Twitter, Instagram, Facebook } from "lucide-react";
+import { Linkedin, Twitter, Instagram, Facebook, Mail } from "lucide-react";
 import Image from "next/image";
 
 export interface LeaderCardProps {
@@ -19,12 +18,6 @@ export interface LeaderCardProps {
     className?: string;
 }
 
-/**
- * LeaderCard
- * - Reusable component for leadership/profile visuals
- * - Improved for aesthetic ambiguity & visual storytelling
- * - No shadows, no gradients. Emphasis on hierarchy & contrast.
- */
 export const LeaderCard: React.FC<LeaderCardProps> = ({
     name,
     title,
@@ -36,127 +29,61 @@ export const LeaderCard: React.FC<LeaderCardProps> = ({
     className = "",
 }) => {
     const socialIcons = [
-        {
-            id: "linkedin",
-            href: socials?.linkedin,
-            Icon: Linkedin,
-            label: "LinkedIn",
-            colorClass: "hover:text-blue-800 focus:text-blue-900",
-        },
-        {
-            id: "twitter",
-            href: socials?.twitter,
-            Icon: Twitter,
-            label: "Twitter",
-            colorClass: "hover:text-sky-500 focus:text-sky-600",
-        },
-        {
-            id: "instagram",
-            href: socials?.instagram,
-            Icon: Instagram,
-            label: "Instagram",
-            colorClass: "hover:text-pink-600 focus:text-pink-700",
-        },
-        {
-            id: "facebook",
-            href: socials?.facebook,
-            Icon: Facebook,
-            label: "Facebook",
-            colorClass: "hover:text-blue-700 focus:text-blue-800",
-        },
+        { id: "linkedin", href: socials?.linkedin, Icon: Linkedin, label: "LinkedIn" },
+        { id: "twitter", href: socials?.twitter, Icon: Twitter, label: "Twitter" },
+        { id: "instagram", href: socials?.instagram, Icon: Instagram, label: "Instagram" },
+        { id: "facebook", href: socials?.facebook, Icon: Facebook, label: "Facebook" },
     ];
-
-    // Gentle story motif: sepia/cream background, gentle borders only
-    // No shadows or gradients; emphasize tactile, print-like feel
 
     return (
         <div
-            className={`
-                flex flex-col items-center p-0
-                bg-[#F8F5F0] border border-neutral-200 rounded-xl
-                ${className}
-                transition-colors duration-300
-                focus-within:ring-2 focus-within:ring-[#806040]/40
-            `}
-            tabIndex={0}
+            className={`flex flex-col items-center ${className}`}
             aria-label={`Leader card for ${name}, ${title}`}
-            role="region"
-            style={{ boxShadow: "none" }}
         >
-            <div className="relative w-32 h-32 rounded-full overflow-hidden mt-7 mb-4 border-[3px] border-[#eadbbd] bg-[#e7dac6]">
-                {/* Slight sepia-tinted backdrop for visual storytelling/ambiguity */}
+            {/* Photo */}
+            <div className="relative w-full aspect-[4/5] overflow-hidden bg-slate-100">
                 <Image
                     src={photoSrc}
                     alt={name}
-                    width={128}
-                    height={128}
-                    className="object-cover w-full h-full mix-blend-multiply"
-                    priority
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 50vw, 25vw"
                 />
-                {/* Subtle visual motif? A faded ring or strip */}
-                <span
-                    className="absolute bottom-2 left-1/2 -translate-x-1/2 w-10 h-[4px] rounded-full bg-[#e2c897]/60 opacity-70"
-                    aria-hidden="true"
-                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
-            <div className="flex-1 flex flex-col items-center justify-between py-0 px-6 w-full">
-                <div className="font-extrabold text-[#2c2824] text-xl leading-tight mb-1 tracking-wide">
-                    {name}
-                </div>
-                <div className="uppercase text-xs tracking-widest font-medium text-[#9C7941] mb-3">
-                    {title}
-                </div>
+
+            {/* Info */}
+            <div className="p-6 w-full">
+                <h3 className="font-bold text-slate-900 text-lg mb-1">{name}</h3>
+                <p className="text-sm text-primary font-bold uppercase tracking-wider mb-4">{title}</p>
+
                 {/* Socials */}
-                <div className="flex justify-center gap-2 mb-6 mt-1" aria-label="Leader social links">
-                    {socialIcons.map(
-                        ({ id, href, Icon, label, colorClass }) =>
-                            href && (
-                                <a
-                                    key={id}
-                                    href={href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    aria-label={label}
-                                    className={`outline-none focus-visible:ring-2 focus-visible:ring-[#dac077]/70 rounded-full transition ${colorClass} p-[5px]`}
-                                    tabIndex={0}
-                                    style={{ background: "none" }}
-                                >
-                                    <Icon size={22} className="text-neutral-500 transition-colors duration-150" />
-                                </a>
-                            )
+                <div className="flex gap-2 mb-4">
+                    {socialIcons.map(({ id, href, Icon, label }) =>
+                        href ? (
+                            <a
+                                key={id}
+                                href={href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={label}
+                                className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-primary hover:text-white text-slate-400 transition-all"
+                            >
+                                <Icon size={14} />
+                            </a>
+                        ) : null
                     )}
                 </div>
-                {contactLabel && (
-                    contactHref ? (
-                        <a
-                            href={contactHref}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            tabIndex={0}
-                            className="inline-block mt-auto"
-                        >
-                            <NaapButton
-                                className="px-5 border-[#dacaa7] text-[#82673e] font-bold text-sm min-w-[115px] shadow-none bg-transparent hover:bg-[#ede3cb] hover:text-[#56451e] transition-colors"
-                                variant="ghost"
-                                style={{ boxShadow: "none", background: "none" }}
-                            >
-                                {contactLabel}
-                            </NaapButton>
-                        </a>
-                    ) : (
-                        <NaapButton
-                            className="px-5 border-[#dacaa7] text-[#82673e] font-bold text-sm min-w-[115px] shadow-none bg-transparent hover:bg-[#ede3cb] hover:text-[#56451e] transition-colors"
-                            variant="ghost"
-                            onClick={onContact}
-                            tabIndex={0}
-                            style={{ boxShadow: "none", background: "none" }}
-                        >
-                            {contactLabel}
-                        </NaapButton>
-                    )
+
+                {/* Contact */}
+                {contactLabel && contactHref && (
+                    <a
+                        href={contactHref}
+                        className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-blue-700 transition-colors"
+                    >
+                        <Mail size={14} /> {contactLabel}
+                    </a>
                 )}
-                {/* Motif line, print-like divider, for ambiguity */}
-                <div className="w-[52%] h-[2px] bg-[#e3d5bc] mt-7 mb-2 opacity-70 rounded-full" aria-hidden="true" />
             </div>
         </div>
     );

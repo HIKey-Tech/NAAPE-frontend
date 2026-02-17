@@ -2,44 +2,40 @@
 
 import Link from "next/link";
 import { NaapButton } from "@/components/ui/custom/button.naap";
-import { FaUsers, FaPaperPlane } from "react-icons/fa";
+import { ArrowRight, Mail } from "lucide-react";
 
 export default function JoinCommunitySection() {
   return (
-    <section className="w-full max-w-full mx-auto py-20 px-4 flex flex-col items-center 
-      bg-gradient-to-br from-primary/5 to-accent/0 border border-black/10 my-12">
+    <section className="w-full px-6 py-20">
+      <div className="max-w-7xl mx-auto rounded-[3rem] bg-slate-900 overflow-hidden relative isolate">
 
-      <div className="flex flex-col items-center gap-3 mb-8">
-        <div className="bg-primary/80 rounded-full p-4 mb-2">
-          <FaUsers className="text-white text-3xl md:text-4xl" />
+        {/* Abstract Background Shapes */}
+        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[500px] h-[500px] bg-primary/30 rounded-full blur-3xl opacity-50" />
+        <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-accent/20 rounded-full blur-3xl opacity-50" />
+
+        <div className="relative z-10 px-8 py-20 text-center">
+          <h2 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight">
+            Ready to shape <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Nigeria’s Aviation Future?</span>
+          </h2>
+          <p className="text-lg md:text-xl text-slate-300 font-medium max-w-2xl mx-auto mb-12">
+            Be part of a vibrant, purpose-driven association that inspires growth,
+            shares opportunities, and builds meaningful professional connections.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link href="/membership">
+              <NaapButton className="bg-white hover:bg-slate-100 text-slate-900 font-bold px-10 py-4 rounded-full text-lg shadow-xl shadow-white/10 transition-transform hover:-translate-y-1 flex items-center gap-3">
+                Become a Member <ArrowRight size={20} />
+              </NaapButton>
+            </Link>
+            <Link href="/contact">
+              <NaapButton className="bg-transparent border-2 border-slate-700 hover:border-white text-white font-bold px-10 py-4 rounded-full text-lg transition-colors flex items-center gap-3">
+                Contact Us
+              </NaapButton>
+            </Link>
+          </div>
         </div>
-        <h2 className="text-2xl md:text-4xl font-extrabold text-[#232835] text-center">
-          Ready to shape Nigeria’s aviation future?
-        </h2>
-        <p className="text-[#596077] text-base md:text-lg text-center max-w-2xl mt-2 font-medium">
-          Be part of a vibrant, purpose-driven association that inspires growth, shares opportunities,
-          and builds meaningful professional connections across the nation’s dynamic aviation sector.
-        </p>
-      </div>
-
-      <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full justify-center items-stretch sm:items-center">
-        <NaapButton
-          className="bg-[color:var(--primary)] pointer-cursor hover:bg-[color:var(--primary)]/90 text-white font-semibold px-8 py-3.5 text-[1.08rem] w-full sm:w-auto rounded-full transition flex items-center gap-2 justify-center shadow-sm"
-        >
-          <Link href="/membership" className="flex items-center gap-2 w-full h-full justify-center">
-            <FaUsers className="text-[1.2em] md:text-base" />
-            <span>Become a Member</span>
-          </Link>
-        </NaapButton>
-        <NaapButton
-          variant="ghost"
-          className="flex items-center gap-2 px-8 py-3.5 text-[1.08rem] w-full sm:w-auto font-semibold sm:min-w-[210px] justify-center border-2 border-primary text-primary bg-white hover:bg-primary/10 transition-all rounded-full focus:ring-2 focus:ring-primary focus:outline-none shadow-sm"
-        >
-          <Link href="/contact" className="flex items-center gap-2 w-full h-full justify-center">
-            <FaPaperPlane className="text-[1.2em] md:text-base" />
-            <span>Contact Us</span>
-          </Link>
-        </NaapButton>
       </div>
     </section>
   );

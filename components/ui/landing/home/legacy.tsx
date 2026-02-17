@@ -22,7 +22,7 @@ const containerVariants = {
 
 const fadeUpVariants = {
     hidden: { opacity: 0, y: 28 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 66, damping: 15, duration: 0.54 } }
+    show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 66, damping: 15, duration: 0.54 } }
 };
 
 const statVariants = {
@@ -33,7 +33,7 @@ const statVariants = {
         scale: 1,
         transition: {
             delay: i * 0.10 + 0.25,
-            type: "spring",
+            type: "spring" as const,
             stiffness: 70,
             damping: 17,
             duration: 0.48,
@@ -68,7 +68,7 @@ function LegacyMobileSlider({ stats }: { stats: any[] }) {
                         initial={{ opacity: 0, x: 40 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -40 }}
-                        transition={{ type: "spring", duration: 0.35 }}
+                        transition={{ type: "spring" as const, duration: 0.35 }}
                     >
                         <LegacyStatCard
                             {...stats[active]}

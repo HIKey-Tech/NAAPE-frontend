@@ -1,115 +1,83 @@
 "use client"
 
-import { Briefcase, ShieldCheck, BarChart2, Handshake } from "lucide-react";
+import { Briefcase, ShieldCheck, TrendingUp, Handshake } from "lucide-react";
 import { motion } from "framer-motion";
 
-// Less literal, more suggestive storytelling; less explanatory copy
 const whatWeDoItems = [
     {
         icon: Briefcase,
         title: "Representation",
+        description: "Advocating for the rights and welfare of pilots and engineers across the industry."
     },
     {
         icon: ShieldCheck,
         title: "Safety",
+        description: "Championing the highest safety standards in Nigerian aviation operations."
     },
     {
-        icon: BarChart2,
+        icon: TrendingUp,
         title: "Growth",
+        description: "Promoting professional development and career advancement for our members."
     },
     {
         icon: Handshake,
         title: "Integrity",
+        description: "Upholding ethical practices and fostering trust within the aviation community."
     },
 ];
 
-// Animation variant for the cards
-const cardVariants = {
-    hidden: { opacity: 0, y: 32 },
-    visible: (i: number) => ({
-        opacity: 1,
-        y: 0,
-        transition: {
-            delay: i * 0.13,
-            duration: 0.66,
-            type: "spring",
-            stiffness: 48,
-            damping: 12,
-        },
-    }),
+const containerVariants = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.1 } },
+};
+
+const fadeUpVariants = {
+    hidden: { opacity: 0, y: 30 },
+    show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 50 } },
 };
 
 export default function WhatWeDoSection() {
     return (
-        <motion.section
-            className="w-full py-20 px-4 md:px-0 flex flex-col items-center bg-white"
-            aria-labelledby="whatwedo-title"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.22 }}
-            transition={{ staggerChildren: 0.14 }}
-        >
-            <motion.h2
-                id="whatwedo-title"
-                className="text-neutral-900 text-3xl md:text-4xl font-black tracking-tight mb-14 text-center uppercase"
-                initial={{ opacity: 0, y: 26 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.60, delay: 0.01, type: "spring", stiffness: 64, damping: 13 }}
+        <section className="py-24 px-6 md:px-12 bg-white w-full text-center">
+            <motion.div
+                initial="hidden"
+                whileInView="show"
                 viewport={{ once: true }}
+                variants={fadeUpVariants}
+                className="max-w-4xl mx-auto mb-16"
             >
-                What We Do
-            </motion.h2>
-            <div
-                className="
-                    w-full max-w-6xl grid grid-cols-1 md:grid-cols-4 gap-10
-                "
-                role="list"
-                aria-label="Ambiguous Focus Areas"
+                <span className="text-secondary font-bold tracking-widest uppercase text-sm mb-2 block">Our Mission</span>
+                <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6">
+                    What We Do
+                </h2>
+            </motion.div>
+
+            <motion.div
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto"
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
             >
                 {whatWeDoItems.map((item, idx) => {
                     const Icon = item.icon;
                     return (
                         <motion.div
                             key={item.title}
-                            className="
-                                group flex flex-col items-center text-center
-                                border-2 border-neutral-900/70 bg-white
-                                rounded-xl transition
-                                px-0 py-8 md:py-10 h-full
-                                focus:outline-none focus:ring-2 focus:ring-blue-400
-                            "
-                            tabIndex={0}
-                            role="listitem"
-                            aria-label={item.title}
-                            initial="hidden"
-                            whileInView="visible"
-                            custom={idx}
-                            variants={cardVariants as any}
-                            viewport={{ once: true, amount: 0.18 }}
+                            variants={fadeUpVariants as any}
+                            className="bg-slate-50 rounded-3xl p-8 border border-slate-100 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group text-left"
                         >
-                            <span
-                                className="
-                                    flex items-center justify-center
-                                    w-16 h-16 mb-6 rounded-full border-2
-                                    border-blue-500 bg-blue-50
-                                    group-hover:border-neutral-900/80
-                                    transition
-                                "
-                                aria-hidden="true"
-                            >
-                                <Icon
-                                    size={36}
-                                    strokeWidth={2.1}
-                                    className="text-blue-500"
-                                />
-                            </span>
-                            <h3 className="text-xl md:text-2xl font-bold uppercase text-neutral-900 tracking-wide mb-0">
-                                {item.title}
-                            </h3>
+                            <div className="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                                <Icon size={28} className="text-primary group-hover:text-white transition-colors" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-900 mb-3">{item.title}</h3>
+                            <p className="text-slate-500 font-medium leading-relaxed">
+                                {item.description}
+                            </p>
                         </motion.div>
                     );
                 })}
-            </div>
-        </motion.section>
+            </motion.div>
+        </section>
     );
 }

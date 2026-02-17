@@ -32,7 +32,7 @@ const fadeUpVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 60,
       damping: 17,
       duration: 0.55,
@@ -47,7 +47,7 @@ const imageVariants = {
     scale: 1,
     y: 0,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 55,
       damping: 15,
       duration: 0.5,

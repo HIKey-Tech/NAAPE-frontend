@@ -266,7 +266,7 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                     animate={{ scale: 1, opacity: 1, rotate: [0, 10, -7, 0], y: 0 }}
                     exit={{ opacity: 0, scale: 0.8, y: 35 }}
                     transition={{
-                        type: "spring",
+                        type: "spring" as const,
                         stiffness: 405,
                         damping: 23,
                         duration: 0.8,
@@ -285,7 +285,7 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                 }`}
                 initial={{ y: 15, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.12, type: "spring", stiffness: 60, damping: 14 }}
+                transition={{ delay: 0.12, type: "spring" as const, stiffness: 60, damping: 14 }}
             >
                 {title}
             </motion.h2>
@@ -293,7 +293,7 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                 className="text-base sm:text-lg text-slate-700 mb-8 text-center max-w-xl"
                 initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.21, type: "spring", stiffness: 60, damping: 13 }}
+                transition={{ delay: 0.21, type: "spring" as const, stiffness: 60, damping: 13 }}
             >
                 {subtitle}
             </motion.p>

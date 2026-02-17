@@ -90,7 +90,7 @@ const leftVariants = {
         opacity: 1,
         x: 0,
         transition: {
-            type: "spring",
+            type: "spring" as const,
             stiffness: 65,
             damping: 12,
             duration: 0.5,
@@ -105,7 +105,7 @@ const rightVariants = {
         x: 0,
         scale: 1,
         transition: {
-            type: "spring",
+            type: "spring" as const,
             stiffness: 66,
             damping: 14,
             duration: 0.5,
@@ -119,7 +119,7 @@ const headingVariants = {
         opacity: 1,
         y: 0,
         transition: {
-            type: "spring",
+            type: "spring" as const,
             stiffness: 80,
             damping: 12,
             duration: 0.44,
@@ -144,7 +144,7 @@ const ctaVariants = {
         transition: {
             delay: 0.12,
             duration: 0.32,
-            type: "spring",
+            type: "spring" as const,
             stiffness: 60,
             damping: 13,
         },
@@ -248,7 +248,7 @@ export default function Hero() {
 
     // This wrapper ensures full viewport height and vertical/horizontal centering (minus safe paddings)
     return (
-        <section className="relative w-full min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#F5F7FA] to-[#e5ecfa] dark:from-[#232835] dark:to-[#2f3650] overflow-hidden px-4 py-4 md:py-10">
+        <section className="relative w-full min-h-screen flex flex-col items-center justify-center bg-background overflow-hidden px-4 py-4 md:py-12">
             {/* Decorative aviation-themed background */}
             <div
                 aria-hidden
@@ -290,14 +290,14 @@ export default function Hero() {
                         variants={leftVariants as any}
                     >
                         <motion.h1
-                            className="text-[1.35rem] sm:text-2xl md:text-[1.7rem] lg:text-[2.15rem] font-extrabold tracking-tight text-[#232835] dark:text-white leading-snug md:leading-[1.12] mb-1"
+                            className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1] mb-4"
                             variants={headingVariants as any}
                         >
-                            <span>The National Association of Aircraft Pilots &amp; Engineers</span>
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-blue-700 to-indigo-600">The National Association of Aircraft Pilots &amp; Engineers</span>
                         </motion.h1>
 
                         <motion.p
-                            className="text-[#3B4360] dark:text-[#BDC4D7] text-[1.13rem] md:text-lg max-w-[95vw] max-w-md md:max-w-lg min-h-[3.8em] font-medium tracking-[0.005em] whitespace-pre-line"
+                            className="text-muted-foreground text-lg md:text-xl max-w-lg leading-relaxed font-medium"
                             variants={paragraphVariants}
                             aria-live="polite"
                         >
@@ -326,21 +326,21 @@ export default function Hero() {
                             )}
                         </motion.p>
                         <motion.div
-                            className="flex flex-col sm:flex-row gap-3 md:gap-6 mt-2 md:mt-7 w-full max-w-sm md:max-w-full items-center md:items-start justify-center md:justify-start"
+                            className="flex flex-col sm:flex-row gap-4 mt-8 w-full max-w-md md:max-w-full justify-center md:justify-start"
                             variants={ctaVariants as any}
                         >
-                            <Link href="/membership" className="w-full sm:w-auto" aria-label="Join NAAPE">
+                            <Link href="/membership" className="w-full sm:w-auto z-20" aria-label="Join NAAPE">
                                 <NaapButton
-                                    className="bg-primary hover:bg-primary/90 w-full h-full sm:w-auto text-white text-base font-semibold px-7 py-3 transition-colors rounded-full"
-                                    icon={<FaArrowRight size={18} />}
+                                    className="bg-primary hover:bg-blue-700 w-full h-full sm:w-auto text-white text-base font-bold px-8 py-3.5 transition-all rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1"
+                                    icon={<FaArrowRight size={16} />}
                                     iconPosition="right"
                                 >
                                     Join NAAPE
                                 </NaapButton>
                             </Link>
-                            <Link href="/about/about-us" className="w-full sm:w-auto" aria-label="Learn More about NAAPE">
+                            <Link href="/about/about-us" className="w-full sm:w-auto z-20" aria-label="Learn More about NAAPE">
                                 <NaapButton
-                                    className="border border-primary h-full text-primary hover:bg-primary/10 text-base font-semibold px-7 py-3 w-full sm:w-auto bg-transparent transition-colors rounded-full"
+                                    className="border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 hover:text-primary text-base font-bold px-8 py-3.5 w-full sm:w-auto transition-all rounded-full shadow-sm hover:shadow-md"
                                 >
                                     Learn More
                                 </NaapButton>
@@ -362,7 +362,7 @@ export default function Hero() {
                                 className="grid grid-cols-2 grid-rows-3 gap-4 md:gap-5 w-full h-full rounded-2xl overflow-hidden"
                                 initial={{ opacity: 0, y: 40 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.7, type: "spring", stiffness: 70, damping: 15 }}
+                                transition={{ duration: 0.7, type: "spring" as const, stiffness: 70, damping: 15 }}
                             >
                                 {IMAGES.map((img, idx) => (
                                     <div

@@ -66,7 +66,7 @@ const fadeUp = {
     show: {
         opacity: 1,
         y: 0,
-        transition: { type: "spring", stiffness: 65, damping: 17, duration: 0.48 },
+        transition: { type: "spring" as const, stiffness: 65, damping: 17, duration: 0.48 },
     },
 };
 const staggerCards = {
@@ -84,7 +84,7 @@ const cardVariants = {
         opacity: 1,
         y: 0,
         scale: 1,
-        transition: { type: "spring", stiffness: 75, damping: 14, duration: 0.38 }
+        transition: { type: "spring" as const, stiffness: 75, damping: 14, duration: 0.38 }
     },
 };
 const buttonVariants = {
@@ -92,7 +92,7 @@ const buttonVariants = {
     show: {
         opacity: 1,
         y: 0,
-        transition: { type: "spring", stiffness: 65, damping: 12, delay: 0.23, duration: 0.33 },
+        transition: { type: "spring" as const, stiffness: 65, damping: 12, delay: 0.23, duration: 0.33 },
     },
 };
 
@@ -213,7 +213,7 @@ export default function LatestNews() {
                                 initial={{ opacity: 0, x: 60 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -60 }}
-                                transition={{ type: "spring", stiffness: 55, damping: 16, duration: 0.34 }}
+                                transition={{ type: "spring" as const, stiffness: 55, damping: 16, duration: 0.34 }}
                                 // Make the whole card clickable for navigation
                                 onClick={() => handleNewsClick(newsList[active].id)}
                                 style={{ cursor: "pointer" }}

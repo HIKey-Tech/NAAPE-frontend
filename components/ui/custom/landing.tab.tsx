@@ -278,7 +278,7 @@ export function LandingTabs({
                                             className="mr-1"
                                             aria-hidden="true"
                                             animate={activeTab === tab.value ? { scale: 1.18 } : { scale: 1 }}
-                                            transition={{ type: "spring", stiffness: 500, damping: 34 }}
+                                            transition={{ type: "spring" as const, stiffness: 500, damping: 34 }}
                                         >
                                             {tab.icon}
                                         </motion.span>

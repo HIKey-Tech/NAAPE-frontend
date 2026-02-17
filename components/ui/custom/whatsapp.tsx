@@ -102,7 +102,7 @@ export default function WhatsAppFloat() {
             <motion.div
                 initial={false}
                 animate={isOpen ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.95, y: 16 }}
-                transition={{ type: "spring", stiffness: 200, damping: 16 }}
+                transition={{ type: "spring" as const, stiffness: 200, damping: 16 }}
                 style={{
                     pointerEvents: isOpen ? "auto" : "none",
                     position: "fixed",
@@ -209,7 +209,7 @@ export default function WhatsAppFloat() {
                 <motion.div
                     initial={{ scale: 1 }}
                     animate={{ scale: ripple ? 1.08 : 1 }}
-                    transition={{ type: "spring", stiffness: 330, damping: 22, duration: 0.19 }}
+                    transition={{ type: "spring" as const, stiffness: 330, damping: 22, duration: 0.19 }}
                     style={{
                         display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%",
                     }}

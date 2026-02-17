@@ -21,7 +21,7 @@ const fadeUpVariants = {
         opacity: 1,
         y: 0,
         transition: {
-            type: "spring",
+            type: "spring" as const,
             stiffness: 60,
             damping: 15,
             duration: 0.55,
@@ -65,13 +65,13 @@ export default function ReadySection() {
                 <motion.p
                     className="text-white/90 text-lg md:text-xl mb-9 text-center max-w-2xl font-medium"
                     variants={fadeUpVariants as any}
-                    transition={{ delay: 0.18, duration: 0.65, type: "spring", stiffness: 55 }}
+                    transition={{ delay: 0.18, duration: 0.65, type: "spring" as const, stiffness: 55 }}
                 >
                     Elevate your career and join a community of passionate Nigerian pilots and engineers shaping the future of aviation excellence.
                 </motion.p>
                 <motion.div
                     variants={fadeUpVariants as any}
-                    transition={{ delay: 0.27, duration: 0.6, type: "spring", stiffness: 55 }}
+                    transition={{ delay: 0.27, duration: 0.6, type: "spring" as const, stiffness: 55 }}
                 >
                     <Link href="/register" passHref >
                         <NaapButton

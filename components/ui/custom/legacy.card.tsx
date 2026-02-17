@@ -80,45 +80,32 @@ export function LegacyStatCard({
     // Enhanced: Improved hierarchy, bolder value, prominent icon, and more visual separation/structure.
     return (
         <Card
-            className={`w-full bg-white max-w-full h-auto border-[#D3D7DF] shadow-none ${className}`}
-            style={{ borderRadius: "1.1rem", borderWidth: 1, borderStyle: "solid" }}
+            className={`w-full bg-card max-w-full h-auto border border-border/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 rounded-2xl ${className}`}
         >
-            <CardContent className="px-7 py-6 flex items-center gap-6">
+            <CardContent className="px-7 py-8 flex items-center gap-5">
                 {/* Icon Section */}
-                <div className="flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center shrink-0">
                     <div
-                        className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-[#ECF0FA] to-[#FCFBFF]"
-                        style={{ boxShadow: "0 2px 9px 0 rgba(54,83,164,0.10)" }}
+                        className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary/10 text-primary border border-primary/20"
                     >
                         {icon ? (
-                            React.cloneElement(icon as React.ReactElement, {
+                            React.cloneElement(icon as React.ReactElement<any>, {
+                                className: "w-8 h-8 text-primary"
                             })
                         ) : (
-                            <svg
-                                width="34"
-                                height="34"
-                                viewBox="0 0 24 24"
-                                stroke="#A5A7B0"
-                                fill="none"
-                                strokeWidth="1.5"
-                                className="drop-shadow-sm"
-                            >
-                                <circle cx="12" cy="12" r="10" stroke="#A5A7B0" strokeWidth="1.5" />
-                                <circle cx="12" cy="10.5" r="2" fill="#A5A7B0" />
-                                <rect x="9.5" y="14" width="5" height="1.2" rx=".6" fill="#A5A7B0" />
-                            </svg>
+                            <div className="w-8 h-8 bg-muted rounded-full" />
                         )}
                     </div>
                 </div>
                 {/* Text Section */}
-                <div className="flex flex-col flex-1 min-w-0 justify-center text-start space-y-0.5">
-                    <div className="flex items-baseline gap-x-2 flex-wrap max-w-[28rem]">
-                        <span className="text-[2.4rem] leading-[2.7rem] font-extrabold text-[#192040] drop-shadow-sm tracking-tight">
+                <div className="flex flex-col flex-1 min-w-0 justify-center text-start space-y-1">
+                    <div className="flex items-baseline gap-x-2 flex-wrap">
+                        <span className="text-4xl font-extrabold text-foreground tracking-tight leading-none">
                             {countedValue}
                         </span>
                     </div>
                     <span
-                        className="block text-[1.10rem] leading-[1.45rem] font-semibold text-[#51609C] mt-1 tracking-normal max-w-[22rem] overflow-hidden text-ellipsis"
+                        className="block text-sm font-semibold text-muted-foreground uppercase tracking-wide opacity-80"
                         style={{
                             WebkitLineClamp: 2,
                             WebkitBoxOrient: "vertical",

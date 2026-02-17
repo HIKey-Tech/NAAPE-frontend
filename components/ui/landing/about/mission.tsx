@@ -6,120 +6,103 @@ const containerVariants = {
     hidden: {},
     show: {
         transition: {
-            staggerChildren: 0.19,
-            delayChildren: 0.09,
+            staggerChildren: 0.1,
+            delayChildren: 0.1,
         },
     },
 };
 
 const fadeUpVariants = {
-    hidden: { opacity: 0, y: 34 },
+    hidden: { opacity: 0, y: 30 },
     show: {
         opacity: 1,
         y: 0,
         transition: {
-            type: "spring",
-            stiffness: 62,
-            damping: 17,
-            duration: 0.56,
+            type: "spring" as const,
+            stiffness: 50,
+            damping: 15,
+            duration: 0.6,
         },
     },
 };
 
 // Micro animation for icon "wobble"
 const iconMicroAnim = {
-    rest: { rotate: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 12 } },
+    rest: { scale: 1, rotate: 0 },
     hover: {
-        rotate: [0, 7, -7, 7, -5, 0],
-        scale: 1.08,
-        transition: {
-            type: "spring",
-            stiffness: 220,
-            damping: 8,
-            duration: 0.5,
-        },
-    },
+        scale: 1.1,
+        rotate: [0, -5, 5, 0],
+        transition: { duration: 0.4 }
+    }
 };
 
 export default function MissionSection() {
     return (
         <motion.section
-            className="relative w-full bg-[#203a5e] py-20 px-4 md:px-0 flex flex-col items-center overflow-hidden border-t border-b border-[#1b2942]"
+            className="relative w-full bg-slate-900 py-24 px-6 flex flex-col items-center overflow-hidden"
             variants={containerVariants}
             initial="hidden"
             whileInView="show"
-            viewport={{ once: true, amount: 0.28 }}
-            aria-label="NAAPE Mission and Vision"
+            viewport={{ once: true, amount: 0.2 }}
         >
-            {/* Visual Motif: subtle faded icons (background, storytelling, ambiguous) */}
-            <span
-                aria-hidden="true"
-                className="pointer-events-none opacity-10 absolute left-12 top-12 hidden md:block"
-            >
-                <Users2 size={108} className="text-white/70" />
+            {/* Visual Motif: subtle faded icons */}
+            <span aria-hidden="true" className="pointer-events-none opacity-[0.03] absolute left-10 top-10 hidden md:block">
+                <Users2 size={200} className="text-white" />
             </span>
-            <span
-                aria-hidden="true"
-                className="pointer-events-none opacity-10 absolute -right-10 bottom-10 hidden md:block"
-            >
-                <Eye size={124} className="text-white/30" />
+            <span aria-hidden="true" className="pointer-events-none opacity-[0.03] absolute -right-20 bottom-0 hidden md:block">
+                <Eye size={250} className="text-white" />
             </span>
 
-            <motion.h2
-                className="text-white text-4xl md:text-5xl font-black tracking-tight uppercase mb-16 text-center drop-shadow-none leading-tight"
-                variants={fadeUpVariants as any}
-            >
-                Mission & Vision
-            </motion.h2>
+            <motion.div variants={fadeUpVariants as any} className="z-10 text-center mb-16 max-w-3xl">
+                <h2 className="text-white text-4xl md:text-5xl font-black tracking-tight mb-6">
+                    Our <span className="text-accent">North Star</span>
+                </h2>
+                <p className="text-slate-400 text-lg md:text-xl font-medium">
+                    Guiding the future of Nigerian aviation through unwavering commitment to our core principles.
+                </p>
+            </motion.div>
 
             <motion.div
-                className="flex flex-col md:flex-row gap-10 w-full max-w-5xl justify-center items-stretch"
+                className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl items-stretch z-10"
                 variants={containerVariants}
             >
                 {/* Mission Card */}
                 <motion.div
-                    className="relative flex-1 min-w-[280px] flex flex-col items-center text-center gap-2
-                    border-2 border-[#eee8da] bg-white/95 rounded-xl px-8 py-12
-                    transition-colors"
+                    className="relative flex flex-col items-center text-center p-10 rounded-3xl bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all duration-300 group"
                     variants={fadeUpVariants as any}
                     initial="rest"
                     whileHover="hover"
                     animate="rest"
                 >
                     <motion.div
-                        className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[#203a5e] rounded-full p-3"
+                        className="bg-accent/20 p-4 rounded-2xl mb-6 group-hover:bg-accent/30 transition-colors"
                         variants={iconMicroAnim as any}
                     >
-                        <ArrowUpRight size={32} className="text-white" aria-hidden="true" />
+                        <ArrowUpRight size={32} className="text-accent" />
                     </motion.div>
-                    <h3 className="font-extrabold text-[#203a5e] text-xl tracking-wide mb-3 uppercase">
-                        Mission
-                    </h3>
-                    <p className="text-neutral-800 text-base md:text-lg font-medium mt-1 leading-relaxed max-w-xs">
-                        Championing safety, skill, and solidarity— we advocate broadly, protect our own, and nurture aviation’s future.
+                    <h3 className="font-bold text-white text-2xl mb-4">Mission</h3>
+                    <p className="text-slate-300 text-lg leading-relaxed">
+                        Championing safety, skill, and solidarity—advocating broadly, protecting our own, and nurturing aviation’s future.
                     </p>
                 </motion.div>
+
                 {/* Vision Card */}
                 <motion.div
-                    className="relative flex-1 min-w-[280px] flex flex-col items-center text-center gap-2
-                    border-2 border-[#eee8da] bg-white/95 rounded-xl px-8 py-12
-                    transition-colors"
+                    className="relative flex flex-col items-center text-center p-10 rounded-3xl bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all duration-300 group"
                     variants={fadeUpVariants as any}
                     initial="rest"
                     whileHover="hover"
                     animate="rest"
                 >
                     <motion.div
-                        className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[#203a5e] rounded-full p-3"
+                        className="bg-blue-500/20 p-4 rounded-2xl mb-6 group-hover:bg-blue-500/30 transition-colors"
                         variants={iconMicroAnim as any}
                     >
-                        <Eye size={32} className="text-white" aria-hidden="true" />
+                        <Eye size={32} className="text-blue-400" />
                     </motion.div>
-                    <h3 className="font-extrabold text-[#203a5e] text-xl tracking-wide mb-3 uppercase">
-                        Vision
-                    </h3>
-                    <p className="text-neutral-800 text-base md:text-lg font-medium mt-1 leading-relaxed max-w-xs">
-                        Together— pilots, engineers, stories— we are the horizon where tomorrow’s possibilities take flight.
+                    <h3 className="font-bold text-white text-2xl mb-4">Vision</h3>
+                    <p className="text-slate-300 text-lg leading-relaxed">
+                        Together—pilots, engineers, stories—we are the horizon where tomorrow’s possibilities take flight.
                     </p>
                 </motion.div>
             </motion.div>

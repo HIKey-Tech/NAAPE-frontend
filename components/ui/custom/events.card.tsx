@@ -1,127 +1,89 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { motion } from "framer-motion";
+import { Calendar, MapPin, Clock } from "lucide-react";
 
 export interface EventCardProps {
-    imageUrl: string;
+    imageUrl?: string;
     title: string;
-    date: string;
-    time: string;
-    venue: string;
+    date: string | Date;
+    time?: string;
+    venue?: string;
+    location?: string;
     registerUrl?: string;
     className?: string;
+    onCardClick?: () => void;
+    [key: string]: any; // allow extra API props to pass through without error
 }
 
-const cardVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 60, damping: 13, duration: 0.55 } },
-    hover: { scale: 1.03, boxShadow: "0 8px 32px 2px rgba(44,49,73,0.14)" }
-};
-
-const imageVariants = {
-    hidden: { scale: 0.98, opacity: 0 },
-    visible: { scale: 1, opacity: 1, transition: { delay: 0.08, duration: 0.44 } }
-};
-
-const contentVariants = {
-    hidden: { opacity: 0, y: 24 },
-    visible: { opacity: 1, y: 0, transition: { delay: 0.17, duration: 0.43, type: "spring", stiffness: 54, damping: 16 } }
-};
-
-export function EventCard({
+export default function EventCard({
     imageUrl,
     title,
     date,
     time,
     venue,
+    location,
     registerUrl,
     className = "",
+    onCardClick,
+    ...rest
 }: EventCardProps) {
-    return (
-        <motion.div
-            className={`rounded-xl overflow-hidden shadow-lg border bg-gradient-to-b from-card via-background/90 to-card/95 flex flex-col transition-all hover:shadow-xl ${className}`}
-            variants={cardVariants as any}
-            initial="hidden"
-            whileInView="visible"
-            whileHover="hover"
-            viewport={{ once: true, amount: 0.23 }}
-        >
-            {/* Image with subtle overlay */}
-            <motion.div
-                className="relative w-full h-52"
-                variants={imageVariants}
-            >
-                <Image
-                    src={imageUrl}
-                    alt={title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    priority
-                    draggable={false}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
-            </motion.div>
+    const displayVenue = venue || location || "TBA";
+    const displayDate = typeof date === "string" ? date : date instanceof Date ? date.toLocaleDateString() : "TBA";
+    const displayTime = time || "";
+    const displayImage = imageUrl || "/images/plane.jpg";
 
-            {/* Content section with detailed visual hierarchy */}
-            <motion.div
-                className="flex-1 flex flex-col gap-2 px-6 pt-6 pb-7"
-                variants={contentVariants as any}
-            >
-                {/* Event Title */}
-                <h3 className="text-lg md:text-xl font-extrabold text-primary mb-0.5 truncate" title={title}>
+    return (
+        <div
+            onClick={onCardClick}
+            className={`group relative flex flex-col h-full bg-white rounded-3xl overflow-hidden cursor-pointer shadow-lg shadow-slate-200/50 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 border border-slate-100 ${className}`}
+        >
+            {/* Image */}
+            <div className="relative h-48 w-full overflow-hidden">
+                <img
+                    src={displayImage}
+                    alt={title}
+                    className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
+                <div className="absolute bottom-3 left-3 right-3">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs font-bold">
+                        <Calendar size={12} className="text-accent" />
+                        {displayDate}
+                    </div>
+                </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-5 flex flex-col flex-1 gap-3">
+                <h3 className="text-lg font-bold text-slate-900 leading-tight group-hover:text-primary transition-colors line-clamp-2">
                     {title}
                 </h3>
-                {/* Date and Time with icons */}
-                <div className="flex items-center text-muted-foreground gap-3 text-sm font-semibold mb-1.5">
-                    <span className="flex items-center gap-1.5">
-                        <svg width={17} height={17} className="inline" fill="none" viewBox="0 0 20 20">
-                            <rect x="2.2" y="4.7" width="15.6" height="13.1" rx="2" fill="currentColor" opacity="0.11" />
-                            <rect x="2.2" y="4.7" width="15.6" height="13.1" rx="2" stroke="currentColor" strokeWidth="1.1"/>
-                            <rect x="4.5" y="7.5" width="11" height="7" rx="1.1" fill="none" />
-                            <rect x="6.7" y="2.9" width="1.3" height="3.1" rx="0.6" fill="currentColor" />
-                            <rect x="11.9" y="2.9" width="1.3" height="3.1" rx="0.6" fill="currentColor" />
-                        </svg>
-                        <span className="">{date}</span>
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                        <svg width={16} height={16} className="inline" fill="none" viewBox="0 0 20 20">
-                            <circle cx="10" cy="10" r="8.2" stroke="currentColor" strokeWidth="1.1" opacity="0.14" />
-                            <path d="M10 5.5v4.2l3.1 1.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
-                        </svg>
-                        <span>{time}</span>
-                    </span>
-                </div>
-                {/* Venue */}
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
-                    <svg width={16} height={16} className="inline" fill="none" viewBox="0 0 18 18">
-                        <path d="M9 16c2-2.5 6-6.83 6-9.45C15 3.4 12.31 1 9 1 5.69 1 3 3.4 3 6.55 3 9.18 7 13.48 9 16z" stroke="currentColor" strokeWidth="1.18" strokeLinejoin="round" opacity="0.22"/>
-                        <circle cx="9" cy="7" r="2.1" stroke="currentColor" strokeWidth="1.05"/>
-                    </svg>
-                    <span className="whitespace-pre-line line-clamp-2">{venue}</span>
-                </div>
-                {/* Divider */}
-                <div className="border-t border-muted my-2" />
 
-                {/* Register CTA button */}
-                <div className="mt-auto flex justify-end">
-                    <Link href={registerUrl ?? "#"} passHref>
-                        <motion.button
-                            className="inline-flex items-center gap-2 px-5 py-2 rounded-lg border border-primary bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground font-semibold text-sm shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/50"
-                            whileHover={{ scale: 1.048 }}
-                            type="button"
-                        >
-                            <svg width={17} height={17} viewBox="0 0 20 20" fill="none" className="inline -ml-1">
-                                <rect x="3.7" y="7.4" width="12.6" height="6.6" rx="1" stroke="currentColor" strokeWidth="1.1"/>
-                                <path d="M12.7 7.5v-1.1A2.2 2.2 0 0 0 10.5 4.2h-1A2.2 2.2 0 0 0 7.3 6.4v1.1" stroke="currentColor" strokeWidth="1.1"/>
-                            </svg>
-                            Register
-                        </motion.button>
-                    </Link>
+                <div className="flex flex-col gap-2 mt-auto">
+                    {displayTime && (
+                        <div className="flex items-center gap-2 text-sm text-slate-500">
+                            <Clock size={14} className="text-slate-400 shrink-0" />
+                            <span>{displayTime}</span>
+                        </div>
+                    )}
+                    <div className="flex items-center gap-2 text-sm text-slate-500">
+                        <MapPin size={14} className="text-slate-400 shrink-0" />
+                        <span className="line-clamp-1">{displayVenue}</span>
+                    </div>
                 </div>
-            </motion.div>
-        </motion.div>
+
+                <div className="pt-4 mt-2 border-t border-slate-100 flex justify-between items-center">
+                    <span className="text-xs font-bold text-primary uppercase tracking-wider group-hover:translate-x-1 transition-transform">
+                        View Details
+                    </span>
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M5 12h14m-7-7 7 7-7 7" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }

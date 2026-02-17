@@ -150,7 +150,7 @@ const iconVariants = {
         rotate: [0, 12, -12, 0],
         boxShadow: `0 0 0 2px ${color}44`,
         transition: {
-            type: "spring",
+            type: "spring" as const,
             stiffness: 420,
             damping: 19,
         },
@@ -158,7 +158,7 @@ const iconVariants = {
     tap: (color: string) => ({
         scale: 0.93,
         boxShadow: `0 0 0 1px ${color}76`,
-        transition: { type: "spring", stiffness: 430, damping: 17 },
+        transition: { type: "spring" as const, stiffness: 430, damping: 17 },
     }),
 };
 
@@ -227,7 +227,7 @@ const CertCard: React.FC<CertCardProps> = ({
                     whileHover="hover"
                     whileTap="tap"
                     custom={cfg.iconColor}
-                    transition={{ type: "spring", damping: 23 }}
+                    transition={{ type: "spring" as const, damping: 23 }}
                 >
                     {cfg.icon}
                 </motion.span>
@@ -280,7 +280,7 @@ const CertCard: React.FC<CertCardProps> = ({
                         whileHover="hover"
                         whileTap="tap"
                         custom={cfg.iconColor}
-                        transition={{ type: "spring", damping: 21 }}
+                        transition={{ type: "spring" as const, damping: 21 }}
                         aria-hidden="true"
                     >
                         {cfg.icon}
@@ -307,7 +307,7 @@ const CertCard: React.FC<CertCardProps> = ({
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -6 }}
-                            transition={{ duration: 0.32, type: "spring", stiffness: 290 }}
+                            transition={{ duration: 0.32, type: "spring" as const, stiffness: 290 }}
                         >
                             {cfg.desc}
                         </motion.span>
@@ -318,7 +318,7 @@ const CertCard: React.FC<CertCardProps> = ({
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -6 }}
-                                transition={{ delay: 0.09, duration: 0.32, type: "spring", stiffness: 225 }}
+                                transition={{ delay: 0.09, duration: 0.32, type: "spring" as const, stiffness: 225 }}
                             >
                                 {cfg.detail}
                             </motion.span>

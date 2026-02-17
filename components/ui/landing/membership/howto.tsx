@@ -1,196 +1,81 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { FaCheckCircle, FaFileWord, FaArrowLeft, FaExclamationCircle } from "react-icons/fa";
+import { CheckCircle, FileText, ArrowLeft, AlertCircle, Download } from "lucide-react";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { useSubmitForm } from "@/hooks/useMembership";
+import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
 
-const PRIMARY_COLOR = 'var(--primary)';
-
-// Form fields used in the membership form
 const defaultForm = {
-    name: "",
-    email: "",
-    tel: "",
-    address: "",
-    designation: "",
-    dateOfEmployment: "",
-    section: "",
-    qualification: "",
-    licenseNo: "",
-    employer: "",
-    rank: "",
-    signature: "",
-    date: "",
+    name: "", email: "", tel: "", address: "", designation: "",
+    dateOfEmployment: "", section: "", qualification: "",
+    licenseNo: "", employer: "", rank: "", signature: "", date: "",
 };
 
-function FormSection({
-    label,
-    name,
-    type = "text",
-    value,
-    onChange,
-    required = false,
-    textarea = false,
-    placeholder = "",
-    children,
-    ...props
-}: any) {
+function FormSection({ label, name, type = "text", value, onChange, required = false, textarea = false, placeholder = "", children, ...props }: any) {
     return (
-        <div className="mb-2">
-            <label
-                className="block text-sm font-semibold tracking-wide mb-1"
-                style={{ color: PRIMARY_COLOR }}
-                htmlFor={name}
-            >
+        <div>
+            <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor={name}>
                 {label}
                 {required && <span className="text-red-500 ml-1">*</span>}
             </label>
-            <div
-                className="rounded-md transition-all"
-                style={{
-                    border: `1.5px solid ${PRIMARY_COLOR}`,
-                    background: "white",
-                    overflow: "hidden"
-                }}
-            >
-                {textarea ? (
-                    <textarea
-                        id={name}
-                        name={name}
-                        value={value}
-                        onChange={onChange}
-                        placeholder={placeholder}
-                        className="input w-full min-h-[42px] resize-none bg-transparent border-0 focus:ring-0 focus:outline-0"
-                        style={{
-                            border: "none",
-                            boxShadow: "none",
-                            outline: "none",
-                            padding: "10px 14px"
-                        }}
-                        {...props}
-                    />
-                ) : (
-                    <input
-                        id={name}
-                        name={name}
-                        type={type}
-                        value={value}
-                        onChange={onChange}
-                        placeholder={placeholder}
-                        className="input w-full bg-transparent border-0 focus:ring-0 focus:outline-0"
-                        style={{
-                            border: "none",
-                            boxShadow: "none",
-                            outline: "none",
-                            padding: "10px 14px"
-                        }}
-                        required={required}
-                        {...props}
-                    />
-                )}
-            </div>
+            {textarea ? (
+                <textarea
+                    id={name} name={name} value={value} onChange={onChange} placeholder={placeholder}
+                    className="w-full min-h-[80px] resize-none bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all outline-none"
+                    {...props}
+                />
+            ) : (
+                <input
+                    id={name} name={name} type={type} value={value} onChange={onChange} placeholder={placeholder} required={required}
+                    className="w-full h-11 bg-slate-50 border border-slate-200 rounded-xl px-3 text-sm focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all outline-none"
+                    {...props}
+                />
+            )}
             {children}
         </div>
     );
 }
 
-function StepIndicator({ stepCount = 5 }) {
-    const steps = [
-        {
-            text: "Register with NAAPE",
-            icon: <FaCheckCircle style={{ color: PRIMARY_COLOR }} />,
-        },
-        {
-            text: "Complete the Membership Form",
-            icon: <FaCheckCircle style={{ color: PRIMARY_COLOR }} />,
-        },
-        {
-            text: "Authorize Salary Deduction",
-            icon: <FaCheckCircle style={{ color: PRIMARY_COLOR }} />,
-        },
-        {
-            text: "Submit & Receive Documents",
-            icon: <FaCheckCircle style={{ color: PRIMARY_COLOR }} />,
-        },
-        {
-            text: "Optional: Download as Word Doc",
-            icon: <FaFileWord style={{ color: PRIMARY_COLOR }} />,
-        },
-    ];
-
-    return (
-        <ol className="mb-7 mt-2 space-y-2">
-            {steps.map(({ text, icon }, idx) => (
-                <li
-                    key={idx}
-                    className={`flex items-center gap-2 pl-2 py-1 rounded ${idx === 0
-                            ? "font-semibold"
-                            : ""
-                        }
-                    text-gray-700 dark:text-gray-200`}
-                    style={
-                        idx === 0
-                            ? { background: "#f4faff", color: PRIMARY_COLOR }
-                            : {}
-                    }
-                >
-                    <span className="flex items-center justify-center w-6">
-                        {icon}
-                    </span>
-                    <span className={"ml-1"}>{text}</span>
-                </li>
-            ))}
-        </ol>
-    );
-}
+const steps = [
+    { text: "Register with NAAPE", icon: <CheckCircle size={18} className="text-primary" /> },
+    { text: "Complete the Membership Form", icon: <CheckCircle size={18} className="text-primary" /> },
+    { text: "Authorize Salary Deduction", icon: <CheckCircle size={18} className="text-primary" /> },
+    { text: "Submit & Receive Documents", icon: <CheckCircle size={18} className="text-primary" /> },
+    { text: "Optional: Download as Word Doc", icon: <FileText size={18} className="text-primary" /> },
+];
 
 function HowToBecomeMember() {
     const formRef = useRef<HTMLFormElement>(null);
-
-    // Membership form state, local to this component.
     const [form, setForm] = useState({ ...defaultForm });
     const [submitted, setSubmitted] = useState(false);
     const [submitStatus, setSubmitStatus] = useState<null | "success" | "error">(null);
     const [submitMessage, setSubmitMessage] = useState("");
     const [downloading, setDownloading] = useState(false);
-
-    // React Query mutation
     const submitMutation = useSubmitForm();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setForm((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Word doc generator mock
     const generateWordDoc = async () => {
         setDownloading(true);
-        // Simple delay mock
         await new Promise((r) => setTimeout(r, 1200));
         setDownloading(false);
-        // Normally would generate and download .doc with current form data
-        // Here, can use code for docx, file-saver, etc.
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setSubmitStatus(null);
         setSubmitMessage("");
-        // Send the full form object (all fields) to the backend for maximal data completeness
         try {
-            // This will POST the whole form object to /submit-form via the useSubmitForm hook.
             await submitMutation.mutateAsync({
                 ...form,
                 date: form.date ? new Date(form.date) : undefined,
-                dateOfEmployment: form.dateOfEmployment
-                    ? new Date(form.dateOfEmployment)
-                    : undefined,
+                dateOfEmployment: form.dateOfEmployment ? new Date(form.dateOfEmployment) : undefined,
             });
-
             setSubmitted(true);
             setSubmitStatus("success");
             setSubmitMessage("Your membership application has been received! We'll be in touch soon.");
@@ -203,258 +88,107 @@ function HowToBecomeMember() {
     };
 
     return (
-        <section className="relative max-w-2xl mx-auto px-2 sm:px-6 py-10">
-            <div className="relative z-10">
-                <div className="flex items-center gap-2 mb-3">
-                    <span className="h-6 w-1 rounded-full" style={{ background: PRIMARY_COLOR }} />
-                    <span
-                        className="uppercase tracking-widest font-semibold text-xs"
-                        style={{ color: PRIMARY_COLOR }}
-                    >
-                        Membership Process
-                    </span>
+        <section className="py-24 px-6 md:px-12 bg-white w-full">
+            <div className="max-w-3xl mx-auto">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="mb-10"
+                >
+                    <span className="text-secondary font-bold tracking-widest uppercase text-sm mb-2 block">Membership Process</span>
+                    <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4">
+                        How to Become a <span className="text-primary">Member</span>
+                    </h2>
+                    <p className="text-lg text-slate-500 font-medium leading-relaxed">
+                        Apply to join NAAPE and gain access to a professional network, member resources, and representation in your field.
+                    </p>
+                </motion.div>
+
+                {/* Steps */}
+                <div className="mb-10 space-y-3">
+                    {steps.map((step, idx) => (
+                        <div key={idx} className={`flex items-center gap-3 p-3 rounded-xl ${idx === 0 ? "bg-primary/5 border border-primary/10" : "bg-slate-50 border border-slate-100"}`}>
+                            {step.icon}
+                            <span className={`font-medium text-sm ${idx === 0 ? "text-primary font-bold" : "text-slate-600"}`}>{step.text}</span>
+                        </div>
+                    ))}
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-extrabold mb-2 leading-tight text-gray-900 dark:text-white">
-                    How to Become a Member of <span style={{ color: PRIMARY_COLOR }}>NAAPE</span>
-                </h2>
-                <p className="mb-4 text-base text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl">
-                    Apply to join the National Association of Aircraft Pilots &amp; Engineers (NAAPE) and gain access to a professional network, member resources, and representation in your field. Follow these steps to get started:
-                </p>
-                <StepIndicator />
 
-                <div className="border border-gray-200 dark:border-[#232a3e] rounded-xl p-6 sm:p-8 bg-white dark:bg-[#18213a] mb-9 transition-all">
-                    <h3
-                        className="text-2xl font-bold mb-1 tracking-tight flex items-center gap-2"
-                        style={{ color: PRIMARY_COLOR }}
-                    >
-                        <span>
-                            <FaFileWord className="inline-block mr-1" size={23} style={{ color: PRIMARY_COLOR }} />
-                        </span>
-                        <span>NAAPE Membership Form</span>
-                    </h3>
-                    <div className="text-xs text-gray-500 mb-4">
-                        Fields marked <span className="text-red-500">*</span> are required
-                    </div>
+                {/* Form Card */}
+                <Card className="border-0 shadow-2xl shadow-slate-200/50 rounded-3xl overflow-hidden">
+                    <CardContent className="p-8 md:p-10">
+                        <div className="flex items-center gap-3 mb-6">
+                            <FileText size={24} className="text-primary" />
+                            <h3 className="text-2xl font-bold text-slate-900">NAAPE Membership Form</h3>
+                        </div>
+                        <p className="text-xs text-slate-400 mb-6">Fields marked <span className="text-red-500">*</span> are required</p>
 
-                    {!submitted ? (
-                        <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <FormSection
-                                    label="Full Name"
-                                    name="name"
-                                    value={form.name}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="Enter your full name"
-                                />
-                                <FormSection
-                                    label="Email"
-                                    name="email"
-                                    type="email"
-                                    value={form.email}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="Enter a valid email address"
-                                />
-                                <FormSection
-                                    label="Tel. No."
-                                    name="tel"
-                                    value={form.tel}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="e.g. +234XXXXXXXXXX"
-                                />
-                                <FormSection
-                                    label="Address"
-                                    name="address"
-                                    value={form.address}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="Residence address"
-                                />
-                                <FormSection
-                                    label="Designation"
-                                    name="designation"
-                                    value={form.designation}
-                                    onChange={handleChange}
-                                    placeholder="(Optional) Your title"
-                                />
-                                <FormSection
-                                    label="Date Of Employment"
-                                    name="dateOfEmployment"
-                                    type="date"
-                                    value={form.dateOfEmployment}
-                                    onChange={handleChange}
-                                />
-                                <FormSection
-                                    label="Section"
-                                    name="section"
-                                    value={form.section}
-                                    onChange={handleChange}
-                                    placeholder="(Optional) Enter section/department"
-                                />
-                                <FormSection
-                                    label="Academic / Professional Qualification"
-                                    name="qualification"
-                                    value={form.qualification}
-                                    onChange={handleChange}
-                                    placeholder="Qualifications & certifications"
-                                />
-                                <FormSection
-                                    label="License No."
-                                    name="licenseNo"
-                                    value={form.licenseNo}
-                                    onChange={handleChange}
-                                    placeholder="(if any)"
-                                />
-                                <FormSection
-                                    label="Name / Address Of Employer"
-                                    name="employer"
-                                    value={form.employer}
-                                    onChange={handleChange}
-                                    textarea
-                                    rows={2}
-                                    placeholder="Company & address"
-                                />
-                                <FormSection
-                                    label="Rank (e.g. F/O, SF/O, SF/E, Capt, Engr.)"
-                                    name="rank"
-                                    value={form.rank}
-                                    onChange={handleChange}
-                                    placeholder="Enter rank (optional)"
-                                />
-                                <FormSection
-                                    label="Signature (type full name)"
-                                    name="signature"
-                                    value={form.signature}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="Type your full name"
-                                />
-                                <FormSection
-                                    label="Date"
-                                    name="date"
-                                    type="date"
-                                    value={form.date}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-                            <div className="flex flex-wrap gap-4 items-center pt-3">
-                                <NaapButton
-                                    type="submit"
-                                    className="px-8 font-bold text-lg rounded transition-colors"
-                                    style={{
-                                        color: "#fff",
-                                        background: PRIMARY_COLOR,
-                                        boxShadow: "none",
-                                        border: "none",
-                                    }}
-                                    disabled={submitMutation.isPending}
-                                >
-                                    {submitMutation.isPending ? "Submitting..." : "Submit Form"}
-                                </NaapButton>
-                                <button
-                                    type="button"
-                                    className="btn btn-outline flex items-center gap-2"
-                                    style={{
-                                        borderColor: PRIMARY_COLOR,
-                                        color: PRIMARY_COLOR,
-                                    }}
-                                    onClick={generateWordDoc}
-                                    disabled={downloading}
-                                >
-                                    {downloading ? (
-                                        <>
-                                            <svg
-                                                className="animate-spin -ml-1 mr-2 h-5 w-5"
-                                                style={{ color: PRIMARY_COLOR }}
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <circle
-                                                    className="opacity-25"
-                                                    cx="12"
-                                                    cy="12"
-                                                    r="10"
-                                                    stroke="currentColor"
-                                                    strokeWidth="4"
-                                                ></circle>
-                                                <path
-                                                    className="opacity-75"
-                                                    fill="currentColor"
-                                                    d="M4 12a8 8 0 018-8v8z"
-                                                ></path>
-                                            </svg>
-                                            Preparing...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <FaFileWord style={{ color: PRIMARY_COLOR }} /> Download as Word Document
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-                    ) : (
-                        submitStatus === "success" ? (
-                            <div className="p-5 bg-green-50 dark:bg-[#233031] border border-green-300 dark:border-green-600 rounded-xl text-center transition-all">
-                                <FaCheckCircle size={45} className="mx-auto mb-2" style={{ color: "#16a34a" }} />
-                                <p className="font-bold text-lg mb-2" style={{ color: "#15803d" }}>
-                                    Thank you for your submission!
-                                </p>
-                                <p className="mb-2 text-gray-700 dark:text-gray-200 leading-snug">
-                                    {submitMessage}
-                                </p>
-                                <div className="flex flex-wrap justify-center gap-2 mt-2">
-                                    <button
-                                        className="btn btn-link mt-1 p-0 flex items-center gap-2"
-                                        style={{ color: PRIMARY_COLOR }}
-                                        onClick={() => { setSubmitted(false); setSubmitStatus(null); setSubmitMessage(""); }}
+                        {!submitted ? (
+                            <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <FormSection label="Full Name" name="name" value={form.name} onChange={handleChange} required placeholder="Enter your full name" />
+                                    <FormSection label="Email" name="email" type="email" value={form.email} onChange={handleChange} required placeholder="you@example.com" />
+                                    <FormSection label="Phone Number" name="tel" value={form.tel} onChange={handleChange} required placeholder="+234XXXXXXXXXX" />
+                                    <FormSection label="Address" name="address" value={form.address} onChange={handleChange} required placeholder="Residence address" />
+                                    <FormSection label="Designation" name="designation" value={form.designation} onChange={handleChange} placeholder="Your title (optional)" />
+                                    <FormSection label="Date Of Employment" name="dateOfEmployment" type="date" value={form.dateOfEmployment} onChange={handleChange} />
+                                    <FormSection label="Section" name="section" value={form.section} onChange={handleChange} placeholder="Section/department (optional)" />
+                                    <FormSection label="Qualification" name="qualification" value={form.qualification} onChange={handleChange} placeholder="Qualifications & certifications" />
+                                    <FormSection label="License No." name="licenseNo" value={form.licenseNo} onChange={handleChange} placeholder="If applicable" />
+                                    <FormSection label="Employer" name="employer" value={form.employer} onChange={handleChange} textarea rows={2} placeholder="Company & address" />
+                                    <FormSection label="Rank" name="rank" value={form.rank} onChange={handleChange} placeholder="e.g. F/O, Capt, Engr." />
+                                    <FormSection label="Signature (type full name)" name="signature" value={form.signature} onChange={handleChange} required placeholder="Type your full name" />
+                                    <FormSection label="Date" name="date" type="date" value={form.date} onChange={handleChange} required />
+                                </div>
+                                <div className="flex flex-wrap gap-4 pt-4">
+                                    <NaapButton
+                                        type="submit"
+                                        className="bg-primary hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-xl text-base shadow-lg hover:shadow-primary/25 transition-all"
+                                        disabled={submitMutation.isPending}
                                     >
-                                        <FaArrowLeft /> Fill another form
-                                    </button>
+                                        {submitMutation.isPending ? "Submitting..." : "Submit Form"}
+                                    </NaapButton>
                                     <button
-                                        className="btn btn-outline flex items-center gap-2"
-                                        style={{
-                                            borderColor: PRIMARY_COLOR,
-                                            color: PRIMARY_COLOR,
-                                        }}
+                                        type="button"
+                                        className="flex items-center gap-2 px-6 py-3 border-2 border-primary text-primary font-bold rounded-xl text-sm hover:bg-primary/5 transition-colors"
                                         onClick={generateWordDoc}
+                                        disabled={downloading}
                                     >
-                                        <FaFileWord style={{ color: PRIMARY_COLOR }} /> Download as Word Document
+                                        {downloading ? (
+                                            <><div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" /> Preparing...</>
+                                        ) : (
+                                            <><Download size={16} /> Download as Word</>
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
+                        ) : submitStatus === "success" ? (
+                            <div className="p-8 bg-green-50 border border-green-200 rounded-2xl text-center">
+                                <CheckCircle size={48} className="mx-auto mb-4 text-green-500" />
+                                <p className="font-bold text-lg text-green-800 mb-2">Thank you for your submission!</p>
+                                <p className="text-green-700 mb-4">{submitMessage}</p>
+                                <div className="flex flex-wrap justify-center gap-3">
+                                    <button className="flex items-center gap-2 text-primary font-bold text-sm hover:underline" onClick={() => { setSubmitted(false); setSubmitStatus(null); }}>
+                                        <ArrowLeft size={16} /> Fill another form
+                                    </button>
+                                    <button className="flex items-center gap-2 px-4 py-2 border border-primary text-primary font-bold rounded-lg text-sm" onClick={generateWordDoc}>
+                                        <Download size={16} /> Download as Word
                                     </button>
                                 </div>
                             </div>
                         ) : (
-                            <div className="p-5 bg-red-50 dark:bg-[#3a2020] border border-red-300 dark:border-red-800 rounded-xl text-center transition-all">
-                                <FaExclamationCircle size={45} className="mx-auto mb-2" style={{ color: "#dc2626" }} />
-                                <p className="font-bold text-lg mb-2" style={{ color: "#dc2626" }}>
-                                    Submission Failed
-                                </p>
-                                <p className="mb-2 text-gray-700 dark:text-gray-200 leading-snug">
-                                    {submitMessage || "Sorry, we could not process your submission. Please try again or check your form entries."}
-                                </p>
-                                <div className="flex flex-wrap justify-center gap-2 mt-2">
-                                    <button
-                                        className="btn btn-link mt-1 p-0 flex items-center gap-2"
-                                        style={{ color: PRIMARY_COLOR }}
-                                        onClick={() => { setSubmitted(false); setSubmitStatus(null); setSubmitMessage(""); }}
-                                    >
-                                        <FaArrowLeft /> Try Again
-                                    </button>
-                                </div>
+                            <div className="p-8 bg-red-50 border border-red-200 rounded-2xl text-center">
+                                <AlertCircle size={48} className="mx-auto mb-4 text-red-500" />
+                                <p className="font-bold text-lg text-red-800 mb-2">Submission Failed</p>
+                                <p className="text-red-700 mb-4">{submitMessage || "Sorry, we could not process your submission."}</p>
+                                <button className="flex items-center gap-2 text-primary font-bold text-sm hover:underline mx-auto" onClick={() => { setSubmitted(false); setSubmitStatus(null); }}>
+                                    <ArrowLeft size={16} /> Try Again
+                                </button>
                             </div>
-                        )
-                    )}
-                </div>
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 mt-6 pl-1">
-                    <span className="font-bold uppercase" style={{ color: PRIMARY_COLOR }}>
-                        NAAPE Secretariat:
-                    </span>
-                    <span>No.2, Unity Road, Ikeja, Lagos. Tel: 234-01-8417290</span>
-                </div>
+                        )}
+                    </CardContent>
+                </Card>
             </div>
         </section>
     );

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { TestimonialCard } from "@/components/ui/custom/testimonial.card";
 import { motion, AnimatePresence } from "framer-motion";
+import { Quote } from "lucide-react";
 
 const testimonials = [
   {
@@ -19,163 +20,63 @@ const testimonials = [
   },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.2,
-    },
-  },
-};
-
-const cardVariants = {
-  enter: { opacity: 0, y: 50 },
-  center: { opacity: 1, y: 0, transition: { type: "spring", duration: 0.5 } },
-  exit: { opacity: 0, y: -30, transition: { duration: 0.3 } },
-};
-
-function useIsMobile(breakpoint: number = 768) {
-  const [isMobile, setIsMobile] = useState<boolean>(
-    typeof window === "undefined" ? false : window.innerWidth < breakpoint
-  );
-  useEffect(() => {
-    function handler() {
-      setIsMobile(window.innerWidth < breakpoint);
-    }
-    window.addEventListener("resize", handler);
-    handler();
-    return () => window.removeEventListener("resize", handler);
-  }, [breakpoint]);
-  return isMobile;
-}
-
 export default function TestimonialsSection() {
-  const isMobile = useIsMobile();
   const [active, setActive] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Mobile: auto-advance each 4s. Desktop: show all cards.
-  useEffect(() => {
-    if (isMobile) {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      intervalRef.current = setInterval(() => {
-        setActive((a) => (a + 1) % testimonials.length);
-      }, 4000);
-      return () => {
-        if (intervalRef.current) clearInterval(intervalRef.current);
-      };
-    }
-    // Clean up and reset for desktop (show all)
-    setActive(0);
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    return () => {};
-  }, [isMobile]);
-
-  // Dots navigation
-  const handleDot = (i: number) => {
-    setActive(i);
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = setInterval(() => {
-        setActive((a) => (a + 1) % testimonials.length);
-      }, 4000);
-    }
-  };
 
   return (
-    <motion.section
-      className="relative w-full max-w-screen-xl mx-auto py-16 px-4 flex flex-col items-center"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.5 }}
-    >
-      <motion.span
-        className="text-xs md:text-sm text-[#CA9414] font-semibold tracking-widest uppercase mb-2 text-center"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-      >
-        TESTIMONIALS
-      </motion.span>
-      <motion.h2
-        className="text-2xl md:text-3xl font-extrabold text-foreground mb-3 text-center"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.2 }}
-      >
-        Real stories from members whose passion for aviation found
-        <br className="hidden md:inline" /> purpose, support, and growth through NAAPE
-      </motion.h2>
-      <motion.div
-        className="w-full flex flex-col md:flex-row gap-4 items-center justify-center mt-10"
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-      >
-        {/* Mobile: auto slider; Desktop: show all */}
-        {isMobile ? (
-          <div className="w-full flex flex-col items-center">
-            <div className="w-full flex justify-center">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={active}
-                  variants={cardVariants as any}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  className="w-full max-w-md"
-                >
-                  <TestimonialCard
-                    testimonial={testimonials[active].testimonial}
-                    name={testimonials[active].name}
-                    title={testimonials[active].title}
-                    className="flex-1 max-w-md"
-                  />
-                </motion.div>
-              </AnimatePresence>
-            </div>
-            <div className="flex gap-2 mt-4 justify-center items-center">
-              {testimonials.map((_, i) => (
-                <button
-                  key={i}
-                  aria-label={`Go to testimonial ${i + 1}`}
-                  className={`
-                    h-2.5 w-2.5 rounded-full
-                    ${i === active ? "bg-primary scale-110" : "bg-muted"}
-                    transition-all
-                  `}
-                  style={{ transition: "background .2s, transform .2s" }}
-                  onClick={() => handleDot(i)}
-                  type="button"
-                />
-              ))}
-            </div>
+    <section className="relative w-full py-24 px-6 bg-[#1a1f36] overflow-hidden">
+      {/* Background Accents */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-30" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-accent/10 rounded-full blur-3xl opacity-30" />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto flex flex-col md:flex-row gap-16 items-center">
+        {/* Left: Text */}
+        <div className="flex-1 text-center md:text-left">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-accent text-sm font-bold tracking-wider uppercase mb-6">
+            <Quote size={14} className="fill-accent" />
+            <span>Member Stories</span>
           </div>
-        ) : (
-          testimonials.map((t, i) => (
+          <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
+            Voices of the <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Aviation Community</span>
+          </h2>
+          <p className="text-lg text-slate-400 font-medium mb-8 max-w-xl mx-auto md:mx-0">
+            Real stories from members whose passion for aviation found purpose, support, and growth through NAAPE.
+          </p>
+
+          <div className="flex gap-3 justify-center md:justify-start">
+            {testimonials.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActive(i)}
+                className={`h-3 rounded-full transition-all duration-300 ${active === i ? "w-12 bg-accent" : "w-3 bg-white/20 hover:bg-white/40"}`}
+                aria-label={`View testimonial ${i + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Right: Card */}
+        <div className="flex-1 w-full max-w-xl">
+          <AnimatePresence mode="wait">
             <motion.div
-              key={i}
-              variants={cardVariants as any}
-              initial="hidden"
-              animate="visible"
-              transition={{ duration: 0.5, delay: 0.2 + i * 0.15 }}
-              className="flex-1 max-w-md w-full"
+              key={active}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
             >
               <TestimonialCard
-                testimonial={t.testimonial}
-                name={t.name}
-                title={t.title}
-                className="flex-1 max-w-md"
+                testimonial={testimonials[active].testimonial}
+                name={testimonials[active].name}
+                title={testimonials[active].title}
+                className="bg-white/5 backdrop-blur-md border border-white/10 shadow-2xl shadow-black/20"
               />
             </motion.div>
-          ))
-        )}
-      </motion.div>
-    </motion.section>
+          </AnimatePresence>
+        </div>
+      </div>
+    </section>
   );
 }

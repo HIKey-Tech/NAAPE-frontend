@@ -60,11 +60,11 @@ export default function TopNavbar() {
     return initials.toUpperCase();
   }
 
-  // Adjust to ensure text is always centered for all items
+  // Modern reduced-noise link style
   const baseMenuLink =
-    "px-2.5 xl:px-3 py-2 font-bold transition focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] border-b-2 border-transparent uppercase tracking-wide text-[13px] hover:border-[color:var(--primary)] hover:text-[color:var(--primary)] flex items-center justify-center h-full text-center min-w-0 max-w-[155px] truncate justify-center items-center text-center";
+    "px-3 py-2 text-[14px] font-bold text-gray-600 transition-all duration-300 hover:text-primary hover:bg-primary/5 rounded-full flex items-center justify-center h-full text-center tracking-tight min-w-0 truncate";
   const activeMenuLink =
-    "text-[color:var(--primary)] font-black border-b-[3px] border-[color:var(--primary)]";
+    "text-primary bg-primary/10";
 
   // Improved Login Button Handler (for Desktop Nav)
   const handleLoginClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -96,7 +96,7 @@ export default function TopNavbar() {
   };
 
   return (
-    <nav className="w-full sticky top-0 left-0 z-40 bg-white border-b-2 border-[color:var(--primary)] flex items-center justify-center relative py-0">
+    <nav className="w-full sticky top-0 left-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100 flex items-center justify-center relative transition-all duration-300 shadow-sm">
       {/* Outer centered container, limit width */}
       <div className={`w-full flex flex-col items-center justify-center`}>
         {/* Main navbar row: set max-w and responsive px, hide overflow */}
@@ -122,10 +122,10 @@ export default function TopNavbar() {
                   alt="NAAPE Logo"
                   width={48}
                   height={48}
-                  className="object-contain h-[40px] w-[40px] xs:h-[46px] xs:w-[46px] sm:h-[53px] sm:w-[53px] bg-white rounded-lg border-[2.5px] border-[color:var(--primary)]"
+                  className="object-contain h-[40px] w-[40px] xs:h-[46px] xs:w-[46px] sm:h-[48px] sm:w-[48px] drop-shadow-sm hover:scale-105 transition-transform duration-300"
                   priority
                 />
-                <span className="ml-2 sm:ml-2 text-[15px] xs:text-[16px] sm:text-[18px] font-extrabold tracking-tight text-[color:var(--primary)] uppercase hidden sm:inline whitespace-nowrap leading-none group-hover:underline decoration-4 underline-offset-[8px] decoration-[color:var(--primary)] transition-all min-w-0 text-center">
+                <span className="ml-2 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600 dark:to-blue-400 sm:ml-3 text-[16px] xs:text-[18px] sm:text-[20px] font-extrabold tracking-tight uppercase hidden sm:inline whitespace-nowrap leading-none group-hover:opacity-80 transition-opacity min-w-0 text-center">
                   NAAPE
                 </span>
               </Link>
@@ -312,19 +312,19 @@ export default function TopNavbar() {
                 <div className="flex items-center gap-1.5 min-w-0">
                   {/* Use a real button for login for instant UI feedback/click handling */}
                   <NaapButton
-                    className="py-1.5 sm:py-2 px-4 border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[13px] font-extrabold min-w-[85px] sm:min-w-[105px] max-w-[112px] tracking-wide uppercase text-center truncate flex justify-center text-center"
-                    style={{ letterSpacing: "0.035em" }}
+                    className="py-2 px-5 rounded-full border border-gray-200 bg-white text-gray-700 hover:text-primary hover:border-primary hover:bg-primary/5 text-[14px] font-bold min-w-[90px] transition-all duration-300 shadow-sm hover:shadow-md"
+                    style={{ letterSpacing: "0.02em" }}
                     onClick={handleLoginClick}
                     disabled={loginLoading}
                   >
-                    {loginLoading ? "Logging In..." : "Log In"}
+                    {loginLoading ? "..." : "Log In"}
                   </NaapButton>
                   <Link href="/register" tabIndex={0}>
                     <NaapButton
-                      className="py-1.5 sm:py-2 px-4 bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white text-[13px] font-extrabold min-w-[110px] sm:min-w-[145px] max-w-[146px] border-2 border-[color:var(--primary)] uppercase tracking-wide text-center truncate flex justify-center text-center"
-                      style={{ letterSpacing: "0.04em" }}
+                      className="py-2 px-6 rounded-full bg-gradient-to-r from-primary to-blue-600 hover:to-blue-700 text-white text-[14px] font-bold border-0 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300 hover:-translate-y-0.5"
+                      style={{ letterSpacing: "0.02em" }}
                     >
-                      Become a member
+                      Join Now
                     </NaapButton>
                   </Link>
                 </div>
@@ -407,13 +407,13 @@ export default function TopNavbar() {
                 style={
                   item.label === "Contact"
                     ? {
-                        marginTop: "0.22rem",
-                        marginBottom: "0.5rem",
-                        zIndex: 2,
-                        position: "relative",
-                        fontFamily: "inherit",
-                        textAlign: "center"
-                      }
+                      marginTop: "0.22rem",
+                      marginBottom: "0.5rem",
+                      zIndex: 2,
+                      position: "relative",
+                      fontFamily: "inherit",
+                      textAlign: "center"
+                    }
                     : { textAlign: "center" }
                 }
                 onClick={() => setMobileOpen(false)}
@@ -577,8 +577,8 @@ export default function TopNavbar() {
           </div>
         </div>
       )}
-      <LogoutDialog 
-        open={showLogoutDialog} 
+      <LogoutDialog
+        open={showLogoutDialog}
         onOpenChange={setShowLogoutDialog}
         onConfirm={confirmLogout}
       />

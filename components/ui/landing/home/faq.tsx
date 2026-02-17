@@ -1,169 +1,86 @@
 "use client";
 
 import { useState } from "react";
-import { FaqItem } from "@/components/ui/custom/faq.card";
 import { motion, AnimatePresence } from "framer-motion";
-import { MdExpandMore } from "react-icons/md";
+import { Plus, Minus } from "lucide-react";
 
-const faqs: FaqItem[] = [
+const faqs = [
   {
     question: "What are the eligibility requirements?",
-    answer:
-      "Membership is open to licensed aviation professionals (pilots, engineers, flight dispatchers, etc.) and students pursuing aviation careers, subject to approval and compliance with NAAPE’s membership criteria.",
+    answer: "Membership is open to licensed aviation professionals (pilots, engineers, flight dispatchers, etc.) and students pursuing aviation careers, subject to approval and compliance with NAAPE’s membership criteria.",
   },
   {
     question: "How do I apply for membership?",
-    answer:
-      "You can apply online through our membership portal, or download the application form and submit it along with the required documentation. Applications are reviewed by our membership committee.",
+    answer: "You can apply online through our membership portal, or download the application form and submit it along with the required documentation. Applications are reviewed by our membership committee.",
   },
   {
     question: "What are the annual membership fees?",
-    answer:
-      "Annual membership fees vary by membership category (professional, associate, student). Current rates and payment instructions are available on our membership page.",
+    answer: "Annual membership fees vary by membership category (professional, associate, student). Current rates and payment instructions are available on our membership page.",
   },
   {
     question: "Is my personal information safe?",
-    answer:
-      "Yes, NAAPE prioritizes your privacy. Personal data is securely stored and used only for official association purposes. We do not share your information with third parties without your consent.",
+    answer: "Yes, NAAPE prioritizes your privacy. Personal data is securely stored and used only for official association purposes. We do not share your information with third parties without your consent.",
   },
   {
     question: "How can we get in touch?",
-    answer:
-      "For any inquiries, please visit our Contact page for phone numbers, email addresses, and our online contact form. We’re here to help!",
+    answer: "For any inquiries, please visit our Contact page for phone numbers, email addresses, and our online contact form. We’re here to help!",
   },
 ];
-
-const sectionVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } },
-};
-
-const itemFade = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: 0.1 + i * 0.18, duration: 0.5 }
-  })
-};
-
-const answerVariants = {
-  collapsed: { height: 0, opacity: 0, marginTop: 0 },
-  open: { height: "auto", opacity: 1, marginTop: 24 }
-};
-
-function FAQItem({
-  faq,
-  isOpen,
-  onClick,
-  index
-}: {
-  faq: FaqItem;
-  isOpen: boolean;
-  onClick: () => void;
-  index: number;
-}) {
-  return (
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      variants={itemFade}
-      custom={index + 2}
-      viewport={{ once: true, amount: 0.2 }}
-      className={`group bg-white border border-[#f3e7cf] shadow-sm rounded-xl overflow-hidden mb-5 transition-all ${
-        isOpen ? "border-[#CA9414] shadow-[0_6px_24px_#ca941417]" : "border-[#f3e7cf]"
-      }`}
-    >
-      <button
-        className={`w-full flex justify-between items-center px-7 py-6 text-left focus:outline-none transition-colors group`}
-        onClick={onClick}
-        aria-expanded={isOpen}
-      >
-        <span
-          className={`font-semibold text-[#232835] text-lg md:text-xl transition group-hover:text-[#CA9414] ${
-            isOpen ? "text-[#CA9414]" : ""
-          }`}
-        >
-          {faq.question}
-        </span>
-        <MdExpandMore
-          className={`h-7 w-7 text-[#CA9414] ml-2 min-w-7 transform transition-transform duration-300 ${
-            isOpen ? "rotate-180 scale-110" : ""
-          } drop-shadow`}
-        />
-      </button>
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            key="answer"
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            variants={answerVariants}
-            transition={{ duration: 0.35, ease: "easeInOut" }}
-            className="
-              px-7 pb-7 pr-2
-              bg-[#FAF8F2]
-              text-[#475569] text-base md:text-lg
-              leading-relaxed border-t border-[#f3e7cf] font-normal
-              rounded-b-xl
-            "
-          >
-            <span className="block pl-1">{faq.answer}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
 
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <motion.section
-      className="w-full max-w-2xl mx-auto py-24 px-4 flex flex-col items-center"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.45 }}
-      variants={sectionVariants as any}
-    >
-      <motion.div
-        className="flex flex-col items-center mb-2"
-        variants={itemFade}
-        custom={0}
-      >
-        <span className="text-[13px] md:text-sm text-[#CA9414] font-bold tracking-[0.18em] uppercase mb-2 text-center drop-shadow-[0_1px_0_#fff]">
-          FREQUENTLY ASKED QUESTIONS
+    <section className="w-full max-w-4xl mx-auto py-24 px-6">
+      <div className="text-center mb-16">
+        <span className="text-sm font-bold text-accent tracking-widest uppercase mb-2 block">
+          Support
         </span>
-      </motion.div>
-      <motion.h2
-        className="text-[2.25rem] md:text-[2.75rem] font-black text-[#232835] mb-3 text-center tracking-tight leading-tight"
-        variants={itemFade}
-        custom={1}
-      >
-        Your Questions, Answered
-      </motion.h2>
-      <motion.p
-        className="text-base md:text-lg text-[#737373] mb-10 text-center max-w-xl"
-        variants={itemFade}
-        custom={1.5}
-      >
-        Find quick answers to common questions about NAAPE membership, benefits, and activities.
-      </motion.p>
-      <div className="w-full space-y-0">
-        {faqs.map((faq, idx) => (
-          <FAQItem
-            key={faq.question}
-            faq={faq}
-            isOpen={openIndex === idx}
-            onClick={() =>
-              setOpenIndex(openIndex === idx ? null : idx)
-            }
-            index={idx}
-          />
-        ))}
+        <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6">
+          Frequently Asked Questions
+        </h2>
+        <p className="text-lg text-slate-500 max-w-xl mx-auto">
+          Find quick answers to common questions about NAAPE membership, benefits, and activities.
+        </p>
       </div>
-    </motion.section>
+
+      <div className="flex flex-col gap-4">
+        {faqs.map((faq, idx) => {
+          const isOpen = openIndex === idx;
+          return (
+            <div
+              key={idx}
+              className={`border rounded-2xl transition-all duration-300 ${isOpen ? "bg-white border-primary/20 shadow-lg shadow-primary/5" : "bg-white border-slate-200 hover:border-slate-300"}`}
+            >
+              <button
+                onClick={() => setOpenIndex(isOpen ? null : idx)}
+                className="w-full flex justify-between items-center p-6 text-left"
+              >
+                <span className={`text-lg font-bold transition-colors ${isOpen ? "text-primary" : "text-slate-800"}`}>
+                  {faq.question}
+                </span>
+                <div className={`p-2 rounded-full transition-colors ${isOpen ? "bg-primary text-white" : "bg-slate-100 text-slate-500"}`}>
+                  {isOpen ? <Minus size={20} /> : <Plus size={20} />}
+                </div>
+              </button>
+              <AnimatePresence>
+                {isOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-6 text-slate-600 leading-relaxed font-medium">
+                      {faq.answer}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )
+        })}
+      </div>
+    </section>
   );
 }

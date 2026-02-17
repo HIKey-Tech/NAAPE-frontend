@@ -6,81 +6,56 @@ import Link from "next/link";
 
 export default function AboutSection() {
     return (
-        <section className="relative w-full min-h-screen flex flex-col md:flex-row items-center justify-center bg-gradient-to-br from-[#F5F7FA] to-[#e5ecfa] overflow-hidden px-4 py-6 md:px-0">
+        <section className="relative w-full min-h-screen flex flex-col md:flex-row items-center justify-center bg-muted/30 overflow-hidden px-6 py-16 md:px-12">
             {/* Soft full-bg overlay */}
             <div
-                className="pointer-events-none absolute inset-0 z-0"
+                className="pointer-events-none absolute inset-0 z-0 bg-[url('/images/handplane.jpg')] bg-cover bg-center opacity-[0.03]"
                 aria-hidden
-                style={{
-                    backgroundImage: "url('/images/handplane.jpg')",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    opacity: 0.30,
-                }}
             ></div>
 
-            <div className="relative z-10 flex flex-col md:flex-row justify-center items-center gap-12 w-full max-w-full p-6">
+            <div className="relative z-10 flex flex-col md:flex-row justify-center items-center gap-16 w-full max-w-7xl mx-auto">
                 {/* Left: Card-like video preview */}
-                <div className="flex-shrink-0 flex-grow-0 w-full md:w-fit max-w-fit">
-                    <div className="relative rounded-[18px] overflow-hidden bg-[#232835] border border-[#E6EAF1] min-h-full">
+                <div className="flex-shrink-0 w-full md:w-1/2 max-w-lg group">
+                    <div className="relative rounded-3xl overflow-hidden bg-slate-900 border border-white/10 shadow-2xl shadow-indigo-500/10 min-h-[400px]">
                         <Image
                             src="/images/loginpic.jpg"
                             alt="Nigerian pilots in cockpit"
                             width={450}
                             height={450}
                             priority
-                            className="object-cover w-full h-full mt-[34px] select-none"
-                            style={{
-                                objectPosition: "center",
-                            }}
+                            className="object-cover w-full h-full opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"
                         />
                         {/* Video play button overlay */}
                         <button
                             aria-label="Play Video"
-                            tabIndex={0}
-                            className="transition-transform duration-200 hover:scale-105 focus:scale-100 active:scale-95 absolute left-1/2 top-[calc(50%+16px)] -translate-x-1/2 -translate-y-1/2 z-20 bg-black/45 hover:bg-black/60 rounded-full p-4 flex items-center justify-center focus:outline-none border-4 border-white/30"
+                            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-full p-5 flex items-center justify-center border border-white/40 transition-all duration-300 hover:scale-110 group-hover:shadow-[0_0_40px_rgba(255,255,255,0.3)]"
                         >
-                            <svg width="54" height="54" viewBox="0 0 54 54" fill="none" aria-hidden="true">
-                                <circle
-                                    cx="27"
-                                    cy="27"
-                                    r="25"
-                                    fill="#fff"
-                                    fillOpacity="0.18"
-                                    stroke="#fff"
-                                    strokeWidth="2"
-                                />
-                                <polygon
-                                    points="23,20 36,27 23,34"
-                                    fill="#fff"
-                                    style={{ filter: "drop-shadow(0 1px 1.5px rgba(0,0,0,0.14))" }}
-                                />
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="white" className="ml-1">
+                                <path d="M8 5v14l11-7z" />
                             </svg>
                         </button>
                     </div>
                 </div>
 
                 {/* Right: Content */}
-                <div className="flex flex-col justify-center gap-3 md:gap-5 w-full max-w-xl">
-                    <span className="text-[#CA9414] font-bold text-xs md:text-sm tracking-wider uppercase mb-1 md:mb-0 letter-spacing[.11em]">
-                        ABOUT NAAPE
-                    </span>
-                    <h2 className=" text-[2.15rem] md:text-[2.4rem] font-extrabold leading-tight mb-1 md:mb-2 tracking-tight">
-                        <span className="block mb-0.5">
-                            Advancing <span className="">Aviation Excellence</span>
+                <div className="flex flex-col justify-center gap-6 w-full md:w-1/2">
+                    <div className="flex flex-col gap-2">
+                        <span className="text-accent font-bold text-sm tracking-widest uppercase">
+                            About NAAPE
                         </span>
-                        <span className="block  text-[1.34rem] md:text-[1.5rem] font-bold tracking-wide">
+                        <h2 className="text-4xl md:text-5xl font-black text-foreground leading-tight tracking-tight">
+                            Advancing <span className="text-primary bg-primary/5 px-2 rounded-lg decoration-clone">Aviation Excellence</span><br />
                             and Safety in Nigeria
-                        </span>
-                    </h2>
-                    <hr className="w-12 border-t-2 border-[#CA9414] mb-2 md:mb-2 mt-[4px] md:mt-[6px] rounded-lg" />
-                    <p className=" text-[1.07rem] md:text-lg font-medium leading-relaxed mb-2 md:mb-4 w-full max-w-prose">
-                        Since 1985, the <span className="font-bold">National Association of Aircraft Pilots and Engineers (NAAPE)</span> has been the united voice of Nigeria’s pilots and engineers—<span className=" font-semibold">our mission is to advance aviation safety, professionalism, and technical expertise</span> in the Nigerian aviation industry through advocacy and safeguarding the rights of those who keep our skies secure.
+                        </h2>
+                    </div>
+
+                    <p className="text-lg text-muted-foreground leading-relaxed font-medium">
+                        Since 1985, the <span className="text-foreground font-bold">National Association of Aircraft Pilots and Engineers (NAAPE)</span> has been the united voice of Nigeria’s pilots and engineers—<span className="text-primary font-semibold">our mission is to advance aviation safety, professionalism, and technical expertise</span> in the Nigerian aviation industry through advocacy and safeguarding the rights of those who keep our skies secure.
                     </p>
 
-                    <Link href="/about/about-us">
+                    <Link href="/about/about-us" className="mt-4">
                         <NaapButton
-                            className="bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 w-fit text-white font-semibold px-7 py-3 text-base transition flex items-center gap-2 rounded-full shadow-none border-0"
+                            className="bg-primary hover:bg-blue-700 text-white font-bold px-8 py-4 text-base transition-all rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1 flex items-center gap-2"
                             icon={<FaArrowRight size={16} />}
                             iconPosition="right"
                         >
@@ -92,4 +67,3 @@ export default function AboutSection() {
         </section>
     );
 }
-
