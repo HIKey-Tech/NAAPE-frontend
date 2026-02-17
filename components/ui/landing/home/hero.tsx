@@ -81,14 +81,20 @@ export default function Hero() {
     useEffect(() => { if (done) setSrText(heroTypewriteText); else setSrText(""); }, [done]);
 
     return (
-        <section className="relative w-full min-h-screen flex flex-col items-center justify-center bg-[#f8fafc] overflow-hidden">
-            {/* Subtle background pattern */}
-            <div className="absolute inset-0 opacity-[0.03]" style={{
-                backgroundImage: "radial-gradient(circle, #000 1px, transparent 1px)",
-                backgroundSize: "24px 24px"
-            }} />
+        <section className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden">
+            {/* Background Image with Overlay */}
+            <div className="absolute inset-0 z-0">
+                <Image
+                    src="/images/hero_bg.jpg"
+                    alt="Hero Background"
+                    fill
+                    className="object-cover"
+                    priority
+                />
+                <div className="absolute inset-0 bg-slate-900/80" /> {/* Dark overlay for readability */}
+            </div>
 
-            <main className="relative z-10 w-full max-w-7xl mx-auto px-6 py-20 md:py-0 min-h-screen flex flex-col justify-center">
+            <main className="relative z-10 w-full max-w-7xl mx-auto px-6 py-24 md:py-0 min-h-screen flex flex-col justify-center">
                 <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
                     {/* Left: Content */}
                     <motion.div
@@ -98,18 +104,16 @@ export default function Hero() {
                         transition={{ duration: 0.6 }}
                     >
                         <motion.h1
-                            className="text-4xl sm:text-5xl md:text-[3.5rem] lg:text-6xl font-black tracking-tight leading-[1.08]"
+                            className="text-4xl sm:text-5xl md:text-[3.5rem] lg:text-6xl font-black tracking-tight leading-[1.08] text-white"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1, duration: 0.5 }}
                         >
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-600 to-indigo-600">
-                                The National Association of Aircraft Pilots & Engineers
-                            </span>
+                            The National Association of Aircraft Pilots & Engineers
                         </motion.h1>
 
                         <motion.p
-                            className="text-slate-500 text-lg md:text-xl max-w-lg leading-relaxed font-medium"
+                            className="text-slate-200 text-lg md:text-xl max-w-lg leading-relaxed font-medium"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.3 }}
@@ -118,7 +122,7 @@ export default function Hero() {
                             <span aria-hidden="true">
                                 {displayed}
                                 {!done && showCursor && (
-                                    <span className="ml-0.5 font-mono text-slate-800 animate-blink" style={{ opacity: 0.7 }}>|</span>
+                                    <span className="ml-0.5 font-mono text-white animate-blink" style={{ opacity: 0.7 }}>|</span>
                                 )}
                             </span>
                             {done && <span className="sr-only">{srText}</span>}
@@ -132,7 +136,7 @@ export default function Hero() {
                         >
                             <Link href="/membership" className="w-full sm:w-auto z-20">
                                 <NaapButton
-                                    className="bg-primary hover:bg-blue-700 w-full sm:w-auto text-white text-base font-bold px-8 py-3.5 transition-all rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5"
+                                    className="bg-primary hover:bg-blue-600 w-full sm:w-auto text-white text-base font-bold px-8 py-3.5 transition-all rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5"
                                     icon={<ArrowRight size={16} />}
                                     iconPosition="right"
                                 >
@@ -141,7 +145,7 @@ export default function Hero() {
                             </Link>
                             <Link href="/about/about-us" className="w-full sm:w-auto z-20">
                                 <NaapButton
-                                    className="border-2 border-slate-200 bg-white hover:bg-slate-50 text-slate-700 hover:text-primary text-base font-bold px-8 py-3.5 w-full sm:w-auto transition-all rounded-full"
+                                    className="border-2 border-white/20 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white hover:text-white text-base font-bold px-8 py-3.5 w-full sm:w-auto transition-all rounded-full"
                                 >
                                     Learn More
                                 </NaapButton>
@@ -156,13 +160,13 @@ export default function Hero() {
                         animate={{ opacity: 1, x: 0, scale: 1 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
                     >
-                        {/* Decorative Background Blob/Shape */}
-                        <div className="absolute -inset-4 bg-gradient-to-tr from-blue-100/50 to-indigo-100/50 rounded-[2.5rem] -z-10 transform -rotate-2 scale-105" />
+                        {/* Decorative Background Blob/Shape - Adjusted for dark bg */}
+                        <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500/20 to-indigo-500/20 rounded-[2.5rem] -z-10 transform -rotate-2 scale-105 blur-lg" />
 
-                        <div className="absolute -inset-1 bg-white/40 rounded-[2.5rem] -z-10 blur-xl" />
+                        <div className="absolute -inset-1 bg-white/10 rounded-[2.5rem] -z-10 blur-xl" />
 
                         {/* Main Image */}
-                        <div className="relative rounded-[2rem] overflow-hidden shadow-2xl shadow-indigo-900/10 border-[6px] border-white aspect-[4/3] transform transition-transform hover:scale-[1.01] duration-500">
+                        <div className="relative rounded-[2rem] overflow-hidden shadow-2xl shadow-black/40 border-[6px] border-white/10 aspect-[4/3] transform transition-transform hover:scale-[1.01] duration-500">
                             <Image
                                 src="/about/cockpit.jpg"
                                 alt="Modern aircraft cockpit view"
@@ -171,11 +175,11 @@ export default function Hero() {
                                 priority
                                 sizes="(max-width: 1024px) 100vw, 50vw"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
 
                             {/* Inner Overlay badge */}
                             <div className="absolute bottom-6 left-6 right-6">
-                                <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white">
+                                <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white">
                                     <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                                     <span className="text-sm font-medium tracking-wide">Excellence in Flight Operations</span>
                                 </div>
@@ -184,7 +188,7 @@ export default function Hero() {
 
                         {/* Floating stat badge - Top Right */}
                         <motion.div
-                            className="absolute -top-6 -right-6 md:-right-10 bg-white rounded-2xl p-4 pr-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 hidden sm:flex items-center gap-4"
+                            className="absolute -top-6 -right-6 md:-right-10 bg-white/95 backdrop-blur-sm rounded-2xl p-4 pr-6 shadow-[0_8px_30px_rgb(0,0,0,0.3)] border border-white/20 hidden sm:flex items-center gap-4"
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: [0, -5, 0] }}
                             transition={{
@@ -203,7 +207,7 @@ export default function Hero() {
 
                         {/* Floating "Safety First" badge - Replacing the small image */}
                         <motion.div
-                            className="absolute -bottom-6 -left-6 md:-left-10 bg-white rounded-2xl p-4 pr-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 hidden sm:flex items-center gap-4"
+                            className="absolute -bottom-6 -left-6 md:-left-10 bg-white/95 backdrop-blur-sm rounded-2xl p-4 pr-6 shadow-[0_8px_30px_rgb(0,0,0,0.3)] border border-white/20 hidden sm:flex items-center gap-4"
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0, y: [0, 5, 0] }}
                             transition={{
@@ -222,29 +226,6 @@ export default function Hero() {
                         </motion.div>
                     </motion.div>
                 </div>
-
-                {/* Stats Row */}
-                <motion.div
-                    className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 lg:mt-20"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5, duration: 0.5 }}
-                >
-                    {stats.map(({ icon: Icon, value, label }, idx) => (
-                        <div
-                            key={idx}
-                            className="flex items-center gap-4 bg-white rounded-2xl px-5 py-5 border border-slate-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
-                        >
-                            <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center shrink-0">
-                                <Icon size={22} className="text-primary" />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-black text-slate-900 leading-none">{value}</p>
-                                <p className="text-sm text-slate-500 font-semibold mt-0.5">{label}</p>
-                            </div>
-                        </div>
-                    ))}
-                </motion.div>
             </main>
 
             <style jsx global>{`
