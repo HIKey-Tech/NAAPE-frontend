@@ -63,7 +63,7 @@ export default function LatestNews() {
     return (
         <section className="w-full max-w-6xl mx-auto py-24 px-6">
             <motion.div
-                className="text-center mb-16"
+                className="text-center mb-10"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -80,7 +80,7 @@ export default function LatestNews() {
             </motion.div>
 
             <motion.div
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
                 variants={containerVariants}
                 initial="hidden"
                 whileInView="show"
