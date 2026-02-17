@@ -70,8 +70,7 @@ export default function TopNavbar() {
   ];
 
   // Styles
-  const baseMenuLink = `px-3 py-2 text-[14px] font-bold transition-all duration-300 rounded-full flex items-center justify-center h-full text-center tracking-tight min-w-0 truncate ${isScrolled ? "text-gray-600 hover:text-primary hover:bg-primary/10" : "text-white/90 hover:text-white hover:bg-white/10"}`;
-  const activeMenuLink = "text-primary hover:text-primary";
+  const baseMenuLink = "px-3 py-2 text-[14px] font-bold transition-all duration-300 rounded-full flex items-center justify-center h-full text-center tracking-tight min-w-0 truncate";
 
   // Handlers
   const handleLoginClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -126,6 +125,20 @@ export default function TopNavbar() {
           <div className="flex items-center bg-white/5 backdrop-blur-sm rounded-full p-1 border border-white/10 mr-4">
             {menuItems.map((item) => {
               const isActive = activeDropdown === item.label;
+
+              // Determine color classes
+              let colorClasses = "";
+              if (isActive) {
+                // Active/Open state - Always dark text (on white pill)
+                colorClasses = "text-primary";
+              } else if (isScrolled) {
+                // Inactive + Scrolled (White Navbar)
+                colorClasses = "text-gray-600 hover:text-primary hover:bg-primary/10";
+              } else {
+                // Inactive + unscrolled (Transparent Header)
+                colorClasses = "text-white/90 hover:text-white hover:bg-white/10";
+              }
+
               return (
                 <div
                   key={item.label}
@@ -134,7 +147,7 @@ export default function TopNavbar() {
                   onMouseLeave={handleMouseLeave}
                 >
                   <button
-                    className={`${baseMenuLink} ${isActive ? activeMenuLink : ""}`}
+                    className={`${baseMenuLink} ${colorClasses}`}
                     onClick={() => { if (item.href) router.push(item.href); }}
                   >
                     <span className="relative z-10 flex items-center gap-1.5">
