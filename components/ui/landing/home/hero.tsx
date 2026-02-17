@@ -151,64 +151,73 @@ export default function Hero() {
 
                     {/* Right: Single Hero Image with floating elements */}
                     <motion.div
-                        className="flex-1 w-full max-w-lg lg:max-w-xl relative"
+                        className="flex-1 w-full max-w-lg lg:max-w-xl relative mx-auto lg:mx-0"
                         initial={{ opacity: 0, x: 30, scale: 0.95 }}
                         animate={{ opacity: 1, x: 0, scale: 1 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
                     >
+                        {/* Decorative Background Blob/Shape */}
+                        <div className="absolute -inset-4 bg-gradient-to-tr from-blue-100/50 to-indigo-100/50 rounded-[2.5rem] -z-10 transform -rotate-2 scale-105" />
+
+                        <div className="absolute -inset-1 bg-white/40 rounded-[2.5rem] -z-10 blur-xl" />
+
                         {/* Main Image */}
-                        <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-slate-300/60 border-4 border-white aspect-[4/3]">
+                        <div className="relative rounded-[2rem] overflow-hidden shadow-2xl shadow-indigo-900/10 border-[6px] border-white aspect-[4/3] transform transition-transform hover:scale-[1.01] duration-500">
                             <Image
-                                src="/images/event1.jpg"
-                                alt="NAAPE aviation professionals"
+                                src="/about/cockpit.jpg"
+                                alt="Modern aircraft cockpit view"
                                 fill
                                 className="object-cover"
                                 priority
                                 sizes="(max-width: 1024px) 100vw, 50vw"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent" />
-                            {/* Overlay badge */}
-                            <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3">
-                                <div className="bg-white/90 backdrop-blur-md rounded-2xl px-5 py-3 flex items-center gap-3 shadow-lg">
-                                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                                        <Image src="/logo.png" alt="NAAPE" width={24} height={24} />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-black text-slate-900">NAAPE Nigeria</p>
-                                        <p className="text-xs text-slate-500 font-medium">Est. 1984 • Aviation Excellence</p>
-                                    </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
+
+                            {/* Inner Overlay badge */}
+                            <div className="absolute bottom-6 left-6 right-6">
+                                <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white">
+                                    <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                    <span className="text-sm font-medium tracking-wide">Excellence in Flight Operations</span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Secondary floating image */}
+                        {/* Floating stat badge - Top Right */}
                         <motion.div
-                            className="absolute -bottom-6 -left-6 w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden shadow-xl border-4 border-white hidden sm:block"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.6 }}
-                        >
-                            <Image
-                                src="/images/loginpic.jpg"
-                                alt="Aviation crew"
-                                fill
-                                className="object-cover"
-                            />
-                        </motion.div>
-
-                        {/* Floating stat badge */}
-                        <motion.div
-                            className="absolute -top-4 -right-4 bg-white rounded-2xl px-5 py-4 shadow-xl border border-slate-100 hidden sm:flex items-center gap-3"
+                            className="absolute -top-6 -right-6 md:-right-10 bg-white rounded-2xl p-4 pr-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 hidden sm:flex items-center gap-4"
                             initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.8 }}
+                            animate={{ opacity: 1, y: [0, -5, 0] }}
+                            transition={{
+                                opacity: { delay: 0.8 },
+                                y: { delay: 0.8, repeat: Infinity, duration: 4, ease: "easeInOut" }
+                            }}
                         >
-                            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
-                                <Users size={20} className="text-accent" />
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+                                <Users size={22} />
                             </div>
                             <div>
-                                <p className="text-lg font-black text-slate-900">1,200+</p>
-                                <p className="text-xs text-slate-500 font-medium">Active Members</p>
+                                <p className="text-2xl font-black text-slate-900 leading-none">1,200+</p>
+                                <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">Active Members</p>
+                            </div>
+                        </motion.div>
+
+                        {/* Floating "Safety First" badge - Replacing the small image */}
+                        <motion.div
+                            className="absolute -bottom-6 -left-6 md:-left-10 bg-white rounded-2xl p-4 pr-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 hidden sm:flex items-center gap-4"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0, y: [0, 5, 0] }}
+                            transition={{
+                                opacity: { delay: 0.9 },
+                                x: { delay: 0.9 },
+                                y: { delay: 0.9, repeat: Infinity, duration: 5, ease: "easeInOut" }
+                            }}
+                        >
+                            <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-red-500">
+                                <Shield size={22} className="fill-current" />
+                            </div>
+                            <div>
+                                <p className="text-lg font-black text-slate-900 leading-tight">Safety First</p>
+                                <p className="text-xs text-slate-500 font-medium">Core Value</p>
                             </div>
                         </motion.div>
                     </motion.div>
