@@ -61,7 +61,7 @@ const itemVariants = {
 
 export default function LatestNews() {
     return (
-        <section className="w-full max-w-7xl mx-auto py-24 px-6">
+        <section className="w-full max-w-6xl mx-auto py-24 px-6">
             <motion.div
                 className="text-center mb-16"
                 initial={{ opacity: 0, y: 20 }}
