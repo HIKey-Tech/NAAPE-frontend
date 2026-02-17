@@ -24,15 +24,15 @@ export default function OrgansOfAssociationComponent() {
         paragraphs={[
           <>
             <span>The organs of the Association are:</span>
-            <ul className="mt-4 mb-0 list-disc list-inside text-left text-[#232835] text-base md:text-lg font-medium space-y-1">
+            <ul className="mt-4 mb-0 list-disc list-inside text-left text-slate-900 text-base md:text-lg font-medium space-y-1">
               <li>
-                <b>The National Delegates Conference</b> <span className="text-[#606476]">(hereinafter referred to as the Conference)</span>
+                <b>The National Delegates Conference</b> <span className="text-slate-500">(hereinafter referred to as the Conference)</span>
               </li>
               <li>
-                <b>The National Executive Council</b> <span className="text-[#606476]">(hereinafter referred to as the NEC)</span>
+                <b>The National Executive Council</b> <span className="text-slate-500">(hereinafter referred to as the NEC)</span>
               </li>
               <li>
-                <b>The National Administrative Council</b> <span className="text-[#606476]">(hereinafter referred to as the NAC)</span>
+                <b>The National Administrative Council</b> <span className="text-slate-500">(hereinafter referred to as the NAC)</span>
               </li>
               <li>
                 <b>The State Council</b>

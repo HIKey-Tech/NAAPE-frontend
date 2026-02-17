@@ -2,10 +2,6 @@ import React, { useRef, useEffect } from "react";
 import { LuTimer, LuCircleDot, LuBadgeCheck } from "react-icons/lu";
 import { motion, AnimatePresence } from "framer-motion";
 
-/**
- * Status configuration object to provide visual and descriptive feedback
- * for each certification status in a detailed manner.
- */
 const STATUS_CONFIG: Record<
     "pending" | "ongoing" | "completed",
     {
@@ -21,10 +17,10 @@ const STATUS_CONFIG: Record<
 > = {
     ongoing: {
         label: "Ongoing",
-        text: "text-[#FFA000]",
-        bg: "bg-[#FFF7E0]",
-        icon: <LuTimer className="text-[#FFA000]" aria-label="Ongoing" />,
-        iconColor: "#FFA000",
+        text: "text-amber-600",
+        bg: "bg-amber-50",
+        icon: <LuTimer className="text-amber-500" aria-label="Ongoing" />,
+        iconColor: "#f59e0b",
         desc: "You are actively progressing through this certification.",
         detail:
             "This certification is currently underway. Be sure to complete all required modules and assessments before the expiration date. Track your progress and continue learning.",
@@ -32,10 +28,10 @@ const STATUS_CONFIG: Record<
     },
     completed: {
         label: "Completed",
-        text: "text-[#43B047]",
-        bg: "bg-[#E6F5EA]",
-        icon: <LuBadgeCheck className="text-[#43B047]" aria-label="Completed" />,
-        iconColor: "#43B047",
+        text: "text-emerald-600",
+        bg: "bg-emerald-50",
+        icon: <LuBadgeCheck className="text-emerald-500" aria-label="Completed" />,
+        iconColor: "#10b981",
         desc: "Congratulations! You have successfully completed this certification.",
         detail:
             "This certification has been awarded to you. Be proud of your accomplishment! Download your certificate and update your records or CV to reflect your achievement.",
@@ -43,10 +39,10 @@ const STATUS_CONFIG: Record<
     },
     pending: {
         label: "Pending",
-        text: "text-[#AEBFD3]",
-        bg: "bg-[#F1F2F6]",
-        icon: <LuCircleDot className="text-[#AEBFD3]" aria-label="Pending" />,
-        iconColor: "#AEBFD3",
+        text: "text-slate-400",
+        bg: "bg-slate-50",
+        icon: <LuCircleDot className="text-slate-400" aria-label="Pending" />,
+        iconColor: "#94a3b8",
         desc: "Certification not started yet. Prepare to begin soon!",
         detail:
             "This certification is awaiting your initiation. Familiarize yourself with the syllabus and key prerequisites to get a head start when the enrollment period begins.",
@@ -63,24 +59,18 @@ type CertCardProps = {
     className?: string;
 };
 
-/**
- * Helper to truncate long descriptions and append an ellipsis.
- */
 function truncate(text: string, max = 140): string {
     if (!text) return "";
     return text.length > max ? text.slice(0, max - 1).trimEnd() + "…" : text;
 }
 
-// Helper to robustly extract year from a variety of date string formats
 function extractYear(dateString: string): number | null {
     if (!dateString || typeof dateString !== "string") return null;
-    // Try ISO, YYYY-MM-DD, or Date.toString()
     const yearMatch = dateString.match(/([1-3][0-9]{3})/);
     if (yearMatch && yearMatch[1]) {
         const yearInt = parseInt(yearMatch[1], 10);
         if (yearInt >= 1900 && yearInt <= 2100) return yearInt;
     }
-    // Try Date parse fallback
     const d = new Date(dateString);
     if (!isNaN(d.getTime())) {
         const year = d.getFullYear();
@@ -93,17 +83,14 @@ function getEffectiveStatus(
     cardStatus: "ongoing" | "completed" | "pending",
     startDate: string
 ): "ongoing" | "completed" | "pending" {
-    // If the year of the startDate has passed (strictly less than current year), force "completed"
     const year = extractYear(startDate);
     const nowYear = new Date().getFullYear();
     if (year && year < nowYear) {
         return "completed";
     }
-    // Else if startDate year is this year or missing or invalid, trust input status
     return cardStatus;
 }
 
-// CSS constants for entry animation and hover effect
 const CARD_ANIMATION_CLASS = "cert-card-anim";
 const CARD_ANIMATION_CSS = `
 .${CARD_ANIMATION_CLASS} {
@@ -140,9 +127,6 @@ function injectCardAnimCSS() {
     }
 }
 
-/**
- * Micro interaction animation configs for framer-motion.
- */
 const iconVariants = {
     initial: { scale: 0.9, rotate: 0 },
     hover: (color: string) => ({
@@ -164,8 +148,8 @@ const iconVariants = {
 
 const pillVariants = {
     initial: { scale: 1, boxShadow: "0 0px 0px transparent" },
-    hover: { scale: 1.03, boxShadow: "0 4px 18px #E5EAF266" },
-    tap: { scale: 0.97, boxShadow: "0 2px 7px #E5EAF299" },
+    hover: { scale: 1.03, boxShadow: "0 4px 18px rgba(226,232,240,0.4)" },
+    tap: { scale: 0.97, boxShadow: "0 2px 7px rgba(226,232,240,0.6)" },
 };
 
 const CertCard: React.FC<CertCardProps> = ({
@@ -176,7 +160,6 @@ const CertCard: React.FC<CertCardProps> = ({
     progress,
     className = "",
 }) => {
-    // Determine real status depending on startDate year
     const effectiveStatus = getEffectiveStatus(status, startDate);
     const cfg = STATUS_CONFIG[effectiveStatus] || STATUS_CONFIG.pending;
     const cardRef = useRef<HTMLDivElement | null>(null);
@@ -213,8 +196,7 @@ const CertCard: React.FC<CertCardProps> = ({
     return (
         <div
             ref={cardRef}
-            className={`${CARD_ANIMATION_CLASS} ${visible ? "visible" : ""} rounded-2xl border border-[#E5EAF2] shadow-sm bg-white w-full max-w-full px-6 py-5 flex flex-col gap-6 transition-shadow hover:shadow-md duration-200 ${className}`}
-            style={{ boxShadow: "0 1px 6px rgba(30,41,59,0.06)" }}
+            className={`${CARD_ANIMATION_CLASS} ${visible ? "visible" : ""} rounded-2xl border border-slate-100 shadow-sm bg-white w-full max-w-full px-6 py-5 flex flex-col gap-6 transition-shadow hover:shadow-md duration-200 ${className}`}
         >
             {/* Header Section */}
             <div className="mb-0 flex items-start gap-4">
@@ -233,31 +215,31 @@ const CertCard: React.FC<CertCardProps> = ({
                 </motion.span>
                 {/* Title & Start Info */}
                 <div className="flex flex-col flex-1 min-w-0 justify-center">
-                    <div className="font-extrabold text-[1.22rem] text-[#222F43] leading-snug mb-1.5 line-clamp-2 break-words">
+                    <div className="font-bold text-lg text-slate-900 leading-snug mb-1.5 line-clamp-2 break-words">
                         {title}
                     </div>
-                    <div className="flex items-center gap-2 text-[1rem] text-[#7C8CA7] font-medium select-none" aria-label={`Start date: ${startDate}`}>
+                    <div className="flex items-center gap-2 text-sm text-slate-400 font-medium select-none" aria-label={`Start date: ${startDate}`}>
                         <span className="flex items-center">
                             <svg width="17" height="17" fill="none" viewBox="0 0 16 16" className="align-middle mr-0.5">
-                                <path fill="#B7BDC8" d="M12.94 10.617A6.001 6.001 0 1 1 14 8a5.98 5.98 0 0 1-1.06 2.617zm-1.268 1.505A4.997 4.997 0 0 0 13 8c0-2.763-2.237-5-5-5S3 5.237 3 8s2.237 5 5 5c1.123 0 2.17-.368 3.002-.878l.021-.014a.016.016 0 0 1 .016 0c.096-.079.205-.162.315-.245l.318-.241zM8.75 4a.75.75 0 0 0-1.5 0v4a.75.75 0 0 0 .334.626l2.5 1.667a.75.75 0 1 0 .832-1.252l-2.166-1.444V4z"/>
+                                <path fill="currentColor" className="text-slate-300" d="M12.94 10.617A6.001 6.001 0 1 1 14 8a5.98 5.98 0 0 1-1.06 2.617zm-1.268 1.505A4.997 4.997 0 0 0 13 8c0-2.763-2.237-5-5-5S3 5.237 3 8s2.237 5 5 5c1.123 0 2.17-.368 3.002-.878l.021-.014a.016.016 0 0 1 .016 0c.096-.079.205-.162.315-.245l.318-.241zM8.75 4a.75.75 0 0 0-1.5 0v4a.75.75 0 0 0 .334.626l2.5 1.667a.75.75 0 1 0 .832-1.252l-2.166-1.444V4z" />
                             </svg>
                         </span>
                         <span className="truncate">
-                            <strong className="font-semibold text-[#4B5A75]">Start Date:</strong> {startDate}
+                            <strong className="font-bold text-slate-500">Start Date:</strong> {startDate}
                         </span>
                     </div>
                 </div>
             </div>
             {/* Description */}
-            <div className="text-[15.4px] text-[#223142] font-normal leading-snug mb-0 break-words line-clamp-4 px-0">
+            <div className="text-sm text-slate-600 font-normal leading-relaxed mb-0 break-words line-clamp-4 px-0">
                 {truncate(description, 160)}
             </div>
-            {/* Status/Progress/Detail Section: improved alignment and micro animations */}
+            {/* Status/Progress/Detail Section */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full pt-2 gap-3 sm:gap-2">
-                {/* Status and Progress micro animated pill */}
+                {/* Status pill */}
                 <motion.div
                     className={`
-                        inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[15.2px] font-semibold whitespace-nowrap
+                        inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-bold whitespace-nowrap
                         ${cfg.text} ${cfg.bg}
                     `}
                     style={{ minWidth: 125, letterSpacing: "0.01em", alignSelf: "flex-start" }}
@@ -272,9 +254,8 @@ const CertCard: React.FC<CertCardProps> = ({
                     whileHover="hover"
                     whileTap="tap"
                 >
-                    {/* Animated status icon */}
                     <motion.span
-                        className="text-[19px] mr-1.5 flex items-center"
+                        className="text-lg mr-1.5 flex items-center"
                         variants={iconVariants as any}
                         initial="initial"
                         whileHover="hover"
@@ -287,14 +268,14 @@ const CertCard: React.FC<CertCardProps> = ({
                     </motion.span>
                     <span>{cfg.label}</span>
                     {effectiveStatus === "ongoing" && typeof progress === "number" && (
-                        <motion.span 
-                            className="ml-2 text-[#7E8AA5] font-semibold tabular-nums"
-                            animate={{ scale: [1,1.13,1], color: ["#7E8AA5", cfg.iconColor, "#7E8AA5"] }}
+                        <motion.span
+                            className="ml-2 text-slate-400 font-bold tabular-nums"
+                            animate={{ scale: [1, 1.13, 1], color: ["#94a3b8", cfg.iconColor, "#94a3b8"] }}
                             transition={{ duration: 0.88, repeat: 1 }}
                         >{progress}%</motion.span>
                     )}
                 </motion.div>
-                {/* Detail, tip micro fade-in */}
+                {/* Detail, tip */}
                 <div
                     className="flex-1 min-w-[120px] pl-1 ml-auto flex flex-col items-end gap-1 justify-center sm:items-end sm:justify-center"
                     style={{ alignItems: "flex-end" }}
@@ -302,7 +283,7 @@ const CertCard: React.FC<CertCardProps> = ({
                     <AnimatePresence>
                         <motion.span
                             key="desc"
-                            className="text-xs text-[#6D799A] font-semibold opacity-90 text-right"
+                            className="text-xs text-slate-500 font-bold opacity-90 text-right"
                             title={cfg.detail}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -314,7 +295,7 @@ const CertCard: React.FC<CertCardProps> = ({
                         {cfg.detail && (
                             <motion.span
                                 key="detail"
-                                className="mt-0.5 text-xs text-[#8A99B7] leading-normal text-right"
+                                className="mt-0.5 text-xs text-slate-400 leading-normal text-right"
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -6 }}
@@ -326,7 +307,7 @@ const CertCard: React.FC<CertCardProps> = ({
                         {cfg.tip && (
                             <motion.span
                                 key="tip"
-                                className="mt-0 text-xs italic text-[#B7BDC8] text-right flex items-center justify-end"
+                                className="mt-0 text-xs italic text-slate-300 text-right flex items-center justify-end"
                                 initial={{ opacity: 0, x: 8 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: 16 }}

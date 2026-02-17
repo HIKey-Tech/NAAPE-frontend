@@ -19,8 +19,8 @@ export default function NewsCpmponent() {
     const filteredPublications =
         Array.isArray(newsList)
             ? newsList.filter((news: any) =>
-                  news.title?.toLowerCase().includes(search.toLowerCase())
-              )
+                news.title?.toLowerCase().includes(search.toLowerCase())
+            )
             : [];
 
     // Helper to safely extract author fields (in case author is an object)
@@ -67,7 +67,7 @@ export default function NewsCpmponent() {
             />
             <div className="grid gap-6 px-6 sm:grid-cols-2 lg:grid-cols-3">
                 {isLoading ? (
-                    <div className="col-span-full text-center text-[#96A6BF] text-[16px] py-16 font-medium">
+                    <div className="col-span-full text-center text-slate-400 text-base py-16 font-medium">
                         Loading News...
                     </div>
                 ) : isError ? (
@@ -75,7 +75,7 @@ export default function NewsCpmponent() {
                         Failed to load news.
                     </div>
                 ) : filteredPublications.length === 0 ? (
-                    <div className="col-span-full text-center text-[#96A6BF] text-[16px] py-16 font-medium">
+                    <div className="col-span-full text-center text-slate-400 text-base py-16 font-medium">
                         Nothing New
                     </div>
                 ) : (
@@ -85,7 +85,7 @@ export default function NewsCpmponent() {
                             imageUrl={news.image || news.imageUrl || "/images/plane.jpg"}
                             title={news.title}
                             summary={
-                                (typeof news.summary === "string" && news.summary) || 
+                                (typeof news.summary === "string" && news.summary) ||
                                 (typeof news.content === "string" ? news.content.slice(0, 128) + "..." : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam nec.")
                             }
                             authorName={getAuthorName(news.author)}

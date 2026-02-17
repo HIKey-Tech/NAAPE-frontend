@@ -1,11 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FaChartLine, FaNewspaper, FaChartBar, FaComments } from "react-icons/fa";
 import { NewsDashboardSection } from "./NewsDashboardSection";
 import { NewsManagementSection } from "./NewsManagementSection";
 import { NewsAnalyticsSection } from "./NewsAnalyticsSection";
 import { CommentModerationSection } from "./CommentModerationSection";
+
+const tabs = [
+    { id: "dashboard", label: "Dashboard", icon: FaChartLine },
+    { id: "management", label: "News Management", icon: FaNewspaper },
+    { id: "analytics", label: "Analytics", icon: FaChartBar },
+    { id: "comments", label: "Comment Moderation", icon: FaComments },
+];
 
 export default function AdminNewsLayout() {
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -13,36 +20,33 @@ export default function AdminNewsLayout() {
     return (
         <div className="p-6 space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">News Management</h1>
-                <p className="text-muted-foreground mt-2">
-                    Manage news articles, analytics, and comment moderation
-                </p>
+                <h1 className="text-2xl font-bold text-slate-900">News Management</h1>
+                <p className="text-slate-500 mt-1">Manage news articles, analytics, and comment moderation</p>
             </div>
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-                    <TabsTrigger value="management">News Management</TabsTrigger>
-                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                    <TabsTrigger value="comments">Comment Moderation</TabsTrigger>
-                </TabsList>
+            {/* Modern Tab Switcher */}
+            <div className="bg-slate-100/80 rounded-2xl p-1.5 inline-flex gap-1">
+                {tabs.map((tab) => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${activeTab === tab.id
+                                ? "bg-white text-slate-900 shadow-sm"
+                                : "text-slate-500 hover:text-slate-700"
+                            }`}
+                    >
+                        <tab.icon className="w-4 h-4" />
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
 
-                <TabsContent value="dashboard" className="space-y-6">
-                    <NewsDashboardSection />
-                </TabsContent>
-
-                <TabsContent value="management" className="space-y-6">
-                    <NewsManagementSection />
-                </TabsContent>
-
-                <TabsContent value="analytics" className="space-y-6">
-                    <NewsAnalyticsSection />
-                </TabsContent>
-
-                <TabsContent value="comments" className="space-y-6">
-                    <CommentModerationSection />
-                </TabsContent>
-            </Tabs>
+            <div>
+                {activeTab === "dashboard" && <NewsDashboardSection />}
+                {activeTab === "management" && <NewsManagementSection />}
+                {activeTab === "analytics" && <NewsAnalyticsSection />}
+                {activeTab === "comments" && <CommentModerationSection />}
+            </div>
         </div>
     );
 }

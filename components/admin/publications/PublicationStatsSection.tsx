@@ -8,12 +8,9 @@ export const PublicationStatsSection: React.FC = () => {
 
     if (isLoading) {
         return (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
                 {[...Array(5)].map((_, i) => (
-                    <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
-                        <div className="h-4 bg-gray-200 rounded w-20 mb-3"></div>
-                        <div className="h-8 bg-gray-200 rounded w-16"></div>
-                    </div>
+                    <div key={i} className="bg-white rounded-2xl border border-slate-100 p-6 animate-pulse h-28" />
                 ))}
             </div>
         );
@@ -21,8 +18,8 @@ export const PublicationStatsSection: React.FC = () => {
 
     if (isError || !data) {
         return (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                <p className="text-red-600 text-sm">Failed to load statistics</p>
+            <div className="bg-red-50 text-red-600 text-sm font-medium p-4 rounded-xl border border-red-100 mb-8">
+                Failed to load statistics.
             </div>
         );
     }
@@ -30,60 +27,24 @@ export const PublicationStatsSection: React.FC = () => {
     const stats = data.data;
 
     const statCards = [
-        {
-            label: "Total",
-            value: stats.total,
-            icon: <FaBookOpen className="text-2xl" />,
-            bgColor: "bg-blue-50",
-            textColor: "text-blue-600",
-            borderColor: "border-blue-200"
-        },
-        {
-            label: "Pending",
-            value: stats.pending,
-            icon: <FaHourglassHalf className="text-2xl" />,
-            bgColor: "bg-yellow-50",
-            textColor: "text-yellow-600",
-            borderColor: "border-yellow-200"
-        },
-        {
-            label: "Approved",
-            value: stats.approved,
-            icon: <FaCheckCircle className="text-2xl" />,
-            bgColor: "bg-green-50",
-            textColor: "text-green-600",
-            borderColor: "border-green-200"
-        },
-        {
-            label: "Rejected",
-            value: stats.rejected,
-            icon: <FaTimesCircle className="text-2xl" />,
-            bgColor: "bg-red-50",
-            textColor: "text-red-600",
-            borderColor: "border-red-200"
-        },
-        {
-            label: "Draft",
-            value: stats.draft,
-            icon: <FaEdit className="text-2xl" />,
-            bgColor: "bg-gray-50",
-            textColor: "text-gray-600",
-            borderColor: "border-gray-200"
-        }
+        { label: "Total", value: stats.total, icon: FaBookOpen, color: "text-primary", bg: "bg-primary/5" },
+        { label: "Pending", value: stats.pending, icon: FaHourglassHalf, color: "text-amber-600", bg: "bg-amber-50" },
+        { label: "Approved", value: stats.approved, icon: FaCheckCircle, color: "text-emerald-600", bg: "bg-emerald-50" },
+        { label: "Rejected", value: stats.rejected, icon: FaTimesCircle, color: "text-red-600", bg: "bg-red-50" },
+        { label: "Draft", value: stats.draft, icon: FaEdit, color: "text-slate-600", bg: "bg-slate-100" },
     ];
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-            {statCards.map((stat, index) => (
-                <div
-                    key={index}
-                    className={`${stat.bgColor} ${stat.borderColor} border rounded-lg p-6 transition-all hover:shadow-md`}
-                >
-                    <div className="flex items-center justify-between mb-3">
-                        <span className={`${stat.textColor} font-medium text-sm`}>{stat.label}</span>
-                        <span className={stat.textColor}>{stat.icon}</span>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+            {statCards.map((stat) => (
+                <div key={stat.label} className="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] p-6 hover:shadow-md transition-all group">
+                    <div className="flex items-start justify-between mb-3">
+                        <div className={`p-2.5 rounded-xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform`}>
+                            <stat.icon size={16} />
+                        </div>
                     </div>
-                    <div className={`${stat.textColor} text-3xl font-bold`}>{stat.value}</div>
+                    <div className={`text-2xl font-black text-slate-800 tracking-tight mb-0.5`}>{stat.value}</div>
+                    <div className="text-xs font-bold text-slate-400 uppercase tracking-wide">{stat.label}</div>
                 </div>
             ))}
         </div>

@@ -26,14 +26,19 @@ import {
     MdDateRange,
     MdOutlineVisibility,
     MdOutlineVisibilityOff,
+    MdClose,
+    MdPhone,
+    MdDescription,
+    MdSchool,
+    MdVerified
 } from "react-icons/md";
-import { FaStar, FaCrown } from "react-icons/fa";
+import { FaCrown, FaUserTie, FaBuilding } from "react-icons/fa";
 import { NaapButton } from "./button.naap";
 import { toast } from "sonner";
 import { LogoutDialog } from "@/components/ui/logout-dialog";
+import Image from "next/image";
 
-const PRIMARY_TEXT = "text-primary";
-
+// --- Types ---
 export interface ProfileData {
     _id: string;
     name: string;
@@ -65,6 +70,97 @@ export interface ProfileData {
     };
 }
 
+// --- Components ---
+
+function SectionCard({ children, title, icon: Icon, action }: { children: React.ReactNode, title: string, icon?: React.ElementType, action?: React.ReactNode }) {
+    return (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sm:p-8 h-full">
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                    {Icon && <div className="p-2 bg-slate-50 text-slate-500 rounded-lg"><Icon size={20} /></div>}
+                    <h3 className="font-bold text-lg text-slate-800">{title}</h3>
+                </div>
+                {action}
+            </div>
+            {children}
+        </div>
+    );
+}
+
+function DetailRow({ label, value, icon: Icon, href }: { label: string, value: React.ReactNode, icon?: React.ElementType, href?: string }) {
+    if (!value && value !== 0) return null;
+    return (
+        <div className="flex items-start gap-4 py-2">
+            {Icon && <Icon className="text-slate-400 mt-1 shrink-0" size={18} />}
+            <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-0.5">{label}</p>
+                {href ? (
+                    <a href={href} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-blue-600 hover:underline truncate block">
+                        {value}
+                    </a>
+                ) : (
+                    <div className="text-sm font-medium text-slate-800 break-words">{value}</div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+function StatCard({ label, value, colorClass }: { label: string, value: number, colorClass: string }) {
+    return (
+        <div className={`rounded-xl p-4 flex flex-col items-center justify-center border ${colorClass}`}>
+            <span className="text-2xl font-black mb-1">{value}</span>
+            <span className="text-xs font-bold uppercase tracking-wide opacity-80">{label}</span>
+        </div>
+    );
+}
+
+function InputField({
+    label,
+    name,
+    value,
+    onChange,
+    type = "text",
+    placeholder,
+    icon: Icon
+}: {
+    label: string,
+    name: string,
+    value: any,
+    onChange: any,
+    type?: string,
+    placeholder?: string,
+    icon?: React.ElementType
+}) {
+    return (
+        <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide flex items-center gap-2">
+                {Icon && <Icon />} {label}
+            </label>
+            {type === 'textarea' ? (
+                <textarea
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none min-h-[100px] text-sm"
+                />
+            ) : (
+                <input
+                    type={type}
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-sm"
+                />
+            )}
+        </div>
+    );
+}
+
+// --- Main Page Component ---
+
 export default function ProfilePage() {
     const { data: profile, isLoading, error } = useMyProfile();
     const { data: subscriptionStatus } = useSubscriptionStatus();
@@ -72,31 +168,27 @@ export default function ProfilePage() {
     const updatePassword = useUpdateMyPassword();
     const { setAuthenticatedUser, user: authUser, token, logout } = useAuth();
 
+    // State
     const [editMode, setEditMode] = useState(false);
     const [form, setForm] = useState<Partial<ProfileData>>({});
     const [picPreview, setPicPreview] = useState<string | undefined>();
     const [imageFile, setImageFile] = useState<File | null>(null);
+
+    // UI State
     const [showPasswordFields, setShowPasswordFields] = useState(false);
     const [showPersonalSettings, setShowPersonalSettings] = useState(false);
-    const [showEmail, setShowEmail] = useState(false);
     const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-    const [passwordFields, setPasswordFields] = useState({
-        oldPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-    });
-    const [passwordStatus, setPasswordStatus] = useState<"success" | "error" | null>(null);
-    const [showPasswords, setShowPasswords] = useState({
-        old: false,
-        new: false,
-        confirm: false,
-    });
 
+    // Password Form State
+    const [passwordFields, setPasswordFields] = useState({ oldPassword: "", newPassword: "", confirmPassword: "" });
+    const [passwordStatus, setPasswordStatus] = useState<"success" | "error" | null>(null);
+    const [showPasswords, setShowPasswords] = useState({ old: false, new: false, confirm: false });
+
+    // Helpers
     function getProfileImage(p: ProfileData) {
         if (!p) return undefined;
         if (p.profile?.image) {
             if (typeof p.profile.image === "string") return p.profile.image;
-            // if ("url" in p.profile.image && p.profile.image.url) return p.profile.image.url;
             if ("publicId" in p.profile.image && p.profile.image.publicId) return p.profile.image.url;
         }
         return undefined;
@@ -104,12 +196,7 @@ export default function ProfilePage() {
 
     function getInitials(name?: string) {
         if (!name) return "U";
-        const parts = name.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0]?.toUpperCase() || "");
-        return parts.length ? parts.join("") : "U";
-    }
-
-    function generateAvatarSVG(initials: string) {
-        return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%231e40af;stop-opacity:1' /%3E%3Cstop offset='50%25' style='stop-color:%233b82f6;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23ec4899;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23grad)' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='80' font-weight='bold' fill='white'%3E${encodeURIComponent(initials)}%3C/text%3E%3C/svg%3E`;
+        return name.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0]?.toUpperCase() || "").join("");
     }
 
     function startEditing() {
@@ -124,12 +211,8 @@ export default function ProfilePage() {
             professional: {
                 licenseNumber: profile?.professional?.licenseNumber ?? "",
                 licenseDocument: profile?.professional?.licenseDocument ?? "",
-                yearsOfExperience:
-                    profile?.professional?.yearsOfExperience ??
-                    undefined,
-                certifications: Array.isArray(profile?.professional?.certifications)
-                    ? [...profile.professional.certifications]
-                    : [],
+                yearsOfExperience: profile?.professional?.yearsOfExperience,
+                certifications: Array.isArray(profile?.professional?.certifications) ? [...profile.professional.certifications] : [],
             },
         });
         setPicPreview(undefined);
@@ -137,92 +220,37 @@ export default function ProfilePage() {
         setEditMode(true);
     }
 
-    function handleFieldChange(
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) {
+    function handleFieldChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         const { name, value } = e.target;
         if (name.startsWith("profile.")) {
             const key = name.split(".")[1];
-            setForm((prev) => ({
-                ...prev,
-                profile: {
-                    ...prev.profile,
-                    [key]: value,
-                },
-            }));
+            setForm((prev) => ({ ...prev, profile: { ...prev.profile, [key]: value } }));
         } else if (name.startsWith("professional.")) {
             const key = name.split(".")[1];
-            setForm((prev) => ({
-                ...prev,
-                professional: {
-                    ...prev.professional,
-                    [key]:
-                        key === "yearsOfExperience"
-                            ? (value === "" ? undefined : Number(value))
-                            : value,
-                },
-            }));
+            setForm((prev) => ({ ...prev, professional: { ...prev.professional, [key]: key === "yearsOfExperience" ? (value === "" ? undefined : Number(value)) : value } }));
         } else {
-            setForm((prev) => ({
-                ...prev,
-                [name]: value,
-            }));
+            setForm((prev) => ({ ...prev, [name]: value }));
         }
     }
 
     function handleCertificationsChange(index: number, val: string) {
         setForm((prev) => {
-            const currentCerts = Array.isArray(prev.professional?.certifications)
-                ? [...(prev.professional!.certifications as string[] ?? [])]
-                : [];
-            currentCerts[index] = val;
-            return {
-                ...prev,
-                professional: {
-                    ...prev.professional,
-                    certifications: currentCerts,
-                },
-            };
+            const list = [...(prev.professional?.certifications || [])];
+            list[index] = val;
+            return { ...prev, professional: { ...prev.professional, certifications: list } };
         });
     }
 
     function addCertification() {
-        setForm((prev) => {
-            const certs = Array.isArray(prev.professional?.certifications)
-                ? [...(prev.professional!.certifications as string[] ?? [])]
-                : [];
-            certs.push("");
-            return {
-                ...prev,
-                professional: {
-                    ...prev.professional,
-                    certifications: certs,
-                },
-            };
-        });
+        setForm((prev) => ({ ...prev, professional: { ...prev.professional, certifications: [...(prev.professional?.certifications || []), ""] } }));
     }
 
     function removeCertification(index: number) {
         setForm((prev) => {
-            const certs = Array.isArray(prev.professional?.certifications)
-                ? [...(prev.professional!.certifications as string[] ?? [])]
-                : [];
-            certs.splice(index, 1);
-            return {
-                ...prev,
-                professional: {
-                    ...prev.professional,
-                    certifications: certs,
-                },
-            };
+            const list = [...(prev.professional?.certifications || [])];
+            list.splice(index, 1);
+            return { ...prev, professional: { ...prev.professional, certifications: list } };
         });
-    }
-
-    function handlePicChange(e: React.ChangeEvent<HTMLInputElement>) {
-        if (!e.target.files?.[0]) return;
-        const file = e.target.files[0];
-        setImageFile(file);
-        setPicPreview(URL.createObjectURL(file));
     }
 
     function cancelEditing() {
@@ -232,118 +260,59 @@ export default function ProfilePage() {
         setPicPreview(undefined);
     }
 
-    // --- saveProfile IMPLEMENTATION (flattening replaced) ---
     function saveProfile() {
         const formData = new FormData();
-
-        if (form.name) {
-            formData.append("name", form.name);
-        }
+        if (form.name) formData.append("name", form.name);
 
         if (form.profile) {
-            // Clean the profile object - remove image field and any undefined values
             const { image, ...cleanProfile } = form.profile as any;
-            
-            // Remove undefined/null values
-            const sanitizedProfile = Object.fromEntries(
-                Object.entries(cleanProfile).filter(([_, value]) => value !== undefined && value !== null && value !== "")
-            );
-            
-            if (Object.keys(sanitizedProfile).length > 0) {
-                formData.append("profile", JSON.stringify(sanitizedProfile));
-            }
+            const sanitized = Object.fromEntries(Object.entries(cleanProfile).filter(([_, v]) => v !== undefined && v !== null && v !== ""));
+            if (Object.keys(sanitized).length > 0) formData.append("profile", JSON.stringify(sanitized));
         }
 
         if (form.professional) {
-            const sanitizedProfessional = {
-                ...form.professional,
-                certifications: form.professional.certifications?.filter(Boolean) || [],
-            };
-            
-            // Remove undefined/null values
-            const cleanProfessional = Object.fromEntries(
-                Object.entries(sanitizedProfessional).filter(([_, value]) => value !== undefined && value !== null && value !== "")
-            );
-            
-            if (Object.keys(cleanProfessional).length > 0) {
-                formData.append("professional", JSON.stringify(cleanProfessional));
-            }
+            const sanitized = { ...form.professional, certifications: form.professional.certifications?.filter(Boolean) || [] };
+            const clean = Object.fromEntries(Object.entries(sanitized).filter(([_, v]) => v !== undefined && v !== null && v !== ""));
+            if (Object.keys(clean).length > 0) formData.append("professional", JSON.stringify(clean));
         }
 
-        if (imageFile) {
-            formData.append("image", imageFile);
-        }
+        if (imageFile) formData.append("image", imageFile);
 
-        // Convert FormData back to a plain object for updateProfile
         const profileData: any = {};
-        formData.forEach((value, key) => {
-            profileData[key] = value;
-        });
+        formData.forEach((value, key) => { profileData[key] = value; });
 
         updateProfile.mutate(profileData, {
             onSuccess: (response) => {
                 setEditMode(false);
-                toast.success("Profile updated!");
-                
-                // Update auth context with new profile data
+                toast.success("Profile updated successfully");
                 if (response?.data && authUser && token) {
-                    const updatedUser = {
-                        ...authUser,
-                        name: response.data.name || authUser.name,
-                        profile: response.data.profile,
-                    };
-                    setAuthenticatedUser(updatedUser, token);
+                    setAuthenticatedUser({ ...authUser, name: response.data.name || authUser.name, profile: response.data.profile }, token);
                 }
             },
-            onError: (err: any) => {
-                toast.error(err?.message || "Profile update failed");
-            },
+            onError: (err: any) => toast.error(err?.message || "Profile update failed"),
         });
-    }
-    // --- end saveProfile implementation ---
-
-    function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const { name, value } = e.target;
-        setPasswordFields((prev) => ({ ...prev, [name]: value }));
     }
 
     function handlePasswordSubmit(e: React.FormEvent) {
         e.preventDefault();
         setPasswordStatus(null);
-
         if (passwordFields.newPassword !== passwordFields.confirmPassword) {
             setPasswordStatus("error");
+            toast.error("Passwords do not match");
             return;
         }
-        updatePassword.mutate(
-            {
-                oldPassword: passwordFields.oldPassword,
-                newPassword: passwordFields.newPassword,
-                confirmPassword: passwordFields.confirmPassword,
+        updatePassword.mutate({ ...passwordFields }, {
+            onSuccess: () => {
+                setPasswordFields({ oldPassword: "", newPassword: "", confirmPassword: "" });
+                setPasswordStatus("success");
+                toast.success("Password changed successfully");
+                setTimeout(() => setShowPasswordFields(false), 1500);
             },
-            {
-                onSuccess: () => {
-                    setPasswordFields({
-                        oldPassword: "",
-                        newPassword: "",
-                        confirmPassword: "",
-                    });
-                    setPasswordStatus("success");
-                    setTimeout(() => setShowPasswordFields(false), 1500);
-                },
-                onError: (error: any) => {
-                    setPasswordStatus("error");
-                    toast.error(error?.message || "Failed to update password");
-                },
-            }
-        );
-    }
-
-    function toggleShowPassword(type: "old" | "new" | "confirm") {
-        setShowPasswords((prev) => ({
-            ...prev,
-            [type]: !prev[type],
-        }));
+            onError: (error: any) => {
+                setPasswordStatus("error");
+                toast.error(error?.message || "Failed to update password");
+            },
+        });
     }
 
     function handleLogoutClick() {
@@ -351,869 +320,292 @@ export default function ProfilePage() {
         setShowPersonalSettings(false);
     }
 
-    function confirmLogout() {
-        setShowLogoutDialog(false);
-        logout();
-    }
+    // --- Render ---
 
-    if (isLoading) {
-        return (
-            <div className="flex min-h-[60vh] items-center justify-center">
-                <div
-                    className="animate-spin rounded-full h-10 w-10 border border-2"
-                    style={{ borderColor: "var(--primary)" }}
-                />
-                <span className="ml-3 text-lg">Loading profile...</span>
-            </div>
-        );
-    }
+    if (isLoading) return <div className="min-h-[60vh] flex items-center justify-center font-medium text-slate-500 animate-pulse">Loading profile...</div>;
+    if (error || !profile) return <div className="min-h-[50vh] flex items-center justify-center text-red-500 font-medium">Failed to load profile.</div>;
 
-    if (error) {
-        return (
-            <div className="p-5 text-red-500 flex items-center gap-2">
-                <MdErrorOutline className="text-2xl" /> Failed to load profile. Please try again later.
-            </div>
-        );
-    }
-    if (!profile) {
-        return (
-            <div className="p-5 text-red-500 flex items-center gap-2">
-                <MdErrorOutline className="text-2xl" /> Profile data not available.
-            </div>
-        );
-    }
+    const imageUrl = picPreview || getProfileImage(profile as ProfileData);
+    const initials = getInitials(profile.name);
 
     return (
-        <div className="max-w-4xl mx-auto py-8 px-2 lg:px-0 relative">
-            {/* HERO */}
-            <section className="relative flex flex-col md:flex-row bg-white rounded-3xl overflow-hidden border mb-8">
-                {/* Avatar + Details */}
-                <div className="flex flex-col items-center justify-center py-8 px-8 min-w-[280px] relative bg-gradient-to-b from-[var(--primary-100,#f0f5ff)] via-white to-white">
-                    <div className="relative group mb-4 w-40 flex justify-center">
-                        <img
-                            src={
-                                picPreview ||
-                                getProfileImage(profile as ProfileData) ||
-                                generateAvatarSVG(getInitials(profile?.name))
-                            }
-                            alt="Profile"
-                            className="w-36 h-36 rounded-full object-cover border-[5px] shadow"
-                            style={{ borderColor: "var(--primary-200, #d2e0f7)" }}
-                        />
-                        {editMode && (
-                            <label
-                                className="absolute right-2 bottom-2 p-2 flex items-center justify-center rounded-full bg-[var(--primary)] text-white cursor-pointer group-hover:scale-110 transition-transform shadow-md"
-                                title="Change Picture"
-                                tabIndex={0}
-                            >
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={handlePicChange}
-                                />
-                                <MdEdit className="text-xl" />
-                            </label>
-                        )}
-                    </div>
-                    <div className="flex flex-col items-center text-center w-full max-w-xs">
-                        {editMode ? (
-                            <input
-                                name="name"
-                                value={form.name ?? ""}
-                                onChange={handleFieldChange}
-                                className="text-2xl font-bold border-b-2 focus:outline-none transition px-2 py-1 bg-transparent w-full text-center"
-                                style={{ borderBottomColor: "var(--primary-300,#bad1f9)" }}
-                                disabled={updateProfile.isPending}
-                                autoFocus
-                            />
-                        ) : (
-                            <h2 className="text-2xl font-bold flex items-center gap-2 justify-center w-full truncate">
-                                <MdOutlinePerson className="text-primary text-xl opacity-80 shrink-0" />
-                                <span className="truncate">{profile.name}</span>
-                            </h2>
-                        )}
-                        <div className={`mt-2 flex items-center justify-center gap-2 ${showEmail ? "" : "opacity-60"} w-full`}>
-                            <MdOutlineAlternateEmail className="shrink-0" />
-                            <span className="truncate">
-                                {showEmail ? (
-                                    <span className="font-mono text-sm">{profile.email}</span>
-                                ) : (
-                                    <span className="italic text-gray-500">Hidden for privacy</span>
-                                )}
-                            </span>
-                            <button
-                                className="ml-1 underline text-xs whitespace-nowrap"
-                                onClick={() => setShowEmail((v) => !v)}
-                                type="button"
-                            >
-                                {showEmail ? "Hide" : "Show"}
-                            </button>
-                        </div>
-                        <div className="flex items-center gap-2 mt-2 flex-wrap">
-                            <span
-                                className="inline-flex items-center gap-2 bg-[var(--primary-50,#f0f5ff)] text-[var(--primary)] rounded-2xl px-3 py-0.5 text-base capitalize font-semibold"
-                            >
-                                <MdBadge />
-                                {profile.role}
-                            </span>
-                            {/* Premium/Subscribed Badge - Show for admin/editor OR active subscription */}
-                            {(profile.role === "admin" || 
-                              profile.role === "editor" || 
-                              (subscriptionStatus?.hasSubscription && subscriptionStatus?.status === "active")) && (
-                                <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-700 rounded-2xl px-3 py-0.5 text-sm font-bold border border-amber-200 shadow-sm">
-                                    <FaCrown className="text-amber-500" />
-                                    {profile.role === "admin" ? "Admin" :
-                                     profile.role === "editor" ? "Editor" :
-                                     subscriptionStatus?.tier === "premium" ? "Premium Member" : "Subscribed Member"}
-                                </span>
+        <div className="max-w-6xl mx-auto py-10 px-4 sm:px-6 space-y-8 min-h-screen bg-slate-50">
+
+            {/* --- HEADER / HERO --- */}
+            <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-8 relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-primary/10 to-blue-50/50 -z-10" />
+
+                <div className="flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8 pt-4">
+                    {/* Avatar */}
+                    <div className="relative shrink-0">
+                        <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-white flex items-center justify-center text-4xl font-bold text-slate-300 overflow-hidden relative">
+                            {imageUrl ? (
+                                <img src={imageUrl} alt={profile.name} className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="w-full h-full bg-slate-100 flex items-center justify-center">{initials}</div>
+                            )}
+
+                            {editMode && (
+                                <label className="absolute inset-0 bg-black/40 flex items-center justify-center cursor-pointer opacity-0 hover:opacity-100 transition-opacity">
+                                    <MdEdit className="text-white text-2xl" />
+                                    <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                                        if (e.target.files?.[0]) {
+                                            setImageFile(e.target.files[0]);
+                                            setPicPreview(URL.createObjectURL(e.target.files[0]));
+                                        }
+                                    }} />
+                                </label>
                             )}
                         </div>
+                        {profile.isVerified && (
+                            <div className="absolute bottom-2 right-2 bg-blue-500 text-white p-1 rounded-full border-2 border-white shadow-sm" title="Verified Member">
+                                <MdVerified size={14} />
+                            </div>
+                        )}
                     </div>
-                </div>
-                {/* Action bar at top right - always consistently aligned */}
-                <div className="absolute top-6 right-6 flex gap-2 sm:gap-3 z-20 items-center">
-                    {!editMode && (
-                        <NaapButton
-                            className={`!text-base rounded-lg border border-[var(--primary-400,#82b2f9)] bg-[var(--primary-50,#f0f5ff)] hover:bg-[var(--primary-100,#dde8fc)] ${PRIMARY_TEXT} hover:!text-[#0e274b] transition-colors px-5 py-2`}
-                            onClick={startEditing}
-                            type="button"
-                            icon={<MdEdit />}
-                        >
-                            Edit
-                        </NaapButton>
-                    )}
-                    <NaapButton
-                        className={`rounded-lg border border-[var(--primary-400,#82b2f9)] bg-[var(--primary-50,#f0f5ff)] hover:bg-[var(--primary-100,#dde8fc)] ${PRIMARY_TEXT} hover:!text-[#0e274b] px-5 py-2 flex items-center gap-2 transition-colors`}
-                        onClick={() => setShowPersonalSettings((v) => !v)}
-                        icon={<MdOutlineSettings />}
-                        type="button"
-                    >
-                        Settings
-                    </NaapButton>
-                    {editMode && (
-                        <>
-                            <NaapButton
-                                variant="primary"
-                                className={
-                                    `rounded-lg font-semibold shadow-sm px-6 py-2.5 transition-colors
-                                    ${PRIMARY_TEXT} 
-                                    bg-gradient-to-tr from-blue-500 via-blue-600 to-blue-700 
-                                    hover:from-blue-600 hover:to-blue-800 
-                                    focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-400 
-                                    border border-blue-500`
-                                }
-                                icon={<MdSave className="text-white text-lg" />}
-                                onClick={saveProfile}
-                                disabled={updateProfile.isPending}
-                            >
-                                <span className="text-white">Save</span>
-                            </NaapButton>
-                            <NaapButton
-                                className={
-                                    `rounded-lg font-semibold px-6 py-2.5 border 
-                                    border-gray-300 bg-gradient-to-tr from-gray-100 via-white to-gray-200 
-                                    hover:bg-gray-200 hover:border-gray-400 
-                                    text-gray-700 transition-colors shadow-sm 
-                                    focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400`
-                                }
-                                icon={<MdCancel className="text-gray-600 text-lg" />}
-                                onClick={cancelEditing}
-                                disabled={updateProfile.isPending}
-                            >
-                                <span>Cancel</span>
-                            </NaapButton>
-                        </>
-                    )}
-                </div>
-            </section>
 
-            {/* Settings drawer (overlay style for personal controls & settings) */}
-            {showPersonalSettings &&
-                <div
-                    className="fixed inset-0 flex justify-end items-stretch z-[1000] bg-black/30 animate-fade-in"
-                    onClick={() => setShowPersonalSettings(false)}
-                >
-                    <div
-                        className="bg-white h-full w-full max-w-xs sm:max-w-sm p-7 flex flex-col gap-5 border-l relative"
-                        onClick={e => e.stopPropagation()}
-                    >
-                        <button
-                            className="absolute right-4 top-4 text-2xl opacity-60 hover:opacity-100"
-                            onClick={() => setShowPersonalSettings(false)}
-                            title="Close"
-                            type="button"
-                        >
-                            &times;
-                        </button>
-                        <div>
-                            <div className="uppercase text-xs tracking-wider font-bold text-gray-400 mb-1">
-                                Quick Controls
+                    {/* Info */}
+                    <div className="flex-1 text-center md:text-left mb-2">
+                        <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-4">
+                            <div>
+                                <h1 className="text-3xl font-black text-slate-900 tracking-tight">{profile.name}</h1>
+                                <div className="flex items-center gap-2 justify-center md:justify-start text-slate-500 font-medium mt-1">
+                                    <MdOutlineAlternateEmail size={16} />
+                                    <span>{profile.email}</span>
+                                </div>
+                                <div className="flex items-center gap-2 mt-3 flex-wrap justify-center md:justify-start">
+                                    <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-bold uppercase tracking-wide">
+                                        {profile.role}
+                                    </span>
+                                    {(subscriptionStatus?.hasSubscription && subscriptionStatus?.status === "active") && (
+                                        <span className="px-3 py-1 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-xs font-bold uppercase tracking-wide flex items-center gap-1">
+                                            <FaCrown size={10} />
+                                            {subscriptionStatus.tier === "premium" ? "Premium" : "Subscribed"}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
-                            <div className="flex flex-col gap-2">
-                                <NaapButton
-                                    icon={<MdOutlineLockReset />}
-                                    variant="ghost"
-                                    className="justify-start"
-                                    onClick={() => {
-                                        setShowPasswordFields(true);
-                                        setShowPersonalSettings(false);
-                                    }}
-                                >
-                                    Change Password
-                                </NaapButton>
-                                <NaapButton
-                                    icon={<MdEdit />}
-                                    variant="ghost"
-                                    className="justify-start"
-                                    onClick={() => {
-                                        setShowPersonalSettings(false);
-                                        startEditing();
-                                    }}
-                                >
-                                    Edit Profile
-                                </NaapButton>
-                                <NaapButton
-                                    icon={<MdLogout />}
-                                    variant="ghost"
-                                    className="justify-start text-red-700"
-                                    style={{ color: "var(--destructive)" }}
-                                    onClick={handleLogoutClick}
-                                >
-                                    Logout
-                                </NaapButton>
-                            </div>
-                        </div>
-                        <div>
-                            <div className="uppercase text-xs tracking-wider font-bold text-gray-400 mb-1">
-                                Preferences
-                            </div>
-                            <div className="flex flex-col gap-2">
-                                <label className="flex items-center gap-3 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={showEmail}
-                                        onChange={() => setShowEmail(v => !v)}
-                                        className="accent-[var(--primary)]"
-                                    />
-                                    <span>Show Email on Profile</span>
-                                </label>
+
+                            {/* Actions */}
+                            <div className="flex items-center gap-3">
+                                {!editMode ? (
+                                    <>
+                                        <button onClick={startEditing} className="px-5 py-2.5 rounded-xl bg-slate-50 text-slate-700 font-bold text-sm hover:bg-slate-100 transition-colors border border-slate-200">
+                                            Edit Profile
+                                        </button>
+                                        <button onClick={() => setShowPersonalSettings(true)} className="p-2.5 rounded-xl bg-white text-slate-500 hover:text-primary hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm">
+                                            <MdOutlineSettings size={20} />
+                                        </button>
+                                    </>
+                                ) : (
+                                    <div className="flex gap-2">
+                                        <button onClick={cancelEditing} className="px-5 py-2.5 rounded-xl bg-white text-slate-600 font-bold text-sm border border-slate-200 hover:bg-slate-50">
+                                            Cancel
+                                        </button>
+                                        <button onClick={saveProfile} className="px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-md shadow-primary/20 hover:bg-blue-700">
+                                            Save Changes
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
-            }
+            </div>
 
-            {/* Personal Details */}
-            <section className="grid md:grid-cols-2 gap-7 mb-8">
-                <div className="bg-white rounded-2xl border px-6 py-6 flex flex-col gap-6">
-                    <h3 className="font-bold text-lg text-[var(--primary)] flex items-center gap-2 mb-3">
-                        <MdOutlinePerson className="text-xl" />
-                        Personal Info
-                    </h3>
-                    <div className="space-y-3">
-                        <FormDetailRow
-                            icon={<MdOutlinePerson />}
-                            label="Full Name"
-                            editing={editMode}
-                            value={profile.name}
-                            field="name"
-                            form={form}
-                            onChange={handleFieldChange}
-                            editable
-                            disabled={updateProfile.isPending}
-                        />
-                        <FormDetailRow
-                            icon={<MdOutlineAlternateEmail />}
-                            label="Email Address"
-                            value={profile.email}
-                            editing={false}
-                        />
-                        <FormDetailRow
-                            icon={<MdOutlineBusinessCenter />}
-                            label="Organization"
-                            editing={editMode}
-                            value={profile.profile?.organization}
-                            field="profile.organization"
-                            form={form}
-                            onChange={handleFieldChange}
-                            editable
-                            disabled={updateProfile.isPending}
-                        />
-                        <FormDetailRow
-                            icon={<>📞</>}
-                            label="Phone"
-                            editing={editMode}
-                            value={profile.profile?.phone}
-                            field="profile.phone"
-                            form={form}
-                            onChange={handleFieldChange}
-                            editable
-                            disabled={updateProfile.isPending}
-                        />
-                        <FormDetailRow
-                            icon={<>📝</>}
-                            label="Bio"
-                            editing={editMode}
-                            value={profile.profile?.bio}
-                            field="profile.bio"
-                            form={form}
-                            onChange={handleFieldChange}
-                            editable
-                            type="textarea"
-                            disabled={updateProfile.isPending}
-                        />
-                    </div>
+            {/* --- CONTENT GRID --- */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                {/* LEFT COL: Personal & Stats */}
+                <div className="space-y-8">
+                    {/* Stats */}
+                    {profile.stats && (
+                        <SectionCard title="Publication Stats" icon={MdCreditCard}>
+                            <div className="grid grid-cols-3 gap-3">
+                                <StatCard label="Total" value={profile.stats.total} colorClass="bg-blue-50 text-blue-700 border-blue-100" />
+                                <StatCard label="Approved" value={profile.stats.approved} colorClass="bg-emerald-50 text-emerald-700 border-emerald-100" />
+                                <StatCard label="Pending" value={profile.stats.pending} colorClass="bg-amber-50 text-amber-700 border-amber-100" />
+                            </div>
+                        </SectionCard>
+                    )}
+
+                    {/* Membership Info */}
+                    <SectionCard title="Membership Details" icon={MdBadge}>
+                        <div className="space-y-4">
+                            <DetailRow label="Member Since" value={new Date(profile.createdAt).toLocaleDateString()} icon={MdDateRange} />
+                            <DetailRow label="Member ID" value={<span className="font-mono bg-slate-100 px-2 py-0.5 rounded text-xs">{profile._id}</span>} icon={MdBadge} />
+                            <DetailRow label="Status" value={profile.isVerified ? "Verified" : "Unverified"} icon={MdOutlineCheckCircle} />
+                            <div className="pt-4 mt-2 border-t border-slate-50">
+                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Subscription</h4>
+                                {subscriptionStatus?.hasSubscription ? (
+                                    <div className="bg-amber-50 p-3 rounded-lg border border-amber-100">
+                                        <p className="text-sm font-bold text-amber-800">{subscriptionStatus.planName || "Active Plan"}</p>
+                                        <p className="text-xs text-amber-600 mt-1">Expires: {new Date(subscriptionStatus.endDate!).toLocaleDateString()}</p>
+                                    </div>
+                                ) : (
+                                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 text-center">
+                                        <p className="text-sm font-medium text-slate-500 mb-2">Basic Membership</p>
+                                        <a href="/subscription" className="text-xs font-bold text-primary hover:underline">Upgrade to Premium</a>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </SectionCard>
                 </div>
 
-                <div className="bg-white rounded-2xl border px-6 py-6 flex flex-col gap-6">
-                    <h3 className="font-bold text-lg text-[var(--primary)] flex items-center gap-2 mb-3">
-                        <MdOutlineWorkOutline className="text-xl" />
-                        Professional Details
-                    </h3>
-                    <div className="space-y-3">
-                        <FormDetailRow
-                            icon={<MdOutlineWorkOutline />}
-                            label="Specialization"
-                            editing={editMode}
-                            value={profile.profile?.specialization}
-                            field="profile.specialization"
-                            form={form}
-                            onChange={handleFieldChange}
-                            editable
-                            disabled={updateProfile.isPending}
-                        />
-                        <FormDetailRow
-                            icon={<MdCreditCard />}
-                            label="License #"
-                            editing={editMode}
-                            value={profile.professional?.licenseNumber}
-                            field="professional.licenseNumber"
-                            form={form}
-                            onChange={handleFieldChange}
-                            editable
-                            disabled={updateProfile.isPending}
-                        />
-                        <FormDetailRow
-                            icon={<MdOutlineWorkOutline />}
-                            label="Years of Experience"
-                            editing={editMode}
-                            value={
-                                profile.professional?.yearsOfExperience !== undefined &&
-                                    profile.professional?.yearsOfExperience !== null
-                                    ? `${profile.professional.yearsOfExperience} years`
-                                    : ''
-                            }
-                            field="professional.yearsOfExperience"
-                            form={form}
-                            onChange={handleFieldChange}
-                            editable
-                            type="number"
-                            disabled={updateProfile.isPending}
-                        />
+                {/* RIGHT COL: Detailed Form Info */}
+                <div className="lg:col-span-2 space-y-8">
+
+                    {/* Personal Information */}
+                    <SectionCard title="Personal Information" icon={MdOutlinePerson}>
                         {editMode ? (
-                            <div className="flex items-start gap-3">
-                                <div className="opacity-50 text-lg">🎓</div>
-                                <div className="w-32 text-sm font-bold text-gray-700 mt-1">Certifications</div>
-                                <div className="flex-1 flex flex-col gap-2">
-                                    {Array.isArray(form.professional?.certifications) &&
-                                        form.professional.certifications.length > 0 ? (
-                                        form.professional.certifications.map((cert: string, idx: number) => (
-                                            <div key={idx} className="flex items-center gap-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="col-span-2"><InputField label="Full Name" name="name" value={form.name} onChange={handleFieldChange} icon={MdOutlinePerson} /></div>
+                                <InputField label="Phone" name="profile.phone" value={form.profile?.phone} onChange={handleFieldChange} icon={MdPhone} />
+                                <InputField label="Organization" name="profile.organization" value={form.profile?.organization} onChange={handleFieldChange} icon={FaBuilding} />
+                                <div className="col-span-2"><InputField label="Bio" name="profile.bio" value={form.profile?.bio} onChange={handleFieldChange} type="textarea" placeholder="Tell us about yourself..." icon={MdDescription} /></div>
+                            </div>
+                        ) : (
+                            <div className="space-y-5">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+                                    <DetailRow label="Full Name" value={profile.name} icon={MdOutlinePerson} />
+                                    <DetailRow label="Email" value={profile.email} icon={MdOutlineAlternateEmail} />
+                                    <DetailRow label="Phone" value={profile.profile?.phone} icon={MdPhone} />
+                                    <DetailRow label="Organization" value={profile.profile?.organization} icon={FaBuilding} />
+                                </div>
+                                <div className="pt-4 border-t border-slate-50">
+                                    <DetailRow label="Bio" value={profile.profile?.bio || <span className="text-slate-400 italic">No bio added yet.</span>} />
+                                </div>
+                            </div>
+                        )}
+                    </SectionCard>
+
+                    {/* Professional Details */}
+                    <SectionCard title="Professional Details" icon={MdOutlineWorkOutline}>
+                        {editMode ? (
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <InputField label="Specialization" name="profile.specialization" value={form.profile?.specialization} onChange={handleFieldChange} icon={FaUserTie} />
+                                    <InputField label="Years Experience" name="professional.yearsOfExperience" value={form.professional?.yearsOfExperience} onChange={handleFieldChange} type="number" icon={MdDateRange} />
+                                    <InputField label="License Number" name="professional.licenseNumber" value={form.professional?.licenseNumber} onChange={handleFieldChange} icon={MdCreditCard} />
+                                    <InputField label="License Document URL" name="professional.licenseDocument" value={form.professional?.licenseDocument} onChange={handleFieldChange} placeholder="https://..." icon={MdDescription} />
+                                </div>
+
+                                <div className="pt-4 border-t border-slate-50">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide flex items-center gap-2 mb-3">
+                                        <MdSchool /> Certifications
+                                    </label>
+                                    <div className="space-y-3">
+                                        {form.professional?.certifications?.map((cert, i) => (
+                                            <div key={i} className="flex gap-2">
                                                 <input
-                                                    name={`certification_${idx}`}
-                                                    className="input input-bordered flex-1 py-1 px-2 text-base border border-[var(--primary-200,#d2e0f7)] rounded-lg"
-                                                    disabled={updateProfile.isPending}
                                                     value={cert}
-                                                    onChange={e => handleCertificationsChange(idx, e.target.value)}
-                                                    placeholder={`Certification #${idx + 1}`}
+                                                    onChange={(e) => handleCertificationsChange(i, e.target.value)}
+                                                    className="flex-1 px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:bg-white focus:border-primary focus:outline-none"
+                                                    placeholder="Certification Name"
                                                 />
-                                                <button
-                                                    type="button"
-                                                    className="text-red-600 text-2xl ml-1"
-                                                    onClick={() => removeCertification(idx)}
-                                                    title="Remove certification"
-                                                    tabIndex={-1}
-                                                >
-                                                    &times;
+                                                <button onClick={() => removeCertification(i)} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                                    <MdClose />
                                                 </button>
                                             </div>
-                                        ))
-                                    ) : (
-                                        <span className="text-gray-400 italic">—</span>
-                                    )}
-                                    <button
-                                        type="button"
-                                        className="text-primary mt-2 underline text-sm"
-                                        onClick={addCertification}
-                                    >
-                                        + Add certification
+                                        ))}
+                                        <button onClick={addCertification} className="text-sm font-bold text-primary hover:text-blue-700 py-2">
+                                            + Add Certification
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+                                    <DetailRow label="Specialization" value={profile.profile?.specialization} icon={FaUserTie} />
+                                    <DetailRow label="Experience" value={profile.professional?.yearsOfExperience ? `${profile.professional.yearsOfExperience} Years` : null} icon={MdDateRange} />
+                                    <DetailRow label="License Number" value={profile.professional?.licenseNumber} icon={MdCreditCard} />
+                                    <DetailRow label="License Document" value="View Document" href={profile.professional?.licenseDocument} icon={MdDescription} />
+                                </div>
+                                <div className="pt-4 border-t border-slate-50">
+                                    <DetailRow
+                                        label="Certifications"
+                                        icon={MdSchool}
+                                        value={
+                                            profile.professional?.certifications?.length ? (
+                                                <ul className="list-disc list-inside space-y-1 mt-1 text-slate-600">
+                                                    {profile.professional.certifications.map((c: string, i: number) => <li key={i}>{c}</li>)}
+                                                </ul>
+                                            ) : <span className="text-slate-400 italic">No certifications listed.</span>
+                                        }
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </SectionCard>
+
+                </div>
+            </div>
+
+            {/* --- SETTINGS DRAWER --- */}
+            {showPersonalSettings && (
+                <div className="fixed inset-0 z-50 flex justify-end">
+                    <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowPersonalSettings(false)} />
+                    <div className="relative w-full max-w-sm bg-white h-full shadow-2xl p-8 flex flex-col animate-in slide-in-from-right duration-200">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-xl font-bold text-slate-800">Settings</h2>
+                            <button onClick={() => setShowPersonalSettings(false)} className="p-2 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-full"><MdClose /></button>
+                        </div>
+
+                        <div className="space-y-6 flex-1">
+                            <div>
+                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Account</h3>
+                                <div className="space-y-2">
+                                    <button onClick={() => { setShowPasswordFields(true); setShowPersonalSettings(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-left transition-colors text-slate-700 font-medium">
+                                        <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><MdOutlineLockReset size={18} /></div>
+                                        Change Password
+                                    </button>
+                                    <button onClick={() => { startEditing(); setShowPersonalSettings(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-left transition-colors text-slate-700 font-medium">
+                                        <div className="p-2 bg-purple-50 text-purple-600 rounded-lg"><MdEdit size={18} /></div>
+                                        Edit Profile
                                     </button>
                                 </div>
                             </div>
-                        ) : (
-                            <FormDetailRow
-                                icon={<>🎓</>}
-                                label="Certifications"
-                                editing={false}
-                                value={
-                                    Array.isArray(profile.professional?.certifications) &&
-                                    profile.professional?.certifications.length
-                                    ? (
-                                        <ul className="list-disc ml-6">
-                                            {(profile.professional.certifications as string[]).map((c: string, idx: number) => (
-                                                <li key={idx}>{c}</li>
-                                            ))}
-                                        </ul>
-                                    )
-                                    : <span className="text-gray-400 italic">—</span>
-                                }
-                            />
-                        )}
-                        <FormDetailRow
-                            icon={<MdOutlineBusinessCenter />}
-                            label="License Document"
-                            editing={editMode}
-                            value={
-                                profile.professional?.licenseDocument
-                                    ? (
-                                        <a
-                                            href={profile.professional.licenseDocument}
-                                            className="underline text-blue-600"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            View Document
-                                        </a>
-                                    ) : undefined
-                            }
-                            field="professional.licenseDocument"
-                            form={form}
-                            onChange={handleFieldChange}
-                            editable
-                            disabled={updateProfile.isPending}
-                        />
-                    </div>
-                </div>
-            </section>
 
-            {/* Membership and Stats */}
-            <section className="grid md:grid-cols-2 gap-7 mb-8">
-                {/* Subscription Status Card */}
-                <div className="bg-white rounded-2xl border px-6 py-6 flex flex-col gap-4">
-                    <h3 className="font-bold text-lg text-[var(--primary)] flex items-center gap-2 mb-3">
-                        <FaCrown className="text-xl text-amber-500" />
-                        Subscription Status
-                    </h3>
-                    <div className="space-y-4">
-                        {(profile.role === "admin" || profile.role === "editor") ? (
-                            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-4">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <FaCrown className="text-purple-600 text-xl" />
-                                    <span className="font-bold text-purple-800 text-lg">
-                                        {profile.role === "admin" ? "Administrator" : "Editor"}
-                                    </span>
-                                </div>
-                                <p className="text-purple-700 text-sm">
-                                    You have full access to all platform features as a {profile.role}.
-                                </p>
+                            <div>
+                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Session</h3>
+                                <button onClick={handleLogoutClick} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 text-left transition-colors text-red-600 font-medium">
+                                    <div className="p-2 bg-red-100 text-red-600 rounded-lg"><MdLogout size={18} /></div>
+                                    Sign Out
+                                </button>
                             </div>
-                        ) : subscriptionStatus?.hasSubscription && subscriptionStatus?.status === "active" ? (
-                            <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-4">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <FaCrown className="text-amber-600 text-xl" />
-                                    <span className="font-bold text-amber-800 text-lg">
-                                        {subscriptionStatus.tier === "premium" ? "Premium Member" : "Subscribed Member"}
-                                    </span>
-                                </div>
-                                <div className="space-y-2 text-sm">
-                                    <p className="text-amber-700">
-                                        <strong>Plan:</strong> {subscriptionStatus.planName || subscriptionStatus.tier}
-                                    </p>
-                                    {subscriptionStatus.startDate && (
-                                        <p className="text-amber-700">
-                                            <strong>Since:</strong> {new Date(subscriptionStatus.startDate).toLocaleDateString()}
-                                        </p>
-                                    )}
-                                    {subscriptionStatus.endDate && (
-                                        <p className="text-amber-700">
-                                            <strong>Expires:</strong> {new Date(subscriptionStatus.endDate).toLocaleDateString()}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <MdBadge className="text-gray-500 text-xl" />
-                                    <span className="font-bold text-gray-700 text-lg">Basic Member</span>
-                                </div>
-                                <p className="text-gray-600 text-sm mb-3">
-                                    You have access to basic platform features.
-                                </p>
-                                <a 
-                                    href="/subscription" 
-                                    className="inline-flex items-center gap-2 bg-[var(--primary)] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity"
-                                >
-                                    <FaCrown />
-                                    Upgrade to Premium
-                                </a>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-2xl border px-6 py-6 flex flex-col gap-4">
-                    <h3 className="font-bold text-lg text-[var(--primary)] flex items-center gap-2 mb-3">
-                        <MdDateRange className="text-xl" />
-                        Membership & IDs
-                    </h3>
-                    <div className="grid grid-cols-1  gap-3 text-base">
-                        <DetailPair label="Member Since" value={new Date(profile.createdAt).toLocaleDateString()} />
-                        <DetailPair label="Member ID" value={<span className="pr-4 font-mono tracking-wide">{profile._id}</span>} />
-                        <DetailPair label="Role" value={profile.role} />
-                        <DetailPair label="Verified" value={profile.isVerified ? "Yes" : "No"} />
-                    </div>
-                </div>
-            </section>
-
-            {/* Publication Stats */}
-            {profile.stats && (
-                <section className="mb-8">
-                    <div className="bg-white rounded-2xl border px-6 py-6">
-                        <h3 className="font-bold text-lg text-[var(--primary)] flex items-center gap-2 mb-3">
-                            My Publication Stats
-                        </h3>
-                        <div className="flex gap-4 mt-2">
-                            <StatBox color="blue" title="Total" value={profile.stats.total} />
-                            <StatBox color="green" title="Approved" value={profile.stats.approved} />
-                            <StatBox color="yellow" title="Pending" value={profile.stats.pending} />
                         </div>
                     </div>
-                </section>
+                </div>
             )}
 
-            {/* Controls (now as a regular block at the end, not sticky, to prevent overlap) */}
-            <section
-                className="bg-opacity-80 py-6 z-10 flex flex-wrap gap-4 items-center border-t"
-            >
-                {!showPasswordFields && (
-                    <NaapButton
-                        variant="ghost"
-                        className="border"
-                        style={{
-                            color: "var(--primary)",
-                            borderColor: "var(--primary-100, #f0f5ff)",
-                        }}
-                        onClick={() => setShowPasswordFields(true)}
-                        type="button"
-                        icon={<MdOutlineLockReset />}
-                    >
-                        Change Password
-                    </NaapButton>
-                )}
-                <NaapButton
-                    variant="primary"
-                    className="bg-red-600 hover:bg-red-700 text-white"
-                    style={{
-                        backgroundColor: "var(--destructive)",
-                        color: "#fff",
-                    }}
-                    type="button"
-                    icon={<MdLogout />}
-                    onClick={handleLogoutClick}
-                >
-                    Logout
-                </NaapButton>
-            </section>
-
-            {/* Change Password Modal */}
+            {/* --- MODALS --- */}
             {showPasswordFields && (
-                <form
-                    onSubmit={handlePasswordSubmit}
-                    className="fixed inset-0 bg-black/40 z-[1100] flex items-center justify-center animate-fade-in"
-                >
-                    <div className="max-w-md w-full p-8 bg-white border border-[var(--primary-100,#f0f5ff)] rounded-2xl space-y-5 relative"
-                        onClick={e => e.stopPropagation()}>
-                        <h3 className="text-xl font-bold flex items-center gap-2 text-[var(--primary)] mb-2">
-                            <MdOutlineLockReset />
-                            Change Password
-                        </h3>
-                        <button
-                            className="absolute right-5 top-5 text-2xl opacity-50 hover:opacity-100"
-                            onClick={() => { setShowPasswordFields(false); setPasswordStatus(null); }}
-                            type="button"
-                            title="Close"
-                        >
-                            &times;
-                        </button>
-                        <div>
-                            <label className="block mb-1 font-semibold">Current Password</label>
-                            <div className="relative">
-                                <input
-                                    type={showPasswords.old ? "text" : "password"}
-                                    name="oldPassword"
-                                    value={passwordFields.oldPassword}
-                                    onChange={handlePasswordChange}
-                                    className="w-full border px-3 py-2 rounded pr-10"
-                                    style={{
-                                        borderColor: "var(--primary-200, #d2e0f7)",
-                                        outlineColor: "var(--primary)",
-                                    }}
-                                    required
-                                />
-                                <button
-                                    type="button"
-                                    className="absolute top-1/2 right-2 -translate-y-1/2 text-lg opacity-60 hover:opacity-80"
-                                    onClick={() => toggleShowPassword("old")}
-                                    tabIndex={-1}
-                                >
-                                    {showPasswords.old
-                                        ? <MdOutlineVisibilityOff />
-                                        : <MdOutlineVisibility />}
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowPasswordFields(false)} />
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative z-10 animate-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-lg font-bold text-slate-800">Change Password</h3>
+                            <button onClick={() => setShowPasswordFields(false)} className="text-slate-400 hover:text-slate-600"><MdClose size={20} /></button>
+                        </div>
+                        <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                            <InputField label="Current Password" name="oldPassword" type="password" value={passwordFields.oldPassword} onChange={(e: any) => setPasswordFields(p => ({ ...p, oldPassword: e.target.value }))} />
+                            <InputField label="New Password" name="newPassword" type="password" value={passwordFields.newPassword} onChange={(e: any) => setPasswordFields(p => ({ ...p, newPassword: e.target.value }))} />
+                            <InputField label="Confirm Password" name="confirmPassword" type="password" value={passwordFields.confirmPassword} onChange={(e: any) => setPasswordFields(p => ({ ...p, confirmPassword: e.target.value }))} />
+                            <div className="pt-4 flex gap-3">
+                                <button type="button" onClick={() => setShowPasswordFields(false)} className="flex-1 py-2.5 rounded-xl border border-slate-200 font-bold text-slate-600 hover:bg-slate-50">Cancel</button>
+                                <button type="submit" disabled={updatePassword.isPending} className="flex-1 py-2.5 rounded-xl bg-primary text-white font-bold hover:bg-blue-700 shadow-md shadow-primary/20 disabled:opacity-50">
+                                    {updatePassword.isPending ? "Updating..." : "Update Password"}
                                 </button>
                             </div>
-                        </div>
-                        <div>
-                            <label className="block mb-1 font-semibold">New Password</label>
-                            <div className="relative">
-                                <input
-                                    type={showPasswords.new ? "text" : "password"}
-                                    name="newPassword"
-                                    value={passwordFields.newPassword}
-                                    onChange={handlePasswordChange}
-                                    className="w-full border px-3 py-2 rounded pr-10"
-                                    style={{
-                                        borderColor: "var(--primary-200, #d2e0f7)",
-                                        outlineColor: "var(--primary)",
-                                    }}
-                                    required
-                                />
-                                <button
-                                    type="button"
-                                    className="absolute top-1/2 right-2 -translate-y-1/2 text-lg opacity-60 hover:opacity-80"
-                                    onClick={() => toggleShowPassword("new")}
-                                    tabIndex={-1}
-                                >
-                                    {showPasswords.new
-                                        ? <MdOutlineVisibilityOff />
-                                        : <MdOutlineVisibility />}
-                                </button>
-                            </div>
-                        </div>
-                        <div>
-                            <label className="block mb-1 font-semibold">Confirm New Password</label>
-                            <div className="relative">
-                                <input
-                                    type={showPasswords.confirm ? "text" : "password"}
-                                    name="confirmPassword"
-                                    value={passwordFields.confirmPassword}
-                                    onChange={handlePasswordChange}
-                                    className="w-full border px-3 py-2 rounded pr-10"
-                                    style={{
-                                        borderColor: "var(--primary-200, #d2e0f7)",
-                                        outlineColor: "var(--primary)",
-                                    }}
-                                    required
-                                />
-                                <button
-                                    type="button"
-                                    className="absolute top-1/2 right-2 -translate-y-1/2 text-lg opacity-60 hover:opacity-80"
-                                    onClick={() => toggleShowPassword("confirm")}
-                                    tabIndex={-1}
-                                >
-                                    {showPasswords.confirm
-                                        ? <MdOutlineVisibilityOff />
-                                        : <MdOutlineVisibility />}
-                                </button>
-                            </div>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-4 mt-3">
-                            <NaapButton
-                                type="submit"
-                                icon={<MdSave />}
-                                iconPosition="left"
-                                variant="primary"
-                                loading={updatePassword.isPending}
-                                loadingText="Saving..."
-                                disabled={updatePassword.isPending}
-                            >
-                                Change Password
-                            </NaapButton>
-                            <NaapButton
-                                type="button"
-                                icon={<MdCancel />}
-                                iconPosition="left"
-                                variant="ghost"
-                                className="px-4 py-1.5"
-                                onClick={() => {
-                                    setPasswordFields({
-                                        oldPassword: "",
-                                        newPassword: "",
-                                        confirmPassword: "",
-                                    });
-                                    setShowPasswordFields(false);
-                                    setPasswordStatus(null);
-                                }}
-                                disabled={updatePassword.isPending}
-                            >
-                                Cancel
-                            </NaapButton>
-                            {passwordStatus === "success" && (
-                                <span className="flex items-center text-green-700 gap-1 ml-2">
-                                    <MdOutlineCheckCircle />
-                                    Updated!
-                                </span>
-                            )}
-                            {passwordStatus === "error" && (
-                                <span className="flex items-center text-red-600 gap-1 ml-2">
-                                    <MdErrorOutline />
-                                    Error: Passwords don't match or update failed.
-                                </span>
-                            )}
-                        </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             )}
 
-            {/* Logout Confirmation Dialog */}
-            <LogoutDialog 
-                open={showLogoutDialog} 
-                onOpenChange={setShowLogoutDialog}
-                onConfirm={confirmLogout}
-            />
+            <LogoutDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog} onConfirm={() => { logout(); setShowLogoutDialog(false); }} />
         </div>
     );
 }
 
-/**
- * DetailPair shows a label-value pair in a flexible format.
- */
-function DetailPair({
-    label,
-    value,
-}: {
-    label: string;
-    value: React.ReactNode;
-}) {
-    return (
-        <div className="flex items-center gap-3">
-            <span className="w-32 text-gray-500 font-medium">{label}:</span>
-            <span className="">{value}</span>
-        </div>
-    );
-}
-
-/**
- * FormDetailRow for profile sections – editable or readonly
- * Recognizes dot notation for nested fields in `form` prop.
- */
-function FormDetailRow({
-    icon,
-    label,
-    value,
-    editing,
-    field,
-    form,
-    onChange,
-    editable,
-    type,
-    disabled,
-}: {
-    icon: React.ReactNode;
-    label: string;
-    value: any;
-    editing?: boolean;
-    field?: string;
-    form?: Record<string, any>;
-    onChange?: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
-    editable?: boolean;
-    type?: string;
-    disabled?: boolean;
-}) {
-    function getFormFieldValue(form: any, field?: string) {
-        if (!form || !field) return "";
-        const keys = field.split(".");
-        let v = form;
-        for (const k of keys) {
-            if (v && typeof v === "object" && k in v) {
-                v = v[k];
-            } else {
-                return "";
-            }
-        }
-        return v ?? "";
-    }
-
-    if (editing && editable && field && typeof onChange === "function") {
-        if (type === "textarea") {
-            return (
-                <div className="flex items-center gap-3">
-                    <div className="opacity-50 text-lg">{icon}</div>
-                    <div className="w-32 text-sm font-bold text-gray-700">{label}</div>
-                    <textarea
-                        name={field}
-                        value={getFormFieldValue(form, field)}
-                        onChange={onChange as React.ChangeEventHandler<HTMLTextAreaElement>}
-                        placeholder={label}
-                        className="input input-bordered flex-1 py-1 px-2 text-base border border-[var(--primary-200,#d2e0f7)] rounded-lg min-h-[60px]"
-                        disabled={disabled}
-                    />
-                </div>
-            );
-        }
-        return (
-            <div className="flex items-center gap-3">
-                <div className="opacity-50 text-lg">{icon}</div>
-                <div className="w-32 text-sm font-bold text-gray-700">{label}</div>
-                <input
-                    name={field}
-                    value={getFormFieldValue(form, field)}
-                    onChange={onChange as React.ChangeEventHandler<HTMLInputElement>}
-                    type={type || "text"}
-                    placeholder={label}
-                    className="input input-bordered flex-1 py-1 px-2 text-base border border-[var(--primary-200,#d2e0f7)] rounded-lg"
-                    disabled={disabled}
-                />
-            </div>
-        );
-    }
-    return (
-        <div className="flex items-center gap-3">
-            <div className="opacity-50 text-lg">{icon}</div>
-            <div className="w-32 text-sm font-bold text-gray-700">{label}</div>
-            <span className="text-base">
-                {typeof value !== "undefined" && value !== null && value !== ""
-                    ? value
-                    : <span className="text-gray-400 italic">—</span>}
-            </span>
-        </div>
-    );
-}
-
-/**
- * StatBox displays a single statistics tile (Total, Approved, Pending).
- */
-function StatBox({
-    color,
-    title,
-    value,
-}: {
-    color: "blue" | "green" | "yellow";
-    title: string;
-    value: any;
-}) {
-    const colorMap: Record<string, string> = {
-        blue: "bg-[var(--primary-50,#f0f5ff)] text-[var(--primary,#1a73e8)] border-[var(--primary-100,#e2eaff)]",
-        green: "bg-green-100 text-green-800 border-green-200",
-        yellow: "bg-yellow-100 text-yellow-800 border-yellow-200",
-    };
-    return (
-        <div
-            className={`flex flex-col justify-center items-center rounded-xl border ${colorMap[color]} p-5 text-center min-w-[120px]`}
-        >
-            <div className="text-4xl font-black">{value}</div>
-            <div className="mt-1 text-sm font-semibold">{title}</div>
-        </div>
-    );
-}

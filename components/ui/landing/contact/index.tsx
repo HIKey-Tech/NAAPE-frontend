@@ -125,7 +125,7 @@ export default function ContactSection() {
                                             type="submit"
                                             loading={submitting}
                                             loadingText="Sending Message..."
-                                            className="w-full bg-primary hover:bg-blue-700 text-white font-bold h-12 rounded-xl text-base shadow-lg hover:shadow-primary/25 transition-all"
+                                            className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl text-base shadow-lg hover:shadow-primary/25 transition-all"
                                             icon={<Send size={18} />}
                                             iconPosition="right"
                                         >
@@ -137,7 +137,7 @@ export default function ContactSection() {
                         </CardContent>
                     </Card>
 
-                    <div className="mt-8 bg-blue-50/50 border border-blue-100 rounded-2xl p-6 flex flex-col md:flex-row gap-6">
+                    <div className="mt-8 bg-primary/5 border border-primary/10 rounded-2xl p-6 flex flex-col md:flex-row gap-6">
                         <div className="flex-1">
                             <h4 className="font-bold text-slate-900 mb-2 flex items-center gap-2">
                                 <CheckCircle size={18} className="text-secondary" />

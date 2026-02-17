@@ -61,7 +61,7 @@ export default function TrainingsComponent() {
                 <AnimatePresence>
                     {filteredTrainings.length === 0 ? (
                         <motion.div
-                            className="col-span-full text-center text-[#96A6BF] text-[16px] py-20 font-medium"
+                            className="col-span-full text-center text-slate-400 text-base py-20 font-medium"
                             key="no-trainings"
                             initial={{ opacity: 0, y: 14 }}
                             animate={{ opacity: 1, y: 0 }}

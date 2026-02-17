@@ -2,23 +2,11 @@
 
 import { useState } from "react";
 import { useAdminNews } from "@/hooks/useAdminNews";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+import { FaTimes } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface EditNewsModalProps {
     news: any;
@@ -40,54 +28,37 @@ export function EditNewsModal({ news, onClose, onSuccess }: EditNewsModalProps) 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-
         const success = await updateNews(news._id, formData);
         setLoading(false);
-
-        if (success) {
-            onSuccess();
-        }
+        if (success) onSuccess();
     };
 
     return (
-        <Dialog open onOpenChange={onClose}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle>Edit News</DialogTitle>
-                </DialogHeader>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between p-6 border-b border-slate-100">
+                    <h2 className="text-lg font-bold text-slate-900">Edit News</h2>
+                    <button onClick={onClose} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors">
+                        <FaTimes className="w-3.5 h-3.5 text-slate-500" />
+                    </button>
+                </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="p-6 space-y-4">
                     <div>
-                        <Label htmlFor="title">Title</Label>
-                        <Input
-                            id="title"
-                            value={formData.title}
-                            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                            required
-                        />
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Title</label>
+                        <Input value={formData.title} onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))} required className="rounded-xl border-slate-200 bg-slate-50 focus:bg-white" />
                     </div>
 
                     <div>
-                        <Label htmlFor="content">Content</Label>
-                        <Textarea
-                            id="content"
-                            value={formData.content}
-                            onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                            rows={10}
-                            required
-                        />
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Content</label>
+                        <Textarea value={formData.content} onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))} rows={10} required className="rounded-xl border-slate-200 bg-slate-50 focus:bg-white" />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <Label htmlFor="category">Category</Label>
-                            <Select
-                                value={formData.category}
-                                onValueChange={(v) => setFormData(prev => ({ ...prev, category: v }))}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue />
-                                </SelectTrigger>
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Category</label>
+                            <Select value={formData.category} onValueChange={(v) => setFormData(prev => ({ ...prev, category: v }))}>
+                                <SelectTrigger className="rounded-xl border-slate-200 bg-slate-50"><SelectValue /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="Engineering">Engineering</SelectItem>
                                     <SelectItem value="Pilot">Pilot</SelectItem>
@@ -96,16 +67,10 @@ export function EditNewsModal({ news, onClose, onSuccess }: EditNewsModalProps) 
                                 </SelectContent>
                             </Select>
                         </div>
-
                         <div>
-                            <Label htmlFor="status">Status</Label>
-                            <Select
-                                value={formData.status}
-                                onValueChange={(v) => setFormData(prev => ({ ...prev, status: v }))}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue />
-                                </SelectTrigger>
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Status</label>
+                            <Select value={formData.status} onValueChange={(v) => setFormData(prev => ({ ...prev, status: v }))}>
+                                <SelectTrigger className="rounded-xl border-slate-200 bg-slate-50"><SelectValue /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="draft">Draft</SelectItem>
                                     <SelectItem value="published">Published</SelectItem>
@@ -115,25 +80,16 @@ export function EditNewsModal({ news, onClose, onSuccess }: EditNewsModalProps) 
                     </div>
 
                     <div>
-                        <Label htmlFor="image">Image URL</Label>
-                        <Input
-                            id="image"
-                            value={formData.image}
-                            onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
-                            placeholder="https://..."
-                        />
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Image URL</label>
+                        <Input value={formData.image} onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))} placeholder="https://..." className="rounded-xl border-slate-200 bg-slate-50 focus:bg-white" />
                     </div>
 
-                    <div className="flex justify-end gap-2 pt-4">
-                        <Button type="button" variant="outline" onClick={onClose}>
-                            Cancel
-                        </Button>
-                        <Button type="submit" disabled={loading}>
-                            {loading ? "Saving..." : "Save Changes"}
-                        </Button>
+                    <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                        <Button type="button" variant="outline" onClick={onClose} className="rounded-xl font-bold border-slate-200">Cancel</Button>
+                        <Button type="submit" disabled={loading} className="rounded-xl font-bold shadow-md shadow-primary/20">{loading ? "Saving..." : "Save Changes"}</Button>
                     </div>
                 </form>
-            </DialogContent>
-        </Dialog>
+            </div>
+        </div>
     );
 }

@@ -144,7 +144,7 @@ function HowToBecomeMember() {
                                 <div className="flex flex-wrap gap-4 pt-4">
                                     <NaapButton
                                         type="submit"
-                                        className="bg-primary hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-xl text-base shadow-lg hover:shadow-primary/25 transition-all"
+                                        className="bg-primary hover:bg-primary/90 text-white font-bold px-8 py-3 rounded-xl text-base shadow-lg hover:shadow-primary/25 transition-all"
                                         disabled={submitMutation.isPending}
                                     >
                                         {submitMutation.isPending ? "Submitting..." : "Submit Form"}

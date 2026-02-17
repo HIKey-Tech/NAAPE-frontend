@@ -48,7 +48,7 @@ export default function AboutSection() {
 
                     <Link href="/about/about-us" className="mt-4">
                         <NaapButton
-                            className="bg-primary hover:bg-blue-700 text-white font-bold px-8 py-4 text-base transition-all rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1 flex items-center gap-2"
+                            className="bg-primary hover:bg-primary/90 text-white font-bold px-8 py-4 text-base transition-all rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1 flex items-center gap-2"
                             icon={<FaArrowRight size={16} />}
                             iconPosition="right"
                         >

@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { useAuth } from "@/context/authcontext";
 import { usePaymentHistory } from "../../../hooks/usePaymentHistory";
+import { FaCreditCard, FaCheckCircle, FaTimesCircle, FaClock, FaExchangeAlt, FaSpinner, FaReceipt } from "react-icons/fa";
 
-// Types for payment records
 type PaymentType = "event" | "subscription" | "tokenized-payment" | "transfer" | "other";
 interface PaymentHistoryItem {
   _id: string;
@@ -16,19 +16,19 @@ interface PaymentHistoryItem {
   createdAt: string;
 }
 
-const STATUS_MAP: Record<string, { label: string; color: string; icon: string }> = {
-  completed: { label: "Completed", color: "#21C87A", icon: "✔️" },
-  success: { label: "Success", color: "#21C87A", icon: "✔️" },
-  pending: { label: "Pending", color: "#EFB00C", icon: "⏳" },
-  failed: { label: "Failed", color: "#E57373", icon: "✖️" },
-  cancelled: { label: "Cancelled", color: "#E57373", icon: "✖️" },
-  refunded: { label: "Refunded", color: "#3866b7", icon: "↩" },
+const STATUS_MAP: Record<string, { label: string; className: string; icon: React.ElementType }> = {
+  completed: { label: "Completed", className: "bg-emerald-50 text-emerald-700 border border-emerald-100", icon: FaCheckCircle },
+  success: { label: "Success", className: "bg-emerald-50 text-emerald-700 border border-emerald-100", icon: FaCheckCircle },
+  pending: { label: "Pending", className: "bg-amber-50 text-amber-700 border border-amber-100", icon: FaClock },
+  failed: { label: "Failed", className: "bg-red-50 text-red-700 border border-red-100", icon: FaTimesCircle },
+  cancelled: { label: "Cancelled", className: "bg-red-50 text-red-700 border border-red-100", icon: FaTimesCircle },
+  refunded: { label: "Refunded", className: "bg-primary/5 text-primary border border-primary/10", icon: FaExchangeAlt },
 };
 
 const TYPE_LABELS: Record<PaymentType, string> = {
   event: "Event",
   subscription: "Subscription",
-  "tokenized-payment": "Tokenized Payment",
+  "tokenized-payment": "Tokenized",
   transfer: "Transfer",
   other: "Other",
 };
@@ -43,161 +43,48 @@ const TABS: { key: PaymentType; label: string }[] = [
 
 function formatAmount(amount: number, currency: string) {
   try {
-    return new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: currency || "NGN",
-      minimumFractionDigits: 2,
-    }).format(amount);
+    return new Intl.NumberFormat("en-NG", { style: "currency", currency: currency || "NGN", minimumFractionDigits: 2 }).format(amount);
   } catch {
     return `${currency || "NGN"} ${amount}`;
   }
 }
+
 function formatDate(dateStr: string) {
-  const d = new Date(dateStr);
-  return d.toLocaleString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return new Date(dateStr).toLocaleString(undefined, { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
-
-const badgeStyle = (color: string) => ({
-  background: color,
-  color: "#fff",
-  fontWeight: 700,
-  borderRadius: 10,
-  padding: "3px 11px",
-  display: "inline-flex",
-  alignItems: "center",
-  fontSize: 14,
-  letterSpacing: "0.02em",
-  minWidth: 82,
-  justifyContent: "center",
-  marginLeft: 5
-});
-
-const tabBtnStyle = (selected: boolean) => ({
-  background: selected ? "#253fa9" : "#f6f7fa",
-  color: selected ? "#fff" : "#253fa9",
-  fontWeight: selected ? 700 : 500,
-  border: "none",
-  padding: "8px 22px",
-  borderRadius: 18,
-  marginRight: 8,
-  cursor: "pointer",
-  fontSize: 15.3,
-  letterSpacing: "0.07em",
-  boxShadow: selected ? "0 2px 9px #253fa91a" : undefined,
-  transition: "background .22s,color .18s"
-});
 
 const PaymentRow: React.FC<{ item: PaymentHistoryItem }> = ({ item }) => {
   const statusKey = (item.status || "").toLowerCase();
-  const status = STATUS_MAP[statusKey] || { label: item.status, color: "#d4dbe8", icon: "•" };
+  const status = STATUS_MAP[statusKey] || { label: item.status, className: "bg-slate-100 text-slate-600", icon: FaClock };
+  const StatusIcon = status.icon;
 
-  // Extract major metadata for tooltips/details
   const details: string[] = [];
   const md = item.metadata || {};
   if (item.type === "event" && md.eventName) details.push(`Event: ${md.eventName}`);
   if (item.type === "subscription" && md.planName) details.push(`Plan: ${md.planName}`);
   if (md.description) details.push(md.description);
-  if (md.reference) details.push(`Ref: ${md.reference}`);
-  if (md.channel) details.push(`Channel: ${md.channel}`);
-  if (md.gateway) details.push(`Gateway: ${md.gateway}`);
 
   return (
-    <div
-      style={{
-        background: "#fff",
-        borderRadius: 14,
-        boxShadow: "0 1px 11px #eaf1fc36",
-        padding: "18px 18px 14px 20px",
-        marginBottom: 17,
-        maxWidth: 520,
-        marginLeft: "auto",
-        marginRight: "auto",
-        border: "1.1px solid #e4e6f1",
-        display: "flex",
-        flexDirection: "column",
-        gap: 7,
-      }}
-      title={`Transaction ID: ${item.transactionId}`}
-    >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 2 }}>
-        <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span
-            style={{
-              width: 33,
-              height: 33,
-              borderRadius: "50%",
-              background: "#f1f3fa",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#253fa9",
-              fontSize: 19.5,
-              fontWeight: 900,
-              marginRight: 5,
-            }}
-            aria-label={TYPE_LABELS[item.type]}
-          >
-            {TYPE_LABELS[item.type][0] || "?"}
-          </span>
-          <span
-            style={{
-              color: "#213869",
-              fontWeight: 700,
-              fontSize: 15.9,
-              letterSpacing: "0.04em",
-            }}
-          >
-            {TYPE_LABELS[item.type]}
-          </span>
-        </span>
-        <span style={badgeStyle(status.color)} title={status.label}>
-          <span style={{ fontSize: 16, marginRight: 5 }}>{status.icon}</span>
-          {status.label}
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 mb-4 hover:shadow-md transition-all" title={`Transaction ID: ${item.transactionId}`}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-sm font-black text-slate-500">
+            {TYPE_LABELS[item.type][0]}
+          </div>
+          <div>
+            <p className="font-bold text-sm text-slate-800">{TYPE_LABELS[item.type]}</p>
+            <p className="text-xs text-slate-400">{formatDate(item.createdAt)}</p>
+          </div>
+        </div>
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${status.className}`}>
+          <StatusIcon size={10} /> {status.label}
         </span>
       </div>
-      <div
-        style={{
-          fontWeight: 800,
-          fontSize: 22,
-          color: "#19496d",
-          letterSpacing: "0.04em",
-          marginBottom: 2,
-        }}
-      >
-        {formatAmount(item.amount, item.currency)}
-      </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 14, fontSize: 14.2 }}>
-        <span>
-          <strong style={{ color: "#51607a" }}>TX:</strong>{" "}
-          <span style={{ color: "#273046" }}>{item.transactionId || "—"}</span>
-        </span>
-        <span>
-          <strong style={{ color: "#51607a" }}>Date:</strong>{" "}
-          <span style={{ color: "#425" }}>{formatDate(item.createdAt)}</span>
-        </span>
-      </div>
+      <div className="text-2xl font-black text-slate-800 tracking-tight mb-2">{formatAmount(item.amount, item.currency)}</div>
+      <div className="text-xs text-slate-400 font-mono">TX: {item.transactionId || "—"}</div>
       {details.length > 0 && (
-        <div
-          style={{
-            fontSize: 13.7,
-            color: "#556",
-            background: "#f8faff",
-            borderRadius: 7,
-            padding: "6px 12px",
-            marginTop: 2,
-            marginBottom: 0,
-            lineHeight: 1.7,
-          }}
-        >
-          {details.map((line, idx) => (
-            <div key={idx}>{line}</div>
-          ))}
+        <div className="mt-3 bg-slate-50 rounded-xl px-4 py-2.5 text-xs text-slate-500 space-y-1 border border-slate-100">
+          {details.map((line, idx) => <div key={idx}>{line}</div>)}
         </div>
       )}
     </div>
@@ -206,17 +93,8 @@ const PaymentRow: React.FC<{ item: PaymentHistoryItem }> = ({ item }) => {
 
 const PaymentHistory: React.FC = () => {
   const { user } = useAuth();
-  // Handle both _id and id properties for backwards compatibility
   const userId = user?._id || (user as any)?.id;
-
-  const {
-    history,
-    loading,
-    error,
-    hasError,
-    refetch,
-  } = usePaymentHistory(userId);
-  
+  const { history, loading, error, hasError, refetch } = usePaymentHistory(userId);
   const [selectedTab, setSelectedTab] = useState<PaymentType>("event");
 
   const filtered = useMemo(() => {
@@ -227,132 +105,73 @@ const PaymentHistory: React.FC = () => {
   const hasAny = Array.isArray(history) && history.length > 0;
 
   return (
-    <div style={{
-      maxWidth: 600,
-      margin: "0 auto",
-      padding: "36px 0 40px",
-      background: "none",
-    }}>
-      <h2 style={{
-        textAlign: "center",
-        fontWeight: 800,
-        color: "#293b5a",
-        letterSpacing: ".04em",
-        fontSize: 22,
-        marginBottom: 24,
-      }}>
-        Payment History
-      </h2>
-      <div style={{
-        display: "flex",
-        justifyContent: "center",
-        background: "#fff",
-        borderRadius: 13,
-        boxShadow: "0 2px 10px #e9ebfa40",
-        marginBottom: 21,
-        padding: "9px 0"
-      }}>
+    <div className="max-w-2xl mx-auto px-4 py-10">
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-2.5 bg-primary/5 text-primary rounded-xl">
+            <FaCreditCard size={20} />
+          </div>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Payment History</h1>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-2 mb-6 flex overflow-x-auto gap-1 scrollbar-hide">
         {TABS.map(tab => (
           <button
             key={tab.key}
             onClick={() => setSelectedTab(tab.key)}
-            style={tabBtnStyle(selectedTab === tab.key)}
-            aria-current={selectedTab === tab.key}
+            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${selectedTab === tab.key
+              ? "bg-primary text-white shadow-md shadow-primary/20"
+              : "text-slate-500 hover:bg-slate-50"
+              }`}
           >
             {tab.label}
           </button>
         ))}
       </div>
 
+      {/* Content */}
       {loading && (
-        <div style={{
-          padding: "50px 0",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center"
-        }}>
-          <div className="animate-spin" style={{
-            width: 28,
-            height: 28,
-            marginBottom: 18,
-            border: "4px solid #d4e0ff",
-            borderTop: "4px solid #4267e7",
-            borderRadius: "50%",
-            animation: "spin 0.7s linear infinite"
-          }}></div>
-          <span style={{ color: "#334", fontWeight: 600 }}>Loading your payment history...</span>
+        <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+          <FaSpinner className="animate-spin text-2xl mb-3" />
+          <span className="font-medium">Loading payment history...</span>
         </div>
       )}
 
       {hasError && (
-        <div style={{
-          color: "#c33",
-          textAlign: "center",
-          padding: "35px 0 24px",
-          margin: "0 auto"
-        }}>
-          <div style={{ fontWeight: 800, fontSize: 21, marginBottom: 5 }}>Unable to load</div>
-          <div style={{ fontSize: 15.5, color: "#b33", marginBottom: 14 }}>
-            {error || "There was an error loading your payment history."}
+        <div className="text-center py-16">
+          <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FaTimesCircle className="text-xl text-red-400" />
           </div>
-          <button
-            style={{
-              background: "#4267e7",
-              color: "#fff",
-              borderRadius: 10,
-              fontWeight: 700,
-              padding: "8px 37px",
-              border: "none",
-              fontSize: 16,
-              letterSpacing: "0.05em",
-              cursor: "pointer",
-              marginTop: 1,
-            }}
-            onClick={()=> refetch}
-          >Retry</button>
+          <h3 className="text-lg font-bold text-slate-700 mb-2">Unable to Load</h3>
+          <p className="text-sm text-slate-500 mb-4">{error || "There was an error loading your payment history."}</p>
+          <button onClick={() => refetch} className="px-6 py-2.5 bg-primary text-white font-bold rounded-xl shadow-md shadow-primary/20 hover:bg-primary/90 transition-colors text-sm">
+            Retry
+          </button>
         </div>
       )}
 
-      {!loading && !hasAny && (
-        <div style={{
-          textAlign: "center",
-          marginTop: 70,
-          color: "#7a7fae"
-        }}>
-          <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 8 }}>No Payment History Found</div>
-          <div style={{
-            color: "#929bcf",
-            fontSize: 15.3,
-            fontWeight: 400,
-            letterSpacing: 0.05,
-            maxWidth: 350,
-            margin: "0 auto"
-          }}>
-            You haven’t made any payments yet. Any payments you complete will show here with all their details.
+      {!loading && !hasAny && !hasError && (
+        <div className="text-center py-20">
+          <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FaReceipt className="text-2xl text-slate-300" />
           </div>
+          <h3 className="text-lg font-bold text-slate-700 mb-2">No Payment History</h3>
+          <p className="text-sm text-slate-400 max-w-xs mx-auto">You haven't made any payments yet. Completed payments will appear here.</p>
         </div>
       )}
 
       {!loading && hasAny && filtered.length === 0 && (
-        <div style={{
-          textAlign: "center",
-          marginTop: 50,
-          color: "#767bae"
-        }}>
-          <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4 }}>
-            No "{TYPE_LABELS[selectedTab]}" payments yet
-          </div>
-          <div style={{ fontSize: 15.3, color: "#9ba3c2", fontWeight: 400 }}>
-            Switch tabs or try refreshing.
-          </div>
+        <div className="text-center py-16">
+          <h3 className="text-lg font-bold text-slate-600 mb-1">No "{TYPE_LABELS[selectedTab]}" payments</h3>
+          <p className="text-sm text-slate-400">Switch tabs or try refreshing.</p>
         </div>
       )}
 
       {!loading && filtered.length > 0 && (
         <div>
-          {filtered.map(item => (
-            <PaymentRow key={item._id || item.transactionId} item={item} />
-          ))}
+          {filtered.map(item => <PaymentRow key={item._id || item.transactionId} item={item} />)}
         </div>
       )}
     </div>
@@ -360,4 +179,3 @@ const PaymentHistory: React.FC = () => {
 };
 
 export default PaymentHistory;
-

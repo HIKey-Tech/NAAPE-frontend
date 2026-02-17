@@ -5,7 +5,6 @@ import {
   FaNewspaper,
   FaBook,
   FaPlusSquare,
-  FaChalkboardTeacher,
   FaCalendarAlt,
   FaComments,
   FaSignOutAlt,
@@ -25,31 +24,7 @@ import { useAuth } from "@/context/authcontext";
 import { useSubscriptionStatus } from "@/hooks/useSubscription";
 import { LogoutDialog } from "@/components/ui/logout-dialog";
 
-/** --- Enhanced Style constants for better hierarchy --- */
-const SIDEBAR_WIDTH = 300;
-const SECTION_LABEL =
-  "text-[.83rem] font-bold text-[#204a7a] uppercase tracking-[0.17em] pl-2 py-1 mt-8 mb-1 opacity-80";
-const SECTION_TITLE =
-  "text-base font-black text-[#15407c] uppercase tracking-wider mb-[2px] mt-7 pl-2";
-const NAV_ITEM_BASE =
-  "flex items-center w-full py-2.5 px-4 rounded-lg text-[#16355D] text-[15px] font-medium hover:bg-[#f0f5fc] transition cursor-pointer select-none gap-2";
-const NAV_ITEM_ACTIVE =
-  "text-[#15407c] bg-[#e2eaf6] font-extrabold shadow-[inset_3px_0_0_0_#15407c]";
-const SIGNOUT_BTN =
-  "flex items-center w-full py-2.5 px-4 rounded-lg text-[#a32424] font-bold hover:bg-[#fae9ea] transition cursor-pointer select-none gap-2";
-const PROFILE_NAME = "text-[16px] font-bold text-[#15407c] truncate";
-const PROFILE_EMAIL = "text-xs text-[#6782a9] truncate";
-const PROFILE_AVATAR_RING = "ring-2 ring-[#cbdeea] shadow-md";
-const SECTION_DIVIDER =
-  "border-t border-[#e4ecf7] w-full mx-auto my-4";
-const DROPDOWN_BTN =
-  "flex items-center w-full py-2.5 px-4 rounded-lg hover:bg-[#f0f5fc] transition cursor-pointer select-none gap-2 text-[#204a7a]";
-const DROPDOWN_ICON = "text-[1.19em]";
-const DROPDOWN_ARROW = "ml-auto";
-const LIST_RESET =
-  "list-none p-0 m-0 flex flex-col gap-y-1 gap-x-0";
-
-/** --- Type definitions --- */
+// --- Types ---
 type User = {
   name?: string;
   email?: string;
@@ -64,17 +39,16 @@ type NavLink = {
   group?: string;
 };
 
-/** --- Links config --- */
+// --- Config ---
 const newsPublicationsLinks: NavLink[] = [
   { label: "All News", icon: FaNewspaper, href: "/news", group: "News" },
   { label: "Browse Publications", icon: FaBook, href: "/publications/browse", group: "Publications" },
   { label: "My Publications", icon: FaBook, href: "/publications", group: "Publications" },
-  { label: "Create Publications", icon: FaPlusSquare, href: "/publications/new", group: "Publications" },
+  { label: "Create Publication", icon: FaPlusSquare, href: "/publications/new", group: "Publications" },
 ];
 
 const navLinksMain: NavLink[] = [
   { label: "Home", icon: FaHome, href: "/dashboard" },
-  // { label: "Training & Certifications", icon: FaChalkboardTeacher, href: "/training" },
   { label: "Events", icon: FaCalendarAlt, href: "/member/events" },
   { label: "Forum", icon: FaComments, href: "/forum" },
 ];
@@ -84,24 +58,70 @@ const navLinksSecondary: NavLink[] = [
   { label: "Payment History", icon: FaCreditCard, href: "/payments" },
 ];
 
-function getUserInitials(user: User) {
-  if (user && user.name) {
-    return user.name
-      .trim()
-      .split(" ")
-      .filter(Boolean)
-      .map((n) => n[0] || "")
-      .join("")
-      .slice(0, 2)
-      .toUpperCase();
-  }
-  if (user && user.email) {
-    return user.email[0]?.toUpperCase() ?? "?";
-  }
-  return "?";
+// --- Components ---
+
+function GroupLabel({ label }: { label: string }) {
+  return (
+    <div className="px-4 mt-6 mb-2 text-[10px] uppercase tracking-widest font-bold text-slate-400">
+      {label}
+    </div>
+  );
 }
 
-// DropdownNavItem visually distinguished
+function NavItem({
+  icon: Icon,
+  label,
+  href,
+  active,
+  onClick,
+  asButton,
+  disabled
+}: {
+  icon: React.ElementType,
+  label: string,
+  href?: string,
+  active?: boolean,
+  onClick?: () => void,
+  asButton?: boolean,
+  disabled?: boolean
+}) {
+  const baseClass = `
+    flex items-center w-full px-4 py-2.5 rounded-xl text-sm font-medium gap-3 transition-all duration-200 group relative
+    ${active
+      ? "text-primary bg-primary/5 font-bold shadow-sm ring-1 ring-black/5"
+      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+    }
+    ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+  `;
+
+  const content = (
+    <>
+      <Icon className={`w-5 h-5 flex-shrink-0 transition-colors ${active ? "text-primary" : "text-slate-400 group-hover:text-primary"}`} />
+      <span className="truncate">{label}</span>
+      {active && <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-primary" />}
+    </>
+  );
+
+  if (asButton) {
+    return (
+      <button
+        type="button"
+        className={baseClass}
+        onClick={onClick}
+        disabled={disabled}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <Link href={href || "#"} className={baseClass}>
+      {content}
+    </Link>
+  );
+}
+
 function DropdownNavItem({
   label,
   icon: Icon,
@@ -114,422 +134,222 @@ function DropdownNavItem({
   isActive: boolean;
 }) {
   const [open, setOpen] = useState(isActive);
+
   return (
-    <li className="w-full">
+    <div className="mb-1">
       <button
-        type="button"
-        className={`${DROPDOWN_BTN} ${isActive ? "bg-[#eaf3fc] text-[#15407c] font-bold" : ""}`}
-        aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => setOpen(!open)}
+        className={`
+          flex items-center w-full px-4 py-2.5 rounded-xl text-sm font-medium gap-3 transition-all duration-200 group
+          ${isActive ? "text-primary bg-primary/5 font-bold" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}
+        `}
       >
-        <Icon className={DROPDOWN_ICON} />
-        <span className="flex-1 text-left tracking-tight">{label}</span>
-        <span className={DROPDOWN_ARROW}>
-          {open ? <FaChevronUp /> : <FaChevronDown />}
+        <Icon className={`w-5 h-5 flex-shrink-0 transition-colors ${isActive ? "text-primary" : "text-slate-400 group-hover:text-primary"}`} />
+        <span className="flex-1 text-left truncate">{label}</span>
+        <span className="text-slate-400">
+          {open ? <FaChevronUp size={12} /> : <FaChevronDown size={12} />}
         </span>
       </button>
-      <ul className={`pl-5 border-l-[2.5px] border-[#eaf3fc] my-1 ml-2 ${open ? "block" : "hidden"} transition-all duration-150`}>
-        {open && children}
-      </ul>
-    </li>
+      {open && (
+        <div className="pl-4 mt-1 space-y-0.5 border-l-2 border-slate-100 ml-6 animate-in slide-in-from-top-1 duration-200">
+          {children}
+        </div>
+      )}
+    </div>
   );
 }
 
-// General Nav Item (as button or link)
-type NavItemProps = {
-  icon: React.ElementType;
-  label: string;
-  href?: string;
-  active?: boolean;
-  onClick?: () => void;
-  asButton?: boolean;
-  disabled?: boolean;
-};
-
-function NavItem({
-  icon: Icon,
-  label,
-  href,
-  active = false,
-  onClick,
-  asButton = false,
-  disabled = false,
-}: NavItemProps) {
-  if (asButton) {
-    return (
-      <li className="w-full">
-        <button
-          type="button"
-          disabled={disabled}
-          className={`${SIGNOUT_BTN} ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}
-          onClick={disabled ? undefined : onClick}
-        >
-          <Icon className="text-[1.14em]" />
-          <span>{label}</span>
-        </button>
-      </li>
-    );
-  }
-  return (
-    <li className="w-full">
-      <Link
-        href={href || "#"}
-        className={`${NAV_ITEM_BASE} ${active ? NAV_ITEM_ACTIVE : ""} `}
-        aria-current={active ? "page" : undefined}
-      >
-        <Icon className="text-[1.14em]" />
-        <span className="font-medium">{label}</span>
-      </Link>
-    </li>
-  );
-}
-
-// Profile in sidebar footer with better layout/visual distinction
 function SidebarProfileCard({ user }: { user: User }) {
   const { data: subscriptionStatus } = useSubscriptionStatus();
-  
+
   if (!user || (!user.name && !user.email)) return null;
-  
-  // Determine if user should show premium badge
-  const showPremiumBadge = user.role === "admin" || 
-                          user.role === "editor" || 
-                          (subscriptionStatus?.hasSubscription && subscriptionStatus?.status === "active");
-  
-  const premiumText = subscriptionStatus?.tier === "premium" ? "Premium" : 
-                     user.role === "admin" ? "Admin" :
-                     user.role === "editor" ? "Editor" : "Subscribed";
-  
+
+  const showPremiumBadge = user.role === "admin" ||
+    user.role === "editor" ||
+    (subscriptionStatus?.hasSubscription && subscriptionStatus?.status === "active");
+
+  const premiumText = subscriptionStatus?.tier === "premium" ? "Premium" :
+    user.role === "admin" ? "Admin" :
+      user.role === "editor" ? "Editor" : "Subscribed";
+
+  const getInitials = (name?: string) => {
+    if (!name) return "U";
+    return name.split(" ").filter(Boolean).slice(0, 2).map(n => n[0]).join("").toUpperCase();
+  };
+
   return (
-    <div className="flex items-center gap-3 px-3 py-4 bg-[#e8f0fb] rounded-xl shadow-sm min-w-0">
-      <div
-        className={`w-11 h-11 rounded-full overflow-hidden bg-[#e5edf8] flex justify-center items-center text-[#15407c] text-[20px] font-bold border-2 border-[#c9daf9] ${PROFILE_AVATAR_RING}`}
-      >
+    <div className="flex items-center gap-3 px-3 py-3 border-t border-slate-100 mt-2 bg-slate-50/50 rounded-xl mx-2">
+      <div className="relative">
         {user.avatarUrl ? (
           <Image
             src={user.avatarUrl}
-            alt={user.name || user.email || "User Avatar"}
-            width={44}
-            height={44}
-            className="object-cover w-11 h-11 rounded-full"
+            alt="Profile"
+            width={40}
+            height={40}
+            className="w-10 h-10 rounded-full border border-slate-200 object-cover bg-white"
           />
         ) : (
-          <span>{getUserInitials(user)}</span>
+          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-blue-400 flex items-center justify-center shadow-sm text-white font-bold text-xs">
+            {getInitials(user.name)}
+          </div>
+        )}
+        {showPremiumBadge && (
+          <div className="absolute -bottom-1 -right-1 bg-amber-100 text-amber-600 p-0.5 rounded-full border border-white shadow-sm">
+            <FaCrown size={10} />
+          </div>
         )}
       </div>
-      <div className="flex flex-col justify-center min-w-0 flex-1">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className={`${PROFILE_NAME} flex-shrink`}>{user.name || "Loading..."}</span>
+      <div className="flex flex-col min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold text-slate-800 truncate max-w-[120px]">{user.name || "User"}</span>
           {showPremiumBadge && (
-            <div className="inline-flex items-center gap-1 bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-700 rounded-full px-2 py-0.5 text-xs font-bold border border-amber-200 shadow-sm flex-shrink-0">
-              <FaCrown className="text-amber-500 text-xs" />
-              <span className="hidden sm:inline">{premiumText}</span>
-            </div>
+            <span className="text-[9px] uppercase font-extrabold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full border border-amber-100">
+              {premiumText}
+            </span>
           )}
         </div>
-        <span className={PROFILE_EMAIL}>{user.email}</span>
+        <span className="text-[10px] text-slate-500 truncate max-w-[140px]">{user.email}</span>
       </div>
     </div>
   );
 }
 
-/** --- Responsive Sidebar --- */
 export function AppSidebar() {
   const pathname = usePathname();
   const { logout, user: authUser } = useAuth();
-
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
-  // Map auth user to sidebar user format
   const user: User = {
     name: authUser?.name,
     email: authUser?.email,
     avatarUrl: authUser?.profile?.image?.url,
-    role: authUser?.role as "admin" | "editor" | "member" | undefined,
+    role: authUser?.role as any,
   };
 
-  // Close sidebar when navigating to a new path (improves UX)
+  // Close mobile menu on path change
   React.useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
 
-  const handleSignOut = useCallback(() => {
-    setShowLogoutDialog(true);
-  }, []);
-
-  const confirmLogout = useCallback(() => {
+  const handleSignOut = () => setShowLogoutDialog(true);
+  const confirmLogout = () => {
     setShowLogoutDialog(false);
     logout();
-  }, [logout]);
+  };
 
-  // Memoized NavItems generation
-  const navItemsMain = useMemo(
-    () =>
-      navLinksMain.map((link, idx) => {
-        const isActive = link.href
-          ? pathname === link.href ||
-          (idx !== 0 && pathname?.startsWith(link.href))
-          : false;
-        return (
-          <NavItem
-            key={link.label}
-            icon={link.icon}
-            label={link.label}
-            href={link.href}
-            active={isActive}
-          />
-        );
-      }),
-    [pathname]
-  );
+  const isNewsPubsDropdownActive = newsPublicationsLinks.some(l => pathname === l.href || pathname?.startsWith(l.href || ""));
 
-  const isNewsPubsDropdownActive = useMemo(() => {
-    return newsPublicationsLinks.some(
-      (link) => link.href && pathname && pathname === link.href
-    );
-  }, [pathname]);
-
-  const navItemsNewsPublicationsDropdown = useMemo(
-    () =>
-      newsPublicationsLinks.map((link) => {
-        const isActive = link.href ? pathname === link.href : false;
-        return (
-          <NavItem
-            key={link.label}
-            icon={link.icon}
-            label={link.label}
-            href={link.href}
-            active={isActive}
-          />
-        );
-      }),
-    [pathname]
-  );
-
-  const navItemsSecondary = useMemo(
-    () =>
-      navLinksSecondary.map((link) => {
-        const isActive = link.href
-          ? pathname === link.href ||
-          (link.href !== "/subscription" && pathname?.startsWith(link.href))
-          : false;
-        return (
-          <NavItem
-            key={link.label}
-            icon={link.icon}
-            label={link.label}
-            href={link.href}
-            active={isActive}
-          />
-        );
-      }),
-    [pathname]
-  );
-
-  // Sidebar inner content for reuse
   const SidebarContent = (
-    <>
-      {/* Logo / Title */}
-      <div className="flex items-center px-8 py-6 border-b border-[#d1e0f3] bg-gradient-to-b from-[#f3f7fa] to-[#e8f0fb] gap-3">
-        <Link href="/" aria-label="Home" className="flex items-center mr-1">
-          <Image
-            src="/logo.png"
-            alt="Logo"
-            width={48}
-            height={36}
-            className="object-contain bg-[#f0f5fc] rounded-md shadow-md"
-            priority
-          />
+    <div className="flex flex-col h-full bg-white">
+      {/* Header */}
+      <div className="p-6 border-b border-slate-50 flex items-center justify-center sm:justify-start">
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="relative">
+            <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Image src="/logo.png" alt="NAAPE" width={40} height={40} className="relative z-10 object-contain w-10 h-10" priority />
+          </div>
+          <span className="hidden sm:block text-lg font-black text-slate-800 tracking-tight ml-2">NAAPE <span className="text-primary">Member</span></span>
         </Link>
-        <span className="font-black text-[1.38rem] tracking-wider text-[#15407c] select-none ml-3 drop-shadow-sm uppercase">
-          NAAPE
-        </span>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-2 px-0" aria-label="Sidebar Navigation">
-        <ul className={LIST_RESET + " px-1"}>
+      {/* Nav */}
+      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1 scrollbar-hide">
+        <GroupLabel label="Overview" />
+        {navLinksMain.map(link => (
+          <NavItem
+            key={link.label}
+            icon={link.icon}
+            label={link.label}
+            href={link.href}
+            active={pathname === link.href}
+          />
+        ))}
 
-          {/* MAIN */}
-          <li className={SECTION_TITLE}>Main</li>
-          {navItemsMain[0]}
-          <li className={SECTION_DIVIDER + " my-3"} />
+        <GroupLabel label="Content" />
+        <DropdownNavItem
+          label="News & Publications"
+          icon={FaNewspaper}
+          isActive={isNewsPubsDropdownActive}
+        >
+          {newsPublicationsLinks.map(link => (
+            <Link
+              key={link.label}
+              href={link.href ?? "#"}
+              className={`
+                        block px-3 py-2 rounded-lg text-sm transition-colors mb-0.5
+                        ${pathname === link.href ? "text-primary font-bold bg-primary/5" : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"}
+                    `}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </DropdownNavItem>
 
-          {/* NEWS & PUBLICATIONS */}
-          <li className={SECTION_LABEL}>News & Publications</li>
-          <DropdownNavItem
-            label="News & Publications"
-            icon={FaNewspaper}
-            isActive={isNewsPubsDropdownActive}
-          >
-            {navItemsNewsPublicationsDropdown}
-          </DropdownNavItem>
-          <li className={SECTION_DIVIDER} />
+        <GroupLabel label="Account" />
+        {navLinksSecondary.map(link => (
+          <NavItem
+            key={link.label}
+            icon={link.icon}
+            label={link.label}
+            href={link.href}
+            active={pathname === link.href}
+          />
+        ))}
+        <NavItem
+          icon={FaSignOutAlt}
+          label="Sign Out"
+          asButton
+          onClick={handleSignOut}
+          active={false}
+          disabled={!logout}
+        />
+      </div>
 
-          {/* ACTIVITIES */}
-          <li className={SECTION_LABEL}>Activities</li>
-          <div className="flex flex-col gap-[2.5px] mb-1 mt-1 pl-1.5 border-l-2 border-[#eaf3fc]">
-            {navItemsMain.slice(1)}
-          </div>
-          <li className={SECTION_DIVIDER + " mt-5"} />
-
-          {/* ACCOUNT */}
-          <li className={SECTION_LABEL}>Account</li>
-          <div className="flex flex-col gap-[2px] mb-2 mt-1 pl-1.5 border-l-2 border-[#eaf3fc]">
-            {navItemsSecondary}
-            <NavItem
-              icon={FaSignOutAlt}
-              label="Sign Out"
-              onClick={handleSignOut}
-              asButton={true}
-              disabled={typeof logout !== "function"}
-            />
-          </div>
-        </ul>
-      </nav>
-      {/* Profile footer */}
-      <footer className="w-full border-t border-[#dde7f3] bg-gradient-to-r from-[#f8fbfc] to-[#eaf3fc] px-2.5 py-4 shadow-inner">
-        <SidebarProfileCard user={user ?? {}} />
-      </footer>
-    </>
+      {/* Footer */}
+      <div className="pb-4">
+        <SidebarProfileCard user={user} />
+      </div>
+    </div>
   );
 
-  // Show overlay and sidebar for mobile (now on all screens, floating)
   return (
     <>
-      {/* -- Mobile Hamburger now visible on all screens (removed sm:hidden, made floating/draggable/fixed) -- */}
-      <button
-        className="fixed bottom-4 left-4 z-[100] rounded-full p-3 bg-[#fafdff] border border-[#dde7f3] shadow-xl flex items-center justify-center backdrop-blur-md"
-        style={{
-          boxShadow: "0 8px 24px 6px rgba(40,50,80,0.19), 0 1.5px 7px #b3c9e6"
-        }}
-        aria-label={mobileOpen ? "Close menu" : "Open menu"}
-        onClick={() => setMobileOpen(v => !v)}
-      >
-        {mobileOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
-      </button>
-
-      {/* -- Sidebar for Desktop remains (for reference, can be removed if only want floating nav) -- */}
-      <aside
-        className="hidden sm:flex flex-col z-[50] border-r border-[#dde7f3] bg-[#fafdff] pt-0"
-        style={{
-          width: SIDEBAR_WIDTH,
-          minWidth: 265,
-          maxWidth: 370,
-          top: 0,
-          position: "sticky",
-          height: "100vh"
-        }}
-      >
+      {/* Desktop */}
+      <aside className="hidden sm:block w-[260px] h-screen sticky top-0 z-30 font-sans border-r border-slate-100 shadow-[2px_0_24px_-12px_rgba(0,0,0,0.1)]">
         {SidebarContent}
       </aside>
 
-      {/* -- Floating Sidebar: show on all screen sizes (removed sm:hidden, floating high z) */}
+      {/* Mobile Trigger - if not handled by TopNavbar */}
+      <div className="sm:hidden fixed bottom-6 right-6 z-50">
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="p-4 bg-primary text-white rounded-full shadow-xl shadow-primary/30 hover:scale-110 transition-transform active:scale-90"
+        >
+          <FaBars size={20} />
+        </button>
+      </div>
+
+      {/* Mobile Drawer */}
       {mobileOpen && (
-        <div>
-          <div
-            className="fixed inset-0 z-[199] bg-black/40 transition-opacity"
-            aria-hidden="true"
-            onClick={() => setMobileOpen(false)}
-            style={{ pointerEvents: "auto", backdropFilter: "blur(2px)" }}
-          />
-          <aside
-            className="fixed top-7 left-6 z-[200] w-[88vw] max-w-[380px] min-w-[220px] h-[90vh] bg-[#fafdff] border border-[#dde7f3] rounded-2xl shadow-2xl flex flex-col animate-float-in"
-            style={{
-              transition: "transform .22s cubic-bezier(.4,0,.2,1)",
-              boxShadow:
-                "0 32px 64px 0 rgba(42,54,108,0.18), 0 2px 16px 0 #b3c9e6",
-            }}
-            tabIndex={-1}
-            aria-modal="true"
-            role="dialog"
-          >
-            <div className="flex items-center px-4 py-6 border-b border-[#d1e0f3] bg-gradient-to-b from-[#f3f7fa] to-[#e8f0fb] gap-3 rounded-t-2xl">
-              <Link href="/" aria-label="Home" className="flex items-center mr-1">
-                <Image
-                  src="/logo.png"
-                  alt="Logo"
-                  width={40}
-                  height={28}
-                  className="object-contain bg-[#f0f5fc] rounded-md shadow-md"
-                  priority
-                />
-              </Link>
-              <span className="font-black text-[1.1rem] tracking-wider text-[#15407c] select-none ml-2 drop-shadow-sm uppercase">
-                NAAPE
-              </span>
-              <button
-                className="ml-auto p-2 text-[#204a7a] rounded hover:bg-[#eaf3fc] focus:outline-none"
-                aria-label="Close menu"
-                onClick={() => setMobileOpen(false)}
-                tabIndex={0}
-              >
-                <FaTimes size={22} />
-              </button>
-            </div>
-            {/* Scrollable content area */}
-            <div className="flex-1 overflow-y-auto py-2 px-0 min-h-0">
-              <ul className={LIST_RESET + " px-1"}>
-
-                {/* MAIN */}
-                <li className={SECTION_TITLE}>Main</li>
-                {navItemsMain[0]}
-                <li className={SECTION_DIVIDER + " my-3"} />
-
-                {/* NEWS & PUBLICATIONS */}
-                <li className={SECTION_LABEL}>News & Publications</li>
-                <DropdownNavItem
-                  label="News & Publications"
-                  icon={FaNewspaper}
-                  isActive={isNewsPubsDropdownActive}
-                >
-                  {navItemsNewsPublicationsDropdown}
-                </DropdownNavItem>
-                <li className={SECTION_DIVIDER} />
-
-                {/* ACTIVITIES */}
-                <li className={SECTION_LABEL}>Activities</li>
-                <div className="flex flex-col gap-[2.5px] mb-1 mt-1 pl-1.5 border-l-2 border-[#eaf3fc]">
-                  {navItemsMain.slice(1)}
-                </div>
-                <li className={SECTION_DIVIDER + " mt-5"} />
-
-                {/* ACCOUNT */}
-                <li className={SECTION_LABEL}>Account</li>
-                <div className="flex flex-col gap-[2px] mb-2 mt-1 pl-1.5 border-l-2 border-[#eaf3fc]">
-                  {navItemsSecondary}
-                  <NavItem
-                    icon={FaSignOutAlt}
-                    label="Sign Out"
-                    onClick={handleSignOut}
-                    asButton={true}
-                    disabled={typeof logout !== "function"}
-                  />
-                </div>
-              </ul>
-            </div>
-            {/* Profile footer */}
-            <footer className="w-full border-t border-[#dde7f3] bg-gradient-to-r from-[#f8fbfc] to-[#eaf3fc] px-2.5 py-4 shadow-inner rounded-b-2xl">
-              <SidebarProfileCard user={user ?? {}} />
-            </footer>
-          </aside>
+        <div className="fixed inset-0 z-[60] sm:hidden">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <div className="absolute inset-y-0 left-0 w-[80vw] max-w-[300px] bg-white shadow-2xl animate-in slide-in-from-left duration-200">
+            {SidebarContent}
+            <button onClick={() => setMobileOpen(false)} className="absolute top-4 right-4 p-2 text-slate-400">
+              <FaTimes />
+            </button>
+          </div>
         </div>
       )}
-      {/* Animation (slide-in/floating) for sidebar */}
-      <style jsx global>{`
-        .animate-float-in {
-          animation: sidebar-float-in 0.22s cubic-bezier(.4,0,.2,1) both;
-        }
-        @keyframes sidebar-float-in {
-          0% { transform: translateY(40%) scale(0.97) rotateY(5deg); opacity: 0; }
-          65% { opacity: 1; }
-          100% { transform: none; opacity: 1; }
-        }
-      `}</style>
-      <LogoutDialog 
-        open={showLogoutDialog} 
+
+      <LogoutDialog
+        open={showLogoutDialog}
         onOpenChange={setShowLogoutDialog}
         onConfirm={confirmLogout}
       />
     </>
   );
 }
+
+export default AppSidebar;

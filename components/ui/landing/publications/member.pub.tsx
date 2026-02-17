@@ -66,7 +66,7 @@ export default function MemberPublicationsComponent() {
             />
 
             <section className="max-w-6xl mx-auto w-full px-4 md:px-8 py-12 flex flex-col gap-8">
-                <h2 className="text-2xl md:text-3xl font-bold text-[#1a2236] mb-2">
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
                     Browse Publications
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

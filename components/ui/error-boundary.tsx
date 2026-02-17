@@ -47,9 +47,9 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 }
 
-const DefaultErrorFallback: React.FC<{ error?: Error; resetError: () => void }> = ({ 
-  error, 
-  resetError 
+const DefaultErrorFallback: React.FC<{ error?: Error; resetError: () => void }> = ({
+  error,
+  resetError
 }) => (
   <Card className="w-full max-w-md mx-auto mt-8">
     <CardHeader className="text-center">
@@ -63,7 +63,7 @@ const DefaultErrorFallback: React.FC<{ error?: Error; resetError: () => void }> 
     </CardHeader>
     <CardContent className="text-center space-y-4">
       {error && (
-        <details className="text-left text-sm text-gray-600 bg-gray-50 p-3 rounded">
+        <details className="text-left text-sm text-slate-600 bg-slate-50 p-3 rounded">
           <summary className="cursor-pointer font-medium">Error details</summary>
           <pre className="mt-2 whitespace-pre-wrap">{error.message}</pre>
         </details>

@@ -22,24 +22,24 @@ interface CommentItemProps {
     depth?: number;
 }
 
-const CommentItem: React.FC<CommentItemProps> = ({ 
-    comment, 
-    onDelete, 
-    onReply, 
-    currentUserId, 
-    currentUserRole, 
-    depth = 0 
+const CommentItem: React.FC<CommentItemProps> = ({
+    comment,
+    onDelete,
+    onReply,
+    currentUserId,
+    currentUserRole,
+    depth = 0
 }) => {
     const [showReplyBox, setShowReplyBox] = useState(false);
     const [replyText, setReplyText] = useState("");
     const [submitting, setSubmitting] = useState(false);
 
     const canDelete = currentUserId === comment.user._id || currentUserRole === "admin";
-    const maxDepth = 3; // Limit nesting depth
+    const maxDepth = 3;
 
     const handleReply = async () => {
         if (!replyText.trim()) return;
-        
+
         setSubmitting(true);
         await onReply(comment._id, replyText);
         setReplyText("");
@@ -59,7 +59,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
         if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? "s" : ""} ago`;
         if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
         if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
-        
+
         return date.toLocaleDateString(undefined, {
             year: "numeric",
             month: "short",
@@ -78,18 +78,18 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
     return (
         <div className={`${depth > 0 ? 'ml-8 mt-3' : 'mt-4'}`}>
-            <div className={`bg-white border ${depth > 0 ? 'border-l-4 border-l-blue-300' : 'border-gray-200'} rounded-lg p-4 hover:shadow-sm transition-shadow`}>
+            <div className={`bg-white border ${depth > 0 ? 'border-l-4 border-l-primary/40' : 'border-slate-100'} rounded-2xl p-4 hover:shadow-sm transition-shadow`}>
                 <div className="flex items-start gap-3">
                     {/* Avatar */}
                     <Avatar className="w-10 h-10 shrink-0">
                         {comment.user.profile?.image?.url ? (
-                            <AvatarImage 
-                                src={comment.user.profile.image.url} 
+                            <AvatarImage
+                                src={comment.user.profile.image.url}
                                 alt={comment.user.name}
                                 className="object-cover"
                             />
                         ) : null}
-                        <AvatarFallback className="bg-[#193B7A] text-white font-semibold text-sm">
+                        <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">
                             {getInitials(comment.user.name)}
                         </AvatarFallback>
                     </Avatar>
@@ -97,17 +97,17 @@ const CommentItem: React.FC<CommentItemProps> = ({
                     {/* Comment Content */}
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <span className="font-semibold text-gray-900">
+                            <span className="font-bold text-sm text-slate-900">
                                 {comment.user.name}
                             </span>
-                            <span className="text-xs text-gray-500 uppercase px-2 py-0.5 bg-gray-100 rounded">
+                            <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wide px-2 py-0.5 bg-slate-100 rounded-full">
                                 {comment.user.role}
                             </span>
-                            <span className="text-sm text-gray-500">
+                            <span className="text-xs text-slate-400">
                                 {formatDate(comment.createdAt)}
                             </span>
                         </div>
-                        <p className="text-gray-700 whitespace-pre-wrap break-words mb-2">
+                        <p className="text-slate-700 whitespace-pre-wrap break-words mb-2 text-sm leading-relaxed">
                             {comment.text}
                         </p>
 
@@ -116,7 +116,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                             {depth < maxDepth && (
                                 <button
                                     onClick={() => setShowReplyBox(!showReplyBox)}
-                                    className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                    className="flex items-center gap-1 text-sm text-primary hover:text-primary/80 font-bold transition-colors"
                                 >
                                     <Reply className="h-3.5 w-3.5" />
                                     Reply
@@ -125,7 +125,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                             {canDelete && (
                                 <button
                                     onClick={() => onDelete(comment._id)}
-                                    className="flex items-center gap-1 text-sm text-red-500 hover:text-red-700 font-medium"
+                                    className="flex items-center gap-1 text-sm text-red-500 hover:text-red-700 font-bold transition-colors"
                                 >
                                     <Trash2 className="h-3.5 w-3.5" />
                                     Delete
@@ -135,19 +135,19 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
                         {/* Reply Box */}
                         {showReplyBox && (
-                            <div className="mt-3 space-y-2 bg-gray-50 p-3 rounded-lg">
+                            <div className="mt-3 space-y-2 bg-slate-50 p-3 rounded-xl">
                                 <Textarea
                                     value={replyText}
                                     onChange={(e) => setReplyText(e.target.value)}
                                     placeholder={`Reply to ${comment.user.name}...`}
-                                    className="min-h-[80px] resize-none"
+                                    className="min-h-[80px] resize-none rounded-xl border-slate-200 bg-white focus:border-primary"
                                 />
                                 <div className="flex gap-2">
                                     <Button
                                         onClick={handleReply}
                                         disabled={submitting || !replyText.trim()}
                                         size="sm"
-                                        className="bg-[#193B7A] hover:bg-[#154075]"
+                                        className="bg-primary hover:bg-primary/90 rounded-xl font-bold shadow-md shadow-primary/20"
                                     >
                                         {submitting ? "Posting..." : "Post Reply"}
                                     </Button>
@@ -158,6 +158,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                                         }}
                                         variant="outline"
                                         size="sm"
+                                        className="rounded-xl font-bold"
                                     >
                                         Cancel
                                     </Button>
@@ -235,37 +236,39 @@ const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
     if (authLoading) {
         return (
             <div className="mt-8 text-center py-8">
-                <p className="text-gray-500">Loading...</p>
+                <p className="text-slate-400">Loading...</p>
             </div>
         );
     }
 
     if (!user) {
         return (
-            <div className="mt-8 p-8 bg-linear-to-br from-blue-50 to-indigo-50 rounded-lg border-2 border-[#193B7A]/20 text-center">
+            <div className="mt-8 p-8 bg-primary/5 rounded-2xl border border-primary/10 text-center">
                 <div className="max-w-md mx-auto">
-                    <svg
-                        className="w-16 h-16 mx-auto mb-4 text-[#193B7A]"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                        />
-                    </svg>
-                    <h3 className="text-xl font-bold text-[#193B7A] mb-2">
+                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                        <svg
+                            className="w-8 h-8 text-primary"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                            />
+                        </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900 mb-2">
                         Join the Conversation
                     </h3>
-                    <p className="text-gray-600 mb-6">
+                    <p className="text-slate-500 mb-6">
                         Log in to read and share your thoughts on this news article.
                     </p>
                     <Button
                         onClick={handleLoginRedirect}
-                        className="bg-[#193B7A] hover:bg-[#154075] text-white px-8 py-3 text-base font-semibold"
+                        className="bg-primary hover:bg-primary/90 text-white px-8 py-3 text-base font-bold rounded-xl shadow-md shadow-primary/20"
                     >
                         Log In to Comment
                     </Button>
@@ -275,8 +278,8 @@ const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
     }
 
     return (
-        <div className="mt-8 border-t border-gray-200 pt-6">
-            <h2 className="text-2xl font-bold mb-6 text-[#193B7A]">
+        <div className="mt-8 border-t border-slate-100 pt-6">
+            <h2 className="text-xl font-bold mb-6 text-slate-900">
                 Comments ({comments.length})
             </h2>
 
@@ -287,13 +290,13 @@ const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
                     onChange={(e) => setCommentText(e.target.value)}
                     onFocus={handleTextareaFocus}
                     placeholder="Share your thoughts..."
-                    className="min-h-[100px] mb-3 resize-none"
+                    className="min-h-[100px] mb-3 resize-none rounded-xl border-slate-200 bg-slate-50 focus:bg-white focus:border-primary"
                     disabled={submitting}
                 />
                 <Button
                     type="submit"
                     disabled={submitting || !commentText.trim()}
-                    className="bg-[#193B7A] hover:bg-[#154075] text-white"
+                    className="bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-md shadow-primary/20"
                 >
                     {submitting ? "Posting..." : "Post Comment"}
                 </Button>
@@ -302,11 +305,11 @@ const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
             {/* Comments List */}
             {loading ? (
                 <div className="text-center py-8">
-                    <p className="text-gray-500">Loading comments...</p>
+                    <p className="text-slate-400">Loading comments...</p>
                 </div>
             ) : comments.length === 0 ? (
-                <div className="text-center py-8 bg-gray-50 rounded-lg">
-                    <p className="text-gray-500">No comments yet. Be the first to comment!</p>
+                <div className="text-center py-8 bg-slate-50 rounded-2xl">
+                    <p className="text-slate-400 font-medium">No comments yet. Be the first to comment!</p>
                 </div>
             ) : (
                 <div className="space-y-4">

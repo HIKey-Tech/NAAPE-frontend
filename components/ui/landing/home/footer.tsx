@@ -29,7 +29,7 @@ export default function Footer() {
                 {/* Quick Links */}
                 <nav aria-label="Footer Quick Links">
                     <span className="text-sm uppercase tracking-widest font-bold text-accent mb-6 block opacity-90">Quick Links</span>
-                    <ul className="flex flex-col gap-3 text-sm text-gray-300 font-medium">
+                    <ul className="flex flex-col gap-3 text-sm text-slate-300 font-medium">
                         <li><Link href="/" className="hover:text-accent transition-colors duration-200">Home</Link></li>
                         <li><Link href="/about/about-us" className="hover:text-accent transition-colors duration-200">About Us</Link></li>
                         <li><Link href="/news/naape" className="hover:text-accent transition-colors duration-200">News</Link></li>

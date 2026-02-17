@@ -1,634 +1,115 @@
 import React from "react";
+import { FaUsers, FaCheckCircle, FaClock, FaBan, FaTimesCircle, FaExclamationTriangle } from "react-icons/fa";
 
-// Micro animation CSS-in-JS via a style tag
-const microAnimations = `
-@keyframes pulse-dot {
-  0% { transform: scale(1);}
-  60% { transform: scale(1.16);}
-  100% { transform: scale(1);}
-}
-@keyframes fade-in-pop {
-  0% {
-    opacity: 0;
-    transform: translateY(16px) scale(0.98);
-    
-  }
-  80% {
-    opacity: 1;
-    transform: translateY(-2px) scale(1.04);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-@keyframes label-float {
-  0%   { opacity: 0; transform: translateY(8px);}
-  100% { opacity: 1; transform: translateY(0);}
-}
-`;
-
-const STATUS_INFO: Record<
-  string,
-  { color: string; bg: string; description: string }
-> = {
-  Active: {
-    color: "#3CB371", // green
-    bg: "#ecfdf5",
-    description:
-      "This member's subscription is paid, current, and in good standing. All privileges are available.",
-  },
-  Expired: {
-    color: "#D2691E", // brown
-    bg: "#f8ede7",
-    description:
-      "This member's subscription term has ended. Renewal is required to maintain privileges.",
-  },
-  Suspended: {
-    color: "#FF6347", // red
-    bg: "#fff0ee",
-    description:
-      "This membership is temporarily blocked due to overdue payment or violation of terms.",
-  },
-  Pending: {
-    color: "#FBC02D", // yellow
-    bg: "#fffbe8",
-    description:
-      "Registration or renewal is in process, or payment is pending review.",
-  },
-  Cancelled: {
-    color: "#7986CB", // blue-grey
-    bg: "#f5f8fd",
-    description:
-      "Membership has been voluntarily cancelled or revoked. Access is no longer granted.",
-  },
+const STATUS_INFO: Record<string, { label: string; className: string; bgClass: string; icon: React.ElementType; description: string }> = {
+  Active: { label: "Active", className: "bg-emerald-50 text-emerald-700 border-emerald-100", bgClass: "bg-emerald-50", icon: FaCheckCircle, description: "Subscription is paid and current." },
+  Expired: { label: "Expired", className: "bg-amber-50 text-amber-700 border-amber-100", bgClass: "bg-amber-50", icon: FaClock, description: "Subscription term has ended." },
+  Suspended: { label: "Suspended", className: "bg-red-50 text-red-700 border-red-100", bgClass: "bg-red-50", icon: FaExclamationTriangle, description: "Temporarily blocked." },
+  Pending: { label: "Pending", className: "bg-yellow-50 text-yellow-700 border-yellow-100", bgClass: "bg-yellow-50", icon: FaClock, description: "Payment pending review." },
+  Cancelled: { label: "Cancelled", className: "bg-slate-100 text-slate-600 border-slate-200", bgClass: "bg-slate-50", icon: FaTimesCircle, description: "Membership cancelled." },
 };
 
 const members = [
-  {
-    memberId: "M-002315",
-    name: "Akira Yamada",
-    status: "Active",
-    expirationDate: "2025-07-09",
-    membershipLevel: "Premium",
-    email: "akira.yamada@email.com",
-    joinedDate: "2022-06-24",
-  },
-  {
-    memberId: "M-002260",
-    name: "Elena Garcia",
-    status: "Expired",
-    expirationDate: "2024-02-21",
-    membershipLevel: "Standard",
-    email: "elena.garcia@email.com",
-    joinedDate: "2021-05-14",
-  },
-  {
-    memberId: "M-002080",
-    name: "John Smith",
-    status: "Suspended",
-    expirationDate: "2024-11-15",
-    membershipLevel: "Standard",
-    email: "john.smith@email.com",
-    joinedDate: "2020-03-09",
-  },
-  {
-    memberId: "M-003110",
-    name: "Emily Johnson",
-    status: "Pending",
-    expirationDate: "2025-03-01",
-    membershipLevel: "Premium",
-    email: "emily.johnson@email.com",
-    joinedDate: "2024-02-01",
-  },
-  {
-    memberId: "M-001780",
-    name: "Yu Chen",
-    status: "Cancelled",
-    expirationDate: "2023-08-31",
-    membershipLevel: "Basic",
-    email: "yu.chen@email.com",
-    joinedDate: "2019-11-15",
-  },
-  // ...more or load from API
+  { memberId: "M-002315", name: "Akira Yamada", status: "Active", expirationDate: "2025-07-09", membershipLevel: "Premium", email: "akira.yamada@email.com", joinedDate: "2022-06-24" },
+  { memberId: "M-002260", name: "Elena Garcia", status: "Expired", expirationDate: "2024-02-21", membershipLevel: "Standard", email: "elena.garcia@email.com", joinedDate: "2021-05-14" },
+  { memberId: "M-002080", name: "John Smith", status: "Suspended", expirationDate: "2024-11-15", membershipLevel: "Standard", email: "john.smith@email.com", joinedDate: "2020-03-09" },
+  { memberId: "M-003110", name: "Emily Johnson", status: "Pending", expirationDate: "2025-03-01", membershipLevel: "Premium", email: "emily.johnson@email.com", joinedDate: "2024-02-01" },
+  { memberId: "M-001780", name: "Yu Chen", status: "Cancelled", expirationDate: "2023-08-31", membershipLevel: "Basic", email: "yu.chen@email.com", joinedDate: "2019-11-15" },
 ];
 
-// In-depth status chip with description tooltip
-function StatusTag({ status }: { status: string }) {
-  const info = STATUS_INFO[status] || {
-    color: "#bbb",
-    bg: "#eee",
-    description: "Unknown status.",
-  };
-  return (
-    <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        fontWeight: 700,
-        color: info.color,
-        background: info.bg,
-        borderRadius: 7,
-        padding: "2px 13px 2px 7px",
-        fontSize: 13.7,
-        letterSpacing: 0.11,
-        textTransform: "uppercase",
-        marginLeft: 5,
-        animation: "fade-in-pop 0.54s cubic-bezier(.41,1.3,.64,1) both",
-        position: "relative",
-        cursor: "default",
-      }}
-      tabIndex={0}
-      title={info.description}
-      aria-label={`${status}: ${info.description}`}
-    >
-      <span
-        style={{
-          background: info.color,
-          width: 11,
-          height: 11,
-          borderRadius: "50%",
-          display: "inline-block",
-          marginRight: 8,
-          border: "2px solid #fff",
-          animation: "pulse-dot 1.21s cubic-bezier(.31,1.48,.54,1.09) infinite",
-        }}
-        aria-hidden="true"
-      />
-      {status}
-      <span
-        style={{
-          fontWeight: 400,
-          fontSize: 11.2,
-          marginLeft: 7,
-          color: "#57648c",
-          opacity: 0.7,
-        }}
-      >
-        <span aria-hidden="true" role="img">
-          ℹ️
-        </span>
-      </span>
-    </span>
-  );
-}
-
-// Calculates member status counts, member percentages, and earliest/latest expiring members
 function getStatusStats(membersList: typeof members) {
-  const stats: Record<
-    string,
-    { count: number; earliest?: any; latest?: any }
-  > = {};
-  let earliestExpiry: any = null;
-  let latestExpiry: any = null;
-
+  const counts: Record<string, number> = {};
+  let earliest: typeof members[0] | null = null;
+  let latest: typeof members[0] | null = null;
   for (const m of membersList) {
-    if (!(m.status in stats)) {
-      stats[m.status] = { count: 1, earliest: m, latest: m };
-    } else {
-      stats[m.status].count += 1;
-      if (m.expirationDate < stats[m.status].earliest.expirationDate) {
-        stats[m.status].earliest = m;
-      }
-      if (m.expirationDate > stats[m.status].latest.expirationDate) {
-        stats[m.status].latest = m;
-      }
-    }
-    // For the whole dataset
-    if (!earliestExpiry || m.expirationDate < earliestExpiry.expirationDate) {
-      earliestExpiry = m;
-    }
-    if (!latestExpiry || m.expirationDate > latestExpiry.expirationDate) {
-      latestExpiry = m;
-    }
+    counts[m.status] = (counts[m.status] || 0) + 1;
+    if (!earliest || m.expirationDate < earliest.expirationDate) earliest = m;
+    if (!latest || m.expirationDate > latest.expirationDate) latest = m;
   }
-  return {
-    statusCounts: Object.fromEntries(
-      Object.entries(stats).map(([k, v]) => [k, v.count])
-    ),
-    total: membersList.length,
-    stats,
-    earliestExpiry,
-    latestExpiry,
-  };
+  return { counts, total: membersList.length, earliest, latest };
 }
 
-const statsData = getStatusStats(members);
-const statusCounts = statsData.statusCounts;
-
-function SectionTitle({ icon, title, subtitle }: { icon?: React.ReactNode; title: string; subtitle?: string }) {
-  return (
-    <div style={{
-      display: "flex",
-      alignItems: subtitle ? "flex-end" : "center",
-      gap: 13,
-      marginBottom: subtitle ? 0 : 24,
-    }}>
-      {icon && <span style={{
-        fontSize: 35,
-        color: "#495dcc",
-        opacity: 0.68,
-        marginBottom: subtitle ? 4 : 0,
-      }}>{icon}</span>}
-      <div>
-        <h2 style={{
-          fontSize: 25,
-          fontWeight: 800,
-          margin: 0,
-          color: "#202846",
-          letterSpacing: 0.18,
-          lineHeight: 1.14,
-          borderBottom: "2px solid #e9edf6",
-          paddingBottom: subtitle ? 2 : 5,
-          animation: "label-float 0.52s cubic-bezier(.41,1.3,.64,1) both",
-        }}>{title}</h2>
-        {subtitle && (
-          <p style={{
-            fontSize: 15,
-            color: "#536094",
-            margin: "5px 0 0 0",
-            lineHeight: 1.5,
-            maxWidth: 650,
-            fontWeight: 400,
-            animation: "label-float 0.62s cubic-bezier(.41,1.3,.64,1) both",
-          }}>{subtitle}</p>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function StatusOverviewBar() {
-  return (
-    <div
-      style={{
-        marginBottom: 30,
-        marginTop: 20,
-        display: "flex",
-        gap: 16,
-        flexWrap: "wrap",
-        justifyContent: "flex-start",
-      }}
-    >
-      {Object.entries(statusCounts).map(([status, count]) => (
-        <div
-          key={status}
-          style={{
-            background: STATUS_INFO[status]?.bg || "#eee",
-            color: STATUS_INFO[status]?.color || "#333",
-            padding: "9px 24px 9px 15px",
-            borderRadius: 14,
-            fontWeight: 700,
-            fontSize: 17,
-            display: "flex",
-            alignItems: "center",
-            gap: 9,
-            minWidth: 112,
-            boxShadow: "0 2.5px 8px 0 rgba(136,152,220,0.07)",
-            border: "1.2px solid #e3ecfa",
-            animation: "fade-in-pop 0.65s cubic-bezier(.41,1.3,.64,1) both",
-            lineHeight: 1.15,
-            cursor: "pointer",
-            position: "relative",
-          }}
-          tabIndex={0}
-          title={STATUS_INFO[status]?.description}
-          aria-label={`${status} (${count}). ${STATUS_INFO[status]?.description || ""}`}
-        >
-          <span
-            style={{
-              background: STATUS_INFO[status]?.color || "#bbb",
-              width: 16,
-              height: 16,
-              borderRadius: "50%",
-              display: "inline-block",
-              marginRight: 8,
-              border: "2.5px solid #fff",
-              boxShadow: "0 1px 2px 0 rgba(66,86,105,0.08)",
-            }}
-          />
-          <span>{status}</span>
-          <span
-            style={{
-              color: "#445477",
-              background: "#e2e6f7",
-              borderRadius: 8,
-              fontSize: 14.5,
-              fontWeight: 700,
-              padding: "1.5px 11px",
-              marginLeft: 11,
-              minWidth: 22,
-              textAlign: "center",
-              display: "inline-block",
-            }}
-          >
-            {count}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function StatusSummaryCard() {
-  return (
-    <section
-      style={{
-        margin: "0 auto 22px auto",
-        color: "#42517c",
-        fontSize: 15.5,
-        background: "#f8fafd",
-        border: "1px solid #e6e9ef",
-        borderRadius: 10,
-        padding: "19px 26px 11px 26px",
-        fontWeight: 500,
-        animation: "fade-in-pop 1.13s cubic-bezier(.41,1.3,.64,1) both",
-        maxWidth: 710,
-        boxShadow: "0 4px 12px 0 rgba(136,152,220,0.06)",
-        marginTop: 0,
-      }}
-      aria-label="Membership statistics summary"
-    >
-      <h3 style={{
-        fontWeight: 800,
-        color: "#2b343f",
-        letterSpacing: 0.04,
-        margin: 0,
-        fontSize: 17.5,
-        marginBottom: 5,
-        display: "flex",
-        alignItems: "center",
-        gap: 6
-      }}>
-        <span role="img" aria-label="Pie chart" style={{ fontSize: 17, color: "#99b" }}>📊</span>
-        Membership Statistics
-      </h3>
-      <div style={{ marginBottom: 5, fontSize: 14.7 }}>
-        {Object.entries(statusCounts).map(([status, count], idx, arr) => {
-          const percent = ((count / statsData.total) * 100).toFixed(1);
-          return (
-            <span key={status}>
-              <span
-                style={{
-                  color: STATUS_INFO[status]?.color || "#333",
-                  fontWeight: 700,
-                  margin: "0 6px 0 2px",
-                }}
-              >
-                {count}
-              </span>
-              {status}
-              <span
-                style={{
-                  fontSize: 12,
-                  opacity: 0.6,
-                  margin: "0 2px 0 2px",
-                }}
-              >
-                ({percent}%)
-              </span>
-              {idx !== arr.length - 1 && <span>&mdash;</span>}
-            </span>
-          );
-        })}
-        .
-      </div>
-      <div style={{ fontSize: 13.6, marginTop: 2, color: "#616d93", display: "flex", gap: 9, flexWrap: "wrap" }}>
-        <div>
-          <span
-            style={{
-              fontWeight: 600,
-              color: "#5765af",
-              marginRight: 6,
-            }}
-          >
-            Earliest expiry:
-          </span>
-          {statsData.earliestExpiry
-            ? <b>{statsData.earliestExpiry.name}</b> + ` (${statsData.earliestExpiry.expirationDate})`
-            : "N/A"}
-        </div>
-        <span style={{ color: "#b9bedb" }}>|</span>
-        <div>
-          <span
-            style={{
-              fontWeight: 600,
-              color: "#5765af",
-              marginRight: 6,
-            }}
-          >
-            Latest expiry:
-          </span>
-          {statsData.latestExpiry
-            ? <b>{statsData.latestExpiry.name}</b> + ` (${statsData.latestExpiry.expirationDate})`
-            : "N/A"}
-        </div>
-      </div>
-      <details style={{
-        fontSize: 12.2,
-        marginTop: 13,
-        color: "#9099b2",
-        background: "#f6f9fe",
-        border: "1px solid #e3e9f6",
-        borderRadius: 7,
-        padding: "7px 11px",
-        marginBottom: 6
-      }}>
-        <summary style={{
-          fontWeight: 700,
-          color: "#5c6fab",
-          cursor: "pointer",
-          outline: "none",
-          fontSize: 12.8,
-          marginBottom: 5
-        }}>
-          Status types explained
-        </summary>
-        <ul style={{ margin: '7px 0 2px 0', paddingLeft: 15 }}>
-          {Object.entries(STATUS_INFO).map(([stat, meta]) => (
-            <li key={stat}
-              style={{
-                marginBottom: 6,
-                color: "#495084"
-              }}>
-              <span
-                style={{
-                  color: meta.color,
-                  fontWeight: 600,
-                  marginRight: 4,
-                }}
-              >
-                {stat}:
-              </span>
-              <span>{meta.description}</span>
-            </li>
-          ))}
-        </ul>
-      </details>
-      <div style={{ marginTop: 7 }}>
-        <span>
-          <strong>Total members: {statsData.total}</strong>
-        </span>
-      </div>
-    </section>
-  );
-}
-
-function MembersTable() {
-  return (
-    <div
-      style={{
-        borderRadius: 14,
-        border: "1.4px solid #e6e9ef",
-        overflow: "hidden",
-        animation: "fade-in-pop 0.64s cubic-bezier(.41,1.3,.64,1) both",
-        boxShadow: "0 1.7px 6px 0 rgba(86,117,180,0.07)",
-        marginBottom: 30,
-        background: "#f5f8fe"
-      }}
-    >
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          fontSize: 15.1,
-          minWidth: 740,
-          background: "#fff",
-        }}
-      >
-        <thead>
-          <tr
-            style={{
-              background: "#f2f6fb",
-              color: "#295d9c",
-              fontWeight: 900,
-              letterSpacing: 0.04,
-              textTransform: "uppercase",
-              fontSize: 13.8,
-              animation: "fade-in-pop 0.67s cubic-bezier(.41,1.3,.64,1) both",
-              height: 36,
-            }}
-          >
-            <th style={{ padding: "11px 13px", textAlign: "left" }}>ID</th>
-            <th style={{ padding: "11px 13px", textAlign: "left" }}>Name</th>
-            <th style={{ padding: "11px 13px", textAlign: "left" }}>Membership</th>
-            <th style={{ padding: "11px 13px", textAlign: "left" }}>Expiry</th>
-            <th style={{ padding: "11px 13px", textAlign: "left" }}>Email</th>
-            <th style={{ padding: "11px 13px", textAlign: "left" }}>Joined</th>
-            <th style={{ padding: "11px 13px", textAlign: "left" }}>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {members.map((m, i) => (
-            <tr
-              key={m.memberId}
-              style={{
-                background: i % 2 === 0 ? "#fafdff" : "#f6f8fb",
-                borderBottom: "1px solid #eaeef6",
-                animation: `fade-in-pop 0.${78 + i * 5}s cubic-bezier(.41,1.3,.64,1) both`,
-              }}
-            >
-              <td
-                style={{
-                  fontWeight: 700,
-                  padding: "11px 13px",
-                  color: "#7986ac",
-                  letterSpacing: 0.04,
-                  fontSize: 14.1,
-                }}
-              >
-                {m.memberId}
-              </td>
-              <td
-                style={{
-                  fontWeight: 600,
-                  padding: "11px 13px",
-                  color: "#242842",
-                  fontSize: 15.1,
-                }}
-              >
-                {m.name}
-              </td>
-              <td
-                style={{
-                  padding: "11px 13px",
-                  color: "#245ca8",
-                  fontWeight: 700,
-                  fontSize: 14.1,
-                }}
-              >
-                {m.membershipLevel}
-              </td>
-              <td
-                style={{
-                  padding: "11px 13px",
-                  color: "#285c4a",
-                  fontWeight: 600,
-                  fontSize: 13.5,
-                }}
-              >
-                {m.expirationDate}
-              </td>
-              <td
-                style={{
-                  padding: "11px 13px",
-                  color: "#246e96",
-                  fontWeight: 400,
-                  fontSize: 13.4,
-                  fontFamily: "monospace",
-                  letterSpacing: 0.05,
-                }}
-              >
-                {m.email}
-              </td>
-              <td
-                style={{
-                  padding: "11px 13px",
-                  color: "#a87c43",
-                  fontWeight: 400,
-                  fontSize: 13.1,
-                }}
-              >
-                {m.joinedDate}
-              </td>
-              <td style={{ padding: "11px 13px" }}>
-                <StatusTag status={m.status} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
+const stats = getStatusStats(members);
 
 const MemberStatus: React.FC = () => {
   return (
-    <>
-      <style>{microAnimations}</style>
-      <div
-        style={{
-          maxWidth: 900,
-          margin: "50px auto",
-          background: "#fff",
-          borderRadius: 18,
-          padding: "36px 38px 26px 38px",
-          border: "1.8px solid #e6e9ef",
-          animation: "fade-in-pop 0.48s cubic-bezier(.41,1.3,.64,1) both",
-          boxShadow: "0 7px 28px 0 rgba(80,111,179,0.13)",
-        }}
-      >
-        <SectionTitle
-          icon={<span role="img" aria-label="members">👥</span>}
-          title="Organization Member Status Overview"
-          subtitle="Explore the status and details of the entire membership roster. Easily see totals by status, drill into member details, and view contextual explanations—hover or tap any status chip to view its meaning."
-        />
-
-        <StatusOverviewBar />
-        <StatusSummaryCard />
-        <MembersTable />
+    <div className="max-w-5xl mx-auto px-4 sm:px-8 py-10 space-y-8">
+      {/* Header */}
+      <div>
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-2.5 bg-primary/5 text-primary rounded-xl"><FaUsers size={20} /></div>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Member Status</h1>
+        </div>
+        <p className="text-slate-500 ml-[52px]">Overview of membership statuses and details.</p>
       </div>
-    </>
+
+      {/* Status Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+        {Object.entries(stats.counts).map(([status, count]) => {
+          const info = STATUS_INFO[status];
+          const Icon = info?.icon || FaClock;
+          return (
+            <div key={status} className={`rounded-2xl border p-4 ${info?.className || "bg-slate-50 text-slate-600 border-slate-100"}`} title={info?.description}>
+              <div className="flex items-center gap-2 mb-2">
+                <Icon size={14} /> <span className="text-xs font-bold uppercase tracking-wide">{status}</span>
+              </div>
+              <span className="text-2xl font-black">{count}</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Summary */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-4">Statistics Summary</h3>
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-600 mb-4">
+          {Object.entries(stats.counts).map(([status, count]) => (
+            <span key={status}><strong className="text-slate-800">{count}</strong> {status} <span className="text-slate-400">({((count / stats.total) * 100).toFixed(0)}%)</span></span>
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-4 text-xs text-slate-500 pt-3 border-t border-slate-100">
+          <span>Earliest expiry: <strong className="text-slate-700">{stats.earliest?.name}</strong> ({stats.earliest?.expirationDate})</span>
+          <span>Latest expiry: <strong className="text-slate-700">{stats.latest?.name}</strong> ({stats.latest?.expirationDate})</span>
+          <span className="ml-auto font-bold text-slate-800">Total: {stats.total}</span>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[700px]">
+            <thead>
+              <tr className="border-b border-slate-100">
+                {["ID", "Name", "Level", "Expiry", "Email", "Joined", "Status"].map((h) => (
+                  <th key={h} className="px-5 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wide">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {members.map((m) => {
+                const info = STATUS_INFO[m.status];
+                const Icon = info?.icon || FaClock;
+                return (
+                  <tr key={m.memberId} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                    <td className="px-5 py-4 font-mono text-xs text-slate-400">{m.memberId}</td>
+                    <td className="px-5 py-4 font-bold text-slate-800">{m.name}</td>
+                    <td className="px-5 py-4"><span className="px-2.5 py-1 rounded-full text-xs font-bold bg-primary/5 text-primary border border-primary/10">{m.membershipLevel}</span></td>
+                    <td className="px-5 py-4 text-slate-600">{m.expirationDate}</td>
+                    <td className="px-5 py-4 text-slate-500 font-mono text-xs">{m.email}</td>
+                    <td className="px-5 py-4 text-slate-500 text-xs">{m.joinedDate}</td>
+                    <td className="px-5 py-4">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${info?.className}`} title={info?.description}>
+                        <Icon size={10} /> {m.status}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 };
 

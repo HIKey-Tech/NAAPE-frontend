@@ -7,19 +7,6 @@ import { cn } from "@/lib/utils";
 const ACCEPT_IMAGE = "image/jpeg,image/png,image/gif,image/webp,image/jpg";
 const MAX_IMAGE_SIZE_MB = 10;
 
-const COLORS = {
-  background: "#fff",
-  border: "#b9cdf1",
-  borderHighlight: "#7591e6",
-  iconBg: "#FFF5E0",
-  iconRect: "#FFE7B2",
-  iconRectStroke: "#FFD580",
-  iconCircle: "#FFA602",
-  iconDetail: "#FFCE73",
-  text: "#585858",
-  subText: "#757575",
-};
-
 function isImageFile(file: File): boolean {
   const validTypes = [
     "image/jpeg",
@@ -38,23 +25,23 @@ function isImageFile(file: File): boolean {
 
 const defaultIcon = (
   <svg width="54" height="54" viewBox="0 0 54 54" fill="none">
-    <rect width="54" height="54" rx="12" fill={COLORS.iconBg} />
+    <rect width="54" height="54" rx="12" fill="#f8fafc" />
     <g filter="url(#icon_dropshadow)">
-      <rect x="12" y="14" width="30" height="26" rx="4" fill={COLORS.iconRect} />
+      <rect x="12" y="14" width="30" height="26" rx="4" fill="#e2e8f0" />
       <rect
         x="12.5"
         y="14.5"
         width="29"
         height="25"
         rx="3.5"
-        stroke={COLORS.iconRectStroke}
+        stroke="#cbd5e1"
       />
     </g>
-    <circle cx="19.5" cy="21.5" r="2.5" fill={COLORS.iconCircle} />
+    <circle cx="19.5" cy="21.5" r="2.5" fill="#94a3b8" />
     <path
       d="M14 36l6.881-8.13c1.572-1.855 4.409-1.855 5.981 0l8.607 10.163c1.384 1.634 4.08 1.015 4.08-1.037V18a4 4 0 00-4-4H16a4 4 0 00-4 4v20a2 2 0 003.246 1.617z"
-      fill={COLORS.iconDetail}
-      fillOpacity=".4"
+      fill="#cbd5e1"
+      fillOpacity=".5"
     />
     <defs>
       <filter
@@ -155,7 +142,7 @@ export default function DropImageDual({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleFileSelection(e.target.files);
-    e.target.value = ""; // allow reselection of same file
+    e.target.value = "";
   };
 
   return (
@@ -168,10 +155,10 @@ export default function DropImageDual({
           onClick={handleBrowse}
           {...dragEvents}
           className={cn(
-            "w-full flex flex-col items-center px-3 py-7 transition-all rounded-[14px] min-h-[210px] shadow-sm cursor-pointer",
+            "w-full flex flex-col items-center px-3 py-7 transition-all rounded-xl min-h-[210px] shadow-sm cursor-pointer",
             dragActive
-              ? "border-2 border-blue-400 bg-blue-50"
-              : "border-2 border-dashed border-[#b9cdf1] bg-white hover:bg-blue-50"
+              ? "border-2 border-primary bg-primary/5"
+              : "border-2 border-dashed border-slate-200 bg-slate-50 hover:bg-primary/5 hover:border-primary/30"
           )}
         >
           <input
@@ -186,11 +173,11 @@ export default function DropImageDual({
 
           <div className="mb-4">{defaultIcon}</div>
 
-          <div className="font-semibold text-base text-[#585858] mb-1 text-center">
+          <div className="font-bold text-base text-slate-700 mb-1 text-center">
             Upload Image
           </div>
 
-          <p className="text-xs text-center text-[#757575] leading-relaxed mb-2 w-11/12">
+          <p className="text-xs text-center text-slate-400 leading-relaxed mb-2 w-11/12">
             <strong>Image:</strong> Minimum recommended width 800px.<br />
             Max 10MB • JPG, JPEG, PNG, GIF, WEBP
           </p>
@@ -202,20 +189,19 @@ export default function DropImageDual({
                 alt="Preview"
                 width={120}
                 height={100}
-                // unoptimized
-                className="rounded-md border object-contain shadow"
+                className="rounded-xl border border-slate-200 object-contain shadow-sm"
               />
             </div>
           )}
 
           {value && (
-            <div className="text-xs text-center text-[#585858] mt-1">
+            <div className="text-xs text-center text-slate-500 mt-1">
               <strong>Selected:</strong> {value.name}
             </div>
           )}
 
           {dragActive && (
-            <div className="mt-3 bg-[#F0F8FF] text-xs text-[#585858] rounded px-2 py-0.5">
+            <div className="mt-3 bg-primary/5 text-xs text-primary font-bold rounded-lg px-3 py-1">
               Drop to upload
             </div>
           )}

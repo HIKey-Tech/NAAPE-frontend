@@ -2,7 +2,7 @@
 
 import { useSubscriptionStatus } from "@/hooks/useSubscription";
 import { useRouter } from "next/navigation";
-import { FaCrown, FaLock, FaCheckCircle } from "react-icons/fa";
+import { FaCrown, FaLock, FaCheck, FaArrowRight, FaGem } from "react-icons/fa";
 
 interface SubscriptionBannerProps {
     showUpgradePrompt?: boolean;
@@ -13,66 +13,62 @@ export function SubscriptionBanner({ showUpgradePrompt = false, feature }: Subsc
     const router = useRouter();
     const { data: subscriptionStatus, isLoading } = useSubscriptionStatus();
 
-    if (isLoading) {
-        return null;
-    }
+    if (isLoading) return null;
 
-    // User has active subscription
+    // Active subscription
     if (subscriptionStatus?.hasSubscription && subscriptionStatus.status === "active") {
         return (
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 mb-6">
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="bg-blue-600 text-white rounded-full p-2">
-                            <FaCrown className="text-xl" />
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-primary/5 text-primary rounded-xl">
+                            <FaCrown size={20} />
                         </div>
                         <div>
-                            <h3 className="font-bold text-blue-900 text-lg">
-                                {subscriptionStatus.tier?.toUpperCase()} Member
+                            <h3 className="font-bold text-slate-800 capitalize">
+                                {subscriptionStatus.tier} Member
                             </h3>
-                            <p className="text-sm text-blue-700">
+                            <p className="text-xs text-slate-500 mt-0.5">
                                 Active until {subscriptionStatus.endDate ? new Date(subscriptionStatus.endDate).toLocaleDateString() : "N/A"}
                             </p>
                         </div>
                     </div>
-                    <FaCheckCircle className="text-green-500 text-2xl" />
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                        <FaCheck size={10} /> Active
+                    </span>
                 </div>
             </div>
         );
     }
 
-    // User needs to upgrade
+    // Upgrade prompt
     if (showUpgradePrompt) {
         return (
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-lg p-6 mb-6">
+            <div className="bg-white rounded-2xl border border-amber-200 shadow-sm p-6 mb-6">
                 <div className="flex items-start gap-4">
-                    <div className="bg-amber-500 text-white rounded-full p-3 flex-shrink-0">
-                        <FaLock className="text-2xl" />
+                    <div className="p-3 bg-amber-50 text-amber-600 rounded-xl shrink-0">
+                        <FaLock size={20} />
                     </div>
                     <div className="flex-1">
-                        <h3 className="font-bold text-amber-900 text-xl mb-2">
-                            Subscription Required
-                        </h3>
-                        <p className="text-amber-800 mb-4">
-                            {feature 
+                        <h3 className="font-black text-slate-800 text-lg mb-1">Subscription Required</h3>
+                        <p className="text-sm text-slate-600 mb-4">
+                            {feature
                                 ? `To ${feature}, you need an active subscription.`
                                 : "This feature requires an active subscription to access."
                             }
                         </p>
-                        <p className="text-sm text-amber-700 mb-4">
-                            Subscribe now to unlock:
-                        </p>
-                        <ul className="text-sm text-amber-800 mb-4 space-y-1 ml-4">
-                            <li>✓ Access to all publications</li>
-                            <li>✓ Create and submit your own publications</li>
-                            <li>✓ Exclusive member resources</li>
-                            <li>✓ Priority event registration</li>
-                        </ul>
+                        <div className="space-y-2 mb-5">
+                            {["Access to all publications", "Create and submit your own publications", "Exclusive member resources", "Priority event registration"].map((item) => (
+                                <div key={item} className="flex items-center gap-2 text-sm text-slate-700">
+                                    <FaCheck className="text-emerald-500 shrink-0" size={12} /> {item}
+                                </div>
+                            ))}
+                        </div>
                         <button
                             onClick={() => router.push("/subscription")}
-                            className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-xl shadow-md shadow-primary/20 hover:bg-primary/90 transition-colors text-sm"
                         >
-                            View Subscription Plans
+                            <FaGem size={14} /> View Plans <FaArrowRight size={12} />
                         </button>
                     </div>
                 </div>
@@ -80,24 +76,22 @@ export function SubscriptionBanner({ showUpgradePrompt = false, feature }: Subsc
         );
     }
 
-    // Simple status indicator
+    // Simple status
     return (
-        <div className="bg-gray-100 border border-gray-300 rounded-lg p-4 mb-6">
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 mb-6">
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="bg-gray-400 text-white rounded-full p-2">
-                        <FaLock className="text-lg" />
+                <div className="flex items-center gap-4">
+                    <div className="p-3 bg-slate-100 text-slate-500 rounded-xl">
+                        <FaLock size={18} />
                     </div>
                     <div>
-                        <h3 className="font-semibold text-gray-700">Free Member</h3>
-                        <p className="text-sm text-gray-600">
-                            Upgrade to access premium features
-                        </p>
+                        <h3 className="font-bold text-slate-700">Free Member</h3>
+                        <p className="text-xs text-slate-400 mt-0.5">Upgrade to access premium features</p>
                     </div>
                 </div>
                 <button
                     onClick={() => router.push("/subscription")}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+                    className="px-5 py-2 bg-primary text-white font-bold rounded-xl text-sm shadow-md shadow-primary/20 hover:bg-primary/90 transition-colors"
                 >
                     Upgrade
                 </button>
@@ -109,20 +103,18 @@ export function SubscriptionBanner({ showUpgradePrompt = false, feature }: Subsc
 export function SubscriptionBadge() {
     const { data: subscriptionStatus, isLoading } = useSubscriptionStatus();
 
-    if (isLoading || !subscriptionStatus?.hasSubscription) {
-        return null;
-    }
+    if (isLoading || !subscriptionStatus?.hasSubscription) return null;
 
-    const tierColors = {
-        free: "bg-green-500",
-        premium: "bg-purple-600",
+    const tierColors: Record<string, string> = {
+        free: "bg-emerald-50 text-emerald-700 border border-emerald-100",
+        premium: "bg-purple-50 text-purple-700 border border-purple-100",
     };
 
-    const tierColor = subscriptionStatus.tier ? tierColors[subscriptionStatus.tier] : "bg-gray-500";
+    const tierColor = subscriptionStatus.tier ? tierColors[subscriptionStatus.tier] || "bg-slate-100 text-slate-600" : "bg-slate-100 text-slate-600";
 
     return (
-        <span className={`${tierColor} text-white text-xs font-bold px-3 py-1 rounded-full inline-flex items-center gap-1`}>
-            <FaCrown className="text-xs" />
+        <span className={`${tierColor} text-xs font-bold px-3 py-1 rounded-full inline-flex items-center gap-1.5`}>
+            <FaCrown size={10} />
             {subscriptionStatus.tier?.toUpperCase()}
         </span>
     );

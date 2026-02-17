@@ -95,10 +95,10 @@ export default function MissionSection() {
                     animate="rest"
                 >
                     <motion.div
-                        className="bg-blue-500/20 p-4 rounded-2xl mb-6 group-hover:bg-blue-500/30 transition-colors"
+                        className="bg-primary/20 p-4 rounded-2xl mb-6 group-hover:bg-primary/30 transition-colors"
                         variants={iconMicroAnim as any}
                     >
-                        <Eye size={32} className="text-blue-400" />
+                        <Eye size={32} className="text-primary" />
                     </motion.div>
                     <h3 className="font-bold text-white text-2xl mb-4">Vision</h3>
                     <p className="text-slate-300 text-lg leading-relaxed">

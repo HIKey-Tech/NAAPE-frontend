@@ -17,11 +17,11 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
     const [replyContent, setReplyContent] = useState("");
     const [showReportModal, setShowReportModal] = useState(false);
     const [showUserReportModal, setShowUserReportModal] = useState(false);
-    
+
     const { user } = useAuth();
     const isAuthor = user?._id === reply.author._id;
     const isAdmin = user?.role === "admin";
-    
+
     const updateReply = useUpdateForumReply();
     const deleteReply = useDeleteForumReply();
     const createReply = useCreateForumReply();
@@ -67,23 +67,23 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
 
     return (
         <div className={`${isNested ? "ml-8 mt-4" : "mt-6"}`}>
-            <div className="bg-[#f8fbff] rounded-lg border-2 border-[#e4ecf7] p-4 hover:border-[#c9daf9] transition-colors">
+            <div className="bg-slate-50/80 rounded-2xl border border-slate-100 p-5 hover:border-slate-200 transition-colors">
                 {/* Author Info */}
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#2C6ED4] to-[#15407c] flex items-center justify-center text-white font-bold">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-bold shadow-sm">
                             {reply.author.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
-                                <span className="font-semibold text-[#15407c]">{reply.author.name}</span>
+                                <span className="font-bold text-sm text-slate-900">{reply.author.name}</span>
                                 {reply.author.role === "admin" && (
-                                    <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold border border-purple-300">
+                                    <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
                                         Admin
                                     </span>
                                 )}
                             </div>
-                            <span className="text-xs text-[#6782a9]">
+                            <span className="text-xs text-slate-400">
                                 {formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })}
                                 {reply.isEdited && " (edited)"}
                             </span>
@@ -91,44 +91,44 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
                     </div>
 
                     {/* Actions */}
-                    <div className="flex gap-2">
+                    <div className="flex gap-1">
                         {(isAuthor || isAdmin) && !isEditing && (
                             <>
                                 {isAuthor && (
                                     <button
                                         onClick={() => setIsEditing(true)}
-                                        className="p-2 hover:bg-[#e8f0fb] rounded-full transition-colors"
+                                        className="p-2 hover:bg-slate-200/60 rounded-xl transition-colors"
                                         title="Edit"
                                     >
-                                        <MdEdit size={18} className="text-[#2C6ED4]" />
+                                        <MdEdit size={16} className="text-primary" />
                                     </button>
                                 )}
                                 <button
                                     onClick={handleDelete}
-                                    className="p-2 hover:bg-red-50 rounded-full transition-colors"
+                                    className="p-2 hover:bg-red-50 rounded-xl transition-colors"
                                     title="Delete"
                                 >
-                                    <MdDelete size={18} className="text-red-600" />
+                                    <MdDelete size={16} className="text-red-500" />
                                 </button>
                             </>
                         )}
-                        
+
                         {/* Report buttons for non-authors */}
                         {user && !isAuthor && (
                             <>
                                 <button
                                     onClick={() => setShowReportModal(true)}
-                                    className="p-2 hover:bg-red-50 rounded-full transition-colors"
+                                    className="p-2 hover:bg-red-50 rounded-xl transition-colors"
                                     title="Report Reply"
                                 >
-                                    <MdFlag size={18} className="text-red-600" />
+                                    <MdFlag size={16} className="text-red-500" />
                                 </button>
                                 <button
                                     onClick={() => setShowUserReportModal(true)}
-                                    className="p-2 hover:bg-orange-50 rounded-full transition-colors"
+                                    className="p-2 hover:bg-orange-50 rounded-xl transition-colors"
                                     title="Report User"
                                 >
-                                    <MdFlag size={18} className="text-orange-600" />
+                                    <MdFlag size={16} className="text-orange-500" />
                                 </button>
                             </>
                         )}
@@ -137,18 +137,18 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
 
                 {/* Content */}
                 {isEditing ? (
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                         <textarea
                             value={editContent}
                             onChange={(e) => setEditContent(e.target.value)}
-                            className="w-full border-2 border-[#e4ecf7] rounded-lg p-3 focus:border-[#2C6ED4] focus:ring-2 focus:ring-[#2C6ED4]/20 outline-none text-[#16355D]"
+                            className="w-full border border-slate-200 rounded-xl p-3 bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-slate-800 transition-all"
                             rows={3}
                         />
                         <div className="flex gap-2">
                             <button
                                 onClick={handleUpdate}
                                 disabled={updateReply.isPending}
-                                className="px-4 py-2 bg-[#2C6ED4] text-white rounded-lg hover:bg-[#15407c] disabled:opacity-50 transition-colors"
+                                className="px-4 py-2 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 disabled:opacity-50 transition-colors"
                             >
                                 Save
                             </button>
@@ -157,7 +157,7 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
                                     setIsEditing(false);
                                     setEditContent(reply.content);
                                 }}
-                                className="px-4 py-2 bg-[#e4ecf7] text-[#16355D] rounded-lg hover:bg-[#d1e0f3] transition-colors"
+                                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors"
                             >
                                 Cancel
                             </button>
@@ -165,12 +165,12 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
                     </div>
                 ) : (
                     <>
-                        <p className="text-[#16355D] whitespace-pre-wrap mb-3">{reply.content}</p>
-                        
+                        <p className="text-slate-700 whitespace-pre-wrap mb-3 text-sm leading-relaxed">{reply.content}</p>
+
                         {!isNested && (
                             <button
                                 onClick={() => setShowReplyForm(!showReplyForm)}
-                                className="text-sm text-[#2C6ED4] hover:text-[#15407c] flex items-center gap-1 font-semibold transition-colors"
+                                className="text-sm text-primary hover:text-primary/80 flex items-center gap-1 font-bold transition-colors"
                             >
                                 <MdReply />
                                 Reply
@@ -181,21 +181,21 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
 
                 {/* Reply Form */}
                 {showReplyForm && (
-                    <div className="mt-4 space-y-2">
+                    <div className="mt-4 space-y-3">
                         <textarea
                             value={replyContent}
                             onChange={(e) => setReplyContent(e.target.value)}
                             placeholder="Write your reply..."
-                            className="w-full border-2 border-[#e4ecf7] rounded-lg p-3 focus:border-[#2C6ED4] focus:ring-2 focus:ring-[#2C6ED4]/20 outline-none text-[#16355D]"
+                            className="w-full border border-slate-200 rounded-xl p-3 bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-slate-800 transition-all"
                             rows={3}
                         />
                         <div className="flex gap-2">
                             <button
                                 onClick={handleReply}
                                 disabled={createReply.isPending || !replyContent.trim()}
-                                className="px-4 py-2 bg-[#2C6ED4] text-white rounded-lg hover:bg-[#15407c] disabled:opacity-50 flex items-center gap-2 transition-colors"
+                                className="px-4 py-2 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2 transition-colors"
                             >
-                                <MdSend />
+                                <MdSend size={14} />
                                 Post Reply
                             </button>
                             <button
@@ -203,7 +203,7 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
                                     setShowReplyForm(false);
                                     setReplyContent("");
                                 }}
-                                className="px-4 py-2 bg-[#e4ecf7] text-[#16355D] rounded-lg hover:bg-[#d1e0f3] transition-colors"
+                                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors"
                             >
                                 Cancel
                             </button>
@@ -252,7 +252,7 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
     const [hasTrackedView, setHasTrackedView] = useState(false);
     const [showThreadReportModal, setShowThreadReportModal] = useState(false);
     const [showUserReportModal, setShowUserReportModal] = useState(false);
-    
+
     const { data: thread, isPending: threadLoading, error: threadError } = useForumThread(threadId);
     const { data: repliesData, isPending: repliesLoading } = useThreadReplies(threadId);
     const createReply = useCreateForumReply();
@@ -276,16 +276,12 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
     React.useEffect(() => {
         if (thread && !hasTrackedView) {
             const viewedThreads = JSON.parse(localStorage.getItem('viewedThreads') || '[]');
-            
+
             if (!viewedThreads.includes(threadId)) {
-                // This is a new view, track it
                 setHasTrackedView(true);
                 viewedThreads.push(threadId);
                 localStorage.setItem('viewedThreads', JSON.stringify(viewedThreads));
-                
-                // The view will be counted by the backend on the initial API call
             } else {
-                // Already viewed, don't count again
                 setHasTrackedView(true);
             }
         }
@@ -317,9 +313,9 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
         return (
             <div className="max-w-4xl mx-auto px-4 py-8">
                 <div className="animate-pulse space-y-4">
-                    <div className="h-8 bg-gray-200 rounded w-3/4" />
-                    <div className="h-4 bg-gray-200 rounded w-1/2" />
-                    <div className="h-32 bg-gray-200 rounded" />
+                    <div className="h-8 bg-slate-100 rounded-lg w-3/4" />
+                    <div className="h-4 bg-slate-100 rounded-lg w-1/2" />
+                    <div className="h-32 bg-slate-100 rounded-lg" />
                 </div>
             </div>
         );
@@ -328,11 +324,13 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
     if (threadError || !thread) {
         return (
             <div className="max-w-4xl mx-auto px-4 py-8 text-center">
-                <div className="text-6xl mb-4">😕</div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">Thread not found</h3>
+                <div className="w-20 h-20 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
+                    <span className="text-4xl">😕</span>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">Thread not found</h3>
                 <button
                     onClick={() => router.push("/forum")}
-                    className="text-blue-600 hover:text-blue-700"
+                    className="text-primary hover:text-primary/80 font-bold transition-colors"
                 >
                     ← Back to Forum
                 </button>
@@ -345,54 +343,54 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
             {/* Back Button */}
             <button
                 onClick={() => router.push(`/forum/category/${thread.category._id}`)}
-                className="text-[#2C6ED4] hover:text-[#15407c] mb-6 flex items-center gap-2 font-semibold transition-colors"
+                className="text-primary hover:text-primary/80 mb-6 flex items-center gap-2 font-bold text-sm transition-colors"
             >
                 ← Back to {thread.category.name}
             </button>
 
             {/* Thread Content */}
             <motion.div
-                className="bg-white rounded-xl border-2 border-[#dde7f3] p-8 mb-6 shadow-sm"
+                className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 mb-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
             >
                 {/* Badges */}
                 <div className="flex items-center gap-2 mb-4">
                     {thread.isPinned && (
-                        <span className="flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold border border-yellow-300">
+                        <span className="flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">
                             <MdPushPin />
                             Pinned
                         </span>
                     )}
                     {thread.isLocked && (
-                        <span className="flex items-center gap-1 px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-semibold border border-red-300">
+                        <span className="flex items-center gap-1 px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">
                             <MdLock />
                             Locked
                         </span>
                     )}
-                    <span className="px-3 py-1 bg-[#e8f0fb] text-[#2C6ED4] rounded-full text-sm font-semibold border border-[#c9daf9]">
+                    <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold">
                         {thread.category.name}
                     </span>
                 </div>
 
                 {/* Title */}
-                <h1 className="text-3xl md:text-4xl font-black text-[#15407c] mb-4">{thread.title}</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">{thread.title}</h1>
 
                 {/* Author & Meta */}
-                <div className="flex items-center gap-4 mb-6 pb-6 border-b border-[#e4ecf7]">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#2C6ED4] to-[#15407c] flex items-center justify-center text-white font-bold text-lg">
+                <div className="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-primary/20">
                         {thread.author.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
                         <div className="flex items-center gap-2">
-                            <span className="font-semibold text-[#15407c]">{thread.author.name}</span>
+                            <span className="font-bold text-slate-900">{thread.author.name}</span>
                             {thread.author.role === "admin" && (
-                                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold border border-purple-300">
+                                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
                                     Admin
                                 </span>
                             )}
                         </div>
-                        <div className="flex items-center gap-3 text-sm text-[#6782a9]">
+                        <div className="flex items-center gap-3 text-sm text-slate-400">
                             <span>{formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })}</span>
                             <span>·</span>
                             <span className="flex items-center gap-1">
@@ -410,22 +408,22 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
 
                 {/* Content */}
                 <div className="prose max-w-none">
-                    <p className="text-[#16355D] text-lg whitespace-pre-wrap leading-relaxed">{thread.content}</p>
+                    <p className="text-slate-700 text-base whitespace-pre-wrap leading-relaxed">{thread.content}</p>
                 </div>
 
                 {/* Report Actions */}
                 {user && !isAuthor && (
-                    <div className="flex gap-2 mt-6 pt-6 border-t border-[#e4ecf7]">
+                    <div className="flex gap-2 mt-6 pt-6 border-t border-slate-100">
                         <button
                             onClick={() => setShowThreadReportModal(true)}
-                            className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl transition-colors"
                         >
                             <MdFlag size={16} />
                             Report Thread
                         </button>
                         <button
                             onClick={() => setShowUserReportModal(true)}
-                            className="flex items-center gap-2 px-3 py-2 text-sm text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-orange-600 hover:bg-orange-50 rounded-xl transition-colors"
                         >
                             <MdFlag size={16} />
                             Report User
@@ -437,43 +435,43 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
             {/* Reply Form */}
             {!thread.isLocked ? (
                 user ? (
-                    <div className="bg-white rounded-xl border-2 border-[#dde7f3] p-6 mb-6 shadow-sm">
-                        <h3 className="text-xl font-bold text-[#15407c] mb-4 flex items-center gap-2">
-                            <MdComment className="text-[#2C6ED4]" />
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 mb-6">
+                        <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                            <MdComment className="text-primary" />
                             Post a Reply
                         </h3>
                         <textarea
                             value={replyContent}
                             onChange={(e) => setReplyContent(e.target.value)}
                             placeholder="Share your thoughts..."
-                            className="w-full border-2 border-[#e4ecf7] rounded-lg p-4 focus:border-[#2C6ED4] focus:ring-2 focus:ring-[#2C6ED4]/20 outline-none mb-4 text-[#16355D]"
+                            className="w-full border border-slate-200 rounded-xl p-4 bg-slate-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none mb-4 text-slate-800 transition-all"
                             rows={5}
                         />
                         <button
                             onClick={handleReply}
                             disabled={createReply.isPending || !replyContent.trim()}
-                            className="bg-[#2C6ED4] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#15407c] hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            className="bg-primary text-white px-6 py-3 rounded-xl font-bold shadow-md shadow-primary/20 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                         >
                             <MdSend />
                             {createReply.isPending ? "Posting..." : "Post Reply"}
                         </button>
                     </div>
                 ) : (
-                    <div className="bg-[#e8f0fb] border-2 border-[#c9daf9] rounded-xl p-6 mb-6 text-center">
-                        <p className="text-[#15407c] font-semibold">Please log in to reply to this thread.</p>
+                    <div className="bg-primary/5 border border-primary/10 rounded-2xl p-6 mb-6 text-center">
+                        <p className="text-slate-700 font-bold">Please log in to reply to this thread.</p>
                     </div>
                 )
             ) : (
-                <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6 mb-6 text-center">
-                    <MdLock className="mx-auto text-red-600 mb-2" size={32} />
-                    <p className="text-red-700 font-semibold">This thread is locked. No new replies can be posted.</p>
+                <div className="bg-red-50 border border-red-100 rounded-2xl p-6 mb-6 text-center">
+                    <MdLock className="mx-auto text-red-500 mb-2" size={32} />
+                    <p className="text-red-700 font-bold">This thread is locked. No new replies can be posted.</p>
                 </div>
             )}
 
             {/* Replies */}
-            <div className="bg-white rounded-xl border-2 border-[#dde7f3] p-6 shadow-sm">
-                <h3 className="text-2xl font-bold text-[#15407c] mb-6 flex items-center gap-2">
-                    <MdComment className="text-[#2C6ED4]" />
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                    <MdComment className="text-primary" />
                     Replies ({repliesData?.data.length || 0})
                 </h3>
 
@@ -481,14 +479,16 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
                     <div className="space-y-4">
                         {Array.from({ length: 3 }).map((_, i) => (
                             <div key={i} className="animate-pulse">
-                                <div className="h-20 bg-[#f0f5fc] rounded" />
+                                <div className="h-20 bg-slate-50 rounded-xl" />
                             </div>
                         ))}
                     </div>
                 ) : repliesData?.data.length === 0 ? (
                     <div className="text-center py-12">
-                        <div className="text-5xl mb-3">💬</div>
-                        <p className="text-[#6782a9]">No replies yet. Be the first to respond!</p>
+                        <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-3">
+                            <span className="text-3xl">💬</span>
+                        </div>
+                        <p className="text-slate-400 font-medium">No replies yet. Be the first to respond!</p>
                     </div>
                 ) : (
                     <div className="space-y-4">

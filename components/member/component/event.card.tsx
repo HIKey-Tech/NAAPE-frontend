@@ -3,115 +3,33 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { EventCardProps } from "@/app/api/events/type";
-import {
-    payForEvent,
-    verifyPayment,
-    getStatus
-} from "@/app/api/events/events";
-
-import {
-    CalendarClock,
-    MapPin,
-    User2,
-    Loader2,
-    BadgeCheck,
-    CheckCircle2,
-    XCircle,
-} from "lucide-react";
-
+import { payForEvent, verifyPayment, getStatus } from "@/app/api/events/events";
+import { CalendarClock, MapPin, User2, Loader2, BadgeCheck, CheckCircle2, XCircle } from "lucide-react";
 import { useAuth } from "@/context/authcontext";
 
 const truncate = (text: string, max = 40) =>
     text.length > max ? text.slice(0, max - 1) + "…" : text;
 
-const EVENT_ANIM_CLASS = "event-card-anim";
-
-// -------------------------------
-// CSS Injection - DISABLED ANIMATION
-// -------------------------------
-const MICRO_ANIMS_CSS = `
-/* animation CSS - ALWAYS VISIBLE */
-.${EVENT_ANIM_CLASS} {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-}
-.${EVENT_ANIM_CLASS}.visible {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-}
-`;
-
-let styleInjected = false;
-
-function injectEventAnimCSS() {
-    if (typeof window !== "undefined" && !styleInjected) {
-        if (!document.getElementById("eventcard-anim-style")) {
-            const s = document.createElement("style");
-            s.id = "eventcard-anim-style";
-            s.textContent = MICRO_ANIMS_CSS;
-            document.head.appendChild(s);
-            styleInjected = true;
-        }
-    }
-}
-
-// -------------------------------
-// Format Helpers
-// -------------------------------
 function formatEventDate(date: string | Date) {
     let d = typeof date === "string" ? new Date(date) : date;
     if (!(d instanceof Date) || isNaN(d.getTime())) return "";
-    return d.toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-    });
+    return d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
 }
 
 function formatEventTime(date: string | Date) {
     let d = typeof date === "string" ? new Date(date) : date;
     if (!(d instanceof Date) || isNaN(d.getTime())) return "";
-    return d
-        .toLocaleTimeString(undefined, {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-        })
-        .toLowerCase();
+    return d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit", hour12: true }).toLowerCase();
 }
 
 const EventCard: React.FC<EventCardProps & { onCardClick?: () => void; isAdmin?: boolean }> = ({
-    _id,
-    id,
-    title,
-    date,
-    location,
-    imageUrl,
-    description,
-    price,
-    currency,
-    isPaid,
-    createdBy,
-    registeredUsers,
-    payments,
-    createdAt,
-    updatedAt,
-    maxCapacity,
-    currentCapacity,
-    isFull,
-    spotsRemaining,
-    className = "",
-    registerLabel = "Register",
-    disabled = false,
-    onCardClick,
-    isAdmin = false,
+    _id, id, title, date, location, imageUrl, description, price, currency, isPaid, createdBy,
+    registeredUsers, payments, createdAt, updatedAt, maxCapacity, currentCapacity, isFull,
+    spotsRemaining, className = "", registerLabel = "Register", disabled = false, onCardClick, isAdmin = false,
 }) => {
     const cardRef = useRef<HTMLDivElement | null>(null);
-    const [pressing, setPressing] = useState(false);
-    const [badgePing, setBadgePing] = useState(false);
     const [showVerify, setShowVerify] = useState(false);
     const [txId, setTxId] = useState("");
-    const [paymentLinkOpened, setPaymentLinkOpened] = useState(false);
     const [showRegisterLoading, setShowRegisterLoading] = useState(false);
     const [checkingStatus, setCheckingStatus] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState<any | null>(null);
@@ -120,9 +38,6 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void; isAdmin?:
     const router = useRouter();
     const { user } = useAuth();
 
-    // -------------------------------
-    // Payment Status (now local call)
-    // -------------------------------
     const fetchPaymentStatus = async () => {
         if (!id) return;
         setCheckingStatus(true);
@@ -138,55 +53,15 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void; isAdmin?:
         }
     };
 
-    // refetch payment status (used after verify, etc)
-    const refetchStatus = fetchPaymentStatus;
-
     useEffect(() => {
-        if (id && user) {
-            fetchPaymentStatus();
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (id && user) fetchPaymentStatus();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id, user]);
 
-    // -------------------------------
-    // Animation CSS - Simplified to always show visible
-    // -------------------------------
-    useEffect(() => {
-        injectEventAnimCSS();
-        const card = cardRef.current;
-        if (!card) return;
-
-        // Immediately add visible class, no animation delay
-        card.classList.add("visible");
-    }, []); // Run once on mount
-
-    // Separate effect for badge ping
-    useEffect(() => {
-        if (isPaid) {
-            setBadgePing(true);
-        }
-    }, [isPaid]);
-
-    useEffect(() => {
-        if (!badgePing) return;
-        const t = setTimeout(() => setBadgePing(false), 1250);
-        return () => clearTimeout(t);
-    }, [badgePing]);
-
-    // -------------------------------
-    // Handle Payment/Registration
-    // -------------------------------
     const handleRegister = async () => {
         if (!id) return;
-
-        if (!user || user.role === "guest") {
-            router.push(`/register?event=${id}`);
-            return;
-        }
-        if (!user?._id) {
-            router.push("/login?redirect=/events/" + id);
-            return;
-        }
+        if (!user || user.role === "guest") { router.push(`/register?event=${id}`); return; }
+        if (!user?._id) { router.push("/login?redirect=/events/" + id); return; }
         if (showRegisterLoading) return;
 
         setShowRegisterLoading(true);
@@ -195,177 +70,116 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void; isAdmin?:
             setShowRegisterLoading(false);
             const link = data?.link;
             if (link) {
-                setPaymentLinkOpened(true);
                 setShowVerify(true);
                 window.open(link, "_blank");
-                console.log("Payment link opened:", link);
             } else {
-                // free event (registered)
                 fetchPaymentStatus();
                 setShowVerify(false);
             }
-        } catch (error: any) {
-            setShowRegisterLoading(false);
-        }
+        } catch { setShowRegisterLoading(false); }
     };
 
     const handleVerifyPayment = async () => {
-        if (!txId.trim()) {
-            alert("Enter a valid transaction ID");
-            return;
-        }
-
+        if (!txId.trim()) { alert("Enter a valid transaction ID"); return; }
         try {
             await verifyPayment(txId);
             fetchPaymentStatus();
-            setTimeout(() => {
-                setShowVerify(false);
-                setTxId("");
-            }, 1500);
-        } catch (e: any) {
-            // error handling could be improved if needed
-        }
+            setTimeout(() => { setShowVerify(false); setTxId(""); }, 1500);
+        } catch { }
     };
 
-    const handleCardClick = () => {
-        if (disabled) return;
-        // Trigger modal open via callback prop
-        if (onCardClick) {
-            onCardClick();
-        }
-    };
+    const handleCardClick = () => { if (!disabled && onCardClick) onCardClick(); };
 
-    const isPaidByUser =
-        paymentStatus?.paid === true ||
-        paymentStatus?.status === "completed" ||
-        paymentStatus?.status === "success";
-
+    const isPaidByUser = paymentStatus?.paid === true || paymentStatus?.status === "completed" || paymentStatus?.status === "success";
     const isRegisteredFree = paymentStatus?.registered === true && !isPaid;
     const isPaymentPending = paymentStatus?.status === "pending";
     const isCardClickable = !!id && !disabled;
 
-    // -------------------------------
-    // UI
-    // -------------------------------
     return (
         <div
             ref={cardRef}
-            className={`${EVENT_ANIM_CLASS} ${pressing ? "pressing" : ""} bg-white border rounded-2xl shadow-sm
-                overflow-hidden flex flex-col items-stretch min-h-[282px] hover:shadow-md transition cursor-pointer ${className}`}
+            className={`bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col min-h-[300px] hover:shadow-lg transition-all group cursor-pointer ${className}`}
             onClick={isCardClickable ? handleCardClick : undefined}
-            onPointerDown={() => setPressing(true)}
-            onPointerUp={() => setPressing(false)}
-            onPointerLeave={() => setPressing(false)}
         >
             {/* Image */}
-            <div className="relative w-full h-32 bg-[#F3F6FA] overflow-hidden">
+            <div className="relative w-full h-36 bg-slate-100 overflow-hidden">
                 {imageUrl ? (
-                    <img src={imageUrl} className="object-cover w-full h-full" />
+                    <img src={imageUrl} alt={title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                 ) : (
-                    <div className="flex w-full h-full items-center justify-center text-gray-400">
-                        No Image
-                    </div>
+                    <div className="flex w-full h-full items-center justify-center text-slate-300 text-sm font-medium">No Image</div>
                 )}
-
                 {isPaid && (
-                    <div
-                        className={`absolute top-3 right-3 px-3 py-1 rounded-full bg-[#fff3dd] border text-[#b18206] font-semibold text-xs ${badgePing ? "ping" : ""
-                            }`}
-                    >
-                        <BadgeCheck size={14} />
-                        Paid Event
+                    <div className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 font-bold text-xs">
+                        <BadgeCheck size={14} /> Paid
                     </div>
                 )}
             </div>
 
             {/* Content */}
-            <div className="px-5 pt-4 pb-5 flex flex-col h-full">
-                {/* Date */}
-                <div className="flex items-center gap-2 mb-1">
-                    <CalendarClock size={15} className="stroke-gray-400" />
-                    <span className="text-gray-600 font-semibold text-sm">
-                        {formatEventDate(date)}
-                    </span>
-                    <span className="text-xs text-gray-400 italic">
-                        {formatEventTime(date)}
-                    </span>
+            <div className="px-5 pt-4 pb-5 flex flex-col flex-1">
+                <div className="flex items-center gap-2 mb-1.5">
+                    <CalendarClock size={14} className="text-slate-400" />
+                    <span className="text-xs font-bold text-slate-500">{formatEventDate(date)}</span>
+                    <span className="text-xs text-slate-400">{formatEventTime(date)}</span>
                 </div>
 
-                {/* Title */}
-                <div className="text-lg font-bold text-[#232a3c] mb-1.5">
+                <h3 className="text-lg font-bold text-slate-800 mb-1.5 group-hover:text-primary transition-colors leading-snug">
                     {truncate(title, 48)}
+                </h3>
+
+                <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-2">
+                    <MapPin size={13} className="text-slate-400" />
+                    {location || <span className="italic text-slate-400">TBA</span>}
                 </div>
 
-                {/* Location */}
-                <div className="flex items-center text-sm text-gray-500 mb-2">
-                    <MapPin size={15} className="stroke-gray-400 mr-1" />
-                    {location || <span className="italic text-gray-400">TBA</span>}
-                </div>
-
-                {/* Description */}
                 {description && (
-                    <div className="text-sm text-gray-500 line-clamp-3 mb-2.5">
-                        {description}
-                    </div>
+                    <p className="text-sm text-slate-500 line-clamp-2 mb-3 leading-relaxed">{description}</p>
                 )}
 
-                {/* Capacity Information */}
                 {maxCapacity && (
-                    <div className="flex items-center gap-2 mb-2 text-xs">
-                        <User2 size={14} className="stroke-gray-400" />
-                        <span className={`font-semibold ${isFull ? 'text-red-600' : spotsRemaining && spotsRemaining <= 5 ? 'text-orange-600' : 'text-gray-600'}`}>
+                    <div className="flex items-center gap-2 mb-3 text-xs">
+                        <User2 size={13} className="text-slate-400" />
+                        <span className={`font-bold ${isFull ? 'text-red-600' : spotsRemaining && spotsRemaining <= 5 ? 'text-amber-600' : 'text-slate-600'}`}>
                             {isFull ? (
-                                <span className="inline-flex items-center gap-1">
-                                    <XCircle size={12} />
-                                    Event Full
-                                </span>
+                                <span className="inline-flex items-center gap-1"><XCircle size={12} /> Full</span>
                             ) : (
-                                `${spotsRemaining} ${spotsRemaining === 1 ? 'spot' : 'spots'} left`
+                                `${spotsRemaining} spot${spotsRemaining === 1 ? '' : 's'} left`
                             )}
                         </span>
-                        <span className="text-gray-400">• {currentCapacity || registeredUsers?.length || 0}/{maxCapacity}</span>
+                        <span className="text-slate-400">• {currentCapacity || registeredUsers?.length || 0}/{maxCapacity}</span>
                     </div>
                 )}
 
-                <div className="flex justify-between mt-auto items-center">
-                    {/* Price */}
+                <div className="flex justify-between mt-auto items-center pt-2 border-t border-slate-50">
                     <div>
-                        <span className="font-bold text-[#5161ab]">
-                            {isPaid && price > 0
-                                ? `${currency === "NGN" ? "₦" : currency}${price}`
-                                : "FREE"}
+                        <span className="font-black text-lg text-primary">
+                            {isPaid && price > 0 ? `${currency === "NGN" ? "₦" : currency}${price.toLocaleString()}` : "FREE"}
                         </span>
-                        <div className="text-xs text-gray-400">
-                            {isPaid && price > 0 ? "Ticket Price" : "Open Registration"}
-                        </div>
+                        <div className="text-xs text-slate-400">{isPaid && price > 0 ? "Ticket" : "Open"}</div>
                     </div>
 
-                    {/* Button / Status */}
                     {isFull && !isPaidByUser && !isRegisteredFree ? (
-                        <div className="flex items-center gap-2 px-5 py-1.5 rounded-full bg-red-50 border border-red-200 text-red-700 font-semibold text-sm">
-                            <XCircle size={15} /> Full
-                        </div>
+                        <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-50 border border-red-100 text-red-600 font-bold text-xs">
+                            <XCircle size={14} /> Full
+                        </span>
                     ) : isPaidByUser ? (
-                        <div className="flex items-center gap-2 px-5 py-1.5 rounded-full bg-green-50 border border-green-200 text-green-700 font-semibold text-sm">
-                            <CheckCircle2 size={15} /> Registered
-                        </div>
+                        <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700 font-bold text-xs">
+                            <CheckCircle2 size={14} /> Registered
+                        </span>
                     ) : isRegisteredFree ? (
-                        <div className="flex items-center gap-2 px-5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-semibold text-sm">
-                            <CheckCircle2 size={15} /> Registered
-                        </div>
+                        <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary/5 border border-primary/10 text-primary font-bold text-xs">
+                            <CheckCircle2 size={14} /> Registered
+                        </span>
                     ) : isPaymentPending ? (
-                        <div className="flex items-center gap-2 px-5 py-1.5 rounded-full bg-yellow-50 border border-yellow-200 text-yellow-700 font-semibold text-sm">
-                            <Loader2 size={15} className="animate-spin" /> Pending
-                        </div>
+                        <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-50 border border-amber-100 text-amber-700 font-bold text-xs">
+                            <Loader2 size={14} className="animate-spin" /> Pending
+                        </span>
                     ) : !isAdmin ? (
                         <button
                             type="button"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleRegister();
-                            }}
+                            onClick={(e) => { e.stopPropagation(); handleRegister(); }}
                             disabled={disabled || showRegisterLoading || isFull}
-                            className={`px-4 py-2 rounded-full bg-[#f7f8fc] border border-[#bfd6f5] text-[#2049a2] hover:bg-[#eff4fd] text-sm ${(disabled || showRegisterLoading || isFull) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className="px-5 py-2 rounded-xl bg-primary text-white font-bold text-sm shadow-md shadow-primary/20 hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             {isFull ? "Full" : showRegisterLoading ? "Loading..." : registerLabel}
                         </button>
@@ -373,18 +187,15 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void; isAdmin?:
                 </div>
 
                 {showVerify && (
-                    <div className="mt-3 flex gap-2">
+                    <div className="mt-3 flex gap-2" onClick={(e) => e.stopPropagation()}>
                         <input
                             type="text"
                             value={txId}
                             onChange={(e) => setTxId(e.target.value)}
-                            placeholder="Enter Transaction ID"
-                            className="border px-3 py-1 rounded w-full"
+                            placeholder="Transaction ID"
+                            className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none"
                         />
-                        <button
-                            onClick={handleVerifyPayment}
-                            className="px-3 py-1 bg-blue-600 text-white rounded"
-                        >
+                        <button onClick={handleVerifyPayment} className="px-4 py-2 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors">
                             Verify
                         </button>
                     </div>

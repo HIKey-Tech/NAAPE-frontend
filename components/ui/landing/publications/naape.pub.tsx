@@ -199,7 +199,7 @@ export default function NaapePublicationsComponent() {
                                     })
                                     : ""
                             }
-                            className="publications-card-animate relative border-2 border-[#cdd9eb] rounded-xl bg-[#fafdff] focus-visible:ring-2 focus-visible:ring-[#1845c1]"
+                            className="publications-card-animate relative border-2 border-slate-200 rounded-xl bg-slate-50 focus-visible:ring-2 focus-visible:ring-primary"
                             // Note: bg is light, border provides contrast, on hover/active gets micro animations
                         />
                     ))}

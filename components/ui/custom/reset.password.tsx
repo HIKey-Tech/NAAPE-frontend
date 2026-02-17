@@ -20,14 +20,14 @@ export default function ResetPassword({ token }: ResetPasswordProps) {
     // Check if token is valid
     if (!token || token === "undefined") {
         return (
-            <div className="max-w-md mx-auto bg-white shadow-lg rounded-xl p-8 mt-12">
+            <div className="max-w-md mx-auto bg-white shadow-sm border border-slate-100 rounded-2xl p-8 mt-12">
                 <h2 className="text-2xl font-bold mb-1 text-center text-red-600">Invalid Reset Link</h2>
-                <p className="text-gray-600 text-center mb-7 text-sm">
+                <p className="text-slate-500 text-center mb-7 text-sm">
                     This password reset link is invalid. Please request a new one.
                 </p>
                 <button
                     onClick={() => router.push("/forgot-password")}
-                    className="w-full bg-primary text-white py-2 font-semibold text-base rounded-md hover:bg-primary/90 transition-shadow shadow"
+                    className="w-full bg-primary text-white py-2.5 font-bold text-base rounded-xl hover:bg-primary/90 shadow-md shadow-primary/20 transition-all"
                 >
                     Request New Link
                 </button>
@@ -69,19 +69,19 @@ export default function ResetPassword({ token }: ResetPasswordProps) {
     };
 
     return (
-        <div className="max-w-md mx-auto bg-white shadow-lg rounded-xl p-8 mt-12">
+        <div className="max-w-md mx-auto bg-white shadow-sm border border-slate-100 rounded-2xl p-8 mt-12">
             <h2 className="text-2xl font-bold mb-1 text-center text-primary">Reset Password</h2>
-            <p className="text-gray-600 text-center mb-7 text-sm">
+            <p className="text-slate-500 text-center mb-7 text-sm">
                 Enter your new password below.
             </p>
             {isSuccess ? (
-                <div className="text-green-600 text-center font-medium py-8">
+                <div className="text-emerald-600 text-center font-bold py-8 bg-emerald-50 rounded-xl">
                     Password reset successful! Redirecting to login...
                 </div>
             ) : (
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                     <div>
-                        <label htmlFor="password" className="block mb-1 font-medium text-gray-700">
+                        <label htmlFor="password" className="block mb-1.5 text-xs font-bold text-slate-400 uppercase tracking-wide">
                             New Password
                         </label>
                         <input
@@ -91,13 +91,13 @@ export default function ResetPassword({ token }: ResetPasswordProps) {
                             onChange={e => setPassword(e.target.value)}
                             required
                             disabled={isPending}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 transition"
+                            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
                             placeholder="Enter new password"
                             minLength={6}
                         />
                     </div>
                     <div>
-                        <label htmlFor="confirmPassword" className="block mb-1 font-medium text-gray-700">
+                        <label htmlFor="confirmPassword" className="block mb-1.5 text-xs font-bold text-slate-400 uppercase tracking-wide">
                             Confirm Password
                         </label>
                         <input
@@ -107,19 +107,19 @@ export default function ResetPassword({ token }: ResetPasswordProps) {
                             onChange={e => setConfirmPassword(e.target.value)}
                             required
                             disabled={isPending}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 transition"
+                            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
                             placeholder="Confirm new password"
                             minLength={6}
                         />
                     </div>
                     {localError && (
-                        <div className="text-red-600 text-sm">
+                        <div className="text-red-600 text-sm font-medium">
                             {localError}
                         </div>
                     )}
                     <NaapButton
                         type="submit"
-                        className="w-full bg-primary text-white py-2 font-semibold text-base rounded-md hover:bg-primary/90 transition-shadow shadow"
+                        className="w-full bg-primary text-white py-2.5 font-bold text-base rounded-xl hover:bg-primary/90 shadow-md shadow-primary/20 transition-all"
                         disabled={isPending}
                     >
                         {isPending ? "Resetting..." : "Reset Password"}

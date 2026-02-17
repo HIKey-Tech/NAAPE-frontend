@@ -24,7 +24,7 @@ export default function TestimonialsSection() {
   const [active, setActive] = useState(0);
 
   return (
-    <section className="relative w-full py-24 px-6 bg-[#1a1f36] overflow-hidden">
+    <section className="relative w-full py-24 px-6 bg-slate-900 overflow-hidden">
       {/* Background Accents */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-30" />

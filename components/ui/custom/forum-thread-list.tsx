@@ -33,9 +33,8 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
 
     return (
         <motion.div
-            className={`bg-white rounded-xl border-2 p-6 cursor-pointer hover:shadow-lg transition-all relative ${
-                thread.isPinned ? "border-yellow-400 bg-yellow-50" : "border-gray-100"
-            }`}
+            className={`bg-white rounded-2xl border p-6 cursor-pointer hover:shadow-lg transition-all relative ${thread.isPinned ? "border-amber-300 bg-amber-50/30" : "border-slate-100 shadow-sm"
+                }`}
             whileHover={{ scale: 1.01, y: -2 }}
             onClick={() => router.push(`/forum/threads/${thread._id}`)}
             initial={{ opacity: 0, y: 20 }}
@@ -44,35 +43,35 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
             {/* Badges */}
             <div className="flex items-center gap-2 mb-3">
                 {thread.isPinned && (
-                    <span className="flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold">
+                    <span className="flex items-center gap-1 px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">
                         <MdPushPin size={14} />
                         Pinned
                     </span>
                 )}
                 {thread.isLocked && (
-                    <span className="flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">
+                    <span className="flex items-center gap-1 px-2.5 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">
                         <MdLock size={14} />
                         Locked
                     </span>
                 )}
                 {thread.author.role === "admin" && (
-                    <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">
+                    <span className="px-2.5 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
                         Admin
                     </span>
                 )}
             </div>
 
             {/* Title */}
-            <h3 className="text-xl font-bold text-gray-900 mb-2 hover:text-blue-600 transition-colors">
+            <h3 className="text-lg font-bold text-slate-900 mb-2 hover:text-primary transition-colors">
                 {thread.title}
             </h3>
 
             {/* Content Preview */}
-            <p className="text-gray-600 text-sm mb-4 line-clamp-2">{thread.content}</p>
+            <p className="text-slate-500 text-sm mb-4 line-clamp-2">{thread.content}</p>
 
             {/* Meta Info */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                <span className="font-semibold text-gray-700">{thread.author.name}</span>
+            <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400">
+                <span className="font-bold text-slate-700">{thread.author.name}</span>
                 <span>·</span>
                 <span>{formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })}</span>
                 <span className="flex items-center gap-1">
@@ -87,21 +86,21 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
 
             {/* Last Reply */}
             {thread.lastReply && (
-                <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-500">
-                    Last reply by <span className="font-semibold">{thread.lastReply.author.name}</span>{" "}
+                <div className="mt-3 pt-3 border-t border-slate-100 text-xs text-slate-400">
+                    Last reply by <span className="font-bold text-slate-600">{thread.lastReply.author.name}</span>{" "}
                     {formatDistanceToNow(new Date(thread.lastReply.createdAt), { addSuffix: true })}
                 </div>
             )}
 
             {/* Report Actions */}
             {user && !isAuthor && (
-                <div className="mt-3 pt-3 border-t border-gray-200 flex gap-2">
+                <div className="mt-3 pt-3 border-t border-slate-100 flex gap-2">
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
                             setShowThreadReportModal(true);
                         }}
-                        className="flex items-center gap-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors"
+                        className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                     >
                         <MdFlag size={12} />
                         Report Thread
@@ -111,7 +110,7 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
                             e.stopPropagation();
                             setShowUserReportModal(true);
                         }}
-                        className="flex items-center gap-1 px-2 py-1 text-xs text-orange-600 hover:bg-orange-50 rounded transition-colors"
+                        className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
                     >
                         <MdFlag size={12} />
                         Report User
@@ -123,39 +122,39 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
             {(isAdmin || isAuthor) && (
                 <div className="absolute top-4 right-4">
                     <button
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
                         onClick={(e) => {
                             e.stopPropagation();
                             setShowMenu(!showMenu);
                         }}
                     >
-                        <MdMoreVert size={20} />
+                        <MdMoreVert size={20} className="text-slate-400" />
                     </button>
 
                     {showMenu && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-10">
+                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-2 z-10">
                             {isAdmin && (
                                 <>
                                     <button
-                                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
+                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-slate-50 flex items-center gap-2 text-slate-700 transition-colors"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             togglePin.mutate(thread._id);
                                             setShowMenu(false);
                                         }}
                                     >
-                                        <MdPushPin />
+                                        <MdPushPin className="text-amber-500" />
                                         {thread.isPinned ? "Unpin" : "Pin"}
                                     </button>
                                     <button
-                                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
+                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-slate-50 flex items-center gap-2 text-slate-700 transition-colors"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             toggleLock.mutate(thread._id);
                                             setShowMenu(false);
                                         }}
                                     >
-                                        <MdLock />
+                                        <MdLock className="text-slate-500" />
                                         {thread.isLocked ? "Unlock" : "Lock"}
                                     </button>
                                 </>
@@ -163,17 +162,17 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
                             {(isAdmin || isAuthor) && (
                                 <>
                                     <button
-                                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
+                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-slate-50 flex items-center gap-2 text-slate-700 transition-colors"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             router.push(`/forum/threads/${thread._id}/edit`);
                                         }}
                                     >
-                                        <MdEdit />
+                                        <MdEdit className="text-primary" />
                                         Edit
                                     </button>
                                     <button
-                                        className="w-full px-4 py-2 text-left hover:bg-red-50 text-red-600 flex items-center gap-2"
+                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-red-50 text-red-600 flex items-center gap-2 transition-colors"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             if (confirm("Are you sure you want to delete this thread?")) {
@@ -231,18 +230,18 @@ const ForumThreadList: React.FC<ForumThreadListProps> = ({ categoryId, categoryN
             <div className="mb-8">
                 <button
                     onClick={() => router.push("/forum")}
-                    className="text-blue-600 hover:text-blue-700 mb-4 flex items-center gap-2"
+                    className="text-primary hover:text-primary/80 mb-4 flex items-center gap-2 font-bold text-sm transition-colors"
                 >
                     ← Back to Categories
                 </button>
-                <h1 className="text-4xl font-black text-gray-900 mb-2">{categoryName || "Threads"}</h1>
+                <h1 className="text-3xl font-bold text-slate-900 mb-2">{categoryName || "Threads"}</h1>
                 <div className="flex justify-between items-center">
-                    <p className="text-gray-600">
+                    <p className="text-slate-500">
                         {data?.pagination.total || 0} threads
                     </p>
                     <button
                         onClick={() => router.push(`/forum/new-thread?category=${categoryId}`)}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                        className="bg-primary text-white px-5 py-2.5 rounded-xl font-bold shadow-md shadow-primary/20 hover:shadow-lg transition-all"
                     >
                         + New Thread
                     </button>
@@ -253,27 +252,31 @@ const ForumThreadList: React.FC<ForumThreadListProps> = ({ categoryId, categoryN
             {isPending ? (
                 <div className="space-y-4">
                     {Array.from({ length: 5 }).map((_, i) => (
-                        <div key={i} className="bg-white rounded-xl border-2 border-gray-100 p-6 animate-pulse">
-                            <div className="h-6 bg-gray-200 rounded w-3/4 mb-3" />
-                            <div className="h-4 bg-gray-200 rounded w-full mb-2" />
-                            <div className="h-4 bg-gray-200 rounded w-2/3" />
+                        <div key={i} className="bg-white rounded-2xl border border-slate-100 p-6 animate-pulse">
+                            <div className="h-6 bg-slate-100 rounded-lg w-3/4 mb-3" />
+                            <div className="h-4 bg-slate-100 rounded-lg w-full mb-2" />
+                            <div className="h-4 bg-slate-100 rounded-lg w-2/3" />
                         </div>
                     ))}
                 </div>
             ) : error ? (
                 <div className="text-center py-20">
-                    <div className="text-6xl mb-4">😕</div>
-                    <h3 className="text-2xl font-bold text-gray-800 mb-2">Unable to load threads</h3>
-                    <p className="text-gray-600">Please try again later</p>
+                    <div className="w-20 h-20 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
+                        <span className="text-4xl">😕</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">Unable to load threads</h3>
+                    <p className="text-slate-500">Please try again later</p>
                 </div>
             ) : data?.data.length === 0 ? (
                 <div className="text-center py-20">
-                    <div className="text-6xl mb-4">📝</div>
-                    <h3 className="text-2xl font-bold text-gray-800 mb-2">No threads yet</h3>
-                    <p className="text-gray-600 mb-6">Be the first to start a discussion!</p>
+                    <div className="w-20 h-20 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
+                        <span className="text-4xl">📝</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">No threads yet</h3>
+                    <p className="text-slate-500 mb-6">Be the first to start a discussion!</p>
                     <button
                         onClick={() => router.push(`/forum/new-thread?category=${categoryId}`)}
-                        className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                        className="bg-primary text-white px-6 py-3 rounded-xl font-bold shadow-md shadow-primary/20 hover:shadow-lg transition-all"
                     >
                         Create First Thread
                     </button>
@@ -288,21 +291,21 @@ const ForumThreadList: React.FC<ForumThreadListProps> = ({ categoryId, categoryN
 
                     {/* Pagination */}
                     {data && data.pagination.pages > 1 && (
-                        <div className="flex justify-center gap-2 mt-8">
+                        <div className="flex justify-center items-center gap-3 mt-8">
                             <button
                                 onClick={() => setPage(page - 1)}
                                 disabled={page === 1}
-                                className="px-4 py-2 border rounded-lg disabled:opacity-50"
+                                className="px-5 py-2.5 border border-slate-200 rounded-xl font-bold text-sm disabled:opacity-50 hover:bg-slate-50 transition-colors"
                             >
                                 Previous
                             </button>
-                            <span className="px-4 py-2">
+                            <span className="px-4 py-2 text-sm font-medium text-slate-500">
                                 Page {page} of {data.pagination.pages}
                             </span>
                             <button
                                 onClick={() => setPage(page + 1)}
                                 disabled={page === data.pagination.pages}
-                                className="px-4 py-2 border rounded-lg disabled:opacity-50"
+                                className="px-5 py-2.5 border border-slate-200 rounded-xl font-bold text-sm disabled:opacity-50 hover:bg-slate-50 transition-colors"
                             >
                                 Next
                             </button>

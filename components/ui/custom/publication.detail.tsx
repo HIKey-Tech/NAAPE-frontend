@@ -33,7 +33,7 @@ function getInitials(name?: string) {
     );
 }
 
-// Animation copied from card
+// Animation
 const ANIMATION_CLASS = "publication-card-animate";
 const ANIMATION_CSS = `
 .${ANIMATION_CLASS} {
@@ -102,14 +102,14 @@ export const PublicationDetail: React.FC<PublicationDetailProps> = ({
         const observer =
             typeof window !== "undefined" && "IntersectionObserver" in window
                 ? new window.IntersectionObserver(entries => {
-                      entries.forEach(entry => {
-                          if (entry.isIntersecting) {
-                              timer = setTimeout(() => {
-                                  card.classList.add("visible");
-                              }, 50 + Math.random() * 120);
-                          }
-                      });
-                  })
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            timer = setTimeout(() => {
+                                card.classList.add("visible");
+                            }, 50 + Math.random() * 120);
+                        }
+                    });
+                })
                 : null;
         if (observer) observer.observe(card);
         else card.classList.add("visible");
@@ -140,14 +140,14 @@ export const PublicationDetail: React.FC<PublicationDetailProps> = ({
             ref={cardRef}
             className={`
                 ${ANIMATION_CLASS}
-                w-full max-w-3xl mx-auto bg-white border rounded-2xl shadow-md overflow-hidden
+                w-full max-w-3xl mx-auto bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden
                 flex flex-col
                 ${className}
             `}
             style={{ boxShadow: "0 1px 10px rgba(30,41,59,0.08)" }}
         >
             {/* Header Image */}
-            <div className="relative w-full h-64 md:h-80 bg-gray-200">
+            <div className="relative w-full h-64 md:h-80 bg-slate-100">
                 {imageUrl ? (
                     <Image
                         src={imageUrl}
@@ -158,32 +158,32 @@ export const PublicationDetail: React.FC<PublicationDetailProps> = ({
                         sizes="(max-width:900px) 100vw, 900px"
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-xl">No Image</div>
+                    <div className="w-full h-full flex items-center justify-center text-slate-400 text-xl">No Image</div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
                 {/* Category */}
                 {category && (
                     <div className="absolute top-4 left-4 z-10">
-                        <Badge variant="outline" className="w-fit text-xs font-semibold text-[#1B0D09] bg-[#F4B05F]">
+                        <span className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold shadow-sm">
                             {category}
-                        </Badge>
+                        </span>
                     </div>
                 )}
             </div>
             {/* Body */}
             <div className="flex flex-col gap-3 p-7 pt-6">
-                <h1 className="text-2xl md:text-3xl font-bold leading-tight mb-2 text-[color:oklch(0.141_0.005_285.823)]">
+                <h1 className="text-2xl md:text-3xl font-bold leading-tight mb-2 text-slate-900">
                     {title}
                 </h1>
                 {summary && (
-                    <div className="text-base text-[#4B576A] mb-2">{summary}</div>
+                    <div className="text-base text-slate-500 mb-2">{summary}</div>
                 )}
 
                 {/* Date &/or category (optional) */}
                 {(displayDate || category) && (
                     <div className="flex items-center gap-5 mb-2">
                         {displayDate && (
-                            <span className="flex items-center gap-1 text-xs text-[#878A97] font-medium">
+                            <span className="flex items-center gap-1 text-xs text-slate-400 font-medium">
                                 <svg
                                     width="15"
                                     height="15"
@@ -197,13 +197,13 @@ export const PublicationDetail: React.FC<PublicationDetailProps> = ({
                                         cx="10"
                                         cy="10"
                                         r="8"
-                                        stroke="#B0B4C5"
+                                        stroke="currentColor"
                                         strokeWidth="1.5"
-                                        fill="#f7fbff"
+                                        fill="none"
                                     />
                                     <path
                                         d="M10 6V10L13 12"
-                                        stroke="#B0B4C5"
+                                        stroke="currentColor"
                                         strokeWidth="1.5"
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
@@ -215,25 +215,25 @@ export const PublicationDetail: React.FC<PublicationDetailProps> = ({
                     </div>
                 )}
                 {/* Author */}
-                <div className="flex items-center gap-2 mb-4">
-                    <Avatar className="w-11 h-11 border">
+                <div className="flex items-center gap-3 mb-4">
+                    <Avatar className="w-11 h-11 border border-slate-100">
                         {authorAvatarUrl ? (
                             <AvatarImage src={authorAvatarUrl} alt={authorName} />
                         ) : (
-                            <AvatarFallback>
+                            <AvatarFallback className="bg-slate-100 text-slate-600 text-sm font-bold">
                                 {getInitials(authorName)}
                             </AvatarFallback>
                         )}
                     </Avatar>
-                    <div className="flex flex-col justify-center ml-1">
-                        <span className="text-base font-semibold text-[#343658] leading-tight">{authorName}</span>
+                    <div className="flex flex-col justify-center">
+                        <span className="text-sm font-bold text-slate-900 leading-tight">{authorName}</span>
                         {authorRole && (
-                            <span className="text-xs text-[#95a0b5] font-medium">{authorRole}</span>
+                            <span className="text-xs text-slate-400 font-medium">{authorRole}</span>
                         )}
                     </div>
                 </div>
                 {/* Body Content */}
-                <section className="prose md:prose-lg max-w-none text-[#322B23]">
+                <section className="prose md:prose-lg max-w-none text-slate-800">
                     {typeof content === "string" ? (
                         <div dangerouslySetInnerHTML={{ __html: content }} />
                     ) : (
@@ -245,7 +245,7 @@ export const PublicationDetail: React.FC<PublicationDetailProps> = ({
             <footer className="px-7 pt-0 pb-6 flex items-center justify-between">
                 <Link
                     href={backHref}
-                    className="inline-flex items-center gap-1 text-[#2852B4] text-sm font-semibold hover:underline hover:text-[#1B3F90] transition-colors duration-200 group/link"
+                    className="inline-flex items-center gap-1 text-primary text-sm font-bold hover:text-primary/80 transition-colors duration-200 group/link"
                     tabIndex={0}
                 >
                     <svg
@@ -256,7 +256,6 @@ export const PublicationDetail: React.FC<PublicationDetailProps> = ({
                         stroke="currentColor"
                         strokeWidth="2"
                         aria-hidden="true"
-                        style={{ color: "#2852B4" }}
                     >
                         <path
                             strokeLinecap="round"

@@ -1,512 +1,263 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-    FaUsers,
-    FaBan,
-    FaClock,
-    FaVolumeMute,
-    FaSearch,
-    FaFilter,
-    FaSyncAlt,
-    FaExclamationTriangle,
-    FaEye,
-    FaComments,
-    FaReply,
-    FaCalendarAlt,
-    FaShieldAlt,
-    FaUndo
-} from "react-icons/fa";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FaSearch, FaUsers, FaUserCheck, FaBan, FaUserShield, FaExclamationTriangle, FaSyncAlt, FaFilter, FaEye, FaUserTimes, FaUnlock, FaVolumeOff, FaClock, FaComments, FaReply, FaChevronDown, FaTimes } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { UserRestrictionData } from "@/app/api/admin/forum";
-import UserRestrictionModal from "./UserRestrictionModal";
-import useUserManagement, { ForumUser } from "@/hooks/useUserManagement";
+import useUserManagement, { ForumUser, BanUserData } from "@/hooks/useUserManagement";
+
+function UserRestrictionModal({ isOpen, onClose, user, onRestrict, isProcessing }: { isOpen: boolean; onClose: () => void; user: ForumUser | null; onRestrict: (userId: string, data: BanUserData) => Promise<void>; isProcessing: boolean; }) {
+    const [restrictionType, setRestrictionType] = useState<'ban' | 'suspend' | 'mute'>('ban');
+    const [reason, setReason] = useState("");
+    const [duration, setDuration] = useState("7");
+    if (!isOpen || !user) return null;
+
+    const handleSubmit = async () => {
+        if (!reason.trim()) { alert("Please provide a reason"); return; }
+        try {
+            await onRestrict(user._id, { banType: restrictionType === 'ban' ? 'permanent' : restrictionType === 'suspend' ? 'temporary' : 'mute', reason, duration: restrictionType !== 'ban' ? parseInt(duration) : undefined });
+            onClose(); setReason(""); setDuration("7");
+        } catch (e) { /* error handled by hook */ }
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+                <div className="flex items-center justify-between p-6 border-b border-slate-100">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center"><FaBan className="w-5 h-5 text-red-500" /></div>
+                        <h2 className="text-lg font-bold text-slate-900">Restrict User</h2>
+                    </div>
+                    <button onClick={onClose} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"><FaTimes className="w-3.5 h-3.5 text-slate-500" /></button>
+                </div>
+                <div className="p-6 space-y-4">
+                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center text-sm font-bold">{user.name.charAt(0).toUpperCase()}</div>
+                        <div><div className="font-bold text-slate-900 text-sm">{user.name}</div><div className="text-xs text-slate-500">{user.email}</div></div>
+                    </div>
+                    <div>
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Restriction Type</label>
+                        <Select value={restrictionType} onValueChange={(v: any) => setRestrictionType(v)}>
+                            <SelectTrigger className="rounded-xl border-slate-200 bg-slate-50"><SelectValue /></SelectTrigger>
+                            <SelectContent><SelectItem value="ban">Permanent Ban</SelectItem><SelectItem value="suspend">Temporary Suspension</SelectItem><SelectItem value="mute">Mute</SelectItem></SelectContent>
+                        </Select>
+                    </div>
+                    {restrictionType !== 'ban' && (
+                        <div>
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Duration (days)</label>
+                            <Select value={duration} onValueChange={setDuration}>
+                                <SelectTrigger className="rounded-xl border-slate-200 bg-slate-50"><SelectValue /></SelectTrigger>
+                                <SelectContent><SelectItem value="1">1 day</SelectItem><SelectItem value="3">3 days</SelectItem><SelectItem value="7">7 days</SelectItem><SelectItem value="14">14 days</SelectItem><SelectItem value="30">30 days</SelectItem><SelectItem value="90">90 days</SelectItem></SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                    <div>
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Reason *</label>
+                        <Textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Enter reason for restriction..." rows={3} className="rounded-xl border-slate-200 bg-slate-50 focus:bg-white" />
+                    </div>
+                </div>
+                <div className="flex justify-end gap-3 p-6 border-t border-slate-100">
+                    <Button variant="outline" onClick={onClose} className="rounded-xl font-bold border-slate-200">Cancel</Button>
+                    <Button onClick={handleSubmit} disabled={isProcessing || !reason.trim()} className="bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold shadow-md shadow-red-600/20">{isProcessing ? "Processing..." : "Apply Restriction"}</Button>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 const UserManagementSection: React.FC = () => {
-    const {
-        users,
-        totalUsers,
-        metrics,
-        isLoading,
-        isRestricting,
-        error,
-        searchTerm,
-        roleFilter,
-        statusFilter,
-        currentPage,
-        totalPages,
-        fetchUsers,
-        banUser,
-        unbanUser,
-        setSearchTerm,
-        setRoleFilter,
-        setStatusFilter,
-        setCurrentPage
-    } = useUserManagement();
+    const { users, metrics, isLoading, isRestricting, error, searchTerm, roleFilter, statusFilter, currentPage, totalPages, fetchUsers, banUser, unbanUser, setSearchTerm, setRoleFilter, setStatusFilter, setCurrentPage } = useUserManagement();
+    const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+    const [selectedUser, setSelectedUser] = useState<ForumUser | null>(null);
+    const [isRestrictionModalOpen, setIsRestrictionModalOpen] = useState(false);
+    const [expandedUser, setExpandedUser] = useState<string | null>(null);
 
-    const [restrictingUser, setRestrictingUser] = useState<ForumUser | null>(null);
-    const [restrictionType, setRestrictionType] = useState<'ban' | 'suspend' | 'mute' | null>(null);
+    const handleSelectUser = (userId: string, checked: boolean) => { if (checked) setSelectedUsers(p => [...p, userId]); else setSelectedUsers(p => p.filter(id => id !== userId)); };
+    const handleSelectAll = (checked: boolean) => { if (checked) setSelectedUsers(users.map((u: ForumUser) => u._id)); else setSelectedUsers([]); };
 
-    const handleSearchChange = (value: string) => {
-        setSearchTerm(value);
-        setCurrentPage(1); // Reset to first page when searching
-    };
-
-    const handleRoleFilterChange = (value: string) => {
-        setRoleFilter(value === 'all' ? '' : value);
-        setCurrentPage(1);
-    };
-
-    const handleStatusFilterChange = (value: string) => {
-        setStatusFilter(value === 'all' ? '' : value);
-        setCurrentPage(1);
-    };
-
-    const handleRestrictUser = (user: ForumUser, type: 'ban' | 'suspend' | 'mute') => {
-        setRestrictingUser(user);
-        setRestrictionType(type);
-    };
-
-    const handleUnbanUser = async (user: ForumUser) => {
-        try {
-            await unbanUser(user._id, "Restriction removed by admin");
-            toast.success(`${user.name} has been unrestricted`);
-        } catch (error) {
-            toast.error("Failed to remove restriction");
-        }
-    };
-
-    const handleRestrictionSubmit = async (data: UserRestrictionData): Promise<boolean> => {
-        if (!restrictingUser || !restrictionType) return false;
-        
-        try {
-            await banUser(restrictingUser._id, {
-                banType: restrictionType === 'suspend' ? 'temporary' : restrictionType === 'mute' ? 'mute' : 'permanent',
-                duration: data.duration,
-                reason: data.reason
-            });
-            
-            const actionText = restrictionType === 'ban' ? 'banned' : 
-                              restrictionType === 'suspend' ? 'suspended' : 'muted';
-            toast.success(`${restrictingUser.name} has been ${actionText}`);
-            return true;
-        } catch (error) {
-            toast.error(`Failed to ${restrictionType} user`);
-            return false;
-        }
-    };
+    const handleRestrict = (user: ForumUser) => { setSelectedUser(user); setIsRestrictionModalOpen(true); };
+    const handleUnban = async (userId: string) => { try { await unbanUser(userId); toast.success("User unbanned successfully"); } catch (e) { /* error handled by hook */ } };
 
     const getStatusBadge = (user: ForumUser) => {
-        if (!user.banStatus) {
-            return <Badge variant="secondary" className="bg-green-100 text-green-800">Active</Badge>;
-        }
-
-        const { type, expiresAt } = user.banStatus;
-        const isExpired = expiresAt && new Date(expiresAt) < new Date();
-        
-        if (isExpired) {
-            return <Badge variant="secondary" className="bg-green-100 text-green-800">Active</Badge>;
-        }
-
-        switch (type) {
-            case 'permanent':
-                return <Badge variant="destructive">Banned</Badge>;
-            case 'temporary':
-                return <Badge variant="secondary" className="bg-orange-100 text-orange-800">Suspended</Badge>;
-            case 'mute':
-                return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Muted</Badge>;
-            default:
-                return <Badge variant="secondary" className="bg-green-100 text-green-800">Active</Badge>;
-        }
+        if (user.status === 'permanent') return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">Banned</span>;
+        if (user.status === 'temporary') return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-100 text-orange-700">Suspended</span>;
+        if (user.status === 'mute') return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700">Muted</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">Active</span>;
     };
 
     const getRoleBadge = (role: string) => {
-        switch (role) {
-            case 'admin':
-                return <Badge variant="default" className="bg-red-100 text-red-800">Admin</Badge>;
-            case 'editor':
-                return <Badge variant="default" className="bg-blue-100 text-blue-800">Editor</Badge>;
-            case 'member':
-                return <Badge variant="secondary">Member</Badge>;
-            default:
-                return <Badge variant="secondary">{role}</Badge>;
-        }
+        const colors: Record<string, string> = { admin: "bg-purple-100 text-purple-700", moderator: "bg-primary/10 text-primary", member: "bg-slate-100 text-slate-600" };
+        return <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${colors[role] || colors.member}`}>{role.charAt(0).toUpperCase() + role.slice(1)}</span>;
     };
 
-    const isUserRestricted = (user: ForumUser) => {
-        if (!user.banStatus) return false;
-        const { expiresAt } = user.banStatus;
-        return !expiresAt || new Date(expiresAt) > new Date();
-    };
+    const isProcessing = isRestricting;
+    const stats = { total: metrics?.totalUsers || 0, active: metrics?.activeUsers || 0, restricted: metrics?.restrictedUsers || 0, totalPosts: metrics?.totalPosts || 0 };
 
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading users...</p>
-                </div>
-            </div>
-        );
-    }
+    if (isLoading) return (
+        <div className="flex items-center justify-center min-h-[400px]"><div className="text-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div><p className="text-slate-500">Loading users...</p></div></div>
+    );
 
-    if (error) {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-center">
-                    <FaExclamationTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                    <p className="text-red-600 mb-4">Error loading users: {error}</p>
-                    <Button onClick={fetchUsers} variant="outline">
-                        <FaSyncAlt className="w-4 h-4 mr-2" />
-                        Retry
-                    </Button>
-                </div>
-            </div>
-        );
-    }
+    if (error) return (
+        <div className="flex items-center justify-center min-h-[400px]"><div className="text-center"><div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4"><FaExclamationTriangle className="w-8 h-8 text-red-500" /></div><p className="text-red-600 mb-4 font-medium">Error loading users: {error}</p><Button onClick={fetchUsers} variant="outline" className="rounded-xl font-bold border-slate-200"><FaSyncAlt className="w-4 h-4 mr-2" />Retry</Button></div></div>
+    );
+
+    const statCards = [
+        { label: "Total Users", value: stats.total, icon: FaUsers, bg: "bg-primary/5", ic: "text-primary", vc: "text-slate-900", sub: "All forum users" },
+        { label: "Active", value: stats.active, icon: FaUserCheck, bg: "bg-emerald-50", ic: "text-emerald-500", vc: "text-emerald-600", sub: "Currently active" },
+        { label: "Restricted", value: stats.restricted, icon: FaBan, bg: "bg-red-50", ic: "text-red-500", vc: "text-red-600", sub: "Banned or suspended" },
+        { label: "Total Posts", value: stats.totalPosts, icon: FaComments, bg: "bg-purple-50", ic: "text-purple-500", vc: "text-purple-600", sub: "Threads & replies" },
+    ];
 
     return (
         <div className="space-y-6">
             {/* Header */}
             <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-                    <p className="text-gray-600">Manage forum users and their permissions</p>
-                </div>
-                <Button 
-                    onClick={fetchUsers} 
-                    disabled={isLoading}
-                    variant="outline"
-                    size="sm"
-                >
-                    <FaSyncAlt className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-                    Refresh
-                </Button>
+                <div><h1 className="text-2xl font-bold text-slate-900">User Management</h1><p className="text-slate-500">Manage forum users and permissions</p></div>
+                <Button onClick={fetchUsers} disabled={isLoading} variant="outline" size="sm" className="rounded-xl font-bold border-slate-200"><FaSyncAlt className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />Refresh</Button>
             </div>
 
-            {/* Statistics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-                        <FaUsers className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{metrics?.totalUsers || 0}</div>
-                        <p className="text-xs text-muted-foreground">
-                            Registered members
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-                        <FaShieldAlt className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-green-600">
-                            {metrics?.activeUsers || 0}
+            {/* Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {statCards.map((s, i) => (
+                    <div key={i} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">{s.label}</span>
+                            <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center`}><s.icon className={`w-4 h-4 ${s.ic}`} /></div>
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                            No restrictions
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Restricted Users</CardTitle>
-                        <FaBan className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-red-600">
-                            {metrics?.restrictedUsers || 0}
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                            Banned/suspended/muted
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Posts</CardTitle>
-                        <FaComments className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">
-                            {metrics?.totalPosts || 0}
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                            Threads + replies
-                        </p>
-                    </CardContent>
-                </Card>
+                        <div className={`text-2xl font-bold ${s.vc}`}>{s.value}</div>
+                        <p className="text-xs text-slate-400 mt-1">{s.sub}</p>
+                    </div>
+                ))}
             </div>
 
             {/* Filters */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <FaFilter className="w-5 h-5" />
-                        Filters
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+                <div className="flex items-center gap-3 p-5 border-b border-slate-100">
+                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center"><FaFilter className="w-4 h-4 text-slate-500" /></div>
+                    <h3 className="text-base font-bold text-slate-900">Filters</h3>
+                </div>
+                <div className="p-5">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Search Users</label>
-                            <div className="relative">
-                                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                                <Input
-                                    placeholder="Search by name or email..."
-                                    value={searchTerm}
-                                    onChange={(e) => handleSearchChange(e.target.value)}
-                                    className="pl-10"
-                                />
-                            </div>
+                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Search Users</label>
+                            <div className="relative"><FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" /><Input placeholder="Search by name or email..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 rounded-xl border-slate-200 bg-slate-50 focus:bg-white" /></div>
                         </div>
-
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Role</label>
-                            <Select value={roleFilter || 'all'} onValueChange={handleRoleFilterChange}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="All roles" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Roles</SelectItem>
-                                    <SelectItem value="admin">Admin</SelectItem>
-                                    <SelectItem value="editor">Editor</SelectItem>
-                                    <SelectItem value="member">Member</SelectItem>
-                                </SelectContent>
+                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Role</label>
+                            <Select value={roleFilter || 'all'} onValueChange={(v) => setRoleFilter(v === 'all' ? '' : v)}>
+                                <SelectTrigger className="rounded-xl border-slate-200 bg-slate-50"><SelectValue placeholder="All Roles" /></SelectTrigger>
+                                <SelectContent><SelectItem value="all">All Roles</SelectItem><SelectItem value="admin">Admin</SelectItem><SelectItem value="moderator">Moderator</SelectItem><SelectItem value="member">Member</SelectItem></SelectContent>
                             </Select>
                         </div>
-
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Status</label>
-                            <Select value={statusFilter || 'all'} onValueChange={handleStatusFilterChange}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="All statuses" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Statuses</SelectItem>
-                                    <SelectItem value="active">Active</SelectItem>
-                                    <SelectItem value="permanent">Banned</SelectItem>
-                                    <SelectItem value="temporary">Suspended</SelectItem>
-                                    <SelectItem value="mute">Muted</SelectItem>
-                                </SelectContent>
+                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Status</label>
+                            <Select value={statusFilter || 'all'} onValueChange={(v) => setStatusFilter(v === 'all' ? '' : v)}>
+                                <SelectTrigger className="rounded-xl border-slate-200 bg-slate-50"><SelectValue placeholder="All Status" /></SelectTrigger>
+                                <SelectContent><SelectItem value="all">All Status</SelectItem><SelectItem value="active">Active</SelectItem><SelectItem value="banned">Banned</SelectItem><SelectItem value="suspended">Suspended</SelectItem><SelectItem value="muted">Muted</SelectItem></SelectContent>
                             </Select>
                         </div>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
 
             {/* Users List */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <FaUsers className="w-5 h-5" />
-                        Forum Users
-                        <Badge variant="secondary" className="ml-2">
-                            {users.length}
-                        </Badge>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+                <div className="flex items-center justify-between p-5 border-b border-slate-100">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center"><FaUsers className="w-4 h-4 text-primary" /></div>
+                        <h3 className="text-base font-bold text-slate-900">Forum Users</h3>
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600">{users.length}</span>
+                    </div>
+                    {users.length > 0 && (<div className="flex items-center gap-2"><Checkbox checked={selectedUsers.length === users.length} onCheckedChange={handleSelectAll} /><span className="text-sm text-slate-500">Select All</span></div>)}
+                </div>
+                <div className="p-5">
                     {users.length === 0 ? (
                         <div className="text-center py-12">
-                            <FaUsers className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">No users found</h3>
-                            <p className="text-gray-600 mb-4">
-                                {searchTerm || roleFilter || statusFilter 
-                                    ? "Try adjusting your filters to see more results."
-                                    : "No users have been registered yet."
-                                }
-                            </p>
+                            <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4"><FaUsers className="w-8 h-8 text-slate-300" /></div>
+                            <h3 className="text-lg font-bold text-slate-900 mb-2">No users found</h3>
+                            <p className="text-slate-500">Try adjusting your search or filter criteria.</p>
                         </div>
                     ) : (
-                        <div className="space-y-4">
-                            {users.map((user: ForumUser) => (
-                                <div
-                                    key={user._id}
-                                    className="flex items-center gap-4 p-4 border rounded-lg bg-white hover:bg-gray-50 transition-colors"
-                                >
-                                    {/* User Avatar/Initial */}
-                                    <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center font-semibold text-lg">
-                                        {user.name.charAt(0).toUpperCase()}
-                                    </div>
-
-                                    {/* User Info */}
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <h3 className="font-medium text-gray-900 truncate">
-                                                {user.name}
-                                            </h3>
-                                            {getRoleBadge(user.role)}
-                                            {getStatusBadge(user)}
+                        <div className="space-y-3">
+                            {users.map((user) => (
+                                <div key={user._id} className="rounded-xl bg-slate-50/50 border border-slate-100 hover:border-slate-200 hover:bg-slate-50 transition-all duration-200">
+                                    <div className="flex items-center gap-4 p-4">
+                                        <Checkbox checked={selectedUsers.includes(user._id)} onCheckedChange={(checked) => handleSelectUser(user._id, checked as boolean)} />
+                                        <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center text-sm font-bold flex-shrink-0">{user.name.charAt(0).toUpperCase()}</div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                                                <span className="font-bold text-slate-900 text-sm">{user.name}</span>
+                                                {getRoleBadge(user.role)}
+                                                {getStatusBadge(user)}
+                                            </div>
+                                            <div className="flex items-center gap-3 text-xs text-slate-500 flex-wrap">
+                                                <span>{user.email}</span>
+                                                <span className="text-slate-300">•</span>
+                                                <span>Joined {format(new Date(user.createdAt), 'MMM dd, yyyy')}</span>
+                                                {user.forumActivity && (<>
+                                                    <span className="text-slate-300">•</span>
+                                                    <span className="inline-flex items-center gap-1"><FaComments className="w-3 h-3" />{user.forumActivity.threadCount} threads</span>
+                                                    <span className="inline-flex items-center gap-1"><FaReply className="w-3 h-3" />{user.forumActivity.replyCount} replies</span>
+                                                </>)}
+                                            </div>
                                         </div>
-                                        <p className="text-sm text-gray-600 truncate mb-2">
-                                            {user.email}
-                                        </p>
-                                        <div className="flex items-center gap-4 text-xs text-gray-500">
-                                            <span>Joined: {format(new Date(user.createdAt), 'MMM dd, yyyy')}</span>
-                                            {user.forumActivity?.lastActivity && (
-                                                <span>Last active: {format(new Date(user.forumActivity.lastActivity), 'MMM dd, yyyy')}</span>
+                                        <div className="flex items-center gap-1">
+                                            <button onClick={() => setExpandedUser(expandedUser === user._id ? null : user._id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors" title="View details"><FaChevronDown className={`w-3.5 h-3.5 transition-transform ${expandedUser === user._id ? 'rotate-180' : ''}`} /></button>
+                                            {user.status === 'permanent' ? (
+                                                <button onClick={() => handleUnban(user._id)} disabled={isProcessing} className="w-8 h-8 rounded-lg flex items-center justify-center text-emerald-500 hover:bg-emerald-50 transition-colors disabled:opacity-50" title="Unban"><FaUnlock className="w-3.5 h-3.5" /></button>
+                                            ) : (
+                                                <button onClick={() => handleRestrict(user)} className="w-8 h-8 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors" title="Restrict"><FaBan className="w-3.5 h-3.5" /></button>
                                             )}
                                         </div>
-                                        
-                                        {/* Ban Status Details */}
-                                        {user.banStatus && isUserRestricted(user) && (
-                                            <div className="mt-2 p-2 bg-red-50 rounded text-xs">
-                                                <p className="text-red-800 font-medium">
-                                                    Reason: {user.banStatus.reason}
-                                                </p>
-                                                {user.banStatus.expiresAt && (
-                                                    <p className="text-red-600">
-                                                        Expires: {format(new Date(user.banStatus.expiresAt), 'MMM dd, yyyy HH:mm')}
-                                                    </p>
+                                    </div>
+                                    {expandedUser === user._id && (
+                                        <div className="px-4 pb-4 border-t border-slate-100 pt-4 ml-16">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {user.forumActivity && (
+                                                    <div className="space-y-2">
+                                                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide">Forum Statistics</h4>
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            <div className="p-2 bg-white rounded-xl border border-slate-100 text-center"><div className="text-lg font-bold text-slate-900">{user.forumActivity.threadCount}</div><div className="text-xs text-slate-500">Threads</div></div>
+                                                            <div className="p-2 bg-white rounded-xl border border-slate-100 text-center"><div className="text-lg font-bold text-slate-900">{user.forumActivity.replyCount}</div><div className="text-xs text-slate-500">Replies</div></div>
+                                                        </div>
+                                                        {user.forumActivity.lastActivity && <div className="text-xs text-slate-500"><FaClock className="w-3 h-3 inline mr-1" />Last active: {format(new Date(user.forumActivity.lastActivity), 'MMM dd, yyyy HH:mm')}</div>}
+                                                    </div>
+                                                )}
+                                                {user.banStatus && user.status !== 'active' && (
+                                                    <div className="space-y-2">
+                                                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide">Restriction Details</h4>
+                                                        <div className="p-3 bg-red-50/50 rounded-xl border border-red-100 space-y-1">
+                                                            {user.banStatus.reason && <div className="text-sm text-slate-700"><span className="font-bold text-slate-500 text-xs">Reason:</span> {user.banStatus.reason}</div>}
+                                                            <div className="text-xs text-slate-500">Type: {user.banStatus.type}</div>
+                                                            {user.banStatus.expiresAt && <div className="text-xs text-slate-500">Expires: {format(new Date(user.banStatus.expiresAt), 'MMM dd, yyyy')}</div>}
+                                                        </div>
+                                                    </div>
                                                 )}
                                             </div>
-                                        )}
-                                    </div>
-
-                                    {/* Forum Activity Stats */}
-                                    <div className="flex items-center gap-6 text-sm">
-                                        <div className="text-center">
-                                            <div className="font-medium text-gray-900">
-                                                {user.forumActivity?.threadCount || 0}
-                                            </div>
-                                            <div className="text-gray-500">Threads</div>
                                         </div>
-                                        <div className="text-center">
-                                            <div className="font-medium text-gray-900">
-                                                {user.forumActivity?.replyCount || 0}
-                                            </div>
-                                            <div className="text-gray-500">Replies</div>
-                                        </div>
-                                        <div className="text-center">
-                                            <div className="font-medium text-gray-900">
-                                                {(user.forumActivity?.threadCount || 0) + (user.forumActivity?.replyCount || 0)}
-                                            </div>
-                                            <div className="text-gray-500">Total</div>
-                                        </div>
-                                    </div>
-
-                                    {/* Actions */}
-                                    <div className="flex items-center gap-2">
-                                        {user.role !== 'admin' && (
-                                            <>
-                                                {isUserRestricted(user) ? (
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        onClick={() => handleUnbanUser(user)}
-                                                        disabled={isRestricting}
-                                                        className="text-green-600 hover:text-green-700"
-                                                    >
-                                                        <FaUndo className="w-4 h-4 mr-1" />
-                                                        Remove
-                                                    </Button>
-                                                ) : (
-                                                    <>
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            onClick={() => handleRestrictUser(user, 'ban')}
-                                                            disabled={isRestricting}
-                                                            className="text-red-600 hover:text-red-700"
-                                                            title="Permanently ban user"
-                                                        >
-                                                            <FaBan className="w-4 h-4" />
-                                                        </Button>
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            onClick={() => handleRestrictUser(user, 'suspend')}
-                                                            disabled={isRestricting}
-                                                            className="text-orange-600 hover:text-orange-700"
-                                                            title="Temporarily suspend user"
-                                                        >
-                                                            <FaClock className="w-4 h-4" />
-                                                        </Button>
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            onClick={() => handleRestrictUser(user, 'mute')}
-                                                            disabled={isRestricting}
-                                                            className="text-yellow-600 hover:text-yellow-700"
-                                                            title="Mute user (read-only access)"
-                                                        >
-                                                            <FaVolumeMute className="w-4 h-4" />
-                                                        </Button>
-                                                    </>
-                                                )}
-                                            </>
-                                        )}
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={() => window.open(`/admin/forum/users/${user._id}/activity`, '_blank')}
-                                            title="View user activity"
-                                        >
-                                            <FaEye className="w-4 h-4" />
-                                        </Button>
-                                    </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
                     )}
-
-                    {/* Pagination */}
                     {totalPages > 1 && (
-                        <div className="flex items-center justify-between mt-6 pt-4 border-t">
-                            <div className="text-sm text-gray-600">
-                                Page {currentPage} of {totalPages}
-                            </div>
+                        <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
+                            <div className="text-sm text-slate-500">Page {currentPage} of {totalPages}</div>
                             <div className="flex gap-2">
-                                <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => setCurrentPage(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                >
-                                    Previous
-                                </Button>
-                                <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => setCurrentPage(currentPage + 1)}
-                                    disabled={currentPage === totalPages}
-                                >
-                                    Next
-                                </Button>
+                                <Button size="sm" variant="outline" onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1} className="rounded-xl font-bold border-slate-200">Previous</Button>
+                                <Button size="sm" variant="outline" onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages} className="rounded-xl font-bold border-slate-200">Next</Button>
                             </div>
                         </div>
                     )}
-                </CardContent>
-            </Card>
+                </div>
+            </div>
 
-            {/* User Restriction Modal */}
-            {restrictingUser && restrictionType && (
-                <UserRestrictionModal
-                    isOpen={!!restrictingUser}
-                    onClose={() => {
-                        setRestrictingUser(null);
-                        setRestrictionType(null);
-                    }}
-                    onSubmit={handleRestrictionSubmit}
-                    user={restrictingUser}
-                    restrictionType={restrictionType}
-                    isLoading={isRestricting}
-                />
-            )}
+            <UserRestrictionModal isOpen={isRestrictionModalOpen} onClose={() => { setIsRestrictionModalOpen(false); setSelectedUser(null); }} user={selectedUser} onRestrict={banUser} isProcessing={isProcessing} />
         </div>
     );
 };

@@ -57,87 +57,87 @@ const SearchForm: React.FC<{
     label,
     inputProps,
 }) => {
-    const inputRef = React.useRef<HTMLInputElement>(null);
+        const inputRef = React.useRef<HTMLInputElement>(null);
 
-    React.useEffect(() => {
-        // Blur input when not searching for better UX
-        if (inputRef.current && !isSearching) {
-            inputRef.current.blur();
-        }
-    }, [isSearching]);
+        React.useEffect(() => {
+            // Blur input when not searching for better UX
+            if (inputRef.current && !isSearching) {
+                inputRef.current.blur();
+            }
+        }, [isSearching]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!searchTerm.trim()) {
+        const handleSubmit = async (e: React.FormEvent) => {
+            e.preventDefault();
+            if (!searchTerm.trim()) {
+                inputRef.current?.focus();
+                return;
+            }
+            setIsSearching(true);
+            try {
+                await onSearch(searchTerm);
+            } finally {
+                setIsSearching(false);
+            }
+        };
+
+        const handleClear = () => {
+            setSearchTerm("");
             inputRef.current?.focus();
-            return;
-        }
-        setIsSearching(true);
-        try {
-            await onSearch(searchTerm);
-        } finally {
-            setIsSearching(false);
-        }
-    };
+        };
 
-    const handleClear = () => {
-        setSearchTerm("");
-        inputRef.current?.focus();
-    };
-
-    return (
-        <form
-            className="flex flex-row items-center w-full gap-2 md:gap-1 mt-2 md:mt-0"
-            onSubmit={handleSubmit}
-            role="search"
-            aria-label={label}
-            autoComplete="off"
-        >
-            <div className="relative flex flex-1 min-w-0">
-                <input
-                    ref={inputRef}
-                    type="text"
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                    placeholder={placeholder}
-                    aria-label={placeholder}
-                    className="px-3 py-2 border border-gray-200 bg-white rounded-l-md rounded-r-none focus:outline-none focus:ring-2 focus:ring-blue-400 text-black w-full text-sm transition-all min-w-0"
-                    disabled={isSearching}
-                    {...inputProps}
-                />
-                {/* Clear button for UX */}
-                {searchTerm && (
-                    <button
-                        type="button"
-                        onClick={handleClear}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-0 outline-none text-gray-400 hover:text-blue-500 focus:text-blue-500 p-0"
-                        aria-label="Clear search"
-                        tabIndex={0}
-                    >
-                        <svg viewBox="0 0 18 18" width="16" height="16" fill="none">
-                            <path d="M5 5l8 8M13 5l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                        </svg>
-                    </button>
-                )}
-            </div>
-            <NaapButton
-                type="submit"
-                className="h-10 md:h-8 px-4 md:px-3 text-xs md:text-sm rounded-l-none rounded-r-md whitespace-nowrap"
-                variant="primary"
-                loading={isSearching}
-                loadingText="Searching..."
-                disabled={isSearching}
-                icon={<LucideSearch className="h-4 w-4" />}
-                iconPosition="left"
-                tooltip={label}
+        return (
+            <form
+                className="flex flex-row items-center w-full gap-2 md:gap-1 mt-2 md:mt-0"
+                onSubmit={handleSubmit}
+                role="search"
                 aria-label={label}
+                autoComplete="off"
             >
-                <span className="hidden xs:inline sm:inline">Search</span>
-                <span className="sr-only">Search</span>
-            </NaapButton>
-        </form>
-    );
-};
+                <div className="relative flex flex-1 min-w-0">
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                        placeholder={placeholder}
+                        aria-label={placeholder}
+                        className="px-3 py-2 border border-slate-200 bg-white rounded-l-xl rounded-r-none focus:outline-none focus:ring-2 focus:ring-primary/30 text-slate-800 w-full text-sm transition-all min-w-0"
+                        disabled={isSearching}
+                        {...inputProps}
+                    />
+                    {/* Clear button for UX */}
+                    {searchTerm && (
+                        <button
+                            type="button"
+                            onClick={handleClear}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-0 outline-none text-slate-400 hover:text-primary focus:text-primary p-0"
+                            aria-label="Clear search"
+                            tabIndex={0}
+                        >
+                            <svg viewBox="0 0 18 18" width="16" height="16" fill="none">
+                                <path d="M5 5l8 8M13 5l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                            </svg>
+                        </button>
+                    )}
+                </div>
+                <NaapButton
+                    type="submit"
+                    className="h-10 md:h-8 px-4 md:px-3 text-xs md:text-sm rounded-l-none rounded-r-xl whitespace-nowrap"
+                    variant="primary"
+                    loading={isSearching}
+                    loadingText="Searching..."
+                    disabled={isSearching}
+                    icon={<LucideSearch className="h-4 w-4" />}
+                    iconPosition="left"
+                    tooltip={label}
+                    aria-label={label}
+                >
+                    <span className="hidden xs:inline sm:inline">Search</span>
+                    <span className="sr-only">Search</span>
+                </NaapButton>
+            </form>
+        );
+    };
 
 /**
  * LandingTabs with improved accessibility, clearer structure, and robust animations.
@@ -260,14 +260,13 @@ export function LandingTabs({
                                     value={tab.value}
                                     className={`
                                         text-sm md:text-base w-full md:w-auto min-w-[80px] md:min-w-[100px]
-                                        text-black hover:text-blue-500 px-2 md:px-3 py-2 md:py-2 font-semibold
-                                        focus-visible:ring-2 focus-visible:ring-blue-400 rounded transition-colors border-b-2 border-transparent
-                                        data-[state=active]:border-blue-500 data-[state=active]:text-blue-500
+                                        text-slate-700 hover:text-primary px-2 md:px-3 py-2 md:py-2 font-semibold
+                                        focus-visible:ring-2 focus-visible:ring-primary/30 rounded-xl transition-colors border-b-2 border-transparent
+                                        data-[state=active]:border-primary data-[state=active]:text-primary
                                         whitespace-nowrap
-                                        ${
-                                            activeTab === tab.value
-                                                ? "shadow-sm bg-blue-50"
-                                                : "bg-white"
+                                        ${activeTab === tab.value
+                                            ? "shadow-sm bg-primary/5"
+                                            : "bg-white"
                                         }
                                     `}
                                     aria-selected={activeTab === tab.value}

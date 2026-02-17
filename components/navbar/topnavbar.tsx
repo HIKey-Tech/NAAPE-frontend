@@ -12,6 +12,7 @@ import {
     useDeleteNotification,
 } from "@/hooks/useNotification";
 import { LogoutDialog } from "@/components/ui/logout-dialog";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Utility: Extract initials from user's name
 function getInitials(name: string | undefined) {
@@ -49,12 +50,12 @@ function UserAvatar({
     size?: number;
 }) {
     const [imageLoaded, setImageLoaded] = useState(!!src);
-    
+
     // Update imageLoaded when src changes
     useEffect(() => {
         setImageLoaded(!!src);
     }, [src]);
-    
+
     return (
         <span
             className={`relative flex items-center justify-center ${className}`}
@@ -66,8 +67,7 @@ function UserAvatar({
                     alt={alt || ""}
                     width={size}
                     height={size}
-                    className="w-full h-full rounded-full object-cover border-2 border-blue-600 bg-white"
-                    // Slightly darker border for more definition
+                    className="w-full h-full rounded-full object-cover border border-slate-200 shadow-sm bg-slate-50"
                     onError={() => setImageLoaded(false)}
                     priority
                 />
@@ -75,18 +75,17 @@ function UserAvatar({
                 <span
                     className={`
                         w-full h-full flex items-center justify-center rounded-full
-                        bg-gradient-to-tr from-blue-800 via-blue-400 to-pink-400
-                        border-2 border-blue-700 text-white font-extrabold select-none
-                        shadow-sm
+                        bg-gradient-to-tr from-primary/80 via-primary to-indigo-500
+                        text-white font-bold select-none shadow-sm
                     `}
-                    style={{ fontSize: size > 28 ? 20 : 16, letterSpacing: "1.5px" }}
+                    style={{ fontSize: size > 28 ? 16 : 12 }}
                     aria-label={alt}
                 >
                     {fallback}
                 </span>
             )}
             {/* High contrast online indicator */}
-            <span className="absolute bottom-0.5 right-0.5 block w-3 h-3 rounded-full bg-gradient-to-br from-lime-400 to-green-600 border-2 border-white shadow-[0_0_0_2px_#0e3322] animate-pulse" aria-label="Online" />
+            <span className="absolute bottom-0 right-0 block w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white shadow-sm" aria-label="Online" />
         </span>
     );
 }
@@ -168,269 +167,243 @@ export default function TopNavbar() {
 
     return (
         <nav
-            className="w-full h-[76px] sm:h-[94px] min-h-[76px] sm:min-h-[94px] flex items-center justify-between px-2 sm:px-10 border-b border-[#43618b] bg-gradient-to-b from-[#fafcff] to-[#f4f8fd] sticky top-0 z-50"
+            className="w-full h-[72px] flex items-center justify-between px-6 md:px-8 border-b border-slate-100 bg-white/80 sticky top-0 z-40 transition-all duration-300"
             style={{
-                WebkitBackdropFilter: "blur(8px)",
-                backdropFilter: "blur(8px)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
             }}
         >
-            {/* Left: Logo & search */}
-            <div className="flex-1 flex items-center min-w-0">
-                {/* Mobile: Logo with better contrast */}
+            {/* Left: Logo (Mobile) & Search (Desktop) */}
+            <div className="flex-1 flex items-center min-w-0 gap-6">
+                {/* Mobile: Logo */}
                 <div className="sm:hidden flex pr-3 items-center">
                     <Image
                         src="/logo.png"
                         alt="Logo"
-                        width={48}
-                        height={48}
-                        className="w-12 h-12 object-contain border-2 border-blue-700 shadow-md rounded-full bg-white"
+                        width={40}
+                        height={40}
+                        className="w-10 h-10 object-contain drop-shadow-sm"
                         priority
                         draggable={false}
                     />
                 </div>
 
-                {/* Desktop: Search with higher-contrast */}
-                <div className="relative hidden sm:block ml-10 min-w-[240px] max-w-[380px] w-full">
-                    <input
-                        type="text"
-                        className="
-                            pl-5 pr-12 py-[13px]
-                            rounded-xl border-2 border-[#295095] bg-white 
-                            text-base text-[#123165] placeholder-[#3c4863] font-semibold
-                            focus:outline-none focus:border-[#174184]
-                            w-full shadow-[0_1px_8px_0_#29509522]
-                        "
-                        placeholder="Search…"
-                        aria-label="Search"
-                    />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#295095] pointer-events-none">
-                        <svg width="24" height="24" fill="none" viewBox="0 0 20 20" aria-hidden="true">
-                            <circle cx="9" cy="9" r="7" stroke="#295095" strokeWidth="2.2" />
-                            <path d="M15 15l-2.2-2.2" stroke="#295095" strokeWidth="2.2" strokeLinecap="round" />
-                        </svg>
-                    </span>
+                {/* Desktop: Search */}
+                <div className="relative hidden sm:block max-w-md w-full">
+                    <div className="relative group">
+                        <input
+                            type="text"
+                            className="
+                                w-full pl-11 pr-4 py-2.5
+                                rounded-full border border-slate-200 bg-slate-50/50 
+                                text-sm text-slate-700 placeholder-slate-400 font-medium
+                                transition-all duration-200
+                                focus:outline-none focus:bg-white focus:border-primary/30 focus:ring-4 focus:ring-primary/5
+                                shadow-sm group-hover:bg-white group-hover:border-slate-300
+                            "
+                            placeholder="Type to search..."
+                            aria-label="Search"
+                        />
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-primary transition-colors duration-200 pointer-events-none">
+                            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            {/* Right: Notification & User */}
-            <div className="flex items-center gap-2 sm:gap-8 pr-0 flex-shrink-0">
-                {/* Notification button with higher contrast and improved accessibility */}
-                <div className="relative flex items-center" ref={notificationsDropdownRef}>
+            {/* Right: Actions */}
+            <div className="flex items-center gap-3 sm:gap-6 flex-shrink-0">
+                {/* Notification Bell */}
+                <div className="relative" ref={notificationsDropdownRef}>
                     <button
                         aria-label="View notifications"
-                        className={
-                            `group p-3 rounded-full bg-white 
-                            hover:bg-[#174184] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#174184]/60
-                            text-[#174184] 
-                            shadow-[0_1px_4px_#0e1e361f] 
-                            transition-colors relative`
-                        }
-                        style={{
-                            minHeight: 0,
-                            height: 48,
-                            width: 48,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
+                        className={`
+                            relative p-2.5 rounded-full transition-all duration-200
+                            focus:outline-none focus:ring-2 focus:ring-primary/20
+                            hover:bg-slate-100 active:scale-95
+                            ${showNotificationsDropdown ? "bg-slate-100 text-primary" : "text-slate-500 hover:text-slate-700"}
+                        `}
                         onClick={() => {
                             setShowUserDropdown(false);
                             setShowNotificationsDropdown((open) => !open);
                         }}
                     >
-                        <FaRegBell size={22} className="transition group-hover:text-white group-hover:drop-shadow-sm" />
+                        <FaRegBell size={20} />
                         {notificationCount > 0 && (
-                            <span className="absolute -top-1 -right-1 flex items-center justify-center text-xs font-extrabold w-5 h-5 rounded-full bg-[#d20d40] text-white border-2 border-white shadow-[0_1px_2px_#d20d4060] select-none">
-                                {notificationCount}
-                            </span>
+                            <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white animate-pulse" />
                         )}
                     </button>
-                    {showNotificationsDropdown && (
-                        <div
-                            className="absolute right-0 mt-3 w-[92vw] sm:w-96 max-w-[95vw] sm:max-w-[90vw] bg-white border border-[#3d5382] rounded-lg z-40 shadow-2xl"
-                            style={{ boxShadow: '0 8px 36px #112d4928', minWidth: "246px" }}
-                        >
-                            <div className="py-4 px-5 sm:px-6 border-b border-[#e8eafa] bg-gradient-to-r from-[#e9f2fd] to-[#f2f8ff] rounded-t-lg flex justify-between items-center">
-                                <span className="text-lg sm:text-xl font-black text-[#123165] tracking-tight">
-                                    Notifications
-                                </span>
-                                {notificationCount > 0 && (
-                                    <button
-                                        onClick={() => markAllNotificationsRead.mutate()}
-                                        className="text-xs text-[#174184] hover:text-[#238b45] hover:underline px-2 font-semibold focus:outline-none focus:underline"
-                                        disabled={markAllNotificationsRead.isPending}
-                                    >
-                                        Mark all as read
-                                    </button>
-                                )}
-                            </div>
-                            <div className="max-h-72 sm:max-h-80 overflow-y-auto divide-y divide-[#e5eaf5] bg-white">
-                                {notificationsLoading ? (
-                                    <div className="p-6 text-base text-[#8ba0c2] text-center font-medium">Loading…</div>
-                                ) : (!notifications || notifications.length === 0) ? (
-                                    <div className="p-6 text-base text-[#8ba0c2] text-center font-medium">No notifications.</div>
-                                ) : (
-                                    notifications.map((notif: any) => (
-                                        <div
-                                            className={`
-                                                px-4 sm:px-6 py-3 flex flex-col cursor-pointer group rounded-none last:rounded-b-lg
-                                                hover:bg-[#e5f0ff] transition
-                                                ${!notif.read ? "bg-[#e9f0fd] border-l-4 border-[#143161]" : ""}
-                                            `}
-                                            key={notif._id}
-                                            onClick={() => {
-                                                if (!notif.read && !markNotificationRead.isPending) {
-                                                    markNotificationRead.mutate(notif._id);
-                                                }
-                                            }}
+
+                    <AnimatePresence>
+                        {showNotificationsDropdown && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                transition={{ duration: 0.2 }}
+                                className="absolute right-0 mt-3 w-80 sm:w-96 bg-white border border-slate-100 rounded-2xl shadow-xl shadow-slate-200/50 z-50 overflow-hidden origin-top-right ring-1 ring-slate-900/5"
+                            >
+                                <div className="p-4 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+                                    <h3 className="text-sm font-bold text-slate-800">Notifications</h3>
+                                    {notificationCount > 0 && (
+                                        <button
+                                            onClick={() => markAllNotificationsRead.mutate()}
+                                            className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
+                                            disabled={markAllNotificationsRead.isPending}
                                         >
-                                            <div className="flex justify-between items-start gap-3 sm:gap-4">
-                                                <div className={
-                                                    `font-bold ${notif.read
-                                                        ? "text-[#7b8bb2] font-medium"
-                                                        : "text-[#143161] underline"
-                                                    } text-sm sm:text-base`
-                                                }>
-                                                    {notif.message}
-                                                </div>
-                                                <button
-                                                    aria-label="Delete notification"
-                                                    className="opacity-80 hover:opacity-100 p-2 text-[#bf112b] hover:bg-[#ffdbe6] rounded-full transition-colors focus:outline-none"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        deleteNotification.mutate(notif._id);
-                                                    }}
-                                                    disabled={deleteNotification.isPending}
-                                                >
-                                                    <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
-                                                        <path d="M4 4l8 8M4 12L12 4" stroke="#bf112b" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-                                                    </svg>
-                                                </button>
+                                            Mark all as read
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="max-h-[60vh] overflow-y-auto">
+                                    {notificationsLoading ? (
+                                        <div className="p-8 text-center text-sm text-slate-400">Loading...</div>
+                                    ) : !notifications?.length ? (
+                                        <div className="p-8 text-center">
+                                            <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-300">
+                                                <FaRegBell size={20} />
                                             </div>
-                                            <div className="text-[11px] sm:text-xs text-[#5d6d95] mt-1 font-mono">{notif.createdAt ? new Date(notif.createdAt).toLocaleString() : ""}</div>
+                                            <p className="text-sm text-slate-500 font-medium">No new notifications</p>
                                         </div>
-                                    ))
-                                )}
-                            </div>
-                        </div>
-                    )}
+                                    ) : (
+                                        <div className="divide-y divide-slate-50">
+                                            {notifications.map((notif: any) => (
+                                                <div
+                                                    key={notif._id}
+                                                    className={`
+                                                        p-4 hover:bg-slate-50 transition-colors cursor-pointer group relative
+                                                        ${!notif.read ? "bg-primary/[0.02]" : ""}
+                                                    `}
+                                                    onClick={() => !notif.read && markNotificationRead.mutate(notif._id)}
+                                                >
+                                                    <div className="flex gap-3 items-start">
+                                                        <div className={`mt-1 h-2 w-2 rounded-full shrink-0 ${!notif.read ? "bg-primary" : "bg-slate-200"}`} />
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className={`text-sm ${!notif.read ? "font-semibold text-slate-800" : "text-slate-600"}`}>
+                                                                {notif.message}
+                                                            </p>
+                                                            <p className="text-xs text-slate-400 mt-1">
+                                                                {notif.createdAt ? new Date(notif.createdAt).toLocaleString(undefined, {
+                                                                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                                                                }) : ""}
+                                                            </p>
+                                                        </div>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                deleteNotification.mutate(notif._id);
+                                                            }}
+                                                            className="opacity-0 group-hover:opacity-100 p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-all"
+                                                        >
+                                                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
-                {/* User dropdown */}
-                <div className="relative flex items-center gap-2 sm:gap-6 ml-2 sm:ml-6" ref={userDropdownRef}>
+
+                {/* User Menu */}
+                <div className="relative" ref={userDropdownRef}>
                     <button
                         className={`
-                            flex items-center gap-2 sm:gap-4 focus:outline-none px-3 sm:px-4 py-2
-                            rounded-lg transition-colors font-semibold bg-white
-                            hover:bg-[#eaf2fb]
-                            ${showUserDropdown ? "ring-2 ring-[#143161] bg-[#eaf2fb]" : ""}
+                            flex items-center gap-3 p-1.5 pr-3 rounded-full transition-all duration-200 border border-transparent
+                            hover:bg-slate-100 focus:outline-none focus:bg-slate-100
+                            ${showUserDropdown ? "bg-slate-100 border-slate-200 shadow-sm" : ""}
                         `}
-                        style={{
-                            minHeight: 0,
-                            height: 52,
-                            alignItems: "center",
-                            display: "flex",
-                        }}
                         onClick={() => setShowUserDropdown((open) => !open)}
-                        aria-haspopup="menu"
                         aria-expanded={showUserDropdown}
-                        aria-label="Open user menu"
-                        tabIndex={0}
-                        type="button"
+                        aria-label="User menu"
                     >
-                        <span className="relative flex items-center">
-                            <UserAvatar
-                                src={user.avatarUrl}
-                                alt={user.name}
-                                fallback={initials}
-                                size={44}
-                            />
-                        </span>
+                        <UserAvatar
+                            src={user.avatarUrl}
+                            alt={user.name}
+                            fallback={initials}
+                            size={36}
+                            className={showUserDropdown ? "ring-2 ring-primary/10" : ""}
+                        />
+                        <div className="hidden lg:block text-left">
+                            <p className="text-sm font-bold text-slate-700 leading-none mb-0.5 max-w-[120px] truncate">{user.name}</p>
+                            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">{user.role}</p>
+                        </div>
                         <svg
-                            width="20"
-                            height="20"
-                            className={`ml-2 sm:ml-3 text-[#143161] transition-transform duration-150 ${showUserDropdown ? "rotate-180" : ""}`}
+                            width="16"
+                            height="16"
+                            className={`hidden lg:block text-slate-400 transition-transform duration-200 ${showUserDropdown ? "rotate-180 text-primary" : ""}`}
                             fill="none"
-                            viewBox="0 0 16 16"
-                            aria-hidden="true"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
                         >
-                            <path d="M4 6l4 4 4-4" stroke="#143161" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
-                    {showUserDropdown && (
-                        <>
-                            <div
-                                className="fixed inset-0 z-[100]"
-                                tabIndex={-1}
-                                aria-hidden="true"
-                                onClick={() => setShowUserDropdown(false)}
-                            />
-                            <div
-                                className="
-                                    absolute top-1 right-0 mt-12 sm:mt-14 w-[93vw] sm:w-72 min-w-[244px] max-w-xs sm:max-w-none
-                                    bg-white rounded-lg border border-[#43618b] py-6 sm:py-8 z-[110] animate-fade-in flex flex-col items-stretch shadow-2xl
-                                "
-                                role="menu"
-                                aria-label="User menu"
-                                style={{ boxShadow: '0 8px 36px #14316122' }}
+
+                    <AnimatePresence>
+                        {showUserDropdown && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                transition={{ duration: 0.2 }}
+                                className="absolute right-0 mt-3 w-64 bg-white border border-slate-100 rounded-2xl shadow-xl shadow-slate-200/50 z-50 overflow-hidden ring-1 ring-slate-900/5"
                             >
-                                <div className="flex flex-col items-center mb-5 sm:mb-7 px-2">
-                                    <UserAvatar
-                                        src={user.avatarUrl}
-                                        alt={user.name}
-                                        fallback={initials}
-                                        size={64}
-                                    />
-                                    <span className="mt-2 font-bold text-[#143161] text-lg sm:text-xl text-center truncate max-w-[160px]">{user.name}</span>
-                                    <span className="text-base sm:text-lg text-[#235ae7] text-center font-semibold truncate max-w-[120px]">{user.role}</span>
+                                <div className="p-2 border-b border-slate-50">
+                                    <div className="px-3 py-2">
+                                        <p className="text-sm font-bold text-slate-800 truncate">{user.name}</p>
+                                        <p className="text-xs text-slate-500 truncate">{authUser?.email || "user@naape.org.ng"}</p>
+                                    </div>
                                 </div>
-                                <hr className="my-2 sm:my-4 border-[#e6ecfa]" />
-                                <button
-                                    className="
-                                        w-full flex items-center gap-3 text-left px-5 sm:px-7 py-3 text-[15px] sm:text-lg text-[#143161] hover:bg-[#edf4fb] focus:bg-[#eaf2fb] transition font-bold
-                                    "
-                                    tabIndex={0}
-                                    role="menuitem"
-                                    onClick={handleProfileClick}
-                                >
-                                    <svg width="18" height="18" fill="none" viewBox="0 0 20 20" className="text-[#235ae7]">
-                                        <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-6 8a6 6 0 0112 0H4z" stroke="#235ae7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                    Profile
-                                </button>
-                                <button
-                                    className="
-                                        w-full flex items-center gap-3 text-left px-5 sm:px-7 py-3 text-[15px] sm:text-lg text-[#143161] hover:bg-[#edf4fb] focus:bg-[#eaf2fb] transition font-bold
-                                    "
-                                    tabIndex={0}
-                                    role="menuitem"
-                                >
-                                    <svg width="18" height="18" fill="none" viewBox="0 0 20 20" className="text-[#235ae7]">
-                                        <path d="M4 11V7a6 6 0 1112 0v4" stroke="#235ae7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                        <rect x="2" y="11" width="16" height="7" rx="2" stroke="#235ae7" strokeWidth="2" />
-                                    </svg>
-                                    Settings
-                                </button>
-                                <hr className="my-2 sm:my-4 border-[#e6ecfa]" />
-                                <button
-                                    className="
-                                        w-full flex items-center gap-3 text-left px-5 sm:px-7 py-3 text-[15px] sm:text-lg text-[#bf112b] hover:bg-[#ffe5ec] focus:bg-[#ffe5ec] transition font-bold
-                                    "
-                                    tabIndex={0}
-                                    role="menuitem"
-                                    onClick={handleLogout}
-                                >
-                                    <svg width="18" height="18" fill="none" viewBox="0 0 20 20" className="text-[#bf112b]">
-                                        <path d="M6 6l8 8M6 14L14 6" stroke="#bf112b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                    Logout
-                                </button>
-                            </div>
-                        </>
-                    )}
+
+                                <div className="p-1.5 flex flex-col gap-0.5">
+                                    <button
+                                        onClick={handleProfileClick}
+                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 hover:text-primary transition-colors text-left"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        My Profile
+                                    </button>
+                                    <button
+                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 hover:text-primary transition-colors text-left"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                        Settings
+                                    </button>
+                                </div>
+
+                                <div className="p-1.5 mt-1 border-t border-slate-50">
+                                    <button
+                                        onClick={handleLogout}
+                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-red-600 rounded-xl hover:bg-red-50 transition-colors text-left"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                        </svg>
+                                        Sign out
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
-            <LogoutDialog 
-                open={showLogoutDialog} 
+
+            <LogoutDialog
+                open={showLogoutDialog}
                 onOpenChange={setShowLogoutDialog}
                 onConfirm={confirmLogout}
             />

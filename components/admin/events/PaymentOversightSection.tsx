@@ -2,613 +2,166 @@
 
 import React, { useState, useMemo } from "react";
 import { useAdminEventPayments } from "@/hooks/useAdminEventPayments";
-import {
-    FaDownload,
-    FaFilter,
-    FaSearch,
-    FaChartLine,
-    FaMoneyBillWave,
-    FaCheckCircle,
-    FaClock,
-    FaTimesCircle,
-    FaEye,
-    FaCalendarAlt
-} from "react-icons/fa";
+import { FaDownload, FaSearch, FaChartLine, FaMoneyBillWave, FaCheckCircle, FaClock, FaTimesCircle, FaEye, FaCalendarAlt } from "react-icons/fa";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface EventPayment {
     _id: string;
-    user: {
-        _id: string;
-        firstName: string;
-        lastName: string;
-        email: string;
-        profilePicture?: string;
-    };
-    type: string;
-    transactionId: string;
-    amount: number;
-    currency: string;
-    status: string;
-    metadata: {
-        eventId: string;
-        eventTitle: string;
-    };
-    eventDetails?: {
-        _id: string;
-        title: string;
-        date: string;
-        location: string;
-        price: number;
-    };
+    user: { _id: string; firstName: string; lastName: string; email: string; profilePicture?: string; };
+    type: string; transactionId: string; amount: number; currency: string; status: string;
+    metadata: { eventId: string; eventTitle: string; };
+    eventDetails?: { _id: string; title: string; date: string; location: string; price: number; };
     createdAt: string;
 }
-
-interface EventStats {
-    _id: string;
-    eventTitle: string;
-    count: number;
-    totalAmount: number;
-    statuses: string[];
-}
-
+interface EventStats { _id: string; eventTitle: string; count: number; totalAmount: number; statuses: string[]; }
 type PaymentStatus = 'all' | 'success' | 'successful' | 'completed' | 'pending' | 'failed' | 'cancelled';
-type ExportFormat = 'csv' | 'excel';
 
-const STATUS_COLORS = {
-    success: { bg: "#e7faf0", color: "#187c49", label: "Paid", icon: FaCheckCircle },
-    successful: { bg: "#e7faf0", color: "#187c49", label: "Paid", icon: FaCheckCircle },
-    completed: { bg: "#e7faf0", color: "#187c49", label: "Completed", icon: FaCheckCircle },
-    pending: { bg: "#fffbe2", color: "#b88712", label: "Pending", icon: FaClock },
-    failed: { bg: "#fbeaec", color: "#af272e", label: "Failed", icon: FaTimesCircle },
-    cancelled: { bg: "#fbeaec", color: "#af272e", label: "Cancelled", icon: FaTimesCircle },
+const statusBadge: Record<string, string> = {
+    success: "bg-emerald-50 text-emerald-700 border border-emerald-100",
+    successful: "bg-emerald-50 text-emerald-700 border border-emerald-100",
+    completed: "bg-emerald-50 text-emerald-700 border border-emerald-100",
+    pending: "bg-amber-50 text-amber-700 border border-amber-100",
+    failed: "bg-red-50 text-red-700 border border-red-100",
+    cancelled: "bg-red-50 text-red-700 border border-red-100",
 };
-
-// Helper function to check if payment is successful
-const isSuccessfulPayment = (status: string) => {
-    return status === "success" || status === "successful" || status === "completed";
-};
+const statusLabel: Record<string, string> = { success: "Paid", successful: "Paid", completed: "Completed", pending: "Pending", failed: "Failed", cancelled: "Cancelled" };
+const isSuccessfulPayment = (status: string) => status === "success" || status === "successful" || status === "completed";
 
 export default function PaymentOversightSection() {
-    const [selectedEvent, setSelectedEvent] = useState<string>("");
+    const [selectedEvent, setSelectedEvent] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState<PaymentStatus>('all');
     const [dateRange, setDateRange] = useState({ start: "", end: "" });
-    
-    const { payments = [], eventStats = [], paymentStats = [], loading, error } = useAdminEventPayments(selectedEvent);
+    const { payments = [], eventStats = [], loading, error } = useAdminEventPayments(selectedEvent);
 
-    // Calculate analytics data
     const analytics = useMemo(() => {
-        const filteredPayments = payments.filter((payment: EventPayment) => {
-            const matchesSearch = 
-                (payment.user?.firstName?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-                (payment.user?.lastName?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-                (payment.user?.email?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-                (payment.metadata?.eventTitle?.toLowerCase() || "").includes(searchTerm.toLowerCase());
-            
-            const matchesStatus = statusFilter === 'all' || payment.status === statusFilter;
-            
-            const matchesDateRange = 
-                (!dateRange.start || new Date(payment.createdAt) >= new Date(dateRange.start)) &&
-                (!dateRange.end || new Date(payment.createdAt) <= new Date(dateRange.end));
-            
-            return matchesSearch && matchesStatus && matchesDateRange;
+        const filteredPayments = payments.filter((p: EventPayment) => {
+            const s = searchTerm.toLowerCase();
+            const matchesSearch = !s || (p.user?.firstName?.toLowerCase() || "").includes(s) || (p.user?.lastName?.toLowerCase() || "").includes(s) || (p.user?.email?.toLowerCase() || "").includes(s) || (p.metadata?.eventTitle?.toLowerCase() || "").includes(s);
+            const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
+            const matchesDate = (!dateRange.start || new Date(p.createdAt) >= new Date(dateRange.start)) && (!dateRange.end || new Date(p.createdAt) <= new Date(dateRange.end));
+            return matchesSearch && matchesStatus && matchesDate;
         });
-
-        const totalRevenue = filteredPayments
-            .filter((p: EventPayment) => isSuccessfulPayment(p.status))
-            .reduce((sum: number, p: EventPayment) => sum + p.amount, 0);
-
-        const successfulPayments = filteredPayments.filter(
-            (p: EventPayment) => isSuccessfulPayment(p.status)
-        ).length;
-
-        const pendingPayments = filteredPayments.filter(
-            (p: EventPayment) => p.status === 'pending'
-        ).length;
-
-        const failedPayments = filteredPayments.filter(
-            (p: EventPayment) => p.status === 'failed' || p.status === 'cancelled'
-        ).length;
-
-        // Revenue by event breakdown
-        const revenueByEvent = filteredPayments
-            .filter((p: EventPayment) => isSuccessfulPayment(p.status))
-            .reduce((acc: Record<string, { title: string; revenue: number; count: number }>, payment: EventPayment) => {
-                const eventId = payment.metadata?.eventId || 'unknown';
-                const eventTitle = payment.metadata?.eventTitle || 'Unknown Event';
-                
-                if (!acc[eventId]) {
-                    acc[eventId] = { title: eventTitle, revenue: 0, count: 0 };
-                }
-                acc[eventId].revenue += payment.amount;
-                acc[eventId].count += 1;
-                return acc;
-            }, {});
-
-        return {
-            filteredPayments,
-            totalRevenue,
-            successfulPayments,
-            pendingPayments,
-            failedPayments,
-            totalTransactions: filteredPayments.length,
-            revenueByEvent: Object.entries(revenueByEvent)
-                .map(([eventId, data]) => ({ eventId, ...data }))
-                .sort((a, b) => b.revenue - a.revenue)
-        };
+        const totalRevenue = filteredPayments.filter((p: EventPayment) => isSuccessfulPayment(p.status)).reduce((s: number, p: EventPayment) => s + p.amount, 0);
+        const successfulPayments = filteredPayments.filter((p: EventPayment) => isSuccessfulPayment(p.status)).length;
+        const pendingPayments = filteredPayments.filter((p: EventPayment) => p.status === 'pending').length;
+        const failedPayments = filteredPayments.filter((p: EventPayment) => p.status === 'failed' || p.status === 'cancelled').length;
+        const revenueByEvent = filteredPayments.filter((p: EventPayment) => isSuccessfulPayment(p.status)).reduce((acc: Record<string, { title: string; revenue: number; count: number }>, p: EventPayment) => {
+            const id = p.metadata?.eventId || 'unknown'; const title = p.metadata?.eventTitle || 'Unknown Event';
+            if (!acc[id]) acc[id] = { title, revenue: 0, count: 0 }; acc[id].revenue += p.amount; acc[id].count += 1; return acc;
+        }, {});
+        return { filteredPayments, totalRevenue, successfulPayments, pendingPayments, failedPayments, totalTransactions: filteredPayments.length, revenueByEvent: Object.entries(revenueByEvent).map(([id, d]) => ({ eventId: id, ...d })).sort((a, b) => b.revenue - a.revenue) };
     }, [payments, searchTerm, statusFilter, dateRange]);
 
-    const formatAmount = (amount: number, currency: string = "NGN") => {
-        return new Intl.NumberFormat("en-NG", {
-            style: "currency",
-            currency,
-        }).format(amount);
+    const formatAmount = (amount: number, currency: string = "NGN") => new Intl.NumberFormat("en-NG", { style: "currency", currency }).format(amount);
+    const formatDate = (d: string) => new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+
+    const handleExport = () => {
+        const csvData = analytics.filteredPayments.map((p: EventPayment) => ({ 'Name': `${p.user?.firstName || ''} ${p.user?.lastName || ''}`, 'Email': p.user?.email || '', 'Event': p.metadata?.eventTitle || '', 'Amount': p.amount, 'Currency': p.currency, 'Status': p.status, 'TX ID': p.transactionId, 'Date': formatDate(p.createdAt) }));
+        const csv = [Object.keys(csvData[0] || {}).join(','), ...csvData.map(r => Object.values(r).map(v => `"${v}"`).join(','))].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `event-payments-${new Date().toISOString().split('T')[0]}.csv`; a.click(); URL.revokeObjectURL(url);
     };
 
-    const formatDate = (dateStr: string) => {
-        return new Date(dateStr).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-        });
-    };
+    const clearFilters = () => { setSelectedEvent(""); setSearchTerm(""); setStatusFilter('all'); setDateRange({ start: "", end: "" }); };
 
-    const getStatusStyle = (status: string) => {
-        const statusConfig = STATUS_COLORS[status as keyof typeof STATUS_COLORS] || {
-            bg: "#f4f6fa",
-            color: "#767676",
-            label: status,
-            icon: FaEye,
-        };
-        return {
-            backgroundColor: statusConfig.bg,
-            color: statusConfig.color,
-            padding: "4px 12px",
-            borderRadius: "12px",
-            fontSize: "12px",
-            fontWeight: "600",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "4px",
-        };
-    };
-
-    const handleExport = async (format: ExportFormat) => {
-        try {
-            // Create CSV data
-            const csvData = analytics.filteredPayments.map((payment: EventPayment) => ({
-                'Member Name': `${payment.user?.firstName || ''} ${payment.user?.lastName || ''}`,
-                'Email': payment.user?.email || '',
-                'Event': payment.metadata?.eventTitle || 'Unknown Event',
-                'Amount': payment.amount,
-                'Currency': payment.currency,
-                'Status': payment.status,
-                'Transaction ID': payment.transactionId,
-                'Date': formatDate(payment.createdAt),
-            }));
-
-            if (format === 'csv') {
-                const csvContent = [
-                    Object.keys(csvData[0] || {}).join(','),
-                    ...csvData.map(row => Object.values(row).map(val => `"${val}"`).join(','))
-                ].join('\n');
-
-                const blob = new Blob([csvContent], { type: 'text/csv' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `event-payments-${new Date().toISOString().split('T')[0]}.csv`;
-                a.click();
-                window.URL.revokeObjectURL(url);
-            }
-        } catch (error) {
-            console.error('Export failed:', error);
-        }
-    };
-
-    const clearFilters = () => {
-        setSelectedEvent("");
-        setSearchTerm("");
-        setStatusFilter('all');
-        setDateRange({ start: "", end: "" });
-    };
+    const stats = [
+        { label: "Total Revenue", value: formatAmount(analytics.totalRevenue), sub: `From ${analytics.successfulPayments} payments`, iconClass: "text-emerald-600 bg-emerald-50", icon: FaMoneyBillWave },
+        { label: "Successful", value: analytics.successfulPayments, sub: analytics.totalTransactions > 0 ? `${Math.round((analytics.successfulPayments / analytics.totalTransactions) * 100)}% success` : "No transactions", iconClass: "text-primary bg-primary/5", icon: FaCheckCircle },
+        { label: "Pending", value: analytics.pendingPayments, sub: "Awaiting completion", iconClass: "text-amber-600 bg-amber-50", icon: FaClock },
+        { label: "Failed", value: analytics.failedPayments, sub: "Require attention", iconClass: "text-red-600 bg-red-50", icon: FaTimesCircle },
+    ];
 
     return (
-        <div style={{ padding: "24px", backgroundColor: "#f8fafc", minHeight: "100vh" }}>
+        <div className="space-y-6">
             {/* Header */}
-            <div style={{ marginBottom: "24px" }}>
-                <h1 style={{ fontSize: "28px", fontWeight: "700", color: "#1e293b", marginBottom: "8px" }}>
-                    Payment Oversight
-                </h1>
-                <p style={{ color: "#64748b", fontSize: "16px" }}>
-                    Monitor event revenue, analyze payment trends, and track financial performance
-                </p>
+            <div>
+                <h1 className="text-2xl font-black text-slate-900">Payment Oversight</h1>
+                <p className="text-slate-500 text-sm">Monitor event revenue, analyze payment trends, and track performance</p>
             </div>
 
-            {/* Analytics Cards */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "16px", marginBottom: "24px" }}>
-                <div style={{ backgroundColor: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                        <h3 style={{ fontSize: "14px", fontWeight: "600", color: "#64748b" }}>
-                            Total Revenue
-                        </h3>
-                        <FaMoneyBillWave style={{ color: "#059669", fontSize: "16px" }} />
+            {/* Stats */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {stats.map(s => (
+                    <div key={s.label} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex items-center gap-4">
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${s.iconClass}`}><s.icon size={20} /></div>
+                        <div><p className="text-xs font-bold text-slate-400 uppercase tracking-wide">{s.label}</p><p className="text-2xl font-black text-slate-800">{s.value}</p><p className="text-[10px] text-slate-400">{s.sub}</p></div>
                     </div>
-                    <p style={{ fontSize: "24px", fontWeight: "700", color: "#059669" }}>
-                        {formatAmount(analytics.totalRevenue)}
-                    </p>
-                    <p style={{ fontSize: "12px", color: "#64748b", marginTop: "4px" }}>
-                        From {analytics.successfulPayments} successful payments
-                    </p>
-                </div>
-
-                <div style={{ backgroundColor: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                        <h3 style={{ fontSize: "14px", fontWeight: "600", color: "#64748b" }}>
-                            Successful Payments
-                        </h3>
-                        <FaCheckCircle style={{ color: "#059669", fontSize: "16px" }} />
-                    </div>
-                    <p style={{ fontSize: "24px", fontWeight: "700", color: "#0f172a" }}>
-                        {analytics.successfulPayments}
-                    </p>
-                    <p style={{ fontSize: "12px", color: "#64748b", marginTop: "4px" }}>
-                        {analytics.totalTransactions > 0 ? 
-                            `${Math.round((analytics.successfulPayments / analytics.totalTransactions) * 100)}% success rate` : 
-                            'No transactions'
-                        }
-                    </p>
-                </div>
-
-                <div style={{ backgroundColor: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                        <h3 style={{ fontSize: "14px", fontWeight: "600", color: "#64748b" }}>
-                            Pending Payments
-                        </h3>
-                        <FaClock style={{ color: "#b88712", fontSize: "16px" }} />
-                    </div>
-                    <p style={{ fontSize: "24px", fontWeight: "700", color: "#b88712" }}>
-                        {analytics.pendingPayments}
-                    </p>
-                    <p style={{ fontSize: "12px", color: "#64748b", marginTop: "4px" }}>
-                        Awaiting completion
-                    </p>
-                </div>
-
-                <div style={{ backgroundColor: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                        <h3 style={{ fontSize: "14px", fontWeight: "600", color: "#64748b" }}>
-                            Failed Payments
-                        </h3>
-                        <FaTimesCircle style={{ color: "#dc2626", fontSize: "16px" }} />
-                    </div>
-                    <p style={{ fontSize: "24px", fontWeight: "700", color: "#dc2626" }}>
-                        {analytics.failedPayments}
-                    </p>
-                    <p style={{ fontSize: "12px", color: "#64748b", marginTop: "4px" }}>
-                        Require attention
-                    </p>
-                </div>
+                ))}
             </div>
 
-            {/* Revenue by Event Breakdown */}
+            {/* Revenue by Event */}
             {analytics.revenueByEvent.length > 0 && (
-                <div style={{ backgroundColor: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", marginBottom: "24px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
-                        <FaChartLine style={{ color: "#059669", fontSize: "16px" }} />
-                        <h2 style={{ fontSize: "18px", fontWeight: "600", color: "#1e293b" }}>
-                            Revenue by Event
-                        </h2>
-                    </div>
-                    <div style={{ display: "grid", gap: "12px" }}>
-                        {analytics.revenueByEvent.slice(0, 5).map((event) => (
-                            <div key={event.eventId} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px", backgroundColor: "#f8fafc", borderRadius: "8px" }}>
-                                <div>
-                                    <div style={{ fontSize: "14px", fontWeight: "600", color: "#1e293b" }}>
-                                        {event.title}
-                                    </div>
-                                    <div style={{ fontSize: "12px", color: "#64748b" }}>
-                                        {event.count} payments
-                                    </div>
-                                </div>
-                                <div style={{ fontSize: "16px", fontWeight: "700", color: "#059669" }}>
-                                    {formatAmount(event.revenue)}
-                                </div>
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                    <div className="flex items-center gap-2 mb-4"><div className="p-2 bg-emerald-50 rounded-xl"><FaChartLine className="text-emerald-600" size={16} /></div><h2 className="text-sm font-black text-slate-700">Revenue by Event</h2></div>
+                    <div className="space-y-2">
+                        {analytics.revenueByEvent.slice(0, 5).map(e => (
+                            <div key={e.eventId} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                                <div><p className="text-sm font-bold text-slate-700">{e.title}</p><p className="text-xs text-slate-400">{e.count} payments</p></div>
+                                <p className="text-sm font-black text-emerald-600">{formatAmount(e.revenue)}</p>
                             </div>
                         ))}
                     </div>
                 </div>
             )}
 
-            {/* Filters and Search */}
-            <div style={{ backgroundColor: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", marginBottom: "24px" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <FaFilter style={{ color: "#64748b", fontSize: "16px" }} />
-                        <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#1e293b" }}>
-                            Filters & Search
-                        </h3>
-                    </div>
-                    <div style={{ display: "flex", gap: "8px" }}>
-                        <button
-                            onClick={clearFilters}
-                            style={{
-                                padding: "8px 16px",
-                                backgroundColor: "#f1f5f9",
-                                color: "#64748b",
-                                border: "none",
-                                borderRadius: "6px",
-                                fontSize: "14px",
-                                fontWeight: "500",
-                                cursor: "pointer",
-                            }}
-                        >
-                            Clear Filters
-                        </button>
-                        <button
-                            onClick={() => handleExport('csv')}
-                            style={{
-                                padding: "8px 16px",
-                                backgroundColor: "#059669",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "6px",
-                                fontSize: "14px",
-                                fontWeight: "500",
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "4px",
-                            }}
-                        >
-                            <FaDownload style={{ fontSize: "12px" }} />
-                            Export CSV
-                        </button>
+            {/* Filters */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+                <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Filter & Search</p>
+                    <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={clearFilters} className="rounded-xl text-xs font-bold">Clear</Button>
+                        <Button size="sm" onClick={handleExport} className="bg-primary rounded-xl text-xs font-bold shadow-md shadow-primary/20"><FaDownload size={10} className="mr-1" /> Export CSV</Button>
                     </div>
                 </div>
-
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px" }}>
-                    <div>
-                        <label style={{ display: "block", fontSize: "14px", fontWeight: "600", color: "#374151", marginBottom: "8px" }}>
-                            Filter by Event
-                        </label>
-                        <select
-                            value={selectedEvent}
-                            onChange={(e) => setSelectedEvent(e.target.value)}
-                            style={{
-                                width: "100%",
-                                padding: "8px 12px",
-                                border: "1px solid #d1d5db",
-                                borderRadius: "8px",
-                                fontSize: "14px",
-                            }}
-                        >
-                            <option value="">All Events</option>
-                            {eventStats.map((stat: EventStats) => (
-                                <option key={stat._id} value={stat._id}>
-                                    {stat.eventTitle} ({stat.count} payments)
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div>
-                        <label style={{ display: "block", fontSize: "14px", fontWeight: "600", color: "#374151", marginBottom: "8px" }}>
-                            Payment Status
-                        </label>
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value as PaymentStatus)}
-                            style={{
-                                width: "100%",
-                                padding: "8px 12px",
-                                border: "1px solid #d1d5db",
-                                borderRadius: "8px",
-                                fontSize: "14px",
-                            }}
-                        >
-                            <option value="all">All Statuses</option>
-                            <option value="success">Successful</option>
-                            <option value="pending">Pending</option>
-                            <option value="failed">Failed</option>
-                            <option value="cancelled">Cancelled</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label style={{ display: "block", fontSize: "14px", fontWeight: "600", color: "#374151", marginBottom: "8px" }}>
-                            Search Members
-                        </label>
-                        <div style={{ position: "relative" }}>
-                            <FaSearch style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#64748b", fontSize: "14px" }} />
-                            <input
-                                type="text"
-                                placeholder="Search by name or email..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                style={{
-                                    width: "100%",
-                                    padding: "8px 12px 8px 36px",
-                                    border: "1px solid #d1d5db",
-                                    borderRadius: "8px",
-                                    fontSize: "14px",
-                                }}
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label style={{ display: "block", fontSize: "14px", fontWeight: "600", color: "#374151", marginBottom: "8px" }}>
-                            Date Range
-                        </label>
-                        <div style={{ display: "flex", gap: "8px" }}>
-                            <input
-                                type="date"
-                                value={dateRange.start}
-                                onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-                                style={{
-                                    flex: 1,
-                                    padding: "8px 12px",
-                                    border: "1px solid #d1d5db",
-                                    borderRadius: "8px",
-                                    fontSize: "14px",
-                                }}
-                            />
-                            <input
-                                type="date"
-                                value={dateRange.end}
-                                onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-                                style={{
-                                    flex: 1,
-                                    padding: "8px 12px",
-                                    border: "1px solid #d1d5db",
-                                    borderRadius: "8px",
-                                    fontSize: "14px",
-                                }}
-                            />
-                        </div>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <Select value={selectedEvent || "all"} onValueChange={v => setSelectedEvent(v === "all" ? "" : v)}>
+                        <SelectTrigger className="rounded-xl border-slate-200"><SelectValue placeholder="All Events" /></SelectTrigger>
+                        <SelectContent><SelectItem value="all">All Events</SelectItem>{eventStats.map((s: EventStats) => <SelectItem key={s._id} value={s._id}>{s.eventTitle} ({s.count})</SelectItem>)}</SelectContent>
+                    </Select>
+                    <Select value={statusFilter} onValueChange={v => setStatusFilter(v as PaymentStatus)}>
+                        <SelectTrigger className="rounded-xl border-slate-200"><SelectValue placeholder="All Statuses" /></SelectTrigger>
+                        <SelectContent><SelectItem value="all">All Statuses</SelectItem><SelectItem value="success">Successful</SelectItem><SelectItem value="pending">Pending</SelectItem><SelectItem value="failed">Failed</SelectItem><SelectItem value="cancelled">Cancelled</SelectItem></SelectContent>
+                    </Select>
+                    <div className="relative"><FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" /><Input placeholder="Search members..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10 bg-slate-50 border-slate-200 rounded-xl" /></div>
+                    <div className="flex gap-2"><Input type="date" value={dateRange.start} onChange={e => setDateRange(p => ({ ...p, start: e.target.value }))} className="rounded-xl border-slate-200 text-xs" /><Input type="date" value={dateRange.end} onChange={e => setDateRange(p => ({ ...p, end: e.target.value }))} className="rounded-xl border-slate-200 text-xs" /></div>
                 </div>
             </div>
 
             {/* Payments Table */}
-            <div style={{ backgroundColor: "white", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", overflow: "hidden" }}>
-                <div style={{ padding: "20px", borderBottom: "1px solid #e5e7eb" }}>
-                    <h2 style={{ fontSize: "18px", fontWeight: "600", color: "#1e293b" }}>
-                        Payment Transactions ({analytics.filteredPayments.length})
-                    </h2>
-                </div>
-
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div className="px-5 py-4 border-b border-slate-100"><h3 className="text-sm font-black text-slate-700">Payment Transactions ({analytics.filteredPayments.length})</h3></div>
                 {loading ? (
-                    <div style={{ padding: "40px", textAlign: "center", color: "#64748b" }}>
-                        Loading payments...
-                    </div>
+                    <div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>
                 ) : error ? (
-                    <div style={{ padding: "40px", textAlign: "center", color: "#dc2626" }}>
-                        Error: {error}
-                    </div>
+                    <div className="text-center py-16"><div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4"><FaTimesCircle className="text-2xl text-red-400" /></div><p className="text-sm text-red-500">{error}</p></div>
                 ) : analytics.filteredPayments.length === 0 ? (
-                    <div style={{ padding: "40px", textAlign: "center", color: "#64748b" }}>
-                        <FaCalendarAlt style={{ fontSize: "48px", marginBottom: "16px", opacity: 0.3 }} />
-                        <div>No payments found matching your criteria</div>
-                        <button
-                            onClick={clearFilters}
-                            style={{
-                                marginTop: "12px",
-                                padding: "8px 16px",
-                                backgroundColor: "#059669",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "6px",
-                                fontSize: "14px",
-                                cursor: "pointer",
-                            }}
-                        >
-                            Clear Filters
-                        </button>
-                    </div>
+                    <div className="text-center py-16"><div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4"><FaCalendarAlt className="text-2xl text-slate-300" /></div><p className="text-sm text-slate-500 mb-3">No payments found</p><Button variant="outline" size="sm" onClick={clearFilters} className="rounded-xl text-xs font-bold">Clear Filters</Button></div>
                 ) : (
-                    <div style={{ overflowX: "auto" }}>
-                        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                            <thead style={{ backgroundColor: "#f8fafc" }}>
-                                <tr>
-                                    <th style={{ padding: "12px 16px", textAlign: "left", fontSize: "12px", fontWeight: "600", color: "#64748b", textTransform: "uppercase" }}>
-                                        Member
-                                    </th>
-                                    <th style={{ padding: "12px 16px", textAlign: "left", fontSize: "12px", fontWeight: "600", color: "#64748b", textTransform: "uppercase" }}>
-                                        Event
-                                    </th>
-                                    <th style={{ padding: "12px 16px", textAlign: "left", fontSize: "12px", fontWeight: "600", color: "#64748b", textTransform: "uppercase" }}>
-                                        Amount
-                                    </th>
-                                    <th style={{ padding: "12px 16px", textAlign: "left", fontSize: "12px", fontWeight: "600", color: "#64748b", textTransform: "uppercase" }}>
-                                        Status
-                                    </th>
-                                    <th style={{ padding: "12px 16px", textAlign: "left", fontSize: "12px", fontWeight: "600", color: "#64748b", textTransform: "uppercase" }}>
-                                        Date
-                                    </th>
-                                    <th style={{ padding: "12px 16px", textAlign: "left", fontSize: "12px", fontWeight: "600", color: "#64748b", textTransform: "uppercase" }}>
-                                        Transaction ID
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {analytics.filteredPayments.map((payment: EventPayment) => {
-                                    const StatusIcon = STATUS_COLORS[payment.status as keyof typeof STATUS_COLORS]?.icon || FaEye;
-                                    return (
-                                        <tr key={payment._id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                                            <td style={{ padding: "16px" }}>
-                                                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                                                    <div
-                                                        style={{
-                                                            width: "40px",
-                                                            height: "40px",
-                                                            borderRadius: "50%",
-                                                            backgroundColor: "#e2e8f0",
-                                                            display: "flex",
-                                                            alignItems: "center",
-                                                            justifyContent: "center",
-                                                            fontSize: "14px",
-                                                            fontWeight: "600",
-                                                            color: "#64748b",
-                                                        }}
-                                                    >
-                                                        {payment.user?.profilePicture ? (
-                                                            <img
-                                                                src={payment.user.profilePicture}
-                                                                alt=""
-                                                                style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }}
-                                                            />
-                                                        ) : (
-                                                            `${payment.user?.firstName?.[0] || ""}${payment.user?.lastName?.[0] || ""}`
-                                                        )}
-                                                    </div>
-                                                    <div>
-                                                        <div style={{ fontSize: "14px", fontWeight: "600", color: "#1e293b" }}>
-                                                            {payment.user?.firstName || ""} {payment.user?.lastName || ""}
-                                                        </div>
-                                                        <div style={{ fontSize: "12px", color: "#64748b" }}>
-                                                            {payment.user?.email || ""}
-                                                        </div>
-                                                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead><tr className="bg-slate-50/80">
+                                {['Member', 'Event', 'Amount', 'Status', 'Date', 'TX ID'].map(h => <th key={h} className="px-5 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider">{h}</th>)}
+                            </tr></thead>
+                            <tbody className="divide-y divide-slate-50">
+                                {analytics.filteredPayments.map((p: EventPayment) => (
+                                    <tr key={p._id} className="hover:bg-slate-50/50 transition-colors">
+                                        <td className="px-5 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-9 h-9 rounded-full bg-primary/5 flex items-center justify-center text-xs font-bold text-primary overflow-hidden">
+                                                    {p.user?.profilePicture ? <img src={p.user.profilePicture} alt="" className="w-full h-full object-cover" /> : `${p.user?.firstName?.[0] || ""}${p.user?.lastName?.[0] || ""}`}
                                                 </div>
-                                            </td>
-                                            <td style={{ padding: "16px" }}>
-                                                <div style={{ fontSize: "14px", fontWeight: "500", color: "#1e293b" }}>
-                                                    {payment.metadata?.eventTitle || "Unknown Event"}
-                                                </div>
-                                                {payment.eventDetails && (
-                                                    <div style={{ fontSize: "12px", color: "#64748b" }}>
-                                                        {new Date(payment.eventDetails.date).toLocaleDateString()} • {payment.eventDetails.location}
-                                                    </div>
-                                                )}
-                                            </td>
-                                            <td style={{ padding: "16px" }}>
-                                                <div style={{ fontSize: "14px", fontWeight: "600", color: "#1e293b" }}>
-                                                    {formatAmount(payment.amount, payment.currency)}
-                                                </div>
-                                            </td>
-                                            <td style={{ padding: "16px" }}>
-                                                <span style={getStatusStyle(payment.status)}>
-                                                    <StatusIcon style={{ fontSize: "10px" }} />
-                                                    {STATUS_COLORS[payment.status as keyof typeof STATUS_COLORS]?.label || payment.status}
-                                                </span>
-                                            </td>
-                                            <td style={{ padding: "16px" }}>
-                                                <div style={{ fontSize: "14px", color: "#64748b" }}>
-                                                    {formatDate(payment.createdAt)}
-                                                </div>
-                                            </td>
-                                            <td style={{ padding: "16px" }}>
-                                                <div style={{ fontSize: "12px", fontFamily: "monospace", color: "#64748b" }}>
-                                                    {payment.transactionId}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
+                                                <div><p className="text-sm font-bold text-slate-800">{p.user?.firstName || ""} {p.user?.lastName || ""}</p><p className="text-xs text-slate-400">{p.user?.email || ""}</p></div>
+                                            </div>
+                                        </td>
+                                        <td className="px-5 py-4"><p className="text-sm font-medium text-slate-700">{p.metadata?.eventTitle || "Unknown"}</p>{p.eventDetails && <p className="text-xs text-slate-400">{new Date(p.eventDetails.date).toLocaleDateString()} • {p.eventDetails.location}</p>}</td>
+                                        <td className="px-5 py-4"><p className="text-sm font-bold text-slate-800">{formatAmount(p.amount, p.currency)}</p></td>
+                                        <td className="px-5 py-4"><span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold ${statusBadge[p.status] || "bg-slate-100 text-slate-600"}`}>{statusLabel[p.status] || p.status}</span></td>
+                                        <td className="px-5 py-4"><p className="text-xs text-slate-500">{formatDate(p.createdAt)}</p></td>
+                                        <td className="px-5 py-4"><p className="text-[10px] font-mono text-slate-400">{p.transactionId}</p></td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>

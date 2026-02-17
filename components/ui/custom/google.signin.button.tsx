@@ -11,19 +11,19 @@ interface GoogleSignInButtonProps {
     text?: "signin_with" | "signup_with" | "continue_with";
 }
 
-export default function GoogleSignInButton({ 
-    onSuccess, 
-    text = "signin_with" 
+export default function GoogleSignInButton({
+    onSuccess,
+    text = "signin_with"
 }: GoogleSignInButtonProps) {
     const { login } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
 
     const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
         setIsLoading(true);
-        
+
         try {
             const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-            
+
             const response = await axios.post(`${baseUrl}/api/v1/auth/google`, {
                 credential: credentialResponse.credential
             }, {
@@ -31,17 +31,14 @@ export default function GoogleSignInButton({
             });
 
             if (response.data.success) {
-                // Use the auth context login function to update state
                 login(response.data.user, response.data.token);
 
                 toast.success("Successfully signed in with Google!");
 
-                // Determine redirect path
-                const redirectPath = response.data.user.role === "admin" 
-                    ? "/admin/dashboard" 
+                const redirectPath = response.data.user.role === "admin"
+                    ? "/admin/dashboard"
                     : "/dashboard";
-                
-                // Use window.location for full page navigation
+
                 window.location.href = redirectPath;
 
                 if (onSuccess) {
@@ -51,7 +48,7 @@ export default function GoogleSignInButton({
         } catch (error: any) {
             console.error("Google Sign-In Error:", error);
             setIsLoading(false);
-            
+
             if (error.code === 'ECONNABORTED') {
                 toast.error("Request timeout. Please try again.");
             } else {
@@ -71,12 +68,12 @@ export default function GoogleSignInButton({
                 <div className="fixed inset-0 z-[9999] bg-white/95 backdrop-blur-sm flex items-center justify-center">
                     <div className="flex flex-col items-center gap-4">
                         <div className="relative">
-                            <div className="w-16 h-16 border-4 border-blue-200 rounded-full"></div>
-                            <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+                            <div className="w-16 h-16 border-4 border-slate-200 rounded-full"></div>
+                            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
                         </div>
                         <div className="text-center">
-                            <p className="text-lg font-semibold text-gray-800">Signing you in...</p>
-                            <p className="text-sm text-gray-500 mt-1">Please wait</p>
+                            <p className="text-lg font-bold text-slate-900">Signing you in...</p>
+                            <p className="text-sm text-slate-400 mt-1">Please wait</p>
                         </div>
                     </div>
                 </div>

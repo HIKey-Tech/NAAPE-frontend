@@ -30,8 +30,8 @@ export default function WhyJoinSection() {
             icon: <FaRegCalendarCheck />,
             title: "Advocacy & Welfare",
             text: "Advocating the rights and improving the working conditions for all our members",
-            color: "text-blue-500",
-            bg: "bg-blue-50"
+            color: "text-primary",
+            bg: "bg-primary/5"
         },
         {
             icon: <FaChalkboardTeacher />,
@@ -100,7 +100,7 @@ export default function WhyJoinSection() {
 
                     <motion.div variants={itemVariants}>
                         <Link href="/membership">
-                            <NaapButton className="bg-primary hover:bg-blue-700 text-white font-bold px-10 py-4 rounded-full shadow-lg shadow-blue-500/20 transition-all hover:-translate-y-1">
+                            <NaapButton className="bg-primary hover:bg-primary/90 text-white font-bold px-10 py-4 rounded-full shadow-lg shadow-primary/20 transition-all hover:-translate-y-1">
                                 Become A Member
                             </NaapButton>
                         </Link>

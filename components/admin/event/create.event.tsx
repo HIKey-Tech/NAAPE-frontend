@@ -58,7 +58,7 @@ const AnimatedPanel: React.FC<React.PropsWithChildren<{ className?: string }>> =
   className = "",
 }) => (
   <div
-    className={`relative bg-white border border-[#e5eaf2] rounded-2xl flex flex-col min-h-[520px] w-full overflow-hidden ${className}`}
+    className={`relative bg-white border border-slate-200 rounded-2xl flex flex-col min-h-[520px] w-full overflow-hidden ${className}`}
     style={{
       animation: "fadein-up .7s cubic-bezier(0.18,0.8,0.27,1) both",
     }}
@@ -152,20 +152,20 @@ const CreateEvent: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[80vh] px-4 py-10 md:py-20 lg:px-0 bg-[#F8FBFF]">
+    <div className="flex justify-center items-center min-h-[80vh] px-4 py-10 md:py-20 lg:px-0 bg-slate-50">
       <div className="w-full max-w-xl mx-auto">
         <AnimatedPanel>
           {/* Header */}
-          <div className="flex justify-between items-center px-7 pt-7 pb-3 border-b border-[#e4eaf7] bg-white relative z-10">
+          <div className="flex justify-between items-center px-7 pt-7 pb-3 border-b border-slate-200 bg-white relative z-10">
             <div className="flex items-center gap-3">
-              <div className="rounded-full bg-[var(--primary-light, #f2f3fc)] p-2 border-2 border-[var(--primary-a10, #e5eaf4)]">
-                <MdEvent className="text-[var(--primary, #563be7)]" size={24} />
+              <div className="rounded-full bg-primary/5 p-2 border-2 border-primary/10">
+                <MdEvent className="text-primary" size={24} />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-[var(--primary-dark, #2d325a)] tracking-tight">
-                Create <span className="text-[var(--primary, #563be7)]">Event</span>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Create <span className="text-primary">Event</span>
               </h2>
             </div>
-            <span className="uppercase text-[11px] tracking-widest font-bold text-[var(--primary, #563be7)] bg-[var(--primary-lightest, #efe8ff)] px-3 py-1.5 rounded-2xl border border-[var(--primary-a20,#dedffe)]">
+            <span className="uppercase text-[11px] tracking-widest font-bold text-primary bg-primary/5 px-3 py-1.5 rounded-2xl border border-primary/10">
               Admin
             </span>
           </div>
@@ -182,10 +182,10 @@ const CreateEvent: React.FC = () => {
                   name="imageFile"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg font-semibold text-[var(--primary-dark, #41547d)] mb-2 flex items-center gap-2">
-                        <MdImage className="text-[var(--primary, #563be7)]" />
+                      <FormLabel className="text-lg font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                        <MdImage className="text-primary" />
                         Upload Cover Image{" "}
-                        <span className="text-[var(--primary, #ba84e7)] font-normal italic ml-1">
+                        <span className="text-slate-400 font-normal italic ml-1">
                           (Optional — helps your event stand out)
                         </span>
                       </FormLabel>
@@ -198,7 +198,7 @@ const CreateEvent: React.FC = () => {
                         inputRef={imageInputRef as React.RefObject<HTMLInputElement>}
                         disabled={uploading}
                       />
-                      <FormMessage className="text-xs text-[#FF3B3B] mt-1 font-semibold" />
+                      <FormMessage className="text-xs text-red-500 mt-1 font-semibold" />
                     </FormItem>
                   )}
                 />
@@ -211,7 +211,7 @@ const CreateEvent: React.FC = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <span className="text-[16px] font-extrabold text-[var(--primary-darkest, #322d61)] uppercase tracking-wide flex items-center gap-1">
+                        <span className="text-base font-extrabold text-slate-900 uppercase tracking-wide flex items-center gap-1">
                           <MdEvent />
                           Event Title
                         </span>
@@ -223,7 +223,7 @@ const CreateEvent: React.FC = () => {
                           maxLength={80}
                           disabled={uploading}
                           autoFocus
-                          className="text-[15px] px-4 py-2 rounded-md border border-[var(--primary-a30,#efe3fe)] focus:border-[var(--primary,#705cfa)] bg-white transition text-[var(--primary-text, #211151)] font-semibold"
+                          className="text-[15px] px-4 py-2 rounded-xl border border-slate-200 focus:border-primary bg-white transition text-slate-900 font-semibold"
                         />
                       </FormControl>
                       <FormMessage className="text-xs mt-1" />
@@ -236,7 +236,7 @@ const CreateEvent: React.FC = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <span className="text-[15px] font-bold text-[#5740c0] uppercase tracking-wide">
+                        <span className="text-[15px] font-bold text-slate-700 uppercase tracking-wide">
                           Description
                         </span>
                       </FormLabel>
@@ -247,7 +247,7 @@ const CreateEvent: React.FC = () => {
                           maxLength={2000}
                           rows={4}
                           disabled={uploading}
-                          className="text-[15px] px-5 py-2 rounded-md border border-[var(--primary-a60,#e4e1f7)] focus:border-[var(--primary, #705cfa)] bg-[var(--primary-bg-superlight,#f8f7fd)] transition resize-none font-medium text-[var(--primary-text2,#282850)]"
+                          className="text-[15px] px-5 py-2 rounded-xl border border-slate-200 focus:border-primary bg-slate-50 transition resize-none font-medium text-slate-800"
                         />
                       </FormControl>
                       <FormMessage className="text-xs mt-1" />
@@ -263,7 +263,7 @@ const CreateEvent: React.FC = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            <span className="text-[15px] font-medium text-[var(--primary-darkest,#322d61)] tracking-wide flex items-center gap-1">
+                            <span className="text-[15px] font-medium text-slate-900 tracking-wide flex items-center gap-1">
                               <MdEvent /> Date
                             </span>
                           </FormLabel>
@@ -273,7 +273,7 @@ const CreateEvent: React.FC = () => {
                               type="date"
                               min={new Date().toISOString().split("T")[0]}
                               disabled={uploading}
-                              className="text-[15px] px-4 py-2 rounded-md border border-[var(--primary-a60,#e4e1f7)] focus:border-[var(--primary,#705cfa)] bg-[var(--primary-bg-superlight,#f8f7fd)] transition text-[var(--primary-dark2,#344178)] font-semibold"
+                              className="text-[15px] px-4 py-2 rounded-xl border border-slate-200 focus:border-primary bg-slate-50 transition text-slate-700 font-semibold"
                             />
                           </FormControl>
                           <FormMessage className="text-xs mt-1" />
@@ -288,7 +288,7 @@ const CreateEvent: React.FC = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            <span className="text-[15px] font-medium text-[var(--primary-darkest,#322d61)] tracking-wide flex items-center gap-1">
+                            <span className="text-[15px] font-medium text-slate-900 tracking-wide flex items-center gap-1">
                               <MdLocationOn /> Location
                             </span>
                           </FormLabel>
@@ -298,7 +298,7 @@ const CreateEvent: React.FC = () => {
                               placeholder="e.g. Life Camp, Abuja"
                               maxLength={60}
                               disabled={uploading}
-                              className="text-[15px] px-4 py-2 rounded-md border border-[var(--primary-a60,#e4e1f7)] focus:border-[var(--primary,#705cfa)] bg-[var(--primary-bg-superlight,#f8f7fd)] transition text-[var(--primary-dark2,#344178)] font-semibold"
+                              className="text-[15px] px-4 py-2 rounded-xl border border-slate-200 focus:border-primary bg-slate-50 transition text-slate-700 font-semibold"
                             />
                           </FormControl>
                           <FormMessage className="text-xs mt-1" />
@@ -317,7 +317,7 @@ const CreateEvent: React.FC = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            <span className="text-[15px] font-medium text-[var(--primary,#6841ec)] tracking-wide flex items-center gap-1">
+                            <span className="text-[15px] font-medium text-primary tracking-wide flex items-center gap-1">
                               <MdOutlineAttachMoney /> Price
                             </span>
                           </FormLabel>
@@ -330,7 +330,7 @@ const CreateEvent: React.FC = () => {
                               inputMode="numeric"
                               placeholder="0 = Free"
                               disabled={uploading || !form.watch("isPaid")}
-                              className="text-[15px] px-4 py-2 rounded-md border border-[var(--primary-a50,#dacdf5)] focus:border-[var(--primary,#6841ec)] bg-[var(--primary-bg-light2,#fafbff)] transition font-bold text-[var(--primary-dark,#583cac)]"
+                              className="text-[15px] px-4 py-2 rounded-xl border border-primary/20 focus:border-primary bg-slate-50 transition font-bold text-primary"
                             />
                           </FormControl>
                           <FormMessage className="text-xs mt-1" />
@@ -345,7 +345,7 @@ const CreateEvent: React.FC = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            <span className="text-[15px] font-medium text-[var(--primary,#6841ec)] tracking-wide flex items-center gap-1">
+                            <span className="text-[15px] font-medium text-primary tracking-wide flex items-center gap-1">
                               <FaRegMoneyBillAlt /> Currency
                             </span>
                           </FormLabel>
@@ -355,7 +355,7 @@ const CreateEvent: React.FC = () => {
                               placeholder="Currency (e.g. NGN, USD)"
                               maxLength={8}
                               disabled={uploading || !form.watch("isPaid")}
-                              className="text-[15px] px-4 py-2 rounded-md border border-[var(--primary-a50,#dacdf5)] focus:border-[var(--primary,#6841ec)] bg-[var(--primary-bg-light2,#fafbff)] transition font-bold text-[var(--primary-dark,#583cac)]"
+                              className="text-[15px] px-4 py-2 rounded-xl border border-primary/20 focus:border-primary bg-slate-50 transition font-bold text-primary"
                             />
                           </FormControl>
                           <FormMessage className="text-xs mt-1" />
@@ -377,15 +377,15 @@ const CreateEvent: React.FC = () => {
                           checked={field.value}
                           onChange={(e) => field.onChange(e.target.checked)}
                           disabled={uploading}
-                          className="w-5 h-5 border-[var(--primary-a70,#dfc8ff)] accent-[var(--primary,#8e5efc)] focus:ring-[var(--primary-a80,#d7cbfa)] mr-2"
+                          className="w-5 h-5 border-primary/30 accent-primary focus:ring-primary/20 mr-2"
                         />
-                        <FormLabel htmlFor="isPaid" className="mb-0 cursor-pointer text-[15px] text-[var(--primary,#6841ec)] font-bold tracking-tight flex items-center gap-1">
+                        <FormLabel htmlFor="isPaid" className="mb-0 cursor-pointer text-[15px] text-primary font-bold tracking-tight flex items-center gap-1">
                           <AiOutlineCheckSquare /> Paid Event
                         </FormLabel>
                       </FormItem>
                     )}
                   />
-                  <span className="text-xs text-[#858399]">(Uncheck for free event; if checked, specify price &amp; currency.)</span>
+                  <span className="text-xs text-slate-400">(Uncheck for free event; if checked, specify price &amp; currency.)</span>
                 </div>
               </FormSection>
 
@@ -416,29 +416,6 @@ const CreateEvent: React.FC = () => {
         }
         @keyframes spin {
           100% { transform: rotate(360deg);}
-        }
-      `}</style>
-      <style jsx global>{`
-        :root {
-          --primary: #563be7; /* or your primary color */
-          --primary-light: #f2f3fc;
-          --primary-lightest: #efe8ff;
-          --primary-a10: #e5eaf4;
-          --primary-a20: #dedffe;
-          --primary-a30: #efe3fe;
-          --primary-a40: #e2dcfb;
-          --primary-a50: #dacdf5;
-          --primary-a60: #e4e1f7;
-          --primary-a70: #dfc8ff;
-          --primary-a80: #d7cbfa;
-          --primary-bg-light: #faf9ff;
-          --primary-bg-light2: #fafbff;
-          --primary-bg-superlight: #f8f7fd;
-          --primary-dark: #6244b2;
-          --primary-dark2: #344178;
-          --primary-darkest: #322d61;
-          --primary-text: #211151;
-          --primary-text2: #282850;
         }
       `}</style>
     </div>

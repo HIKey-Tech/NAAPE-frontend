@@ -4,16 +4,16 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-    FaEnvelope, 
-    FaPaperPlane, 
-    FaUsers, 
+import {
+    FaEnvelope,
+    FaPaperPlane,
+    FaUsers,
     FaHistory,
     FaSpinner,
     FaCheckCircle,
-    FaExclamationCircle
+    FaExclamationCircle,
+    FaClock
 } from "react-icons/fa";
 import { useGeneralCommunications } from "@/hooks/useGeneralCommunications";
 import { toast } from "sonner";
@@ -44,16 +44,11 @@ export function GeneralCommunications() {
             toast.error("Please fill in both subject and message");
             return;
         }
-
         try {
             await sendBulkEmail(subject, content);
             toast.success("Email sent successfully to all members!");
-            
-            // Reset form
             setSubject("");
             setContent("");
-            
-            // Show history
             setShowHistory(true);
         } catch (error: any) {
             toast.error(error.response?.data?.message || "Failed to send email");
@@ -61,171 +56,145 @@ export function GeneralCommunications() {
     };
 
     return (
-        <div className="space-y-6 p-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 py-10 space-y-8">
             {/* Header */}
-            <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold text-gray-900">Communications</h1>
-                <p className="text-gray-600">Send emails to all members</p>
+            <div>
+                <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2.5 bg-primary/5 text-primary rounded-xl">
+                        <FaEnvelope size={20} />
+                    </div>
+                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Communications</h1>
+                </div>
+                <p className="text-slate-500 ml-[52px]">Send emails to all members.</p>
             </div>
 
             {/* Member Count Card */}
-            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-                <CardContent className="flex items-center gap-4 py-6">
-                    <div className="p-3 bg-blue-500 rounded-full">
-                        <FaUsers className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                        <p className="text-sm text-gray-600">Total Active Members</p>
-                        <p className="text-3xl font-bold text-gray-900">
-                            {loading ? "..." : memberCount.toLocaleString()}
-                        </p>
-                    </div>
-                </CardContent>
-            </Card>
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex items-center gap-5">
+                <div className="p-3.5 bg-primary/5 text-primary rounded-xl">
+                    <FaUsers size={24} />
+                </div>
+                <div>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Total Active Members</p>
+                    <p className="text-3xl font-black text-slate-800 tracking-tight mt-0.5">
+                        {loading ? "..." : memberCount.toLocaleString()}
+                    </p>
+                </div>
+            </div>
 
-            {/* Compose Email Card */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <FaEnvelope className="h-5 w-5" />
-                        Compose Email
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    {/* Subject */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">Subject</label>
+            {/* Compose Email */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+                <div className="p-6 border-b border-slate-50">
+                    <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <FaPaperPlane className="text-primary" size={16} /> Compose Email
+                    </h2>
+                </div>
+                <div className="p-6 space-y-5">
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Subject</label>
                         <Input
                             value={subject}
                             onChange={(e) => setSubject(e.target.value)}
                             placeholder="Enter email subject"
                             disabled={sending}
+                            className="bg-slate-50 border-slate-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10"
                         />
                     </div>
-
-                    {/* Content */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">Message</label>
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Message</label>
                         <Textarea
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="Enter your message content..."
                             rows={10}
                             disabled={sending}
+                            className="bg-slate-50 border-slate-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10"
                         />
                     </div>
 
-                    {/* Recipient Info */}
-                    <div className="flex items-center gap-2 text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
-                        <FaUsers className="h-4 w-4" />
-                        <span>
-                            This email will be sent to all {memberCount} active members
-                        </span>
+                    <div className="flex items-center gap-2 text-sm text-primary bg-primary/5 px-4 py-3 rounded-xl border border-primary/10">
+                        <FaUsers size={14} />
+                        <span className="font-medium">This email will be sent to all <strong>{memberCount}</strong> active members</span>
                     </div>
 
-                    {/* Send Button */}
-                    <div className="flex justify-end gap-3">
-                        <Button 
+                    <div className="flex justify-end gap-3 pt-2">
+                        <Button
                             variant="outline"
                             onClick={() => setShowHistory(!showHistory)}
                             disabled={sending}
+                            className="rounded-xl border-slate-200 text-slate-600"
                         >
-                            <FaHistory className="h-4 w-4 mr-2" />
+                            <FaHistory className="mr-2" size={14} />
                             {showHistory ? "Hide" : "Show"} History
                         </Button>
-                        <Button 
+                        <Button
                             onClick={handleSendEmail}
                             disabled={!subject.trim() || !content.trim() || sending}
-                            className="flex items-center gap-2"
+                            className="rounded-xl bg-primary hover:bg-primary/90 text-white shadow-md shadow-primary/20"
                         >
-                            {sending ? (
-                                <FaSpinner className="h-4 w-4 animate-spin" />
-                            ) : (
-                                <FaPaperPlane className="h-4 w-4" />
-                            )}
+                            {sending ? <FaSpinner className="mr-2 animate-spin" size={14} /> : <FaPaperPlane className="mr-2" size={14} />}
                             {sending ? "Sending..." : "Send to All Members"}
                         </Button>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
 
             {/* Communication History */}
             {showHistory && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <FaHistory className="h-5 w-5" />
-                            Communication History
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+                    <div className="p-6 border-b border-slate-50">
+                        <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <FaHistory className="text-slate-400" size={16} /> History
+                        </h2>
+                    </div>
+                    <div className="p-6">
                         {loading ? (
-                            <div className="flex items-center justify-center py-8">
-                                <FaSpinner className="h-8 w-8 animate-spin text-gray-400" />
+                            <div className="flex items-center justify-center py-12 text-slate-400">
+                                <FaSpinner className="animate-spin text-xl" />
                             </div>
                         ) : communicationHistory.length === 0 ? (
-                            <div className="text-center py-8">
-                                <FaHistory className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-gray-900 mb-2">No History Yet</h3>
-                                <p className="text-gray-500">
-                                    Your sent emails will appear here.
-                                </p>
+                            <div className="text-center py-12">
+                                <div className="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <FaHistory className="text-xl text-slate-300" />
+                                </div>
+                                <h3 className="text-lg font-bold text-slate-700 mb-1">No History Yet</h3>
+                                <p className="text-sm text-slate-400">Your sent emails will appear here.</p>
                             </div>
                         ) : (
                             <div className="space-y-4">
                                 {communicationHistory.map((comm) => (
-                                    <div 
-                                        key={comm._id} 
-                                        className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
-                                    >
-                                        <div className="flex items-start justify-between mb-2">
-                                            <div className="flex-1">
-                                                <h4 className="font-medium text-gray-900">{comm.subject}</h4>
-                                                <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                                                    {comm.content}
-                                                </p>
+                                    <div key={comm._id} className="rounded-xl border border-slate-100 p-5 hover:bg-slate-50/50 transition-colors">
+                                        <div className="flex items-start justify-between gap-4 mb-2">
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-bold text-sm text-slate-800 truncate">{comm.subject}</h4>
+                                                <p className="text-xs text-slate-500 mt-1 line-clamp-2">{comm.content}</p>
                                             </div>
-                                            <Badge 
-                                                variant={
-                                                    comm.deliveryStatus === 'delivered' ? 'default' :
-                                                    comm.deliveryStatus === 'failed' ? 'destructive' :
-                                                    'secondary'
-                                                }
-                                                className="ml-4"
-                                            >
-                                                {comm.deliveryStatus === 'delivered' && (
-                                                    <FaCheckCircle className="h-3 w-3 mr-1" />
-                                                )}
-                                                {comm.deliveryStatus === 'failed' && (
-                                                    <FaExclamationCircle className="h-3 w-3 mr-1" />
-                                                )}
+                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold shrink-0 ${comm.deliveryStatus === 'delivered'
+                                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                                                    : comm.deliveryStatus === 'failed'
+                                                        ? 'bg-red-50 text-red-700 border border-red-100'
+                                                        : 'bg-slate-100 text-slate-600'
+                                                }`}>
+                                                {comm.deliveryStatus === 'delivered' && <FaCheckCircle size={10} />}
+                                                {comm.deliveryStatus === 'failed' && <FaExclamationCircle size={10} />}
                                                 {comm.deliveryStatus}
-                                            </Badge>
+                                            </span>
                                         </div>
-                                        <div className="flex items-center gap-4 text-xs text-gray-500 mt-3">
-                                            <span>
-                                                Sent by: {comm.sentBy?.name || 'Unknown'}
-                                            </span>
+                                        <div className="flex items-center gap-3 text-xs text-slate-400 mt-3 flex-wrap">
+                                            <span className="flex items-center gap-1"><FaUsers size={10} /> {comm.recipients.length} recipients</span>
                                             <span>•</span>
-                                            <span>
-                                                Recipients: {comm.recipients.length}
-                                            </span>
+                                            <span className="flex items-center gap-1"><FaClock size={10} /> {new Date(comm.sentAt).toLocaleString()}</span>
                                             <span>•</span>
-                                            <span>
-                                                {new Date(comm.sentAt).toLocaleString()}
-                                            </span>
+                                            <span>By {comm.sentBy?.name || 'Unknown'}</span>
                                         </div>
                                         {comm.errorMessage && (
-                                            <div className="mt-2 text-xs text-red-600 bg-red-50 p-2 rounded">
-                                                {comm.errorMessage}
-                                            </div>
+                                            <div className="mt-3 text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg border border-red-100">{comm.errorMessage}</div>
                                         )}
                                     </div>
                                 ))}
                             </div>
                         )}
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             )}
         </div>
     );

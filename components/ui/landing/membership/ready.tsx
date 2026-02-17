@@ -31,7 +31,7 @@ const fadeUpVariants = {
 
 export default function ReadySection() {
     return (
-        <section className="relative w-full py-28 bg-gradient-to-br from-[#2047a5] to-[#2852b4] flex items-center justify-center overflow-hidden">
+        <section className="relative w-full py-28 bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center overflow-hidden">
             {/* Decorative, subtle overlay for extra visual depth */}
             <div className="absolute inset-0 pointer-events-none z-0">
                 <svg
@@ -46,7 +46,7 @@ export default function ReadySection() {
                     <ellipse cx="1300" cy="230" rx="400" ry="120" fill="#ffffff" />
                     <ellipse cx="400" cy="170" rx="600" ry="90" fill="#bedafc" />
                 </svg>
-                <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#2047a5]/70" />
+                <div className="absolute inset-0 bg-gradient-to-br from-transparent to-primary/70" />
             </div>
 
             <motion.div
@@ -60,7 +60,7 @@ export default function ReadySection() {
                     className="text-3xl md:text-5xl font-extrabold text-white mb-3 text-center drop-shadow-xl"
                     variants={fadeUpVariants as any}
                 >
-                    Ready to <span className="text-[#ffce3c]">Take Flight</span> with NAAPE?
+                    Ready to <span className="text-secondary">Take Flight</span> with NAAPE?
                 </motion.h2>
                 <motion.p
                     className="text-white/90 text-lg md:text-xl mb-9 text-center max-w-2xl font-medium"
@@ -75,7 +75,7 @@ export default function ReadySection() {
                 >
                     <Link href="/register" passHref >
                         <NaapButton
-                            className="bg-white text-[#2047a5] hover:bg-[#e6eaf3] px-9 py-3 font-semibold text-lg shadow-lg transition-all duration-200"
+                            className="bg-white text-primary hover:bg-slate-100 px-9 py-3 font-semibold text-lg shadow-lg transition-all duration-200"
                             variant="primary"
                             icon={<FaArrowRight />}
                             iconPosition="right"

@@ -22,7 +22,7 @@ const imageVariants = {
 export default function AboutHeroSection() {
   return (
     <motion.section
-      className="relative w-full min-h-[85vh] flex flex-col items-center justify-center py-20 px-6 bg-[#f8fafc] overflow-hidden"
+      className="relative w-full min-h-[85vh] flex flex-col items-center justify-center py-20 px-6 bg-slate-50 overflow-hidden"
       variants={containerVariants}
       initial="hidden"
       animate="show"
@@ -35,7 +35,7 @@ export default function AboutHeroSection() {
         <span className="text-secondary font-bold tracking-widest uppercase text-sm mb-4 block">Our Story</span>
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-slate-900 tracking-tight leading-[1.1] mb-6">
           The National Association of <br className="hidden md:block" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70">
             Aircraft Pilots & Engineers
           </span>
         </h1>

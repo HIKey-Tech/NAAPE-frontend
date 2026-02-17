@@ -133,7 +133,7 @@ export default function TopNavbar() {
                 colorClasses = "text-primary";
               } else if (isScrolled) {
                 // Inactive + Scrolled (White Navbar)
-                colorClasses = "text-gray-600 hover:text-primary hover:bg-primary/10";
+                colorClasses = "text-slate-600 hover:text-primary hover:bg-primary/10";
               } else {
                 // Inactive + unscrolled (Transparent Header)
                 colorClasses = "text-white/90 hover:text-white hover:bg-white/10";
@@ -178,7 +178,7 @@ export default function TopNavbar() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.98 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="absolute top-full left-0 mt-3 w-64 bg-white rounded-2xl shadow-xl shadow-indigo-900/10 border border-gray-100 overflow-hidden z-50 ring-1 ring-black/5"
+                        className="absolute top-full left-0 mt-3 w-64 bg-white rounded-2xl shadow-xl shadow-indigo-900/10 border border-slate-100 overflow-hidden z-50 ring-1 ring-black/5"
                         style={{ transformOrigin: "top left" }}
                       >
                         <div className="p-2 flex flex-col gap-1">
@@ -189,8 +189,8 @@ export default function TopNavbar() {
                               className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors group/item"
                             >
                               <div>
-                                <p className="text-sm font-bold text-gray-800 leading-none mb-1 group-hover/item:text-primary transition-colors">{sub.label}</p>
-                                {sub.desc && <p className="text-[11px] text-gray-500 line-clamp-1">{sub.desc}</p>}
+                                <p className="text-sm font-bold text-slate-800 leading-none mb-1 group-hover/item:text-primary transition-colors">{sub.label}</p>
+                                {sub.desc && <p className="text-[11px] text-slate-500 line-clamp-1">{sub.desc}</p>}
                               </div>
                             </Link>
                           ))}
@@ -207,11 +207,11 @@ export default function TopNavbar() {
           <div className="pl-4 border-l border-white/20 ml-2">
             {!isAuthenticated ? (
               <div className="flex items-center gap-3">
-                <Link href="/login" className={`hidden xl:block text-sm font-bold transition-colors ${isScrolled ? "text-gray-600 hover:text-primary" : "text-white/80 hover:text-white"}`}>
+                <Link href="/login" className={`hidden xl:block text-sm font-bold transition-colors ${isScrolled ? "text-slate-600 hover:text-primary" : "text-white/80 hover:text-white"}`}>
                   Log In
                 </Link>
                 <NaapButton
-                  className={`py-2 px-6 rounded-full border border-gray-200 bg-white text-gray-700 hover:text-primary hover:border-primary hover:bg-primary/5 text-[14px] font-bold min-w-[100px] transition-all duration-300 shadow-sm hover:shadow-md ${!isScrolled ? "bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white" : ""}`}
+                  className={`py-2 px-6 rounded-full border border-slate-200 bg-white text-slate-700 hover:text-primary hover:border-primary hover:bg-primary/5 text-[14px] font-bold min-w-[100px] transition-all duration-300 shadow-sm hover:shadow-md ${!isScrolled ? "bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white" : ""}`}
                   onClick={handleLoginClick}
                   disabled={loginLoading}
                 >
@@ -222,17 +222,17 @@ export default function TopNavbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-3 p-1 pr-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 transition-all group">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-blue-400 flex items-center justify-center text-white font-bold text-sm shadow-inner">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white font-bold text-sm shadow-inner">
                       {getInitials(user?.name)}
                     </div>
                     <div className="text-left hidden xl:block">
-                      <p className={`text-xs font-bold leading-none ${isScrolled ? "text-gray-800" : "text-white"}`}>{user?.name?.split(' ')[0] || "Member"}</p>
-                      <p className={`text-[10px] uppercase tracking-wider ${isScrolled ? "text-gray-500" : "text-white/60"}`}>{user?.role || "Member"}</p>
+                      <p className={`text-xs font-bold leading-none ${isScrolled ? "text-slate-800" : "text-white"}`}>{user?.name?.split(' ')[0] || "Member"}</p>
+                      <p className={`text-[10px] uppercase tracking-wider ${isScrolled ? "text-slate-500" : "text-white/60"}`}>{user?.role || "Member"}</p>
                     </div>
-                    <ChevronDown size={14} className={`ml-1 transition-transform group-data-[state=open]:rotate-180 ${isScrolled ? "text-gray-400" : "text-white/60"}`} />
+                    <ChevronDown size={14} className={`ml-1 transition-transform group-data-[state=open]:rotate-180 ${isScrolled ? "text-slate-400" : "text-white/60"}`} />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl border-gray-100 shadow-xl bg-white/95 backdrop-blur-md">
+                <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl border-slate-100 shadow-xl bg-white/95 backdrop-blur-md">
                   <DropdownMenuItem className="p-3 rounded-xl cursor-pointer hover:bg-primary/5 focus:bg-primary/5 group" onClick={() => router.push("/dashboard")}>
                     <LayoutDashboard size={16} className="text-slate-400 group-hover:text-primary mr-3" />
                     <span className="font-medium text-slate-700 group-hover:text-primary">Dashboard</span>
@@ -241,7 +241,7 @@ export default function TopNavbar() {
                     <User size={16} className="text-slate-400 group-hover:text-primary mr-3" />
                     <span className="font-medium text-slate-700 group-hover:text-primary">My Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator className="my-1 bg-gray-100" />
+                  <DropdownMenuSeparator className="my-1 bg-slate-100" />
                   <DropdownMenuItem className="p-3 rounded-xl cursor-pointer hover:bg-red-50 focus:bg-red-50 group text-red-600" onClick={() => setShowLogoutDialog(true)}>
                     <LogOut size={16} className="mr-3 opacity-70 group-hover:opacity-100" />
                     <span className="font-medium">Sign Out</span>
@@ -270,21 +270,21 @@ export default function TopNavbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-white border-t border-gray-100 absolute top-full left-0 w-full shadow-xl overflow-hidden"
+            className="lg:hidden bg-white border-t border-slate-100 absolute top-full left-0 w-full shadow-xl overflow-hidden"
           >
             <div className="p-4 flex flex-col gap-2">
               {menuItems.map((item) => (
                 <div key={item.label} className="w-full">
-                  <Button variant="ghost" className="w-full justify-start font-bold text-gray-700" onClick={() => {
+                  <Button variant="ghost" className="w-full justify-start font-bold text-slate-700" onClick={() => {
                     if (item.href) router.push(item.href);
                     setMobileOpen(false);
                   }}>
                     {item.label}
                   </Button>
                   {item.submenu && (
-                    <div className="pl-4 flex flex-col gap-1 border-l-2 border-gray-100 ml-4 mt-1">
+                    <div className="pl-4 flex flex-col gap-1 border-l-2 border-slate-100 ml-4 mt-1">
                       {item.submenu.map(sub => (
-                        <Link key={sub.label} href={sub.href} className="text-sm text-gray-500 py-1 hover:text-primary" onClick={() => setMobileOpen(false)}>
+                        <Link key={sub.label} href={sub.href} className="text-sm text-slate-500 py-1 hover:text-primary" onClick={() => setMobileOpen(false)}>
                           {sub.label}
                         </Link>
                       ))}

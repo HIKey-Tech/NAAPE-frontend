@@ -18,7 +18,7 @@ interface VerificationState {
 const icons = {
     success: <CheckCircle2 className="text-green-600 drop-shadow-lg mb-5" size={74} strokeWidth={1.08} aria-hidden="true" />,
     error: <XCircle className="text-red-600 drop-shadow-lg mb-5" size={74} strokeWidth={1.08} aria-hidden="true" />,
-    loading: <Loader2 className="animate-spin text-blue-500 mb-5" size={60} strokeWidth={1.22} aria-hidden="true" />,
+    loading: <Loader2 className="animate-spin text-primary mb-5" size={60} strokeWidth={1.22} aria-hidden="true" />,
 };
 
 const messages = {
@@ -57,7 +57,7 @@ const messages = {
 export default function PaymentComplete({ eventName: propEventName }: { eventName?: string }) {
     const params = useSearchParams();
     const eventNameFromParams = params.get("eventName");
-    
+
     // Initialize verification state
     const [verificationState, setVerificationState] = useState<VerificationState>({
         status: 'loading',
@@ -65,7 +65,7 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
         transactionId: undefined,
         errorType: undefined
     });
-    
+
     const [isReady, setIsReady] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
     const [eventDetails, setEventDetails] = useState<any>(null);
@@ -89,7 +89,7 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
     // Automatic verification on page load with caching
     useEffect(() => {
         const transactionId = params.get("transaction_id");
-        
+
         // Handle missing transaction_id
         if (!transactionId) {
             setVerificationState({
@@ -104,7 +104,7 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
 
         // Generate cache key for this transaction
         const cacheKey = `payment_verification_${transactionId}`;
-        
+
         // Check if verification result is already cached in sessionStorage
         try {
             const cachedResult = sessionStorage.getItem(cacheKey);
@@ -131,9 +131,9 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                 });
 
                 const response = await verifyPayment(transactionId);
-                
+
                 let newState: VerificationState;
-                
+
                 // Check response status
                 if (response.status === 'successful') {
                     newState = {
@@ -142,7 +142,7 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                         transactionId,
                         errorType: undefined
                     };
-                    
+
                     // Store event details if available
                     if (response.event) {
                         setEventDetails(response.event);
@@ -163,9 +163,9 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                         errorType: 'unknown'
                     };
                 }
-                
+
                 setVerificationState(newState);
-                
+
                 // Cache the verification result in sessionStorage
                 try {
                     sessionStorage.setItem(cacheKey, JSON.stringify(newState));
@@ -181,7 +181,7 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                 // Check if it's an axios error with response
                 if (error.response) {
                     const status = error.response.status;
-                    
+
                     if (status === 404) {
                         errorMessage = `Transaction not found for ${eventName}. Please contact support with your transaction reference.`;
                         errorType = 'not_found';
@@ -211,9 +211,9 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                     transactionId,
                     errorType
                 };
-                
+
                 setVerificationState(errorState);
-                
+
                 // Don't cache error states - allow retry on refresh
             } finally {
                 setIsReady(true);
@@ -233,7 +233,7 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
         if (retryCount < MAX_RETRIES) {
             setIsReady(false);
             setRetryCount(prev => prev + 1);
-            
+
             // Exponential backoff: wait before retrying
             const backoffDelay = Math.min(1000 * Math.pow(2, retryCount), 8000);
             setTimeout(() => {
@@ -276,13 +276,12 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                 </motion.div>
             </AnimatePresence>
             <motion.h2
-                className={`text-3xl font-extrabold mb-3 text-center ${
-                    state === "success"
+                className={`text-3xl font-extrabold mb-3 text-center ${state === "success"
                         ? "text-green-800"
                         : state === "error"
-                        ? "text-red-800"
-                        : "text-blue-700"
-                }`}
+                            ? "text-red-800"
+                            : "text-primary"
+                    }`}
                 initial={{ y: 15, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.12, type: "spring" as const, stiffness: 60, damping: 14 }}
@@ -308,8 +307,8 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                 >
                     <h3 className="text-lg font-semibold text-slate-800 mb-4">Event Details</h3>
                     {eventDetails.imageUrl && (
-                        <img 
-                            src={eventDetails.imageUrl} 
+                        <img
+                            src={eventDetails.imageUrl}
                             alt={eventDetails.title}
                             className="w-full h-40 object-cover rounded-lg mb-4"
                         />
@@ -394,7 +393,7 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                 {state === "error" && retryCount < MAX_RETRIES && (verificationState.errorType === 'network' || verificationState.errorType === 'server' || verificationState.errorType === 'unknown') && (
                     <button
                         onClick={handleRetry}
-                        className="inline-block px-6 py-2.5 bg-blue-600 text-white rounded-lg font-semibold shadow-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500/60 transition-all duration-150 active:scale-[0.99]"
+                        className="inline-block px-6 py-2.5 bg-primary text-white rounded-xl font-bold shadow-md shadow-primary/20 hover:bg-primary/90 focus:ring-2 focus:ring-primary/30 transition-all duration-150 active:scale-[0.99]"
                         aria-label="Retry Payment Verification"
                     >
                         Retry Verification {retryCount > 0 && `(${retryCount}/${MAX_RETRIES})`}

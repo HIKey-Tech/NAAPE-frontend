@@ -53,7 +53,7 @@ function LegacyMobileSlider({ stats }: { stats: any[] }) {
             <div className="w-full flex items-center justify-center">
                 <button
                     aria-label="Previous"
-                    className="mr-3 p-2 rounded-full bg-[#F5F6FB] hover:bg-[#ececef] text-[#2852B4] disabled:opacity-50"
+                    className="mr-3 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-primary disabled:opacity-50"
                     onClick={goPrev}
                     disabled={stats.length < 2}
                     type="button"
@@ -78,7 +78,7 @@ function LegacyMobileSlider({ stats }: { stats: any[] }) {
                 </div>
                 <button
                     aria-label="Next"
-                    className="ml-3 p-2 rounded-full bg-[#F5F6FB] hover:bg-[#ececef] text-[#2852B4] disabled:opacity-50"
+                    className="ml-3 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-primary disabled:opacity-50"
                     onClick={goNext}
                     disabled={stats.length < 2}
                     type="button"
@@ -94,8 +94,8 @@ function LegacyMobileSlider({ stats }: { stats: any[] }) {
                         aria-label={`Go to slide ${i + 1}`}
                         key={i}
                         className={`h-2 w-2 rounded-full transition-all ${i === active
-                                ? 'bg-[#2852B4] scale-110'
-                                : 'bg-[#D7DDF1]'
+                                ? 'bg-primary scale-110'
+                                : 'bg-slate-300'
                             }`}
                         style={{ transition: "background .2s, transform .2s" }}
                         onClick={() => setActive(i)}
@@ -113,22 +113,22 @@ export default function OurLegacy() {
         {
             value: "100%",
             label: <>Safety &amp; Compliance Advocacy</>,
-            icon: <FaShieldAlt size={28} className="text-[#CA9414]" />,
+            icon: <FaShieldAlt size={28} className="text-secondary" />,
         },
         {
             value: "39+",
             label: <>Years of Aviation Leadership</>,
-            icon: <FaRegClock size={28} className="text-[#2347A0]" />,
+            icon: <FaRegClock size={28} className="text-primary" />,
         },
         {
             value: "50+",
             label: <>Training &amp; Development Programs</>,
-            icon: <FaChalkboardTeacher size={28} className="text-[#3970D8]" />,
+            icon: <FaChalkboardTeacher size={28} className="text-primary" />,
         },
         {
             value: "1200+",
             label: <>Pilots &amp; Engineers Represented</>,
-            icon: <FaUserFriends size={28} className="text-[#2852B4]" />,
+            icon: <FaUserFriends size={28} className="text-primary" />,
         },
     ];
 
@@ -147,19 +147,19 @@ export default function OurLegacy() {
                 viewport={{ once: true, amount: 0.4 }}
             >
                 <motion.span
-                    className="text-[#CA9414] font-semibold text-sm tracking-widest mb-2"
+                    className="text-secondary font-semibold text-sm tracking-widest mb-2"
                     variants={fadeUpVariants as any}
                 >
                     OUR LEGACY
                 </motion.span>
                 <motion.h2
-                    className="text-2xl md:text-3xl font-bold text-[#232835] mb-2"
+                    className="text-2xl md:text-3xl font-bold text-slate-900 mb-2"
                     variants={fadeUpVariants as any}
                 >
                     Building a Legacy That Soars
                 </motion.h2>
                 <motion.p
-                    className="text-[#4B4B55] max-w-2xl text-base md:text-lg mb-6"
+                    className="text-slate-500 max-w-2xl text-base md:text-lg mb-6"
                     variants={fadeUpVariants as any}
                 >
                     Born from the merger of two pioneering aviation groups in 1984, NAAPE represents a legacy of unity, professionalism, and service.

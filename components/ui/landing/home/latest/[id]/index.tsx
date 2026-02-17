@@ -98,14 +98,14 @@ export default function LatestNewsDetailsPage() {
 
     if (!news) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-[#F8FAFC]">
+            <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-slate-50">
                 <div className="max-w-md text-center">
-                    <h1 className="text-2xl font-semibold mb-2 text-[#357AA8]">News article not found</h1>
-                    <p className="mb-6 text-gray-500">
+                    <h1 className="text-2xl font-semibold mb-2 text-primary">News article not found</h1>
+                    <p className="mb-6 text-slate-500">
                         Sorry, we couldn't find that news article.
                     </p>
                     <button
-                        className="bg-[#357AA8] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#256E98] transition-colors"
+                        className="bg-primary text-white px-4 py-2 rounded-xl font-bold hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
                         onClick={() => router.push("/home#latest")}
                     >
                         Back to Latest News
@@ -116,7 +116,7 @@ export default function LatestNewsDetailsPage() {
     }
 
     return (
-        <main className="min-h-screen bg-[#F8FAFC] py-9 px-3 sm:px-0">
+        <main className="min-h-screen bg-slate-50 py-9 px-3 sm:px-0">
             <NewsDetails
                 imageUrl={news.image}
                 title={news.title}

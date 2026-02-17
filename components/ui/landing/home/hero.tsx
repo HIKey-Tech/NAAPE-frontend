@@ -149,7 +149,7 @@ export default function Hero() {
                         >
                             <Link href="/membership">
                                 <NaapButton
-                                    className="bg-primary hover:bg-blue-600 text-white border-0 shadow-lg shadow-blue-900/20 px-8 py-6 text-lg rounded-full"
+                                    className="bg-primary hover:bg-primary/90 text-white border-0 shadow-lg shadow-primary/20 px-8 py-6 text-lg rounded-full"
                                 >
                                     Join The Association
                                 </NaapButton>

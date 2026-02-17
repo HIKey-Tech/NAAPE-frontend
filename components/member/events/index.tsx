@@ -69,12 +69,12 @@ export default function EventsComponent() {
             router.push("/admin/events/management");
             return;
         }
-        
+
         // For members, show modal
         setSelectedEvent(event);
         setIsModalOpen(true);
         setShowVerify(false);
-        
+
         // Fetch payment status
         try {
             const status = await getStatus(event.id || event._id || "");
@@ -144,20 +144,20 @@ export default function EventsComponent() {
 
             <div className="grid gap-6 px-6 sm:grid-cols-2 lg:grid-cols-3">
                 {isLoading ? (
-                    <div className="col-span-full text-center text-[#96A6BF] text-[16px] py-16 font-medium">
+                    <div className="col-span-full text-center text-slate-400 text-base py-16 font-medium">
                         Loading...
                     </div>
                 ) : isError ? (
-                    <div className="col-span-full text-center text-[#D14343] text-[16px] py-16 font-medium">
+                    <div className="col-span-full text-center text-red-500 text-base py-16 font-medium">
                         Failed to load events.
                     </div>
                 ) : filteredEvents.length === 0 ? (
-                    <div className="col-span-full text-center text-[#96A6BF] text-[16px] py-16 font-medium">
+                    <div className="col-span-full text-center text-slate-400 text-base py-16 font-medium">
                         Nothing New
                         {isAdmin && (
                             <>
                                 <br />
-                                <span className="text-[#274fb7]">
+                                <span className="text-primary">
                                     You can <strong>create a new event</strong> to get started!
                                 </span>
                             </>
@@ -178,18 +178,18 @@ export default function EventsComponent() {
                                 typeof event.price !== "undefined"
                                     ? event.price
                                     : event.isPaid
-                                    ? event.price ?? 1000
-                                    : 0
+                                        ? event.price ?? 1000
+                                        : 0
                             }
                             currency={event.currency ?? "NGN"}
                             isPaid={
                                 typeof event.isPaid === "boolean"
                                     ? event.isPaid
                                     : typeof event.isPaid === "number"
-                                    ? !!event.isPaid
-                                    : typeof event.price === "number"
-                                    ? event.price > 0
-                                    : false
+                                        ? !!event.isPaid
+                                        : typeof event.price === "number"
+                                            ? event.price > 0
+                                            : false
                             }
                             registerLabel={
                                 isMember

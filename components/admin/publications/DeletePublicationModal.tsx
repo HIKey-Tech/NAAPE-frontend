@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { IPublication } from "@/app/api/publication/types";
-import { FaTimes, FaExclamationTriangle } from "react-icons/fa";
+import { FaTimes, FaExclamationTriangle, FaTrash } from "react-icons/fa";
 import { useDeletePublication } from "@/hooks/useAdminPublications";
 import { toast } from "sonner";
 
@@ -21,82 +21,66 @@ export const DeletePublicationModal: React.FC<DeletePublicationModalProps> = ({
         deleteMutation.mutate(
             { id: publication._id, reason: reason.trim() || undefined },
             {
-                onSuccess: () => {
-                    toast.success("Publication deleted successfully");
-                    onClose();
-                },
-                onError: (error: any) => {
-                    toast.error(error?.response?.data?.message || "Failed to delete publication");
-                },
+                onSuccess: () => { toast.success("Publication deleted"); onClose(); },
+                onError: (error: any) => toast.error(error?.response?.data?.message || "Failed to delete"),
             }
         );
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-md w-full">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
+            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-100" onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
-                <div className="bg-red-50 border-b border-red-200 px-6 py-4 flex items-center justify-between rounded-t-lg">
+                <div className="px-6 py-5 flex items-center justify-between border-b border-slate-100">
                     <div className="flex items-center gap-3">
-                        <FaExclamationTriangle className="text-red-600 text-xl" />
-                        <h2 className="text-xl font-bold text-red-900">Delete Publication</h2>
+                        <div className="p-2.5 bg-red-50 text-red-600 rounded-xl">
+                            <FaExclamationTriangle size={18} />
+                        </div>
+                        <h2 className="text-lg font-black text-slate-900">Delete Publication</h2>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="text-red-400 hover:text-red-600 transition"
-                        aria-label="Close"
-                    >
-                        <FaTimes className="text-xl" />
+                    <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-xl transition-colors" aria-label="Close">
+                        <FaTimes className="text-slate-400" size={14} />
                     </button>
                 </div>
 
                 {/* Content */}
-                <div className="p-6 space-y-4">
-                    <p className="text-gray-700">
-                        Are you sure you want to delete this publication? This action cannot be undone.
-                    </p>
+                <div className="p-6 space-y-5">
+                    <p className="text-sm text-slate-600">Are you sure you want to delete this publication? This action cannot be undone.</p>
 
-                    <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                    <div className="bg-slate-50 rounded-xl p-4 space-y-2 border border-slate-100">
                         <div>
-                            <span className="text-sm font-semibold text-gray-600">Title:</span>
-                            <p className="text-gray-900">{publication.title}</p>
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">Title</span>
+                            <p className="text-sm font-bold text-slate-800 mt-0.5">{publication.title}</p>
                         </div>
                         <div>
-                            <span className="text-sm font-semibold text-gray-600">Author:</span>
-                            <p className="text-gray-900">{publication.author.name}</p>
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">Author</span>
+                            <p className="text-sm font-medium text-slate-700 mt-0.5">{publication.author.name}</p>
                         </div>
                     </div>
 
                     <div>
-                        <label htmlFor="reason" className="block text-sm font-medium text-gray-700 mb-2">
-                            Reason for deletion (optional)
+                        <label htmlFor="reason" className="text-xs font-bold text-slate-400 uppercase tracking-wide block mb-2">
+                            Reason (optional)
                         </label>
                         <textarea
                             id="reason"
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
-                            placeholder="Provide a reason for deleting this publication..."
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+                            placeholder="Provide a reason for deletion..."
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 outline-none resize-none transition-all"
                             rows={3}
                         />
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className="bg-gray-50 border-t border-gray-200 px-6 py-4 flex items-center justify-end gap-3 rounded-b-lg">
-                    <button
-                        onClick={onClose}
-                        disabled={deleteMutation.isPending}
-                        className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50"
-                    >
+                <div className="border-t border-slate-100 px-6 py-4 flex items-center justify-end gap-3">
+                    <button onClick={onClose} disabled={deleteMutation.isPending} className="px-5 py-2.5 text-sm font-bold text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors disabled:opacity-50">
                         Cancel
                     </button>
-                    <button
-                        onClick={handleDelete}
-                        disabled={deleteMutation.isPending}
-                        className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition disabled:opacity-50"
-                    >
-                        {deleteMutation.isPending ? "Deleting..." : "Delete Publication"}
+                    <button onClick={handleDelete} disabled={deleteMutation.isPending} className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-red-600 rounded-xl shadow-md shadow-red-200 hover:bg-red-700 transition-colors disabled:opacity-50">
+                        <FaTrash size={12} />
+                        {deleteMutation.isPending ? "Deleting..." : "Delete"}
                     </button>
                 </div>
             </div>

@@ -7,7 +7,7 @@ import { ArrowRight, Users, Shield, TrendingUp } from "lucide-react";
 
 export default function MembershipHeroSection() {
     return (
-        <section className="relative w-full min-h-[85vh] flex items-center justify-center bg-[#f8fafc] overflow-hidden py-20 px-6">
+        <section className="relative w-full min-h-[85vh] flex items-center justify-center bg-slate-50 overflow-hidden py-20 px-6">
             {/* Background grid pattern */}
             <div className="absolute inset-0 opacity-[0.03]" style={{
                 backgroundImage: "radial-gradient(circle, #000 1px, transparent 1px)",
@@ -26,7 +26,7 @@ export default function MembershipHeroSection() {
                         <span className="text-secondary font-bold tracking-widest uppercase text-sm mb-4 block">Membership</span>
                         <h1 className="text-4xl md:text-6xl font-black text-slate-900 leading-[1.1] mb-6">
                             Welcome, <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70">
                                 Future Aviation Professional!
                             </span>
                         </h1>
@@ -36,7 +36,7 @@ export default function MembershipHeroSection() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4">
-                        <Link href="/register" className="inline-flex items-center gap-2 bg-primary hover:bg-blue-700 text-white font-bold px-8 py-4 rounded-full text-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-0.5 transition-all">
+                        <Link href="/register" className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold px-8 py-4 rounded-full text-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-0.5 transition-all">
                             Become a Member <ArrowRight size={18} />
                         </Link>
                         <Link href="/about/about-us" className="inline-flex items-center gap-2 border-2 border-primary text-primary font-bold px-8 py-4 rounded-full text-lg hover:bg-primary/5 transition-all">

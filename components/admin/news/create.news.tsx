@@ -4,7 +4,7 @@ import React, { useState, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { NaapButton } from "@/components/ui/custom/button.naap";
+import { Button } from "@/components/ui/button";
 import {
     Form,
     FormField,
@@ -25,6 +25,7 @@ import {
 import { toast } from "sonner";
 import DropImageDual from "@/components/member/component/drop.image";
 import { useCreateNews } from "@/hooks/useNews";
+import { FaNewspaper } from "react-icons/fa";
 
 // Schema for frontend validation using Zod
 const newsSchema = z.object({
@@ -112,12 +113,9 @@ export default function CreateNewsComponent() {
 
     const onSubmit = async (values: NewsInput) => {
         setSubmitting(true);
-
         const file = values.imageFile as File | null;
 
         try {
-
-
             const payload = {
                 title: values.title.trim(),
                 content: values.content.trim(),
@@ -130,7 +128,7 @@ export default function CreateNewsComponent() {
             formData.append("category", payload.category);
 
             if (file instanceof File) {
-                formData.append("image", file)
+                formData.append("image", file);
             }
 
             await createNews.mutateAsync(formData);
@@ -149,164 +147,164 @@ export default function CreateNewsComponent() {
         }
     };
 
-    const inputBase =
-        "bg-[#F6F8FA] border border-[#B4D3EF] rounded px-3 py-2 focus:border-[#357AA8] transition-colors";
-    const labelBase = "font-medium mb-1 block";
-
     return (
-        <div className="max-w-5xl mx-auto px-4 py-8 bg-white shadow-md rounded-lg">
-            <h1 className="text-2xl font-bold mb-5 text-[#16355D]">
-                Create News Article
-            </h1>
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-7"
-                    autoComplete="off"
-                    noValidate
-                >
-                    {/* Title */}
-                    <FormField
-                        control={form.control}
-                        name="title"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className={`${labelBase} text-[#144]`}>
-                                    News Title <span className="text-red-500">*</span>
-                                </FormLabel>
-                                <FormControl>
-                                    <Input
-                                        {...field}
-                                        inputMode="text"
-                                        autoFocus
-                                        ref={titleInputRef}
-                                        maxLength={120}
-                                        placeholder="E.g. Electric Propulsion Now Powers Engineering Spacecraft"
-                                        className={`${inputBase} h-10 text-base`}
-                                        aria-required="true"
-                                    />
-                                </FormControl>
-                                <FormMessage className="text-xs text-red-500 mt-1" />
-                            </FormItem>
-                        )}
-                    />
-
-                    {/* Category */}
-                    <FormField
-                        control={form.control}
-                        name="category"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className={`${labelBase} text-[#144]`}>
-                                    News Category <span className="text-red-500">*</span>
-                                </FormLabel>
-                                <FormControl>
-                                    <Select value={field.value} onValueChange={field.onChange}>
-                                        <SelectTrigger
-                                            id="news-category"
-                                            className={`${inputBase} h-10 text-base w-full`}
-                                        >
-                                            <SelectValue placeholder="Select category" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {newsCategories.map((cat) => (
-                                                <SelectItem key={cat.value} value={cat.value}>
-                                                    {cat.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </FormControl>
-                                <FormMessage className="text-xs text-red-500 mt-1" />
-                            </FormItem>
-                        )}
-                    />
-
-                    {/* Content */}
-                    <FormField
-                        control={form.control}
-                        name="content"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className={`${labelBase} text-[#144]`}>
-                                    News Content <span className="text-red-500">*</span>
-                                </FormLabel>
-                                <FormControl>
-                                    <Textarea
-                                        {...field}
-                                        minLength={20}
-                                        maxLength={6000}
-                                        placeholder="Write the full news article here."
-                                        className={`${inputBase} text-base min-h-[160px]`}
-                                        rows={8}
-                                        aria-required="true"
-                                    />
-                                </FormControl>
-                                <div className="flex justify-end text-xs text-gray-500 mt-1">
-                                    {form.watch("content")?.length || 0}/6000
-                                </div>
-                                <FormMessage className="text-xs text-red-500 mt-1" />
-                            </FormItem>
-                        )}
-                    />
-
-                    {/* Image */}
+        <div className="max-w-5xl mx-auto px-4 py-8">
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+                {/* Header */}
+                <div className="flex items-center gap-3 p-6 border-b border-slate-100">
+                    <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center">
+                        <FaNewspaper className="w-5 h-5 text-primary" />
+                    </div>
                     <div>
+                        <h1 className="text-xl font-bold text-slate-900">Create News Article</h1>
+                        <p className="text-sm text-slate-500">Write and publish a new article</p>
+                    </div>
+                </div>
+
+                <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="p-6 space-y-6"
+                        autoComplete="off"
+                        noValidate
+                    >
+                        {/* Title */}
                         <FormField
                             control={form.control}
-                            name="imageFile"
+                            name="title"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-[#203040] font-medium mb-2 block">
-                                        Upload Cover Image{" "}
-                                        <span className="text-[#8CA1B6] font-normal">
-                                            (optional, recommended to attract more readers)
-                                        </span>
+                                    <FormLabel className="text-xs font-bold text-slate-400 uppercase tracking-wide">
+                                        News Title <span className="text-red-500">*</span>
                                     </FormLabel>
-                                    <DropImageDual
-                                        value={field.value ?? undefined}
-                                        onDrop={file => {
-                                            field.onChange(file ?? null);
-                                            handleDrop(file ?? null);
-                                        }}
-                                        inputRef={imageInputRef as React.RefObject<HTMLInputElement>}
-                                        disabled={submitting}
-                                    // previewUrl={imagePreviewUrl || undefined}
-                                    // onRemove={onRemoveImage}
-                                    />
-                                    <FormMessage className="text-xs text-red-600 mt-1" />
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            inputMode="text"
+                                            autoFocus
+                                            ref={titleInputRef}
+                                            maxLength={120}
+                                            placeholder="E.g. Electric Propulsion Now Powers Engineering Spacecraft"
+                                            className="rounded-xl border-slate-200 bg-slate-50 focus:bg-white h-11 text-base"
+                                            aria-required="true"
+                                        />
+                                    </FormControl>
+                                    <FormMessage className="text-xs text-red-500 mt-1" />
                                 </FormItem>
                             )}
                         />
-                    </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex flex-row items-center pb-6 justify-end gap-3 pt-3">
-                        <NaapButton
-                            type="button"
-                            variant="ghost"
-                            className="!rounded !h-10 !px-8 border border-[#357AA8] text-[#357AA8] hover:bg-[#ecf3f9] font-semibold"
-                            style={{ minWidth: 130 }}
-                            onClick={() => toast.info("Draft news saved locally. (Feature coming soon!)")}
-                            disabled={submitting || imageUploading}
-                            data-testid="save-draft-btn"
-                        >
-                            Save as Draft
-                        </NaapButton>
-                        <NaapButton
-                            type="submit"
-                            variant="primary"
-                            className="!rounded !h-10 !px-8"
-                            style={{ minWidth: 100 }}
-                            loading={submitting || imageUploading}
-                            data-testid="submit-btn"
-                            disabled={submitting || imageUploading}
-                        >
-                            {submitting || imageUploading ? "Publishing..." : "Publish News"}
-                        </NaapButton>
-                    </div>
-                </form>
-            </Form>
+                        {/* Category */}
+                        <FormField
+                            control={form.control}
+                            name="category"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-xs font-bold text-slate-400 uppercase tracking-wide">
+                                        News Category <span className="text-red-500">*</span>
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Select value={field.value} onValueChange={field.onChange}>
+                                            <SelectTrigger
+                                                id="news-category"
+                                                className="rounded-xl border-slate-200 bg-slate-50 h-11 text-base w-full"
+                                            >
+                                                <SelectValue placeholder="Select category" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {newsCategories.map((cat) => (
+                                                    <SelectItem key={cat.value} value={cat.value}>
+                                                        {cat.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage className="text-xs text-red-500 mt-1" />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Content */}
+                        <FormField
+                            control={form.control}
+                            name="content"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-xs font-bold text-slate-400 uppercase tracking-wide">
+                                        News Content <span className="text-red-500">*</span>
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            {...field}
+                                            minLength={20}
+                                            maxLength={6000}
+                                            placeholder="Write the full news article here."
+                                            className="rounded-xl border-slate-200 bg-slate-50 focus:bg-white text-base min-h-[160px]"
+                                            rows={8}
+                                            aria-required="true"
+                                        />
+                                    </FormControl>
+                                    <div className="flex justify-end text-xs text-slate-400 mt-1">
+                                        {form.watch("content")?.length || 0}/6000
+                                    </div>
+                                    <FormMessage className="text-xs text-red-500 mt-1" />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Image */}
+                        <div>
+                            <FormField
+                                control={form.control}
+                                name="imageFile"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-xs font-bold text-slate-400 uppercase tracking-wide">
+                                            Upload Cover Image{" "}
+                                            <span className="text-slate-400 font-normal normal-case tracking-normal">
+                                                (optional, recommended to attract more readers)
+                                            </span>
+                                        </FormLabel>
+                                        <DropImageDual
+                                            value={field.value ?? undefined}
+                                            onDrop={file => {
+                                                field.onChange(file ?? null);
+                                                handleDrop(file ?? null);
+                                            }}
+                                            inputRef={imageInputRef as React.RefObject<HTMLInputElement>}
+                                            disabled={submitting}
+                                        />
+                                        <FormMessage className="text-xs text-red-600 mt-1" />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex flex-row items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="rounded-xl font-bold border-slate-200 px-8 h-11"
+                                onClick={() => toast.info("Draft news saved locally. (Feature coming soon!)")}
+                                disabled={submitting || imageUploading}
+                                data-testid="save-draft-btn"
+                            >
+                                Save as Draft
+                            </Button>
+                            <Button
+                                type="submit"
+                                className="rounded-xl font-bold shadow-md shadow-primary/20 px-8 h-11"
+                                disabled={submitting || imageUploading}
+                                data-testid="submit-btn"
+                            >
+                                {submitting || imageUploading ? "Publishing..." : "Publish News"}
+                            </Button>
+                        </div>
+                    </form>
+                </Form>
+            </div>
         </div>
     );
 }

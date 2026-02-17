@@ -23,46 +23,46 @@ import { parseAppSegmentConfig } from "next/dist/build/segment-config/app/app-se
 const STATUS_CONFIG = {
     draft: {
         label: "Draft",
-        bg: "bg-gray-50 border-gray-300",
-        text: "text-gray-900",
+        bg: "bg-slate-50 border-slate-200",
+        text: "text-slate-700",
         icon: (
             <svg width="20" height="20" viewBox="0 0 20 20">
-                <circle cx="10" cy="10" r="8" stroke="#9CA3AF" strokeWidth="2" />
-                <path d="M7 10h6M10 7v6" stroke="#6B7280" strokeWidth="2" />
+                <circle cx="10" cy="10" r="8" stroke="#94a3b8" strokeWidth="2" />
+                <path d="M7 10h6M10 7v6" stroke="#64748b" strokeWidth="2" />
             </svg>
         ),
     },
     pending: {
         label: "Pending",
-        bg: "bg-yellow-50 border-yellow-300",
-        text: "text-yellow-900",
+        bg: "bg-amber-50 border-amber-200",
+        text: "text-amber-700",
         icon: (
             <svg width="20" height="20" viewBox="0 0 20 20">
-                <circle cx="10" cy="10" r="8" stroke="#FFD600" strokeWidth="2" />
-                <path d="M10 6v5" stroke="#E2A900" strokeWidth="2" />
-                <circle cx="10" cy="14" r="1" fill="#E2A900" />
+                <circle cx="10" cy="10" r="8" stroke="#f59e0b" strokeWidth="2" />
+                <path d="M10 6v5" stroke="#d97706" strokeWidth="2" />
+                <circle cx="10" cy="14" r="1" fill="#d97706" />
             </svg>
         ),
     },
     approved: {
         label: "Published",
-        bg: "bg-green-50 border-green-400",
-        text: "text-green-900",
+        bg: "bg-emerald-50 border-emerald-200",
+        text: "text-emerald-700",
         icon: (
             <svg width="20" height="20" viewBox="0 0 20 20">
-                <circle cx="10" cy="10" r="8" stroke="#26C281" strokeWidth="2" />
-                <path d="M6.5 10.5l2.5 2.5L13.5 8" stroke="#27AE60" strokeWidth="2" />
+                <circle cx="10" cy="10" r="8" stroke="#10b981" strokeWidth="2" />
+                <path d="M6.5 10.5l2.5 2.5L13.5 8" stroke="#059669" strokeWidth="2" />
             </svg>
         ),
     },
     rejected: {
         label: "Rejected",
-        bg: "bg-red-50 border-red-300",
-        text: "text-red-900",
+        bg: "bg-red-50 border-red-200",
+        text: "text-red-700",
         icon: (
             <svg width="20" height="20" viewBox="0 0 20 20">
-                <circle cx="10" cy="10" r="8" stroke="#FF6161" strokeWidth="2" />
-                <path d="M7 7l6 6M13 7l-6 6" stroke="#D33A2C" strokeWidth="2" />
+                <circle cx="10" cy="10" r="8" stroke="#ef4444" strokeWidth="2" />
+                <path d="M7 7l6 6M13 7l-6 6" stroke="#dc2626" strokeWidth="2" />
             </svg>
         ),
     },
@@ -83,8 +83,6 @@ const PublicationComments = ({ publicationId }: { publicationId: string }) => {
     const { data = [], isPending, refetch } = useComments(publicationId);
     const addComment = useAddComment();
 
-    console.log("The comments", data)
-
     const comments = Array.isArray(data) ? data : [];
 
     const submit = (e: React.FormEvent) => {
@@ -98,38 +96,38 @@ const PublicationComments = ({ publicationId }: { publicationId: string }) => {
     };
 
     return (
-        <section className="border-t pt-6 mt-10">
-            <h3 className="font-bold text-lg mb-3">Comments</h3>
+        <section className="border-t border-slate-100 pt-6 mt-10">
+            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-4">Comments</h3>
 
             <form onSubmit={submit} className="flex gap-2 mb-4">
                 <input
                     value={text}
                     onChange={(e) => setText(e.target.value)}
-                    className="flex-1 border rounded px-3 py-2"
+                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
                     placeholder="Add a comment"
                 />
                 <button
                     disabled={!text.trim()}
-                    className="bg-blue-600 text-white px-4 rounded disabled:opacity-50"
+                    className="bg-primary text-white px-4 py-2 rounded-xl font-bold text-sm disabled:opacity-40 hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
                 >
                     Send
                 </button>
             </form>
 
-            {isPending && <p className="text-gray-400">Loading comments...</p>}
+            {isPending && <p className="text-slate-400 text-sm">Loading comments...</p>}
 
             {!isPending && comments.length === 0 && (
-                <p className="italic text-gray-400">No comments yet.</p>
+                <p className="italic text-slate-400 text-sm">No comments yet.</p>
             )}
 
             <ul className="space-y-2">
                 {comments.map((c) => (
                     <li
                         key={c._id}
-                        className="bg-gray-50 border rounded px-3 py-2"
+                        className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3"
                     >
-                        <strong className="mr-2">{getAuthorLabel(c.author)}:</strong>
-                        {c.text || c.content}
+                        <strong className="mr-2 text-slate-700 text-sm">{getAuthorLabel(c.author)}:</strong>
+                        <span className="text-slate-600 text-sm">{c.text || c.content}</span>
                     </li>
                 ))}
             </ul>
@@ -186,13 +184,13 @@ const PublicationActions = ({
             <div className="flex gap-2">
                 <button
                     onClick={() => setEditing(true)}
-                    className="px-3 py-1 bg-yellow-200 rounded"
+                    className="px-4 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl font-bold text-sm hover:bg-amber-100 transition-colors"
                 >
                     Edit
                 </button>
                 <button
                     onClick={remove}
-                    className="px-3 py-1 bg-red-200 rounded"
+                    className="px-4 py-1.5 bg-red-50 text-red-700 border border-red-200 rounded-xl font-bold text-sm hover:bg-red-100 transition-colors"
                 >
                     Delete
                 </button>
@@ -201,26 +199,26 @@ const PublicationActions = ({
     }
 
     return (
-        <form onSubmit={submit} className="space-y-2">
+        <form onSubmit={submit} className="space-y-3">
             <input
-                className="border px-3 py-2 rounded w-full"
+                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 w-full text-sm focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
             />
             <textarea
-                className="border px-3 py-2 rounded w-full"
+                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 w-full text-sm focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
                 rows={4}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
             />
             <div className="flex gap-2">
-                <button className="bg-green-600 text-white px-3 py-1 rounded">
+                <button className="bg-primary text-white px-4 py-1.5 rounded-xl font-bold text-sm shadow-md shadow-primary/20 hover:bg-primary/90 transition-colors">
                     Save
                 </button>
                 <button
                     type="button"
                     onClick={() => setEditing(false)}
-                    className="bg-gray-400 text-white px-3 py-1 rounded"
+                    className="bg-slate-100 text-slate-600 px-4 py-1.5 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors"
                 >
                     Cancel
                 </button>
@@ -249,14 +247,12 @@ export default function PublicationDetail({ hideStatus = false }: { hideStatus?:
         refetch,
     } = useGetSinglePublication(publicationId as any);
 
-    // Check subscription status and redirect if needed
     useEffect(() => {
         if (!subscriptionLoading && publication && user) {
             const isAdmin = user.role === "admin" || user.role === "editor";
             const hasActiveSubscription = subscriptionStatus?.hasSubscription;
             const isAuthor = isOwner(user, publication.author);
-            
-            // Allow access if: admin, has subscription, or is the author
+
             if (!isAdmin && !hasActiveSubscription && !isAuthor) {
                 router.push(`/subscription?redirect=/publications/${publicationId}`);
             }
@@ -264,10 +260,19 @@ export default function PublicationDetail({ hideStatus = false }: { hideStatus?:
     }, [subscriptionStatus, subscriptionLoading, publication, user, router, publicationId]);
 
     if (isPending || subscriptionLoading)
-        return <div className="text-center py-20">Loading…</div>;
+        return (
+            <div className="text-center py-20">
+                <div className="w-10 h-10 border-2 border-slate-200 border-t-primary rounded-full animate-spin mx-auto mb-3" />
+                <span className="text-slate-400 font-medium text-sm">Loading…</span>
+            </div>
+        );
 
     if (error || !publication)
-        return <div className="text-center py-20">Not found</div>;
+        return (
+            <div className="text-center py-20">
+                <span className="text-slate-400 font-medium text-sm">Not found</span>
+            </div>
+        );
 
     const canEdit = isOwner(user, publication.author);
 
@@ -275,16 +280,8 @@ export default function PublicationDetail({ hideStatus = false }: { hideStatus?:
         STATUS_CONFIG[publication.status as PublicationStatus] ??
         STATUS_CONFIG.pending;
 
-    // const refs = Array.isArray(publication.references)
-    //     ? publication.
-    //     : [];
-
-    // const files = Array.isArray(publication.attachments)
-    //     ? publication.attachments
-    //     : [];
-
     return (
-        <article className="max-w-3xl mx-auto bg-white border rounded-xl overflow-hidden mt-10">
+        <article className="max-w-3xl mx-auto bg-white border border-slate-100 rounded-2xl overflow-hidden mt-10 shadow-sm">
             <img
                 src={publication.image || FallbackImage}
                 className="w-full h-[300px] object-cover"
@@ -293,10 +290,10 @@ export default function PublicationDetail({ hideStatus = false }: { hideStatus?:
 
             <div className="p-8 space-y-6">
                 <div className="flex justify-between items-center">
-                    <h1 className="text-3xl font-bold">{publication.title}</h1>
+                    <h1 className="text-3xl font-bold text-slate-900">{publication.title}</h1>
                     {!hideStatus && (
                         <span
-                            className={`px-4 py-1 rounded-full border ${status.bg} ${status.text}`}
+                            className={`px-4 py-1 rounded-full border text-xs font-bold ${status.bg} ${status.text}`}
                         >
                             {status.label}
                         </span>
@@ -311,42 +308,12 @@ export default function PublicationDetail({ hideStatus = false }: { hideStatus?:
                     />
                 )}
 
-                <p className="text-gray-700 whitespace-pre-line">
+                <p className="text-slate-600 whitespace-pre-line leading-relaxed">
                     {publication.content}
                 </p>
-
-                {/* {refs.length > 0 && (
-                    <ul className="list-disc ml-6">
-                        {refs.map((r) => (
-                            <li key={r}>
-                                <a
-                                    href={r}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="text-blue-600 underline"
-                                >
-                                    {r}
-                                </a>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-
-                {files.length > 0 && (
-                    <ul>
-                        {files.map((f: any) => (
-                            <li key={f.url}>
-                                <a href={f.url} className="underline">
-                                    {f.name || f.url}
-                                </a>
-                            </li>
-                        ))}
-                    </ul>
-                )} */}
 
                 <PublicationComments publicationId={publication._id!} />
             </div>
         </article>
     );
 }
-

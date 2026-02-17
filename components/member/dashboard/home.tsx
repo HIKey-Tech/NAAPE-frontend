@@ -1,191 +1,175 @@
 "use client";
+
 import React from "react";
-import DashboardCard from "../component/dashboardcard";
 import { PublicationCard } from "../component/publication.card";
 import EventCard from "../component/event.card";
 import {
-  MdLibraryBooks,
-  MdEventAvailable,
-  MdWork,
-} from "react-icons/md";
+  FaBook,
+  FaCalendarAlt,
+  FaBriefcase,
+  FaArrowRight
+} from "react-icons/fa";
 import { usePublications } from "@/hooks/usePublications";
 import { useMemberStats } from "@/hooks/useMembers";
 import { useEvents } from "@/hooks/useEvents";
 import { useAuth } from "@/context/authcontext";
+import Link from "next/link";
 
-// --- Types ---
-type DashboardCardData = {
-  icon: React.ReactNode;
-  value: number;
-  label: string;
-};
+// --- Components ---
 
-// --- Dashboard Cards Section ---
-const DashboardCards: React.FC = () => {
-  const { data: stats, isPending, error } = useMemberStats();
-  const metrics: DashboardCardData[] = [
-    {
-      icon: <MdLibraryBooks size={32} color="#1843BF" />,
-      value: stats?.publicationCount ?? 0,
-      label: "Publications",
-    },
-    {
-      icon: <MdEventAvailable size={32} color="#DB8801" />,
-      value: stats?.eventsRegistered ?? 0,
-      label: "Events",
-    },
-    {
-      icon: <MdWork size={32} color="#4D5770" />,
-      value: stats?.jobMatches ?? 0,
-      label: "Jobs",
-    },
-  ];
+function StatCard({
+  label,
+  value,
+  icon: Icon,
+  colorClass,
+  bgClass
+}: {
+  label: string,
+  value: number,
+  icon: React.ElementType,
+  colorClass: string,
+  bgClass: string
+}) {
+  return (
+    <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-all duration-200 group">
+      <div className="flex items-start justify-between mb-4">
+        <div className={`p-3 rounded-xl ${bgClass} ${colorClass} group-hover:scale-110 transition-transform duration-300`}>
+          <Icon size={20} />
+        </div>
+      </div>
+      <div>
+        <h3 className="text-3xl font-black text-slate-800 tracking-tight mb-1 group-hover:text-primary transition-colors">{value}</h3>
+        <p className="text-sm font-semibold text-slate-400 uppercase tracking-wide">{label}</p>
+      </div>
+    </div>
+  );
+}
 
-  if (error)
+const DashboardStats: React.FC = () => {
+  const { data: stats, isPending } = useMemberStats();
+
+  if (isPending) {
     return (
-      <div className="text-center text-red-600 font-semibold py-4 bg-white rounded-xl shadow-sm">
-        Couldn't fetch stats.
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="bg-white rounded-2xl p-6 border border-slate-100 h-32 animate-pulse" />
+        ))}
       </div>
     );
+  }
+
+  const items = [
+    { label: "Publications", value: stats?.publicationCount ?? 0, icon: FaBook, color: "text-primary", bg: "bg-primary/5" },
+    { label: "Events", value: stats?.eventsRegistered ?? 0, icon: FaCalendarAlt, color: "text-amber-600", bg: "bg-amber-50" },
+    { label: "Jobs", value: stats?.jobMatches ?? 0, icon: FaBriefcase, color: "text-slate-600", bg: "bg-slate-100" },
+  ];
 
   return (
-    <section aria-label="Dashboard summary cards" className="mb-10">
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
-        {isPending
-          ? [...Array(3)].map((_, idx) => (
-              <div
-                key={idx}
-                className="rounded-2xl border border-[#e5eaf2] bg-white p-5 flex flex-col items-center shadow-xs animate-pulse transition"
-              >
-                <div className="bg-gray-200 rounded-full w-12 h-12 mb-3" />
-                <div className="w-20 h-5 bg-gray-100 mb-2 rounded" />
-                <div className="w-12 h-4 bg-gray-100 rounded" />
-              </div>
-            ))
-          : metrics.map((card, idx) => (
-              <div
-                key={idx}
-                className="rounded-2xl border border-[#e5eaf2] bg-white p-5 flex flex-col items-center shadow-sm hover:shadow-md transition"
-              >
-                <div className="mb-2">{card.icon}</div>
-                <div className="font-extrabold text-2xl mt-1 text-[#1843BF] tracking-tight">
-                  {card.value}
-                </div>
-                <div className="text-[14px] text-[#4D5770] font-medium tracking-wide mt-1 uppercase">
-                  {card.label}
-                </div>
-              </div>
-            ))}
-      </div>
-    </section>
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+      {items.map((item) => (
+        <StatCard
+          key={item.label}
+          {...item}
+          colorClass={item.color}
+          bgClass={item.bg}
+        />
+      ))}
+    </div>
   );
 };
 
-// --- Section Headline component ---
-const SectionHeading: React.FC<{
-  title: string;
-  children?: React.ReactNode;
-}> = ({ title, children }) => (
-  <div className="flex items-center justify-between mb-5">
-    <h2 className="font-extrabold text-xl text-[#15407C] tracking-tight flex-1 select-none">
-      {title}
-    </h2>
-    {children}
+const SectionHeader = ({ title, href }: { title: string, href?: string }) => (
+  <div className="flex items-center justify-between mb-6">
+    <h2 className="text-xl font-bold text-slate-800 tracking-tight">{title}</h2>
+    {href && (
+      <Link href={href} className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors group">
+        View All <FaArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+      </Link>
+    )}
   </div>
 );
 
-// --- Publications Section ---
-const PublicationsSection: React.FC = () => {
-  const { data: publications, isPending: loading, error } = usePublications();
+const RecentPublications: React.FC = () => {
+  const { data: publications, isPending, error } = usePublications();
 
   return (
-    <section className="mb-8 bg-white rounded-2xl py-6 px-4 shadow-sm border border-[#e6eaf1]">
-      <SectionHeading title="Recent Publications" />
-      {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {[...Array(3)].map((_, idx) => (
-            <div
-              key={idx}
-              className="rounded-xl border bg-gray-100 p-4 h-36 animate-pulse"
-            />
-          ))}
+    <section className="mb-12">
+      <SectionHeader title="Recent Publications" href="/publications" />
+
+      {isPending ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => <div key={i} className="bg-slate-100 rounded-2xl h-64 animate-pulse" />)}
         </div>
       ) : error ? (
-        <div className="text-center text-red-600 py-5">
-          Couldn't load publications.
-        </div>
+        <div className="text-red-500 bg-red-50 p-4 rounded-xl text-center text-sm font-medium">Failed to load publications</div>
       ) : publications && publications.length > 0 ? (
-        <div className="grid grid-cols-1 w-full sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {publications.slice(0, 3).map((pub: any, idx: number) => (
-            <PublicationCard
-              key={pub._id ?? idx}
-              publication={pub}
-            // className="w-full"
-            />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {publications.slice(0, 3).map((pub: any) => (
+            <PublicationCard key={pub._id} publication={pub} />
           ))}
         </div>
       ) : (
-        <div className="text-center text-[#8BA4C9] py-6 font-medium">
-          No publications yet.
+        <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-slate-200">
+          <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-300">
+            <FaBook />
+          </div>
+          <p className="text-slate-500 font-medium">No publications found</p>
         </div>
       )}
     </section>
   );
 };
 
-// --- Events Section ---
-const EventsSection: React.FC = () => {
+const UpcomingEvents: React.FC = () => {
   const { data: events, isPending, error } = useEvents();
 
   return (
-    <section className="mb-8 bg-white rounded-2xl py-6 px-4 shadow-sm border border-[#e6eaf1]">
-      <SectionHeading title="Upcoming Events" />
+    <section className="mb-8">
+      <SectionHeader title="Upcoming Events" href="/member/events" />
+
       {isPending ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {[...Array(3)].map((_, idx) => (
-            <div
-              key={idx}
-              className="rounded-xl border bg-gray-100 p-4 h-44 animate-pulse"
-            />
-          ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => <div key={i} className="bg-slate-100 rounded-2xl h-64 animate-pulse" />)}
         </div>
       ) : error ? (
-        <div className="text-center text-red-600 py-5">
-          Couldn't load events.
-        </div>
-      ) : Array.isArray(events) && events.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {events.slice(0, 3).map((ev: any, idx: number) => (
+        <div className="text-red-500 bg-red-50 p-4 rounded-xl text-center text-sm font-medium">Failed to load events</div>
+      ) : events && events.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {events.slice(0, 3).map((ev: any) => (
             <EventCard
-              key={ev._id ?? idx}
+              key={ev._id}
               {...ev}
-              className="w-full"
-              id={ev._id?.toString() ?? `${idx}`}
-            // registerLabel={ev.registerLabel || "Register"}
+              id={ev._id}
+              className="w-full h-full"
             />
           ))}
         </div>
       ) : (
-        <div className="text-center text-[#8BA4C9] py-6 font-medium">
-          No upcoming events.
+        <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-slate-200">
+          <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-300">
+            <FaCalendarAlt />
+          </div>
+          <p className="text-slate-500 font-medium">No upcoming events</p>
         </div>
       )}
     </section>
   );
 };
 
-// --- Main Dashboard Home ---
 const MemberDashboardHome: React.FC = () => {
-  useAuth(); // Ensure user exists
+  const { user } = useAuth();
 
   return (
-    <main className="flex-1 pb-10 bg-[#f5f7fb] min-h-screen">
-      <div className="w-full max-w-7xl mx-auto px-2 sm:px-8 pt-8 pb-4">
-        <DashboardCards />
-        <div className="space-y-7">
-          <PublicationsSection />
-          <EventsSection />
+    <main className="flex-1 bg-slate-50 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10">
+        <div className="mb-10">
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Dashboard</h1>
+          <p className="text-slate-500 mt-2 text-lg">Welcome back, {user?.name?.split(' ')[0] || "Member"}</p>
         </div>
+
+        <DashboardStats />
+        <RecentPublications />
+        <UpcomingEvents />
       </div>
     </main>
   );

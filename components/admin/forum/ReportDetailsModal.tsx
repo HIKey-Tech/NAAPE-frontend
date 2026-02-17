@@ -79,29 +79,29 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'pending':
-                return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+                return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700">Pending</span>;
             case 'resolved':
-                return <Badge variant="default" className="bg-green-100 text-green-800">Resolved</Badge>;
+                return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">Resolved</span>;
             case 'dismissed':
-                return <Badge variant="secondary" className="bg-gray-100 text-gray-800">Dismissed</Badge>;
+                return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600">Dismissed</span>;
             default:
-                return <Badge variant="secondary">{status}</Badge>;
+                return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600">{status}</span>;
         }
     };
 
     const getReasonBadge = (reason: string) => {
-        const colors = {
-            spam: "bg-red-100 text-red-800",
-            harassment: "bg-orange-100 text-orange-800",
-            inappropriate: "bg-purple-100 text-purple-800",
-            'off-topic': "bg-blue-100 text-blue-800",
-            other: "bg-gray-100 text-gray-800"
+        const colors: Record<string, string> = {
+            spam: "bg-red-100 text-red-700",
+            harassment: "bg-orange-100 text-orange-700",
+            inappropriate: "bg-purple-100 text-purple-700",
+            'off-topic': "bg-primary/10 text-primary",
+            other: "bg-slate-100 text-slate-600"
         };
 
         return (
-            <Badge variant="secondary" className={colors[reason as keyof typeof colors] || colors.other}>
+            <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${colors[reason] || colors.other}`}>
                 {reason.charAt(0).toUpperCase() + reason.slice(1).replace('-', ' ')}
-            </Badge>
+            </span>
         );
     };
 
@@ -119,87 +119,89 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b">
+                <div className="flex items-center justify-between p-6 border-b border-slate-100">
                     <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2 text-lg font-semibold">
+                        <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
                             {getTypeIcon(report.reportType)}
-                            Report Details
                         </div>
-                        {getStatusBadge(report.status)}
+                        <div>
+                            <h2 className="text-lg font-bold text-slate-900">Report Details</h2>
+                            <div className="flex items-center gap-2 mt-0.5">
+                                {getStatusBadge(report.status)}
+                            </div>
+                        </div>
                     </div>
-                    <Button
-                        variant="ghost"
-                        size="sm"
+                    <button
                         onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700"
+                        className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
                     >
-                        <FaTimes className="w-4 h-4" />
-                    </Button>
+                        <FaTimes className="w-3.5 h-3.5 text-slate-500" />
+                    </button>
                 </div>
 
                 {/* Content */}
                 <div className="p-6 space-y-6">
                     {/* Report Info */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
+                        <div className="space-y-5">
                             <div>
-                                <h3 className="font-medium text-gray-900 mb-2">Report Information</h3>
-                                <div className="space-y-2 text-sm">
+                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Report Information</h3>
+                                <div className="space-y-3 text-sm">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-gray-600">Type:</span>
+                                        <span className="text-slate-500">Type:</span>
                                         <div className="flex items-center gap-2">
                                             {getTypeIcon(report.reportType)}
-                                            <span className="capitalize">{report.reportType}</span>
+                                            <span className="capitalize font-medium text-slate-700">{report.reportType}</span>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-gray-600">Reason:</span>
+                                        <span className="text-slate-500">Reason:</span>
                                         {getReasonBadge(report.reason)}
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <FaCalendarAlt className="w-4 h-4 text-gray-400" />
-                                        <span className="text-gray-600">Reported:</span>
-                                        <span>{format(new Date(report.createdAt), 'MMM dd, yyyy HH:mm')}</span>
+                                        <FaCalendarAlt className="w-3.5 h-3.5 text-slate-400" />
+                                        <span className="text-slate-500">Reported:</span>
+                                        <span className="text-slate-700">{format(new Date(report.createdAt), 'MMM dd, yyyy HH:mm')}</span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Reporter Info */}
                             <div>
-                                <h3 className="font-medium text-gray-900 mb-2">Reported By</h3>
-                                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                                    <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">
+                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Reported By</h3>
+                                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                    <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center text-sm font-bold">
                                         {report.reporter.name.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
-                                        <div className="font-medium">{report.reporter.name}</div>
-                                        <div className="text-sm text-gray-600">{report.reporter.email}</div>
-                                        <Badge variant="secondary" className="text-xs">
+                                        <div className="font-bold text-slate-900 text-sm">{report.reporter.name}</div>
+                                        <div className="text-xs text-slate-500">{report.reporter.email}</div>
+                                        <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-500 mt-1 inline-block">
                                             {report.reporter.role}
-                                        </Badge>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-5">
                             {/* Reported User (if applicable) */}
                             {report.reportedUser && (
                                 <div>
-                                    <h3 className="font-medium text-gray-900 mb-2">Reported User</h3>
-                                    <div className="flex items-center gap-3 p-3 bg-red-50 rounded-lg">
-                                        <div className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Reported User</h3>
+                                    <div className="flex items-center gap-3 p-3 bg-red-50/50 rounded-xl border border-red-100">
+                                        <div className="w-10 h-10 bg-red-500 text-white rounded-xl flex items-center justify-center text-sm font-bold">
                                             {report.reportedUser.name.charAt(0).toUpperCase()}
                                         </div>
                                         <div>
-                                            <div className="font-medium">{report.reportedUser.name}</div>
-                                            <div className="text-sm text-gray-600">{report.reportedUser.email}</div>
-                                            <Badge variant="secondary" className="text-xs">
+                                            <div className="font-bold text-slate-900 text-sm">{report.reportedUser.name}</div>
+                                            <div className="text-xs text-slate-500">{report.reportedUser.email}</div>
+                                            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-600 mt-1 inline-block">
                                                 {report.reportedUser.role}
-                                            </Badge>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -208,21 +210,21 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                             {/* Resolution Info (if resolved) */}
                             {report.status !== 'pending' && report.resolvedBy && (
                                 <div>
-                                    <h3 className="font-medium text-gray-900 mb-2">Resolution</h3>
+                                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Resolution</h3>
                                     <div className="space-y-2 text-sm">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-gray-600">Resolved by:</span>
-                                            <span className="font-medium">{report.resolvedBy.name}</span>
+                                            <span className="text-slate-500">Resolved by:</span>
+                                            <span className="font-bold text-slate-700">{report.resolvedBy.name}</span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <FaCalendarAlt className="w-4 h-4 text-gray-400" />
-                                            <span className="text-gray-600">Resolved:</span>
-                                            <span>{format(new Date(report.resolvedAt!), 'MMM dd, yyyy HH:mm')}</span>
+                                            <FaCalendarAlt className="w-3.5 h-3.5 text-slate-400" />
+                                            <span className="text-slate-500">Resolved:</span>
+                                            <span className="text-slate-700">{format(new Date(report.resolvedAt!), 'MMM dd, yyyy HH:mm')}</span>
                                         </div>
                                         {report.resolutionNotes && (
                                             <div className="mt-2">
-                                                <span className="text-gray-600">Notes:</span>
-                                                <div className="mt-1 p-2 bg-gray-50 rounded text-sm">
+                                                <span className="text-slate-500">Notes:</span>
+                                                <div className="mt-1 p-3 bg-slate-50 rounded-xl text-sm border border-slate-100">
                                                     {report.resolutionNotes}
                                                 </div>
                                             </div>
@@ -236,8 +238,8 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                     {/* Report Description */}
                     {report.description && (
                         <div>
-                            <h3 className="font-medium text-gray-900 mb-2">Description</h3>
-                            <div className="p-3 bg-gray-50 rounded-lg text-sm">
+                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Description</h3>
+                            <div className="p-4 bg-slate-50 rounded-xl text-sm border border-slate-100 text-slate-700">
                                 {report.description}
                             </div>
                         </div>
@@ -246,27 +248,27 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                     {/* Reported Content */}
                     {report.reportedContent && (
                         <div>
-                            <h3 className="font-medium text-gray-900 mb-2">Reported Content</h3>
-                            <div className="border rounded-lg p-4 bg-gray-50">
+                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Reported Content</h3>
+                            <div className="rounded-xl p-4 bg-slate-50 border border-slate-100">
                                 {report.reportType === 'thread' && (
                                     <div>
                                         <div className="flex items-center gap-2 mb-2">
-                                            <FaComments className="w-4 h-4 text-gray-500" />
-                                            <span className="font-medium">{report.reportedContent.title}</span>
+                                            <FaComments className="w-4 h-4 text-slate-400" />
+                                            <span className="font-bold text-slate-900 text-sm">{report.reportedContent.title}</span>
                                             {report.reportedContent.category && (
-                                                <Badge variant="secondary" className="text-xs">
+                                                <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-500">
                                                     {report.reportedContent.category.name}
-                                                </Badge>
+                                                </span>
                                             )}
                                         </div>
                                         {report.reportedContent.author && (
-                                            <div className="text-sm text-gray-600 mb-2">
+                                            <div className="text-sm text-slate-500 mb-2">
                                                 By: {report.reportedContent.author.name}
                                             </div>
                                         )}
                                         {report.reportedContent.content && (
-                                            <div className="text-sm bg-white p-3 rounded border">
-                                                {report.reportedContent.content.length > 200 
+                                            <div className="text-sm bg-white p-3 rounded-xl border border-slate-100 text-slate-700">
+                                                {report.reportedContent.content.length > 200
                                                     ? `${report.reportedContent.content.substring(0, 200)}...`
                                                     : report.reportedContent.content
                                                 }
@@ -278,22 +280,22 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                                 {report.reportType === 'reply' && (
                                     <div>
                                         <div className="flex items-center gap-2 mb-2">
-                                            <FaReply className="w-4 h-4 text-gray-500" />
-                                            <span className="font-medium">Reply</span>
+                                            <FaReply className="w-4 h-4 text-slate-400" />
+                                            <span className="font-bold text-slate-900 text-sm">Reply</span>
                                             {report.additionalContext?.threadTitle && (
-                                                <span className="text-sm text-gray-600">
-                                                    in "{report.additionalContext.threadTitle}"
+                                                <span className="text-sm text-slate-500">
+                                                    in &quot;{report.additionalContext.threadTitle}&quot;
                                                 </span>
                                             )}
                                         </div>
                                         {report.reportedContent.author && (
-                                            <div className="text-sm text-gray-600 mb-2">
+                                            <div className="text-sm text-slate-500 mb-2">
                                                 By: {report.reportedContent.author.name}
                                             </div>
                                         )}
                                         {report.reportedContent.content && (
-                                            <div className="text-sm bg-white p-3 rounded border">
-                                                {report.reportedContent.content.length > 200 
+                                            <div className="text-sm bg-white p-3 rounded-xl border border-slate-100 text-slate-700">
+                                                {report.reportedContent.content.length > 200
                                                     ? `${report.reportedContent.content.substring(0, 200)}...`
                                                     : report.reportedContent.content
                                                 }
@@ -307,16 +309,16 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
 
                     {/* Resolution Actions (only for pending reports) */}
                     {report.status === 'pending' && (
-                        <div className="border-t pt-6">
-                            <h3 className="font-medium text-gray-900 mb-4">Resolve Report</h3>
-                            
+                        <div className="border-t border-slate-100 pt-6">
+                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-4">Resolve Report</h3>
+
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">
                                         Action to Take
                                     </label>
                                     <Select value={actionTaken} onValueChange={(value: any) => setActionTaken(value)}>
-                                        <SelectTrigger>
+                                        <SelectTrigger className="rounded-xl border-slate-200 bg-slate-50 focus:bg-white">
                                             <SelectValue placeholder="Select action" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -329,7 +331,7 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">
                                         Resolution Notes *
                                     </label>
                                     <Textarea
@@ -337,7 +339,7 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                                         onChange={(e) => setResolutionNotes(e.target.value)}
                                         placeholder="Explain how this report was resolved..."
                                         rows={3}
-                                        className="w-full"
+                                        className="w-full rounded-xl border-slate-200 bg-slate-50 focus:bg-white"
                                     />
                                 </div>
 
@@ -345,7 +347,7 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                                     <Button
                                         onClick={handleResolve}
                                         disabled={isProcessing || !resolutionNotes.trim()}
-                                        className="bg-green-600 hover:bg-green-700 text-white"
+                                        className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-md shadow-emerald-600/20"
                                     >
                                         <FaCheckCircle className="w-4 h-4 mr-2" />
                                         {isProcessing ? "Resolving..." : "Resolve Report"}
@@ -354,7 +356,7 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                                         onClick={handleDismiss}
                                         disabled={isProcessing}
                                         variant="outline"
-                                        className="text-gray-600 hover:text-gray-800"
+                                        className="text-slate-600 hover:text-slate-800 rounded-xl font-bold border-slate-200"
                                     >
                                         <FaTimesCircle className="w-4 h-4 mr-2" />
                                         {isProcessing ? "Dismissing..." : "Dismiss Report"}

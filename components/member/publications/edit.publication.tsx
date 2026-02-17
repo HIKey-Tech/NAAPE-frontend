@@ -115,7 +115,6 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
       status: saveAsDraft ? "draft" : "pending",
     };
 
-    // Handle image if changed
     const file = values.imageFile as File | null;
     if (file instanceof File) {
       updatedData.image = file;
@@ -137,7 +136,7 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
       toast.success(
         <div>
           <div className="font-bold mb-1">{successMessage}</div>
-          <div className="text-sm text-[#244]">{successDescription}</div>
+          <div className="text-sm text-slate-500">{successDescription}</div>
         </div>
       );
 
@@ -163,18 +162,18 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
 
   return (
     <div
-      className="max-w-2xl mx-auto px-4 py-10 bg-white shadow-md rounded-xl md:px-8"
+      className="max-w-2xl mx-auto px-4 py-10 bg-white shadow-sm border border-slate-100 rounded-2xl md:px-8"
       role="region"
       aria-labelledby="edit-publication-heading"
     >
       <header className="mb-7">
         <h1
           id="edit-publication-heading"
-          className="text-3xl md:text-4xl font-extrabold text-[#16355D] mb-2 leading-tight"
+          className="text-3xl md:text-4xl font-bold text-slate-900 mb-2 leading-tight"
         >
           Edit Publication
         </h1>
-        <p className="text-base md:text-lg text-[#486186] font-medium">
+        <p className="text-base md:text-lg text-slate-500 font-medium">
           Update your publication and save as draft or submit for review.
         </p>
       </header>
@@ -188,15 +187,15 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[#142535] font-semibold text-lg mb-1 block">
-                    Publication Title <span className="text-[#E12D39]">*</span>
+                  <FormLabel className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">
+                    Publication Title <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       maxLength={100}
                       placeholder="e.g., The Future of Education in STEM in Nigeria"
-                      className="bg-[#F6F8FA] border border-[#C3D6ED] rounded-lg px-3 py-2 h-12 text-base"
+                      className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 h-12 text-base focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
                     />
                   </FormControl>
                   <FormMessage className="text-xs text-red-600 mt-1" />
@@ -212,12 +211,12 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[#142535] font-semibold text-lg mb-1 block">
-                    Category <span className="text-[#E12D39]">*</span>
+                  <FormLabel className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">
+                    Category <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="bg-[#F6F8FA] border border-[#C3D6ED] rounded-lg px-3 py-2 h-12 text-base">
+                      <SelectTrigger className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 h-12 text-base focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
@@ -242,15 +241,15 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
               name="content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[#142535] font-semibold text-lg mb-1 block">
-                    Description <span className="text-[#E12D39]">*</span>
+                  <FormLabel className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">
+                    Description <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
                       maxLength={4000}
                       placeholder="Describe your publication and its usefulness"
-                      className="bg-[#F6F8FA] border border-[#C3D6ED] rounded-lg px-3 py-2 text-base min-h-[120px]"
+                      className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-base min-h-[120px] focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
                       rows={5}
                     />
                   </FormControl>
@@ -267,13 +266,13 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
               name="imageFile"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[#142535] font-semibold text-lg mb-2 block">
-                    Upload Cover Image <span className="text-[#8CA1B6] font-normal text-base">(optional)</span>
+                  <FormLabel className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2 block">
+                    Upload Cover Image <span className="text-slate-300 font-normal text-xs normal-case">(optional)</span>
                   </FormLabel>
                   {imagePreviewUrl && !field.value && (
                     <div className="mb-4">
-                      <p className="text-sm text-gray-600 mb-2">Current image:</p>
-                      <img src={imagePreviewUrl} alt="Current" className="w-full max-w-md h-48 object-cover rounded-lg" />
+                      <p className="text-sm text-slate-500 mb-2">Current image:</p>
+                      <img src={imagePreviewUrl} alt="Current" className="w-full max-w-md h-48 object-cover rounded-xl" />
                     </div>
                   )}
                   <DropImageDual
@@ -292,11 +291,11 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
           </section>
 
           {/* Action buttons */}
-          <section className="flex flex-row flex-wrap items-center justify-end gap-4 pt-6 border-t border-[#E3E8ED] mt-4">
+          <section className="flex flex-row flex-wrap items-center justify-end gap-4 pt-6 border-t border-slate-100 mt-4">
             <NaapButton
               type="button"
               variant="ghost"
-              className="rounded-lg h-11 px-8 border border-[#357AA8] text-[#357AA8] hover:bg-[#ecf3f9] font-semibold"
+              className="rounded-xl h-11 px-8 border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold"
               onClick={handleDraft}
               disabled={submitting}
             >
@@ -305,7 +304,7 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
             <NaapButton
               type="button"
               variant="primary"
-              className="rounded-lg h-11 px-8"
+              className="rounded-xl h-11 px-8 shadow-md shadow-primary/20"
               onClick={handleSubmit}
               loading={submitting}
             >

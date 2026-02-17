@@ -1,9 +1,9 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { useAdminPublications } from "@/hooks/useAdminPublications";
 import { useApprovePublication, useRejectPublication } from "@/hooks/usePublications";
 import { IPublication } from "@/app/api/publication/types";
-import { FaSearch, FaEye, FaTrash, FaFilter } from "react-icons/fa";
+import { FaSearch, FaEye, FaTrash, FaCheck, FaTimes, FaChevronLeft, FaChevronRight, FaBook } from "react-icons/fa";
 import { PublicationDetailsModal } from "./PublicationDetailsModal";
 import { DeletePublicationModal } from "./DeletePublicationModal";
 import { toast } from "sonner";
@@ -15,6 +15,13 @@ const STATUS_OPTIONS = [
     { value: "rejected", label: "Rejected" },
     { value: "draft", label: "Draft" },
 ];
+
+const statusStyles: Record<string, string> = {
+    draft: "bg-slate-100 text-slate-600",
+    pending: "bg-amber-50 text-amber-700 border border-amber-100",
+    approved: "bg-emerald-50 text-emerald-700 border border-emerald-100",
+    rejected: "bg-red-50 text-red-700 border border-red-100",
+};
 
 export const PublicationManagementSection: React.FC = () => {
     const [search, setSearch] = useState("");
@@ -33,188 +40,114 @@ export const PublicationManagementSection: React.FC = () => {
     const approveMutation = useApprovePublication();
     const rejectMutation = useRejectPublication();
 
-    const handleApprove = (publication: IPublication) => {
-        approveMutation.mutate(publication._id, {
+    const handleApprove = (pub: IPublication) => {
+        approveMutation.mutate(pub._id, {
             onSuccess: () => toast.success("Publication approved"),
-            onError: (error: any) =>
-                toast.error(error?.response?.data?.message || "Failed to approve"),
+            onError: (error: any) => toast.error(error?.response?.data?.message || "Failed to approve"),
         });
     };
 
-    const handleReject = (publication: IPublication) => {
-        rejectMutation.mutate(publication._id, {
+    const handleReject = (pub: IPublication) => {
+        rejectMutation.mutate(pub._id, {
             onSuccess: () => toast.success("Publication rejected"),
-            onError: (error: any) =>
-                toast.error(error?.response?.data?.message || "Failed to reject"),
+            onError: (error: any) => toast.error(error?.response?.data?.message || "Failed to reject"),
         });
     };
 
     const formatDate = (dateString?: string) => {
         if (!dateString) return "N/A";
-        return new Date(dateString).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-        });
-    };
-
-    const getStatusBadge = (status: IPublication["status"]) => {
-        const styles = {
-            draft: "bg-gray-100 text-gray-800 border-gray-300",
-            pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
-            approved: "bg-green-100 text-green-800 border-green-300",
-            rejected: "bg-red-100 text-red-800 border-red-300",
-        };
-
-        return (
-            <span
-                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${
-                    styles[status]
-                }`}
-            >
-                {status.charAt(0).toUpperCase() + status.slice(1)}
-            </span>
-        );
+        return new Date(dateString).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     };
 
     return (
-        <div className="bg-white rounded-lg border border-gray-200">
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
             {/* Header with Filters */}
-            <div className="p-6 border-b border-gray-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">All Publications</h3>
-                
-                <div className="flex flex-col sm:flex-row gap-4">
-                    {/* Search */}
+            <div className="p-6 border-b border-slate-50">
+                <h3 className="text-lg font-bold text-slate-800 mb-5">All Publications</h3>
+                <div className="flex flex-col sm:flex-row gap-3">
                     <div className="flex-1 relative">
-                        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                        <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={14} />
                         <input
                             type="text"
-                            placeholder="Search by title, author, or content..."
+                            placeholder="Search by title, author..."
                             value={search}
-                            onChange={(e) => {
-                                setSearch(e.target.value);
-                                setPage(1);
-                            }}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                            className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none"
                         />
                     </div>
-
-                    {/* Status Filter */}
-                    <div className="sm:w-48 relative">
-                        <FaFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => {
-                                setStatusFilter(e.target.value);
-                                setPage(1);
-                            }}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
-                        >
-                            {STATUS_OPTIONS.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    <select
+                        value={statusFilter}
+                        onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
+                        className="sm:w-44 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none appearance-none"
+                    >
+                        {STATUS_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                    </select>
                 </div>
             </div>
 
             {/* Table */}
             <div className="overflow-x-auto">
                 {isLoading ? (
-                    <div className="p-12 text-center">
-                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                        <p className="mt-2 text-gray-600">Loading publications...</p>
+                    <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+                        <div className="w-8 h-8 border-2 border-slate-200 border-t-primary rounded-full animate-spin mb-3" />
+                        <span className="font-medium text-sm">Loading publications...</span>
                     </div>
                 ) : isError ? (
-                    <div className="p-12 text-center text-red-600">
-                        Failed to load publications. Please try again.
-                    </div>
+                    <div className="py-16 text-center text-red-500 font-medium text-sm">Failed to load publications.</div>
                 ) : !data?.data || data.data.length === 0 ? (
-                    <div className="p-12 text-center text-gray-500">
-                        No publications found.
+                    <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+                        <div className="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                            <FaBook className="text-xl text-slate-300" />
+                        </div>
+                        <span className="font-semibold text-slate-500">No publications found</span>
+                        <span className="text-sm text-slate-400 mt-1">Try adjusting your filters.</span>
                     </div>
                 ) : (
                     <>
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Title
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Author
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Status
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Submitted
-                                    </th>
-                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Actions
-                                    </th>
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="border-b border-slate-100">
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Title</th>
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider hidden md:table-cell">Author</th>
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider hidden sm:table-cell">Date</th>
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {data.data.map((publication) => (
-                                    <tr key={publication._id} className="hover:bg-gray-50">
-                                        <td className="px-6 py-4">
-                                            <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
-                                                {publication.title}
-                                            </div>
-                                            <div className="text-sm text-gray-500">
-                                                {publication.category || "Uncategorized"}
-                                            </div>
+                            <tbody className="divide-y divide-slate-50">
+                                {data.data.map((pub) => (
+                                    <tr key={pub._id} className="hover:bg-slate-50/50 transition-colors group">
+                                        <td className="py-4 px-6">
+                                            <div className="text-sm font-semibold text-slate-800 truncate max-w-xs">{pub.title}</div>
+                                            <div className="text-xs text-slate-400 mt-0.5">{pub.category || "Uncategorized"}</div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="text-sm text-gray-900">
-                                                {publication.author.name}
-                                            </div>
-                                            <div className="text-sm text-gray-500">
-                                                {publication.author.email}
-                                            </div>
+                                        <td className="py-4 px-6 hidden md:table-cell">
+                                            <div className="text-sm font-medium text-slate-700">{pub.author.name}</div>
+                                            <div className="text-xs text-slate-400">{pub.author.email}</div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            {getStatusBadge(publication.status)}
+                                        <td className="py-4 px-6">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${statusStyles[pub.status]}`}>
+                                                {pub.status.charAt(0).toUpperCase() + pub.status.slice(1)}
+                                            </span>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-500">
-                                            {formatDate(publication.createdAt)}
-                                        </td>
-                                        <td className="px-6 py-4 text-right text-sm font-medium">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <button
-                                                    onClick={() => setSelectedPublication(publication)}
-                                                    className="text-blue-600 hover:text-blue-900 p-2"
-                                                    title="View Details"
-                                                >
-                                                    <FaEye />
+                                        <td className="py-4 px-6 text-sm text-slate-500 hidden sm:table-cell">{formatDate(pub.createdAt)}</td>
+                                        <td className="py-4 px-6">
+                                            <div className="flex items-center justify-end gap-1.5">
+                                                <button onClick={() => setSelectedPublication(pub)} className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors" title="View">
+                                                    <FaEye size={14} />
                                                 </button>
-                                                {publication.status === "pending" && (
+                                                {pub.status === "pending" && (
                                                     <>
-                                                        <button
-                                                            onClick={() => handleApprove(publication)}
-                                                            disabled={approveMutation.isPending}
-                                                            className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
-                                                        >
-                                                            Approve
+                                                        <button onClick={() => handleApprove(pub)} disabled={approveMutation.isPending} className="p-2 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors disabled:opacity-50" title="Approve">
+                                                            <FaCheck size={14} />
                                                         </button>
-                                                        <button
-                                                            onClick={() => handleReject(publication)}
-                                                            disabled={rejectMutation.isPending}
-                                                            className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
-                                                        >
-                                                            Reject
+                                                        <button onClick={() => handleReject(pub)} disabled={rejectMutation.isPending} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50" title="Reject">
+                                                            <FaTimes size={14} />
                                                         </button>
                                                     </>
                                                 )}
-                                                <button
-                                                    onClick={() => setDeletePublication(publication)}
-                                                    className="text-red-600 hover:text-red-900 p-2"
-                                                    title="Delete"
-                                                >
-                                                    <FaTrash />
+                                                <button onClick={() => setDeletePublication(pub)} className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+                                                    <FaTrash size={12} />
                                                 </button>
                                             </div>
                                         </td>
@@ -225,25 +158,16 @@ export const PublicationManagementSection: React.FC = () => {
 
                         {/* Pagination */}
                         {data.pagination && data.pagination.totalPages > 1 && (
-                            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                                <div className="text-sm text-gray-700">
-                                    Showing page {data.pagination.page} of {data.pagination.totalPages}
-                                    {" "}({data.pagination.total} total)
-                                </div>
+                            <div className="px-6 py-4 border-t border-slate-50 flex items-center justify-between">
+                                <span className="text-sm text-slate-500">
+                                    Page {data.pagination.page} of {data.pagination.totalPages} ({data.pagination.total} total)
+                                </span>
                                 <div className="flex gap-2">
-                                    <button
-                                        onClick={() => setPage((p) => Math.max(1, p - 1))}
-                                        disabled={page === 1}
-                                        className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        Previous
+                                    <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                                        <FaChevronLeft size={10} /> Previous
                                     </button>
-                                    <button
-                                        onClick={() => setPage((p) => p + 1)}
-                                        disabled={page >= data.pagination.totalPages}
-                                        className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        Next
+                                    <button onClick={() => setPage((p) => p + 1)} disabled={page >= data.pagination.totalPages} className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                                        Next <FaChevronRight size={10} />
                                     </button>
                                 </div>
                             </div>
@@ -253,18 +177,8 @@ export const PublicationManagementSection: React.FC = () => {
             </div>
 
             {/* Modals */}
-            {selectedPublication && (
-                <PublicationDetailsModal
-                    publication={selectedPublication}
-                    onClose={() => setSelectedPublication(null)}
-                />
-            )}
-            {deletePublication && (
-                <DeletePublicationModal
-                    publication={deletePublication}
-                    onClose={() => setDeletePublication(null)}
-                />
-            )}
+            {selectedPublication && <PublicationDetailsModal publication={selectedPublication} onClose={() => setSelectedPublication(null)} />}
+            {deletePublication && <DeletePublicationModal publication={deletePublication} onClose={() => setDeletePublication(null)} />}
         </div>
     );
 };

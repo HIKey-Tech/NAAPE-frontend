@@ -4,790 +4,224 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, Save, RotateCcw, Settings, Users, Clock, Shield, Plus, X } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { FaSpinner } from "react-icons/fa";
 
-export interface EventSettings {
-    eventId: string;
-    maxCapacity?: number;
-    isPremiumOnly: boolean;
-    registrationDeadline?: Date;
-    allowWaitlist: boolean;
-    requireApproval: boolean;
-    customFields: CustomField[];
-    notifications: NotificationSettings;
-    version?: number;
-    lastModified?: Date;
-    lastModifiedBy?: string;
-}
+export interface EventSettings { eventId: string; maxCapacity?: number; isPremiumOnly: boolean; registrationDeadline?: Date; allowWaitlist: boolean; requireApproval: boolean; customFields: CustomField[]; notifications: NotificationSettings; version?: number; lastModified?: Date; lastModifiedBy?: string; }
+export interface CustomField { id: string; name: string; type: FieldType; required: boolean; options?: string[]; }
+export enum FieldType { TEXT = 'text', EMAIL = 'email', PHONE = 'phone', SELECT = 'select', CHECKBOX = 'checkbox', TEXTAREA = 'textarea' }
+export interface NotificationSettings { sendReminders: boolean; reminderDays: number[]; sendUpdates: boolean; sendConfirmations: boolean; }
+interface EventSummary { _id: string; title: string; date: Date; registeredCount: number; isPaid: boolean; price: number; }
+interface EventSettingsSectionProps { events: EventSummary[]; selectedEventId: string | null; eventSettings: EventSettings | null; onEventSelect: (eventId: string) => void; onUpdateSettings: (settings: EventSettings) => Promise<void>; loading: boolean; saving: boolean; }
+interface SettingsHistory { id: string; settings: EventSettings; timestamp: Date; description: string; }
 
-export interface CustomField {
-    id: string;
-    name: string;
-    type: FieldType;
-    required: boolean;
-    options?: string[];
-}
+const defaultSettings: Omit<EventSettings, 'eventId'> = { maxCapacity: undefined, isPremiumOnly: false, registrationDeadline: undefined, allowWaitlist: false, requireApproval: false, customFields: [], notifications: { sendReminders: true, reminderDays: [7, 1], sendUpdates: true, sendConfirmations: true }, version: 1, lastModified: new Date() };
 
-export enum FieldType {
-    TEXT = 'text',
-    EMAIL = 'email',
-    PHONE = 'phone',
-    SELECT = 'select',
-    CHECKBOX = 'checkbox',
-    TEXTAREA = 'textarea'
-}
-
-export interface NotificationSettings {
-    sendReminders: boolean;
-    reminderDays: number[];
-    sendUpdates: boolean;
-    sendConfirmations: boolean;
-}
-
-interface EventSummary {
-    _id: string;
-    title: string;
-    date: Date;
-    registeredCount: number;
-    isPaid: boolean;
-    price: number;
-}
-
-interface EventSettingsSectionProps {
-    events: EventSummary[];
-    selectedEventId: string | null;
-    eventSettings: EventSettings | null;
-    onEventSelect: (eventId: string) => void;
-    onUpdateSettings: (settings: EventSettings) => Promise<void>;
-    loading: boolean;
-    saving: boolean;
-}
-
-interface SettingsHistory {
-    id: string;
-    settings: EventSettings;
-    timestamp: Date;
-    description: string;
-}
-
-const defaultSettings: Omit<EventSettings, 'eventId'> = {
-    maxCapacity: undefined,
-    isPremiumOnly: false,
-    registrationDeadline: undefined,
-    allowWaitlist: false,
-    requireApproval: false,
-    customFields: [],
-    notifications: {
-        sendReminders: true,
-        reminderDays: [7, 1],
-        sendUpdates: true,
-        sendConfirmations: true
-    },
-    version: 1,
-    lastModified: new Date()
-};
-
-export function EventSettingsSection({
-    events,
-    selectedEventId,
-    eventSettings,
-    onEventSelect,
-    onUpdateSettings,
-    loading,
-    saving
-}: EventSettingsSectionProps) {
+export function EventSettingsSection({ events, selectedEventId, eventSettings, onEventSelect, onUpdateSettings, loading, saving }: EventSettingsSectionProps) {
     const [localSettings, setLocalSettings] = useState<EventSettings | null>(null);
     const [hasChanges, setHasChanges] = useState(false);
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-    const [newReminderDay, setNewReminderDay] = useState<string>("");
+    const [newReminderDay, setNewReminderDay] = useState("");
     const [settingsHistory, setSettingsHistory] = useState<SettingsHistory[]>([]);
     const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
     const [lastSaveTime, setLastSaveTime] = useState<Date | null>(null);
     const [conflictDetected, setConflictDetected] = useState(false);
-
     const selectedEvent = events.find(e => e._id === selectedEventId);
     const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Update local settings when eventSettings changes
     useEffect(() => {
         if (eventSettings) {
-            setLocalSettings(eventSettings);
-            setHasChanges(false);
-            setValidationErrors({});
-            setConflictDetected(false);
-            
-            // Add to history if it's a new version
+            setLocalSettings(eventSettings); setHasChanges(false); setValidationErrors({}); setConflictDetected(false);
             if (eventSettings.version && eventSettings.lastModified) {
-                const historyEntry: SettingsHistory = {
-                    id: `${eventSettings.eventId}-${eventSettings.version}`,
-                    settings: { ...eventSettings },
-                    timestamp: eventSettings.lastModified,
-                    description: `Settings version ${eventSettings.version}`
-                };
-                
-                setSettingsHistory(prev => {
-                    const exists = prev.find(h => h.id === historyEntry.id);
-                    if (!exists) {
-                        return [historyEntry, ...prev].slice(0, 10);
-                    }
-                    return prev;
-                });
+                const entry: SettingsHistory = { id: `${eventSettings.eventId}-${eventSettings.version}`, settings: { ...eventSettings }, timestamp: eventSettings.lastModified, description: `Version ${eventSettings.version}` };
+                setSettingsHistory(prev => { const exists = prev.find(h => h.id === entry.id); return exists ? prev : [entry, ...prev].slice(0, 10); });
             }
         } else if (selectedEventId) {
-            const defaults = {
-                ...defaultSettings,
-                eventId: selectedEventId
-            };
-            setLocalSettings(defaults);
-            setHasChanges(false);
-            setValidationErrors({});
-            setConflictDetected(false);
-            setSettingsHistory([]);
+            setLocalSettings({ ...defaultSettings, eventId: selectedEventId }); setHasChanges(false); setValidationErrors({}); setConflictDetected(false); setSettingsHistory([]);
         }
     }, [eventSettings, selectedEventId]);
 
-    // Auto-save functionality
     useEffect(() => {
         if (autoSaveEnabled && hasChanges && localSettings && !saving) {
-            if (autoSaveTimeoutRef.current) {
-                clearTimeout(autoSaveTimeoutRef.current);
-            }
-            
-            autoSaveTimeoutRef.current = setTimeout(() => {
-                handleAutoSave();
-            }, 3000);
+            if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current);
+            autoSaveTimeoutRef.current = setTimeout(() => handleAutoSave(), 3000);
         }
-        
-        return () => {
-            if (autoSaveTimeoutRef.current) {
-                clearTimeout(autoSaveTimeoutRef.current);
-            }
-        };
+        return () => { if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current); };
     }, [hasChanges, localSettings, autoSaveEnabled, saving]);
 
-    const handleAutoSave = async () => {
-        if (!localSettings || !hasChanges) return;
-        
-        const errors = validateSettings(localSettings);
-        if (Object.keys(errors).length > 0) {
-            return;
-        }
-        
-        try {
-            await handleSaveSettings(true);
-        } catch (error) {
-            console.error('Auto-save failed:', error);
-        }
-    };
+    const handleAutoSave = async () => { if (!localSettings || !hasChanges) return; const errors = validateSettings(localSettings); if (Object.keys(errors).length > 0) return; try { await handleSaveSettings(true); } catch { } };
+    const updateLocalSettings = (updates: Partial<EventSettings>) => { if (!localSettings) return; setLocalSettings({ ...localSettings, ...updates }); setHasChanges(true); const errs = { ...validationErrors }; Object.keys(updates).forEach(k => delete errs[k]); setValidationErrors(errs); };
+    const validateSettings = (s: EventSettings): Record<string, string> => { const e: Record<string, string> = {}; if (s.maxCapacity !== undefined && s.maxCapacity < 1) e.maxCapacity = "Must be at least 1"; if (s.registrationDeadline && s.registrationDeadline < new Date()) e.registrationDeadline = "Cannot be in the past"; if (selectedEvent && s.registrationDeadline && s.registrationDeadline > selectedEvent.date) e.registrationDeadline = "Cannot be after event date"; return e; };
 
-    const updateLocalSettings = (updates: Partial<EventSettings>) => {
+    const handleSaveSettings = async (isAutoSave = false) => {
         if (!localSettings) return;
-        
-        const newSettings = { ...localSettings, ...updates };
-        setLocalSettings(newSettings);
-        setHasChanges(true);
-        
-        const newErrors = { ...validationErrors };
-        Object.keys(updates).forEach(key => {
-            delete newErrors[key];
-        });
-        setValidationErrors(newErrors);
-    };
-
-    const validateSettings = (settings: EventSettings): Record<string, string> => {
-        const errors: Record<string, string> = {};
-        
-        if (settings.maxCapacity !== undefined && settings.maxCapacity < 1) {
-            errors.maxCapacity = "Capacity must be at least 1";
-        }
-        
-        if (settings.registrationDeadline && settings.registrationDeadline < new Date()) {
-            errors.registrationDeadline = "Registration deadline cannot be in the past";
-        }
-        
-        if (selectedEvent && settings.registrationDeadline && settings.registrationDeadline > selectedEvent.date) {
-            errors.registrationDeadline = "Registration deadline cannot be after event date";
-        }
-        
-        return errors;
-    };
-
-    const handleSaveSettings = async (isAutoSave: boolean = false) => {
-        if (!localSettings) return;
-        
         const errors = validateSettings(localSettings);
-        if (Object.keys(errors).length > 0) {
-            setValidationErrors(errors);
-            if (!isAutoSave) {
-                toast.error("Please fix validation errors before saving");
-            }
-            return;
-        }
-        
+        if (Object.keys(errors).length > 0) { setValidationErrors(errors); if (!isAutoSave) toast.error("Fix validation errors"); return; }
         try {
-            const settingsToSave = {
-                ...localSettings,
-                version: (localSettings.version || 0) + 1,
-                lastModified: new Date()
-            };
-            
-            await onUpdateSettings(settingsToSave);
-            setHasChanges(false);
-            setLastSaveTime(new Date());
-            
-            if (!isAutoSave) {
-                toast.success("Event settings saved successfully");
-            }
-            
-            const historyEntry: SettingsHistory = {
-                id: `${settingsToSave.eventId}-${settingsToSave.version}`,
-                settings: { ...settingsToSave },
-                timestamp: settingsToSave.lastModified,
-                description: isAutoSave ? 'Auto-saved' : 'Manual save'
-            };
-            
-            setSettingsHistory(prev => [historyEntry, ...prev].slice(0, 10));
-            
+            const toSave = { ...localSettings, version: (localSettings.version || 0) + 1, lastModified: new Date() };
+            await onUpdateSettings(toSave); setHasChanges(false); setLastSaveTime(new Date());
+            if (!isAutoSave) toast.success("Settings saved");
+            setSettingsHistory(prev => [{ id: `${toSave.eventId}-${toSave.version}`, settings: { ...toSave }, timestamp: toSave.lastModified, description: isAutoSave ? 'Auto-saved' : 'Manual save' }, ...prev].slice(0, 10));
         } catch (error: any) {
-            if (error.message.includes('conflict') || error.message.includes('version')) {
-                setConflictDetected(true);
-                if (!isAutoSave) {
-                    toast.error("Settings were modified by another user. Please refresh and try again.");
-                }
-            } else {
-                if (!isAutoSave) {
-                    toast.error("Failed to save event settings");
-                }
-            }
-            console.error("Error saving settings:", error);
+            if (error.message?.includes('conflict') || error.message?.includes('version')) { setConflictDetected(true); if (!isAutoSave) toast.error("Settings modified by another user"); }
+            else if (!isAutoSave) toast.error("Failed to save");
         }
     };
 
-    const handleManualSave = () => handleSaveSettings(false);
+    const handleResetSettings = () => { if (eventSettings) setLocalSettings(eventSettings); else if (selectedEventId) setLocalSettings({ ...defaultSettings, eventId: selectedEventId }); setHasChanges(false); setValidationErrors({}); setConflictDetected(false); };
+    const handleRollback = (entry: SettingsHistory) => { setLocalSettings({ ...entry.settings }); setHasChanges(true); setValidationErrors({}); setConflictDetected(false); toast.success(`Rolled back to ${entry.description}`); };
+    const refreshSettings = async () => { if (selectedEventId) { try { await onEventSelect(selectedEventId); setConflictDetected(false); toast.success("Refreshed"); } catch { toast.error("Failed to refresh"); } } };
+    const addReminderDay = () => { if (!localSettings || !newReminderDay) return; const day = parseInt(newReminderDay); if (isNaN(day) || day < 1) { toast.error("Enter a valid number"); return; } if (localSettings.notifications.reminderDays.includes(day)) { toast.error("Already exists"); return; } updateLocalSettings({ notifications: { ...localSettings.notifications, reminderDays: [...localSettings.notifications.reminderDays, day].sort((a, b) => b - a) } }); setNewReminderDay(""); };
+    const removeReminderDay = (day: number) => { if (!localSettings) return; updateLocalSettings({ notifications: { ...localSettings.notifications, reminderDays: localSettings.notifications.reminderDays.filter(d => d !== day) } }); };
 
-    const handleResetSettings = () => {
-        if (eventSettings) {
-            setLocalSettings(eventSettings);
-        } else if (selectedEventId) {
-            setLocalSettings({
-                ...defaultSettings,
-                eventId: selectedEventId
-            });
-        }
-        setHasChanges(false);
-        setValidationErrors({});
-        setConflictDetected(false);
-    };
-
-    const handleRollbackToVersion = (historyEntry: SettingsHistory) => {
-        setLocalSettings({ ...historyEntry.settings });
-        setHasChanges(true);
-        setValidationErrors({});
-        setConflictDetected(false);
-        toast.success(`Rolled back to ${historyEntry.description}`);
-    };
-
-    const refreshSettings = async () => {
-        if (selectedEventId) {
-            try {
-                await onEventSelect(selectedEventId);
-                setConflictDetected(false);
-                toast.success("Settings refreshed successfully");
-            } catch (error) {
-                toast.error("Failed to refresh settings");
-            }
-        }
-    };
-
-    const addReminderDay = () => {
-        if (!localSettings || !newReminderDay) return;
-        
-        const day = parseInt(newReminderDay);
-        if (isNaN(day) || day < 1) {
-            toast.error("Please enter a valid number of days");
-            return;
-        }
-        
-        if (localSettings.notifications.reminderDays.includes(day)) {
-            toast.error("This reminder day already exists");
-            return;
-        }
-        
-        updateLocalSettings({
-            notifications: {
-                ...localSettings.notifications,
-                reminderDays: [...localSettings.notifications.reminderDays, day].sort((a, b) => b - a)
-            }
-        });
-        setNewReminderDay("");
-    };
-
-    const removeReminderDay = (day: number) => {
-        if (!localSettings) return;
-        
-        updateLocalSettings({
-            notifications: {
-                ...localSettings.notifications,
-                reminderDays: localSettings.notifications.reminderDays.filter(d => d !== day)
-            }
-        });
-    };
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading event settings...</p>
-                </div>
-            </div>
-        );
-    }
+    if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>;
 
     return (
         <div className="space-y-6">
             {/* Header */}
             <div className="flex items-center gap-3">
-                <Settings className="h-6 w-6 text-blue-600" />
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Event Settings</h2>
-                    <p className="text-gray-600">Configure event-specific parameters and restrictions</p>
-                </div>
+                <div className="p-2.5 bg-primary/5 text-primary rounded-xl"><Settings size={20} /></div>
+                <div><h2 className="text-2xl font-black text-slate-900">Event Settings</h2><p className="text-slate-500 text-sm">Configure event-specific parameters</p></div>
             </div>
 
             {/* Event Selection */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Users className="h-5 w-5" />
-                        Select Event
-                    </CardTitle>
-                    <CardDescription>
-                        Choose an event to configure its settings
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Select value={selectedEventId || ""} onValueChange={onEventSelect}>
-                        <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select an event to configure" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {events.map((event) => (
-                                <SelectItem key={event._id} value={event._id}>
-                                    <div className="flex items-center justify-between w-full">
-                                        <span>{event.title}</span>
-                                        <div className="flex items-center gap-2 ml-4">
-                                            <Badge variant="outline">
-                                                {event.registeredCount} registered
-                                            </Badge>
-                                            {event.isPaid && (
-                                                <Badge variant="secondary">
-                                                    ${event.price}
-                                                </Badge>
-                                            )}
-                                        </div>
-                                    </div>
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </CardContent>
-            </Card>
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Select Event</p>
+                <Select value={selectedEventId || ""} onValueChange={onEventSelect}>
+                    <SelectTrigger className="w-full rounded-xl border-slate-200"><SelectValue placeholder="Select an event to configure" /></SelectTrigger>
+                    <SelectContent>{events.map(e => <SelectItem key={e._id} value={e._id}><span className="font-medium">{e.title}</span> <span className="text-slate-400 ml-2 text-xs">{e.registeredCount} registered{e.isPaid ? ` • $${e.price}` : ''}</span></SelectItem>)}</SelectContent>
+                </Select>
+            </div>
 
-            {/* Settings Configuration */}
-            {selectedEventId && localSettings && (
+            {selectedEventId && localSettings ? (
                 <div className="space-y-6">
                     {/* Basic Settings */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Shield className="h-5 w-5" />
-                                Basic Settings
-                            </CardTitle>
-                            <CardDescription>
-                                Configure capacity and access restrictions
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            {/* Max Capacity */}
-                            <div className="space-y-2">
-                                <Label htmlFor="maxCapacity">Maximum Capacity</Label>
-                                <Input
-                                    id="maxCapacity"
-                                    type="number"
-                                    min="1"
-                                    placeholder="No limit"
-                                    value={localSettings.maxCapacity || ""}
-                                    onChange={(e) => updateLocalSettings({
-                                        maxCapacity: e.target.value ? parseInt(e.target.value) : undefined
-                                    })}
-                                    className={validationErrors.maxCapacity ? "border-red-500" : ""}
-                                />
-                                {validationErrors.maxCapacity && (
-                                    <p className="text-sm text-red-600">{validationErrors.maxCapacity}</p>
-                                )}
-                                <p className="text-sm text-gray-600">
-                                    Leave empty for unlimited capacity. Current registrations: {selectedEvent?.registeredCount || 0}
-                                </p>
-                            </div>
-
-                            {/* Premium Only */}
-                            <div className="flex items-center space-x-2">
-                                <Checkbox
-                                    id="isPremiumOnly"
-                                    checked={localSettings.isPremiumOnly}
-                                    onCheckedChange={(checked) => updateLocalSettings({
-                                        isPremiumOnly: checked as boolean
-                                    })}
-                                />
-                                <Label htmlFor="isPremiumOnly" className="text-sm font-medium">
-                                    Restrict to premium members only
-                                </Label>
-                            </div>
-
-                            {/* Allow Waitlist */}
-                            <div className="flex items-center space-x-2">
-                                <Checkbox
-                                    id="allowWaitlist"
-                                    checked={localSettings.allowWaitlist}
-                                    onCheckedChange={(checked) => updateLocalSettings({
-                                        allowWaitlist: checked as boolean
-                                    })}
-                                />
-                                <Label htmlFor="allowWaitlist" className="text-sm font-medium">
-                                    Allow waitlist when capacity is reached
-                                </Label>
-                            </div>
-
-                            {/* Require Approval */}
-                            <div className="flex items-center space-x-2">
-                                <Checkbox
-                                    id="requireApproval"
-                                    checked={localSettings.requireApproval}
-                                    onCheckedChange={(checked) => updateLocalSettings({
-                                        requireApproval: checked as boolean
-                                    })}
-                                />
-                                <Label htmlFor="requireApproval" className="text-sm font-medium">
-                                    Require admin approval for registration
-                                </Label>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Registration Settings */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Clock className="h-5 w-5" />
-                                Registration Settings
-                            </CardTitle>
-                            <CardDescription>
-                                Configure registration deadlines and requirements
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {/* Registration Deadline */}
-                            <div className="space-y-2">
-                                <Label>Registration Deadline</Label>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            className={cn(
-                                                "w-full justify-start text-left font-normal",
-                                                !localSettings.registrationDeadline && "text-muted-foreground",
-                                                validationErrors.registrationDeadline && "border-red-500"
-                                            )}
-                                        >
-                                            <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {localSettings.registrationDeadline ? (
-                                                format(localSettings.registrationDeadline, "PPP")
-                                            ) : (
-                                                <span>No deadline set</span>
-                                            )}
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0" align="start">
-                                        <Calendar
-                                            mode="single"
-                                            selected={localSettings.registrationDeadline}
-                                            onSelect={(date) => updateLocalSettings({
-                                                registrationDeadline: date
-                                            })}
-                                            disabled={(date) => date < new Date()}
-                                            initialFocus
-                                        />
-                                        {localSettings.registrationDeadline && (
-                                            <div className="p-3 border-t">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => updateLocalSettings({
-                                                        registrationDeadline: undefined
-                                                    })}
-                                                    className="w-full"
-                                                >
-                                                    Clear deadline
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </PopoverContent>
-                                </Popover>
-                                {validationErrors.registrationDeadline && (
-                                    <p className="text-sm text-red-600">{validationErrors.registrationDeadline}</p>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Notification Settings */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Notification Settings</CardTitle>
-                            <CardDescription>
-                                Configure automatic notifications for this event
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            {/* Basic Notifications */}
-                            <div className="space-y-4">
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id="sendConfirmations"
-                                        checked={localSettings.notifications.sendConfirmations}
-                                        onCheckedChange={(checked) => updateLocalSettings({
-                                            notifications: {
-                                                ...localSettings.notifications,
-                                                sendConfirmations: checked as boolean
-                                            }
-                                        })}
-                                    />
-                                    <Label htmlFor="sendConfirmations" className="text-sm font-medium">
-                                        Send registration confirmations
-                                    </Label>
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 space-y-5">
+                        <div className="flex items-center gap-2"><Shield size={16} className="text-primary" /><h3 className="text-sm font-black text-slate-700">Basic Settings</h3></div>
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Maximum Capacity</Label>
+                            <Input type="number" min="1" placeholder="No limit" value={localSettings.maxCapacity || ""} onChange={e => updateLocalSettings({ maxCapacity: e.target.value ? parseInt(e.target.value) : undefined })} className={cn("rounded-xl border-slate-200 bg-slate-50", validationErrors.maxCapacity && "border-red-400")} />
+                            {validationErrors.maxCapacity && <p className="text-xs text-red-500">{validationErrors.maxCapacity}</p>}
+                            <p className="text-xs text-slate-400">Leave empty for unlimited. Current: {selectedEvent?.registeredCount || 0}</p>
+                        </div>
+                        <div className="space-y-3">
+                            {[{ id: "isPremiumOnly", label: "Restrict to premium members", checked: localSettings.isPremiumOnly, key: "isPremiumOnly" },
+                            { id: "allowWaitlist", label: "Allow waitlist when full", checked: localSettings.allowWaitlist, key: "allowWaitlist" },
+                            { id: "requireApproval", label: "Require admin approval", checked: localSettings.requireApproval, key: "requireApproval" }
+                            ].map(item => (
+                                <div key={item.id} className="flex items-center space-x-3">
+                                    <Checkbox id={item.id} checked={item.checked} onCheckedChange={checked => updateLocalSettings({ [item.key]: checked as boolean })} />
+                                    <Label htmlFor={item.id} className="text-sm text-slate-700">{item.label}</Label>
                                 </div>
+                            ))}
+                        </div>
+                    </div>
 
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id="sendUpdates"
-                                        checked={localSettings.notifications.sendUpdates}
-                                        onCheckedChange={(checked) => updateLocalSettings({
-                                            notifications: {
-                                                ...localSettings.notifications,
-                                                sendUpdates: checked as boolean
-                                            }
-                                        })}
-                                    />
-                                    <Label htmlFor="sendUpdates" className="text-sm font-medium">
-                                        Send event updates and changes
-                                    </Label>
+                    {/* Registration Deadline */}
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 space-y-4">
+                        <div className="flex items-center gap-2"><Clock size={16} className="text-primary" /><h3 className="text-sm font-black text-slate-700">Registration</h3></div>
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Deadline</Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal rounded-xl border-slate-200", !localSettings.registrationDeadline && "text-muted-foreground", validationErrors.registrationDeadline && "border-red-400")}>
+                                        <CalendarIcon className="mr-2 h-4 w-4" />{localSettings.registrationDeadline ? format(localSettings.registrationDeadline, "PPP") : "No deadline set"}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar mode="single" selected={localSettings.registrationDeadline} onSelect={date => updateLocalSettings({ registrationDeadline: date })} disabled={date => date < new Date()} initialFocus />
+                                    {localSettings.registrationDeadline && <div className="p-3 border-t"><Button variant="outline" size="sm" onClick={() => updateLocalSettings({ registrationDeadline: undefined })} className="w-full rounded-xl">Clear</Button></div>}
+                                </PopoverContent>
+                            </Popover>
+                            {validationErrors.registrationDeadline && <p className="text-xs text-red-500">{validationErrors.registrationDeadline}</p>}
+                        </div>
+                    </div>
+
+                    {/* Notifications */}
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 space-y-5">
+                        <h3 className="text-sm font-black text-slate-700">Notifications</h3>
+                        <div className="space-y-3">
+                            {[{ id: "sendConfirmations", label: "Registration confirmations", checked: localSettings.notifications.sendConfirmations, key: "sendConfirmations" },
+                            { id: "sendUpdates", label: "Event updates", checked: localSettings.notifications.sendUpdates, key: "sendUpdates" },
+                            { id: "sendReminders", label: "Event reminders", checked: localSettings.notifications.sendReminders, key: "sendReminders" }
+                            ].map(item => (
+                                <div key={item.id} className="flex items-center space-x-3">
+                                    <Checkbox id={item.id} checked={item.checked} onCheckedChange={checked => updateLocalSettings({ notifications: { ...localSettings.notifications, [item.key]: checked as boolean } })} />
+                                    <Label htmlFor={item.id} className="text-sm text-slate-700">{item.label}</Label>
                                 </div>
-
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id="sendReminders"
-                                        checked={localSettings.notifications.sendReminders}
-                                        onCheckedChange={(checked) => updateLocalSettings({
-                                            notifications: {
-                                                ...localSettings.notifications,
-                                                sendReminders: checked as boolean
-                                            }
-                                        })}
-                                    />
-                                    <Label htmlFor="sendReminders" className="text-sm font-medium">
-                                        Send event reminders
-                                    </Label>
-                                </div>
-                            </div>
-
-                            {/* Reminder Days */}
-                            {localSettings.notifications.sendReminders && (
-                                <div className="space-y-3">
-                                    <Label className="text-sm font-medium">Reminder Schedule</Label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {localSettings.notifications.reminderDays.map((day) => (
-                                            <Badge key={day} variant="secondary" className="flex items-center gap-1">
-                                                {day} day{day !== 1 ? 's' : ''} before
-                                                <button
-                                                    onClick={() => removeReminderDay(day)}
-                                                    className="ml-1 hover:text-red-600"
-                                                >
-                                                    <X className="h-3 w-3" />
-                                                </button>
-                                            </Badge>
-                                        ))}
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <Input
-                                            type="number"
-                                            min="1"
-                                            placeholder="Days before event"
-                                            value={newReminderDay}
-                                            onChange={(e) => setNewReminderDay(e.target.value)}
-                                            className="flex-1"
-                                        />
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={addReminderDay}
-                                            disabled={!newReminderDay}
-                                        >
-                                            <Plus className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    {/* Auto-save and History Controls */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center justify-between">
-                                <span>Save Options</span>
-                                <div className="flex items-center gap-4 text-sm">
-                                    {lastSaveTime && (
-                                        <span className="text-gray-600">
-                                            Last saved: {format(lastSaveTime, "HH:mm:ss")}
+                            ))}
+                        </div>
+                        {localSettings.notifications.sendReminders && (
+                            <div className="space-y-3 pt-3 border-t border-slate-100">
+                                <Label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Reminder Schedule</Label>
+                                <div className="flex flex-wrap gap-2">
+                                    {localSettings.notifications.reminderDays.map(day => (
+                                        <span key={day} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/5 text-primary text-xs font-bold">
+                                            {day} day{day !== 1 ? 's' : ''} before<button onClick={() => removeReminderDay(day)} className="ml-1 hover:text-red-600"><X size={12} /></button>
                                         </span>
-                                    )}
-                                    {autoSaveEnabled && hasChanges && (
-                                        <span className="text-blue-600 flex items-center gap-1">
-                                            <div className="animate-pulse w-2 h-2 bg-blue-600 rounded-full"></div>
-                                            Auto-saving...
-                                        </span>
-                                    )}
+                                    ))}
                                 </div>
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {/* Auto-save toggle */}
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <Label className="text-sm font-medium">Auto-save changes</Label>
-                                    <p className="text-xs text-gray-600">Automatically save changes after 3 seconds</p>
-                                </div>
-                                <Checkbox
-                                    checked={autoSaveEnabled}
-                                    onCheckedChange={(checked) => setAutoSaveEnabled(checked as boolean)}
-                                />
+                                <div className="flex gap-2"><Input type="number" min="1" placeholder="Days before event" value={newReminderDay} onChange={e => setNewReminderDay(e.target.value)} className="flex-1 rounded-xl border-slate-200 bg-slate-50" /><Button type="button" variant="outline" size="sm" onClick={addReminderDay} disabled={!newReminderDay} className="rounded-xl"><Plus size={14} /></Button></div>
                             </div>
+                        )}
+                    </div>
 
-                            {/* Conflict warning */}
-                            {conflictDetected && (
-                                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h4 className="text-sm font-medium text-yellow-800">Settings Conflict Detected</h4>
-                                            <p className="text-xs text-yellow-700">Another user has modified these settings</p>
-                                        </div>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={refreshSettings}
-                                        >
-                                            Refresh
-                                        </Button>
+                    {/* Save Options */}
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-sm font-black text-slate-700">Save Options</h3>
+                            <div className="flex items-center gap-3 text-xs">
+                                {lastSaveTime && <span className="text-slate-400">Last saved: {format(lastSaveTime, "HH:mm:ss")}</span>}
+                                {autoSaveEnabled && hasChanges && <span className="text-primary flex items-center gap-1"><div className="animate-pulse w-1.5 h-1.5 bg-primary rounded-full" />Auto-saving...</span>}
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <div><Label className="text-sm text-slate-700">Auto-save changes</Label><p className="text-xs text-slate-400">Saves after 3s of inactivity</p></div>
+                            <Checkbox checked={autoSaveEnabled} onCheckedChange={checked => setAutoSaveEnabled(checked as boolean)} />
+                        </div>
+                        {conflictDetected && (
+                            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center justify-between">
+                                <div><h4 className="text-xs font-bold text-amber-800">Conflict Detected</h4><p className="text-[10px] text-amber-600">Settings modified by another user</p></div>
+                                <Button variant="outline" size="sm" onClick={refreshSettings} className="rounded-xl text-xs">Refresh</Button>
+                            </div>
+                        )}
+                        {settingsHistory.length > 0 && (
+                            <div><Label className="text-xs font-bold text-slate-400 uppercase tracking-wide">History</Label>
+                                <div className="mt-2 space-y-1 max-h-28 overflow-y-auto">{settingsHistory.slice(0, 5).map(entry => (
+                                    <div key={entry.id} className="flex items-center justify-between text-xs bg-slate-50 rounded-xl p-2.5">
+                                        <div><span className="font-bold text-slate-600">{entry.description}</span><span className="text-slate-400 ml-2">{format(entry.timestamp, "MMM d, HH:mm")}</span></div>
+                                        <Button variant="ghost" size="sm" onClick={() => handleRollback(entry)} className="text-[10px] h-6 px-2 text-primary">Restore</Button>
                                     </div>
-                                </div>
-                            )}
+                                ))}</div>
+                            </div>
+                        )}
+                    </div>
 
-                            {/* Settings History */}
-                            {settingsHistory.length > 0 && (
-                                <div>
-                                    <Label className="text-sm font-medium">Recent Changes</Label>
-                                    <div className="mt-2 space-y-2 max-h-32 overflow-y-auto">
-                                        {settingsHistory.slice(0, 5).map((entry) => (
-                                            <div key={entry.id} className="flex items-center justify-between text-xs bg-gray-50 rounded p-2">
-                                                <div>
-                                                    <span className="font-medium">{entry.description}</span>
-                                                    <span className="text-gray-600 ml-2">
-                                                        {format(entry.timestamp, "MMM d, HH:mm")}
-                                                    </span>
-                                                </div>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => handleRollbackToVersion(entry)}
-                                                    className="text-xs h-6 px-2"
-                                                >
-                                                    Restore
-                                                </Button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    {/* Action Buttons */}
+                    {/* Actions */}
                     <div className="flex items-center justify-between">
-                        <Button
-                            variant="outline"
-                            onClick={handleResetSettings}
-                            disabled={!hasChanges || saving}
-                        >
-                            <RotateCcw className="h-4 w-4 mr-2" />
-                            Reset Changes
-                        </Button>
-                        
+                        <Button variant="outline" onClick={handleResetSettings} disabled={!hasChanges || saving} className="rounded-xl font-bold"><RotateCcw size={14} className="mr-2" /> Reset</Button>
                         <div className="flex gap-2">
-                            {conflictDetected && (
-                                <Button
-                                    variant="outline"
-                                    onClick={refreshSettings}
-                                    disabled={saving}
-                                >
-                                    Refresh Settings
-                                </Button>
-                            )}
-                            
-                            <Button
-                                onClick={handleManualSave}
-                                disabled={(!hasChanges && !conflictDetected) || saving}
-                            >
-                                {saving ? (
-                                    <>
-                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                        Saving...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Save className="h-4 w-4 mr-2" />
-                                        {conflictDetected ? "Force Save" : "Save Settings"}
-                                    </>
-                                )}
+                            {conflictDetected && <Button variant="outline" onClick={refreshSettings} disabled={saving} className="rounded-xl font-bold">Refresh</Button>}
+                            <Button onClick={() => handleSaveSettings(false)} disabled={(!hasChanges && !conflictDetected) || saving} className="bg-primary hover:bg-primary/90 rounded-xl font-bold shadow-md shadow-primary/20">
+                                {saving ? <><FaSpinner className="w-3 h-3 animate-spin mr-2" /> Saving...</> : <><Save size={14} className="mr-2" /> {conflictDetected ? "Force Save" : "Save Settings"}</>}
                             </Button>
                         </div>
                     </div>
                 </div>
-            )}
-
-            {/* No Event Selected */}
-            {!selectedEventId && (
-                <Card>
-                    <CardContent className="flex flex-col items-center justify-center py-12">
-                        <Settings className="h-12 w-12 text-gray-400 mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No Event Selected</h3>
-                        <p className="text-gray-600 text-center">
-                            Select an event from the dropdown above to configure its settings
-                        </p>
-                    </CardContent>
-                </Card>
-            )}
+            ) : !selectedEventId ? (
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm text-center py-16">
+                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4"><Settings className="text-2xl text-slate-300" /></div>
+                    <h3 className="text-lg font-bold text-slate-700 mb-2">No Event Selected</h3>
+                    <p className="text-sm text-slate-400">Select an event from the dropdown above</p>
+                </div>
+            ) : null}
         </div>
     );
 }

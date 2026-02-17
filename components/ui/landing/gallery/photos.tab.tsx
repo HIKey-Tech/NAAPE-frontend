@@ -129,7 +129,7 @@ export default function PhotoGalleryTab() {
 
   return (
     <section
-      className="w-full min-h-screen bg-[#f8fafc] flex flex-col items-center pt-8 md:pt-12 pb-8 px-4 sm:px-6"
+      className="w-full min-h-screen bg-slate-50 flex flex-col items-center pt-8 md:pt-12 pb-8 px-4 sm:px-6"
       aria-label="Photo Gallery"
     >
       <header className="w-full max-w-7xl mx-auto mb-8">

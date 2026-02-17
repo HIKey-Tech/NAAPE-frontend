@@ -105,14 +105,14 @@ export default function SubHeroSection({
         variants={fadeUpVariants as any}
       >
         <motion.h1
-          className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#232835] leading-tight mb-2"
+          className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight mb-2"
           variants={fadeUpVariants as any}
         >
           {heading}
         </motion.h1>
         {subheading && (
           <motion.p
-            className="text-[#4B4B55] text-base md:text-lg font-medium max-w-2xl mx-auto md:mx-0"
+            className="text-slate-500 text-base md:text-lg font-medium max-w-2xl mx-auto md:mx-0"
             variants={fadeUpVariants as any}
             transition={{ delay: 0.16 }}
           >

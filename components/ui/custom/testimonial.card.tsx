@@ -19,7 +19,7 @@ export function TestimonialCard({
 }: TestimonialCardProps) {
   return (
     <div
-      className={`relative bg-gradient-to-b from-white via-[#F5F7FB] to-white rounded-2xl shadow-xl border border-black/5 px-8 py-8 flex flex-col items-center text-center min-w-[270px] max-w-[420px] mx-auto transition-all duration-200 hover:shadow-2xl ${className}`}
+      className={`relative bg-gradient-to-b from-white via-slate-50 to-white rounded-2xl shadow-xl border border-black/5 px-8 py-8 flex flex-col items-center text-center min-w-[270px] max-w-[420px] mx-auto transition-all duration-200 hover:shadow-2xl ${className}`}
     >
       {/* Quotation Icon */}
       <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-primary rounded-full p-3 shadow-md">
@@ -32,7 +32,7 @@ export function TestimonialCard({
       </p>
 
       {/* Divider */}
-      <hr className="w-16 border-[#CA9414]/30 my-2" />
+      <hr className="w-16 border-secondary/30 my-2" />
 
       {/* Avatar, Name, Title */}
       <div className="flex flex-col items-center mt-4">
@@ -54,12 +54,12 @@ export function TestimonialCard({
         )}
 
         {/* Name */}
-        <span className="block font-bold text-[#222844] text-base md:text-lg mt-1">
+        <span className="block font-bold text-slate-900 text-base md:text-lg mt-1">
           {name}
         </span>
 
         {/* Title/Role */}
-        <span className="block text-xs md:text-sm font-medium text-[#968BA1] mt-0.5 tracking-wide">
+        <span className="block text-xs md:text-sm font-medium text-slate-400 mt-0.5 tracking-wide">
           {title}
         </span>
       </div>

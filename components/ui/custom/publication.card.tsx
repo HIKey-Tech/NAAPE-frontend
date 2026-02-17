@@ -20,7 +20,7 @@ export type PublishedPublicationCardProps = {
     className?: string;
 };
 
-// Helper: splits a long title for 2-line layout, as in original member PublicationCard
+// Helper: splits a long title for 2-line layout
 const splitTitle = (title: string, maxLineLength = 32): [string, string] => {
     if (!title) return ["", ""];
     if (title.length <= maxLineLength) return [title, ""];
@@ -31,7 +31,7 @@ const splitTitle = (title: string, maxLineLength = 32): [string, string] => {
     return [title.slice(0, spaceIdx), title.slice(spaceIdx).trim()];
 };
 
-// Fade-in/scale-in animation CSS, following the user/member publication.card.tsx pattern
+// Fade-in/scale-in animation CSS
 const ANIMATION_CLASS = "publication-card-animate";
 const ANIMATION_CSS = `
 .${ANIMATION_CLASS} {
@@ -99,14 +99,14 @@ export const PublishedPublicationCard: React.FC<PublishedPublicationCardProps> =
         const observer =
             typeof window !== "undefined" && "IntersectionObserver" in window
                 ? new window.IntersectionObserver(entries => {
-                      entries.forEach(entry => {
-                          if (entry.isIntersecting) {
-                              timer = setTimeout(() => {
-                                  card.classList.add("visible");
-                              }, 45 + Math.random() * 120);
-                          }
-                      });
-                  })
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            timer = setTimeout(() => {
+                                card.classList.add("visible");
+                            }, 45 + Math.random() * 120);
+                        }
+                    });
+                })
                 : null;
         if (observer) observer.observe(card);
         else card.classList.add("visible");
@@ -121,7 +121,7 @@ export const PublishedPublicationCard: React.FC<PublishedPublicationCardProps> =
             ref={cardRef}
             className={`
                 ${ANIMATION_CLASS}
-                overflow-hidden rounded-2xl border border-[#E5EAF2] bg-white shadow-sm
+                overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm
                 p-0 hover:shadow-md transition
                 flex flex-col
                 ${className}
@@ -129,7 +129,7 @@ export const PublishedPublicationCard: React.FC<PublishedPublicationCardProps> =
             style={{ boxShadow: "0 1px 6px rgba(30,41,59,0.05)" }}
         >
             {/* Image */}
-            <div className="relative w-full h-56 sm:h-64 md:h-72 bg-gray-200">
+            <div className="relative w-full h-56 sm:h-64 md:h-72 bg-slate-100">
                 {imageUrl ? (
                     <Image
                         src={imageUrl}
@@ -140,7 +140,7 @@ export const PublishedPublicationCard: React.FC<PublishedPublicationCardProps> =
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                 ) : (
-                    <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xl">
+                    <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400 text-xl">
                         No Image
                     </div>
                 )}
@@ -149,16 +149,16 @@ export const PublishedPublicationCard: React.FC<PublishedPublicationCardProps> =
 
             {/* Content */}
             <CardContent className="flex-1 flex flex-col gap-2 p-4 pt-3">
-                {/* Category only in the row, status removed */}
+                {/* Category */}
                 <div className="flex items-start justify-between gap-2 mb-1">
                     {category && (
-                        <Badge variant="outline" className="w-fit text-xs font-semibold text-[#1B0D09] bg-[#F4B05F]">
+                        <span className="px-2.5 py-0.5 bg-amber-100 text-amber-800 rounded-full text-xs font-bold">
                             {category}
-                        </Badge>
+                        </span>
                     )}
                 </div>
                 {/* Title split into up to 2 lines */}
-                <CardTitle className="text-base font-bold leading-tight mb-0">
+                <CardTitle className="text-base font-bold leading-tight mb-0 text-slate-900">
                     {mainTitle}
                     {subTitle && (
                         <div>
@@ -166,26 +166,26 @@ export const PublishedPublicationCard: React.FC<PublishedPublicationCardProps> =
                         </div>
                     )}
                 </CardTitle>
-                <CardDescription className="text-muted-foreground text-xs font-normal mb-2 line-clamp-3">{summary}</CardDescription>
+                <CardDescription className="text-slate-500 text-xs font-normal mb-2 line-clamp-3">{summary}</CardDescription>
                 {/* Author */}
                 <div className="flex items-center gap-2 mt-auto pt-3">
-                    <Avatar className="w-7 h-7 border">
+                    <Avatar className="w-7 h-7 border border-slate-100">
                         {authorAvatarUrl ? (
                             <AvatarImage src={authorAvatarUrl} alt={authorName} />
                         ) : (
-                            <AvatarFallback>
+                            <AvatarFallback className="bg-slate-100 text-slate-600 text-xs font-bold">
                                 {authorName?.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)}
                             </AvatarFallback>
                         )}
                     </Avatar>
                     <div className="flex flex-col">
-                        <span className="text-xs font-medium text-[#363749]">{authorName}</span>
+                        <span className="text-xs font-bold text-slate-700">{authorName}</span>
                         {authorRole && (
-                            <span className="text-[11px] text-[#6B7280]">{authorRole}</span>
+                            <span className="text-[11px] text-slate-400">{authorRole}</span>
                         )}
                     </div>
                     {publishedDate && (
-                        <span className="ml-3 text-[12px] text-[#96A6BF] font-normal truncate">{publishedDate}</span>
+                        <span className="ml-3 text-[11px] text-slate-400 font-normal truncate">{publishedDate}</span>
                     )}
                 </div>
             </CardContent>
@@ -194,7 +194,7 @@ export const PublishedPublicationCard: React.FC<PublishedPublicationCardProps> =
             <CardFooter className="pt-0 pb-3 px-4">
                 <Link
                     href={linkUrl}
-                    className="text-[#2852B4] text-sm font-semibold hover:underline flex items-center gap-1"
+                    className="text-primary text-sm font-bold hover:text-primary/80 flex items-center gap-1 transition-colors"
                 >
                     Read More{" "}
                     <svg xmlns="http://www.w3.org/2000/svg" className="inline-block ml-1 h-4 w-4" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M6 4l4 4-4 4" /></svg>
@@ -205,4 +205,3 @@ export const PublishedPublicationCard: React.FC<PublishedPublicationCardProps> =
 };
 
 export default PublishedPublicationCard;
-
