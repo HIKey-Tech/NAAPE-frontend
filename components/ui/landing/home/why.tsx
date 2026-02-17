@@ -117,7 +117,7 @@ export default function WhyJoinSection() {
                 >
                     <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl shadow-slate-200 aspect-[4/5] lg:aspect-square">
                         <Image
-                            src="/images/plane.jpg"
+                            src="/images/event1.jpg"
                             alt="Jet airplane"
                             fill
                             className="object-cover"

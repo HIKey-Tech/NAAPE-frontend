@@ -15,13 +15,13 @@ export default function AboutSection() {
 
             <div className="relative z-10 flex flex-col md:flex-row justify-center items-center gap-16 w-full max-w-7xl mx-auto">
                 {/* Left: Card-like video preview */}
-                <div className="flex-shrink-0 w-full md:w-1/2 max-w-lg group">
-                    <div className="relative rounded-3xl overflow-hidden bg-slate-900 border border-white/10 shadow-2xl shadow-indigo-500/10 min-h-[400px]">
+                <div className="flex-shrink-0 w-full md:w-1/2 group">
+                    <div className="relative rounded-3xl overflow-hidden bg-slate-900 border border-white/10 shadow-2xl shadow-indigo-500/10 min-h-[500px]">
                         <Image
-                            src="/images/loginpic.jpg"
+                            src="/images/handplane.jpg"
                             alt="Nigerian pilots in cockpit"
-                            width={450}
-                            height={450}
+                            width={800}
+                            height={800}
                             priority
                             className="object-cover w-full h-full opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"
                         />

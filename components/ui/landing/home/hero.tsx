@@ -95,134 +95,72 @@ export default function Hero() {
             </div>
 
             <main className="relative z-10 w-full max-w-7xl mx-auto px-6 py-24 md:py-0 min-h-screen flex flex-col justify-center">
-                <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-                    {/* Left: Content */}
+                <div className="flex flex-col items-start justify-center text-left w-full pl-4 md:pl-16 lg:pl-24">
+                    {/* Left Aligned Content */}
                     <motion.div
-                        className="flex-1 text-center lg:text-left flex flex-col items-center lg:items-start gap-6 max-w-2xl"
-                        initial={{ opacity: 0, x: -30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.6 }}
+                        className="flex flex-col items-start gap-6 max-w-5xl"
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
                     >
                         <motion.h1
-                            className="text-4xl sm:text-5xl md:text-[3.5rem] lg:text-6xl font-black tracking-tight leading-[1.08] text-white"
+                            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.1] text-white"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1, duration: 0.5 }}
+                            transition={{ delay: 0.2, duration: 0.8 }}
                         >
                             The National Association of Aircraft Pilots & Engineers
                         </motion.h1>
 
-                        <motion.p
-                            className="text-slate-200 text-lg md:text-xl max-w-lg leading-relaxed font-medium"
+                        <motion.div
+                            className="h-1 w-32 bg-primary rounded-full"
+                            initial={{ width: 0 }}
+                            animate={{ width: 128 }}
+                            transition={{ delay: 0.5, duration: 0.8 }}
+                        />
+
+                        <motion.div
+                            className="text-xl sm:text-2xl md:text-3xl font-medium text-slate-200 min-h-[3rem]"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ delay: 0.3 }}
-                            aria-live="polite"
+                            transition={{ delay: 0.4, duration: 0.8 }}
                         >
                             <span aria-hidden="true">
                                 {displayed}
-                                {!done && showCursor && (
-                                    <span className="ml-0.5 font-mono text-white animate-blink" style={{ opacity: 0.7 }}>|</span>
-                                )}
+                                <span className={`ml-1 inline-block w-[3px] h-[1.2em] align-middle bg-primary ${!done ? 'animate-blink' : 'opacity-0'}`}></span>
                             </span>
-                            {done && <span className="sr-only">{srText}</span>}
+                            {done && <span className="sr-only">{heroTypewriteText}</span>}
+                        </motion.div>
+
+                        <motion.p
+                            className="text-lg md:text-xl text-slate-300 max-w-2xl leading-relaxed font-light"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.6, duration: 0.8 }}
+                        >
+                            Uniting professionals, elevating standards, and shaping the future of aviation in Nigeria and beyond.
                         </motion.p>
 
                         <motion.div
-                            className="flex flex-col sm:flex-row gap-4 mt-2 w-full max-w-md lg:max-w-full justify-center lg:justify-start"
-                            initial={{ opacity: 0, y: 15 }}
+                            className="flex flex-row gap-4 mt-8"
+                            initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4, duration: 0.4 }}
+                            transition={{ delay: 0.8, duration: 0.8 }}
                         >
-                            <Link href="/membership" className="w-full sm:w-auto z-20">
+                            <Link href="/membership">
                                 <NaapButton
-                                    className="bg-primary hover:bg-blue-600 w-full sm:w-auto text-white text-base font-bold px-8 py-3.5 transition-all rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5"
-                                    icon={<ArrowRight size={16} />}
-                                    iconPosition="right"
+                                    className="bg-primary hover:bg-blue-600 text-white border-0 shadow-lg shadow-blue-900/20 px-8 py-6 text-lg rounded-full"
                                 >
-                                    Join NAAPE
+                                    Join The Association
                                 </NaapButton>
                             </Link>
-                            <Link href="/about/about-us" className="w-full sm:w-auto z-20">
+                            <Link href="/about/about-us">
                                 <NaapButton
-                                    className="border-2 border-white/20 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white hover:text-white text-base font-bold px-8 py-3.5 w-full sm:w-auto transition-all rounded-full"
+                                    className="border-2 border-white/20 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full backdrop-blur-sm"
                                 >
                                     Learn More
                                 </NaapButton>
                             </Link>
-                        </motion.div>
-                    </motion.div>
-
-                    {/* Right: Single Hero Image with floating elements */}
-                    <motion.div
-                        className="flex-1 w-full max-w-lg lg:max-w-xl relative mx-auto lg:mx-0"
-                        initial={{ opacity: 0, x: 30, scale: 0.95 }}
-                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                    >
-                        {/* Decorative Background Blob/Shape - Adjusted for dark bg */}
-                        <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500/20 to-indigo-500/20 rounded-[2.5rem] -z-10 transform -rotate-2 scale-105 blur-lg" />
-
-                        <div className="absolute -inset-1 bg-white/10 rounded-[2.5rem] -z-10 blur-xl" />
-
-                        {/* Main Image */}
-                        <div className="relative rounded-[2rem] overflow-hidden shadow-2xl shadow-black/40 border-[6px] border-white/10 aspect-[4/3] transform transition-transform hover:scale-[1.01] duration-500">
-                            <Image
-                                src="/about/cockpit.jpg"
-                                alt="Modern aircraft cockpit view"
-                                fill
-                                className="object-cover"
-                                priority
-                                sizes="(max-width: 1024px) 100vw, 50vw"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
-
-                            {/* Inner Overlay badge */}
-                            <div className="absolute bottom-6 left-6 right-6">
-                                <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white">
-                                    <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                                    <span className="text-sm font-medium tracking-wide">Excellence in Flight Operations</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Floating stat badge - Top Right */}
-                        <motion.div
-                            className="absolute -top-6 -right-6 md:-right-10 bg-white/95 backdrop-blur-sm rounded-2xl p-4 pr-6 shadow-[0_8px_30px_rgb(0,0,0,0.3)] border border-white/20 hidden sm:flex items-center gap-4"
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: [0, -5, 0] }}
-                            transition={{
-                                opacity: { delay: 0.8 },
-                                y: { delay: 0.8, repeat: Infinity, duration: 4, ease: "easeInOut" }
-                            }}
-                        >
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
-                                <Users size={22} />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-black text-slate-900 leading-none">1,200+</p>
-                                <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">Active Members</p>
-                            </div>
-                        </motion.div>
-
-                        {/* Floating "Safety First" badge - Replacing the small image */}
-                        <motion.div
-                            className="absolute -bottom-6 -left-6 md:-left-10 bg-white/95 backdrop-blur-sm rounded-2xl p-4 pr-6 shadow-[0_8px_30px_rgb(0,0,0,0.3)] border border-white/20 hidden sm:flex items-center gap-4"
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0, y: [0, 5, 0] }}
-                            transition={{
-                                opacity: { delay: 0.9 },
-                                x: { delay: 0.9 },
-                                y: { delay: 0.9, repeat: Infinity, duration: 5, ease: "easeInOut" }
-                            }}
-                        >
-                            <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-red-500">
-                                <Shield size={22} className="fill-current" />
-                            </div>
-                            <div>
-                                <p className="text-lg font-black text-slate-900 leading-tight">Safety First</p>
-                                <p className="text-xs text-slate-500 font-medium">Core Value</p>
-                            </div>
                         </motion.div>
                     </motion.div>
                 </div>

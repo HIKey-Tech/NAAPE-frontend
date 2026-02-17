@@ -55,7 +55,7 @@ export default function MissionSection() {
 
             <motion.div variants={fadeUpVariants as any} className="z-10 text-center mb-16 max-w-3xl">
                 <h2 className="text-white text-4xl md:text-5xl font-black tracking-tight mb-6">
-                    Our <span className="text-accent">North Star</span>
+                    Our <span className="text-accent">Guiding Principles</span>
                 </h2>
                 <p className="text-slate-400 text-lg md:text-xl font-medium">
                     Guiding the future of Nigerian aviation through unwavering commitment to our core principles.

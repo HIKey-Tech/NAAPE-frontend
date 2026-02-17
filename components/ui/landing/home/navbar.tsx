@@ -1,57 +1,96 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Menu, X, ChevronDown, ChevronUp, LogOut, User2 } from "lucide-react";
+import { Menu, X, ChevronDown, LogOut, User2, LayoutDashboard, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 import { useAuth } from "@/context/authcontext";
 import { LogoutDialog } from "@/components/ui/logout-dialog";
-
-// Utility: Responsive width padding class for max screen support
-const NAVBAR_MAX_WIDTH = "max-w-[1440px]"; // change this if your layout is wider/smaller
-const DESKTOP_NAV_MIN_WIDTH = 1160; // px, should be high enough for all items + buttons
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function TopNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [serveOpen, setServeOpen] = useState(false);
-  const [publicationsOpen, setPublicationsOpen] = useState(false);
-  const drawerRef = useRef<HTMLDivElement>(null);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const { user, logout, isAuthenticated } = useAuth();
   const router = useRouter();
   const [loginLoading, setLoginLoading] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
+  // Scroll detection
   useEffect(() => {
-    if (!mobileOpen) return;
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setMobileOpen(false);
-    }
-    function onClick(e: MouseEvent) {
-      if (drawerRef.current && !drawerRef.current.contains(e.target as Node)) {
-        setMobileOpen(false);
-      }
-    }
-    document.addEventListener("keydown", onKeyDown);
-    document.addEventListener("mousedown", onClick);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.removeEventListener("mousedown", onClick);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
     };
-  }, [mobileOpen]);
-
-  const [active, setActive] = useState("");
-  useEffect(() => {
-    if (typeof window !== "undefined") setActive(window.location.pathname);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Menu Items Definition
+  const menuItems = [
+    {
+      label: "About",
+      href: "/about/about-us",
+      submenu: [
+        { label: "About Us", href: "/about/about-us", desc: "Our history and mission" },
+        { label: "NAC Members", href: "/about/nac-members", desc: "Leadership team" },
+        { label: "Organs of Association", href: "/about/organs-of-association", desc: "Organizational structure" },
+        { label: "Rights & Responsibilities", href: "/about/rights-and-responsibilites", desc: "Member guidelines" },
+      ]
+    },
+    { label: "Membership", href: "/membership" },
+    {
+      label: "News",
+      href: "/news",
+      submenu: [
+        { label: "NAAPE News", href: "/news/naape", desc: "Latest updates" },
+      ]
+    },
+    {
+      label: "Publications",
+      href: "/publications",
+      submenu: [
+        { label: "From Members", href: "/publication/members", desc: "Member contributions" },
+        { label: "From NAAPE", href: "/publication/naape", desc: "Official releases" },
+      ]
+    },
+    { label: "Advertisement", href: "/advertisement" },
+    { label: "Gallery", href: "/gallery" },
+    { label: "Contact", href: "/contact" },
+  ];
+
+  // Styles
+  const baseMenuLink = `px-3 py-2 text-[14px] font-bold transition-all duration-300 hover:text-primary hover:bg-primary/10 rounded-full flex items-center justify-center h-full text-center tracking-tight min-w-0 truncate ${isScrolled ? "text-gray-600" : "text-white/90 hover:text-white"}`;
+  const activeMenuLink = "text-primary bg-primary/10";
+
+  // Handlers
+  const handleLoginClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (!loginLoading) {
+      setLoginLoading(true);
+      router.push("/login");
+    }
+  };
+
+  const handleLogoutClick = () => setShowLogoutDialog(true);
+  const confirmLogout = () => {
+    setShowLogoutDialog(false);
+    setMobileOpen(false);
+    logout();
+  };
+
+  const handleMouseEnter = (label: string) => setActiveDropdown(label);
+  const handleMouseLeave = () => setActiveDropdown(null);
 
   function getInitials(name?: string) {
     if (!name) return "U";
@@ -60,553 +99,199 @@ export default function TopNavbar() {
     return initials.toUpperCase();
   }
 
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Modern reduced-noise link style - Dynamic based on scroll state
-  const baseMenuLink =
-    `px-3 py-2 text-[14px] font-bold transition-all duration-300 hover:text-primary hover:bg-primary/10 rounded-full flex items-center justify-center h-full text-center tracking-tight min-w-0 truncate ${isScrolled ? "text-gray-600" : "text-white/90 hover:text-white"}`;
-  const activeMenuLink =
-    "text-primary bg-primary/10";
-
-  // Improved Login Button Handler (for Desktop Nav)
-  const handleLoginClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
-    if (!loginLoading) {
-      setLoginLoading(true);
-      router.push("/login");
-    }
-  };
-
-  // Improved Login Button Handler (for Mobile Nav)
-  const handleMobileLoginClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
-    if (!loginLoading) {
-      setLoginLoading(true);
-      setMobileOpen(false);
-      router.push("/login");
-    }
-  };
-
-  const handleLogoutClick = () => {
-    setShowLogoutDialog(true);
-  };
-
-  const confirmLogout = () => {
-    setShowLogoutDialog(false);
-    setMobileOpen(false);
-    logout();
-  };
-
   return (
-    <nav
-      className={`w-full fixed top-0 left-0 z-50 transition-all duration-300 ${isScrolled
-        ? "bg-white/95 backdrop-blur-md shadow-md py-2"
-        : "bg-transparent py-4" // Increased padding for initial state
-        }`}
-    >
-      {/* Outer centered container, limit width */}
-      <div className={`w-full flex flex-col items-center justify-center`}>
-        {/* Main navbar row: set max-w and responsive px, hide overflow */}
-        <div
-          className={`w-full ${NAVBAR_MAX_WIDTH} mx-auto flex items-center justify-between px-2 xs:px-3 sm:px-4 ${isScrolled
-            ? "min-h-[64px] h-[64px] sm:min-h-[72px] sm:h-[72px]"
-            : "min-h-[80px] h-[80px] sm:min-h-[90px] sm:h-[90px]" // Taller header when not scrolled
-            } transition-all duration-300`}
-          style={{
-            minWidth: 0,
-            overflowX: "hidden",
-          }}
-        >
-          {/* Logo & Hamburger */}
-          <div className="flex flex-row items-center px-2 sm:px-6 justify-between min-w-0 h-full shrink-0">
-            {/* Logo Group */}
-            <div className="flex flex-row items-center gap-2 sm:gap-4 min-w-0 h-full shrink-0">
-              <Link
-                href="/"
-                className="flex items-center group min-w-0 h-full"
-                aria-label="Go to NAAPE homepage"
-                tabIndex={0}
-              >
-                <div className={`relative transition-all duration-300 ${isScrolled ? "scale-100" : "scale-110"}`}>
-                  <Image
-                    src="/logo.png"
-                    alt="NAAPE Logo"
-                    width={48}
-                    height={48}
-                    className="object-contain h-[40px] w-[40px] xs:h-[46px] xs:w-[46px] sm:h-[48px] sm:w-[48px] drop-shadow-sm hover:scale-105 transition-transform duration-300"
-                    priority
-                  />
-                </div>
-                <span className={`ml-2 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600 dark:to-blue-400 sm:ml-3 text-[16px] xs:text-[18px] sm:text-[20px] font-extrabold tracking-tight uppercase hidden sm:inline whitespace-nowrap leading-none group-hover:opacity-80 transition-opacity min-w-0 text-center ${!isScrolled && "drop-shadow-sm"}`}>
-                  NAAPE
-                </span>
-              </Link>
-            </div>
-            {/* Hamburger for mobile only */}
-            <button
-              className="md:hidden ml-2 p-2 flex items-center justify-center rounded-xl border-2 border-[color:var(--primary)] bg-white focus-visible:ring-2 focus-visible:ring-[color:var(--primary)]"
-              aria-label="Open main menu"
-              aria-expanded={mobileOpen}
-              aria-controls="mobile-nav"
-              onClick={() => setMobileOpen((prev) => !prev)}
-            >
-              {mobileOpen ? (
-                <X size={25} className="text-[color:var(--primary)]" />
-              ) : (
-                <Menu size={23} className="text-[color:var(--primary)]" />
-              )}
-            </button>
+    <nav className={`w-full sticky top-0 left-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white/95 backdrop-blur-md shadow-md py-2 min-h-[64px] sm:min-h-[72px]" : "bg-transparent py-4 min-h-[80px] sm:min-h-[90px]"}`}>
+      <div className="w-full max-w-[1400px] mx-auto px-4 md:px-8 flex items-center justify-between relative">
+
+        {/* Logo Section - Left Aligned */}
+        <Link href="/" className="flex items-center gap-3 group relative z-50 outline-none rounded-lg focus-visible:ring-2 focus-visible:ring-primary/50" aria-label="NAAPE Home">
+          <div className={`relative transition-all duration-500 ease-out-back ${isScrolled ? "scale-100" : "scale-110"}`}>
+            {/* Glow effect */}
+            <div className={`absolute inset-0 rounded-full bg-primary/20 blur-xl transition-opacity duration-500 ${isScrolled ? "opacity-0" : "opacity-40 group-hover:opacity-60"}`} />
+
+            <Image
+              src="/logo.png"
+              alt="NAAPE Logo"
+              width={60}
+              height={60}
+              className="object-contain w-[48px] h-[48px] sm:w-[60px] sm:h-[60px] relative z-10 drop-shadow-sm transition-transform duration-500 group-hover:scale-105"
+              priority
+            />
           </div>
+        </Link>
 
-          {/* Desktop Navigation Center */}
-          <div
-            className="hidden md:flex grow flex-shrink-[2] basis-0 items-center justify-center min-w-0"
-            style={{
-              maxWidth: "calc(100vw - 375px)",
-            }}
-          >
-            <div
-              className="flex items-center gap-0.5 sm:gap-1 xl:gap-2 text-[#1A2752] font-semibold text-[13px] uppercase h-full py-1 min-w-0 w-full justify-center"
-              style={{ width: "100%", minWidth: 0, justifyContent: "center", textAlign: "center" }}
-            >
-              {/* About group */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className={`${baseMenuLink} ${active.startsWith("/about") ? activeMenuLink : ""}`}
-                    tabIndex={0}
+        {/* Desktop Menu - Right Aligned */}
+        <div className="hidden lg:flex items-center gap-1 xl:gap-2">
+          {/* Main Navigation Items */}
+          <div className="flex items-center bg-white/5 backdrop-blur-sm rounded-full p-1 border border-white/10 mr-4">
+            {menuItems.map((item) => {
+              const isActive = activeDropdown === item.label;
+              return (
+                <div
+                  key={item.label}
+                  className="relative group"
+                  onMouseEnter={() => handleMouseEnter(item.label)}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  <button
+                    className={`${baseMenuLink} ${isActive ? activeMenuLink : ""}`}
+                    onClick={() => { if (item.href) router.push(item.href); }}
                   >
-                    <span className="flex items-center gap-1 mx-auto justify-center min-w-0 truncate text-center w-full">
-                      About
-                      <ChevronDown size={15} />
+                    <span className="relative z-10 flex items-center gap-1.5">
+                      {item.label}
+                      {item.submenu && (
+                        <ChevronDown
+                          size={13}
+                          className={`transition-transform duration-300 ${isActive ? "rotate-180" : "rotate-0 text-primary/40 group-hover:text-primary/70"}`}
+                          strokeWidth={3}
+                        />
+                      )}
                     </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="text-center">
-                  <DropdownMenuItem asChild>
-                    <Link href="/about/about-us" className="font-bold text-[color:var(--primary)]/90 text-[13px] text-center w-full flex justify-center">
-                      About Us
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/about/nac-members" className="font-semibold text-[13px] text-center w-full flex justify-center">
-                      NAC Members
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/about/organs-of-association" className="font-semibold text-[13px] text-center w-full flex justify-center">
-                      Organs of Association
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/about/rights-and-responsibilites" className="font-semibold text-[13px] text-center w-full flex justify-center">
-                      Rights &amp; Responsibilities
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    {isActive && (
+                      <motion.div
+                        layoutId="navbar-indicator"
+                        className="absolute inset-0 rounded-full bg-white shadow-sm"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        style={{ zIndex: 0 }}
+                      />
+                    )}
+                  </button>
 
-              {/* Membership */}
-              <Link
-                href="/membership"
-                className={`${baseMenuLink} ${active === "/membership" ? activeMenuLink : ""} text-center flex justify-center`}
-                tabIndex={0}
-                style={{ minWidth: 0, maxWidth: "140px", textAlign: "center" }}
-              >
-                Membership
-              </Link>
-
-              {/* News group */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className={`${baseMenuLink} ${active.startsWith("/news") ? activeMenuLink : ""}`}
-                    tabIndex={0}
-                  >
-                    <span className="flex items-center gap-1 mx-auto justify-center min-w-0 truncate text-center w-full">
-                      News
-                      <ChevronDown size={15} />
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="text-center">
-                  <DropdownMenuItem asChild>
-                    <Link href="/news/naape" className="font-bold text-[color:var(--primary)]/90 text-[13px] text-center w-full flex justify-center">
-                      NAAPE News
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Publications group */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className={`${baseMenuLink} ${active.startsWith("/publications") ? activeMenuLink : ""}`}
-                    tabIndex={0}
-                  >
-                    <span className="flex items-center gap-1 mx-auto justify-center min-w-0 truncate text-center w-full">
-                      Publications
-                      <ChevronDown size={15} />
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="text-center">
-                  <DropdownMenuItem asChild>
-                    <Link href="/publication/members" className="font-semibold text-[13px] text-center w-full flex justify-center">
-                      From Members
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/publication/naape" className="font-semibold text-[13px] text-center w-full flex justify-center">
-                      From NAAPE
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Advertisement */}
-              <Link
-                href="/advertisement"
-                className={`${baseMenuLink} ${active === "/advertisement" ? activeMenuLink : ""} text-center flex justify-center`}
-                style={{ minWidth: 0, maxWidth: "160px", textAlign: "center" }}
-                tabIndex={0}
-              >
-                Advertisement
-              </Link>
-
-              {/* Gallery */}
-              <Link
-                href="/gallery"
-                className={`${baseMenuLink} ${active === "/gallery" ? activeMenuLink : ""} text-center flex justify-center`}
-                style={{ minWidth: 0, maxWidth: "100px", textAlign: "center" }}
-                tabIndex={0}
-              >
-                Gallery
-              </Link>
-
-              {/* Contact */}
-              <Link
-                href="/contact"
-                className={`${baseMenuLink} ${active === "/contact" ? activeMenuLink : ""} text-center flex justify-center`}
-                style={{
-                  position: "relative",
-                  zIndex: 1,
-                  minWidth: 0,
-                  maxWidth: "100px",
-                  marginRight: "0.35rem",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  textAlign: "center"
-                }}
-                tabIndex={0}
-              >
-                Contact
-              </Link>
-            </div>
-          </div>
-
-          {/* User auth/buttons group - always right, vertically centered */}
-          <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 ml-1 sm:ml-2 xl:ml-4 justify-end h-full shrink-0">
-            {/* Auth section (desktop only) */}
-            <div
-              className="hidden md:flex items-center px-2 gap-2 justify-end min-w-0"
-              style={{
-                minWidth: "200px",
-                maxWidth: "285px",
-              }}
-            >
-              {!isAuthenticated ? (
-                <div className="flex items-center gap-1.5 min-w-0">
-                  {/* Use a real button for login for instant UI feedback/click handling */}
-                  <NaapButton
-                    className={`py-2 px-5 rounded-full border border-gray-200 bg-white text-gray-700 hover:text-primary hover:border-primary hover:bg-primary/5 text-[14px] font-bold min-w-[90px] transition-all duration-300 shadow-sm hover:shadow-md ${!isScrolled ? "bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white" : ""}`}
-                    style={{ letterSpacing: "0.02em" }}
-                    onClick={handleLoginClick}
-                    disabled={loginLoading}
-                  >
-                    {loginLoading ? "..." : "Log In"}
-                  </NaapButton>
-                  <Link href="/register" tabIndex={0}>
-                    <NaapButton
-                      className="py-2 px-6 rounded-full bg-gradient-to-r from-primary to-blue-600 hover:to-blue-700 text-white text-[14px] font-bold border-0 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300 hover:-translate-y-0.5"
-                      style={{ letterSpacing: "0.02em" }}
-                    >
-                      Join Now
-                    </NaapButton>
-                  </Link>
-                </div>
-              ) : (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      className="flex items-center gap-2 sm:gap-2.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-2xl bg-white border-2 border-[color:var(--primary)] font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] min-w-[44px] sm:min-w-[50px] transition h-full justify-center text-center"
-                      aria-label="Open account menu"
-                      type="button"
-                    >
-                      <span className="inline-flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-[color:var(--primary)] text-white font-extrabold text-xs sm:text-sm uppercase border-4 border-white">
-                        {getInitials(user?.name)}
-                      </span>
-                      <span className="text-[12px] sm:text-[13px] text-[color:var(--primary)] font-black max-w-[100px] sm:max-w-[130px] truncate hidden sm:inline tracking-wide uppercase text-center">
-                        {user?.name}
-                      </span>
-                      <ChevronDown size={16} className="text-[color:var(--primary)] sm:w-[17px] sm:h-[17px]" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="end"
-                    className="min-w-[150px] sm:min-w-[160px] mt-2 rounded-xl !overflow-hidden border-2 border-[color:var(--primary)]/[.22] bg-white text-center"
-                  >
-                    <DropdownMenuItem asChild>
-                      <Link
-                        href="/dashboard"
-                        className="font-bold text-[13px] flex items-center gap-2 py-2 hover:bg-[color:var(--primary)]/16 hover:text-[color:var(--primary)] transition-colors text-center w-full justify-center"
+                  <AnimatePresence>
+                    {isActive && item.submenu && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="absolute top-full left-0 mt-3 w-64 bg-white rounded-2xl shadow-xl shadow-indigo-900/10 border border-gray-100 overflow-hidden z-50 ring-1 ring-black/5"
+                        style={{ transformOrigin: "top left" }}
                       >
-                        <User2 className="w-4 h-4" />
-                        Dashboard
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={handleLogoutClick}
-                      className="!text-red-600 cursor-pointer font-bold text-[13px] flex items-center gap-2 py-2 hover:bg-red-50 transition-all text-center w-full justify-center"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Log Out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Navigation Drawer - items and groupings centrally aligned */}
-      {mobileOpen && (
-        <div
-          ref={drawerRef}
-          role="dialog"
-          aria-modal="true"
-          id="mobile-nav"
-          className="absolute left-0 top-[100%] w-full z-50 bg-white border-t-2 border-[color:var(--primary)] flex flex-col items-center px-4 py-6 gap-4 md:hidden shadow-xl overflow-x-auto"
-        >
-          {/* Welcome header */}
-          <div className="mb-3 flex flex-col items-center text-center w-full">
-            <span className="font-black text-[color:var(--primary)] text-base uppercase tracking-widest text-center w-full">
-              Welcome to NAAPE
-            </span>
-            <span className="text-[11px] mt-0.5 font-semibold tracking-normal text-[#3654B2]/60 w-full text-center">
-              United. Safe. Professional. Proud.
-            </span>
-          </div>
-          {/* Section: Main Navigation Links (centralized text) */}
-          <div className="flex flex-col gap-1 w-full items-center justify-center text-center">
-            {[
-              { href: "/about", label: "About" },
-              { href: "/membership", label: "Membership" },
-              { href: "/advertisement", label: "Advertisement" },
-              { href: "/gallery", label: "Gallery" },
-              { href: "/contact", label: "Contact" },
-            ].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`py-2 px-2 w-full text-[13px] rounded-xl font-black hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 transition uppercase tracking-wider text-center flex justify-center items-center ${item.label === "Contact" ? "mt-1 mb-2" : ""}`}
-                style={
-                  item.label === "Contact"
-                    ? {
-                      marginTop: "0.22rem",
-                      marginBottom: "0.5rem",
-                      zIndex: 2,
-                      position: "relative",
-                      fontFamily: "inherit",
-                      textAlign: "center"
-                    }
-                    : { textAlign: "center" }
-                }
-                onClick={() => setMobileOpen(false)}
-                tabIndex={0}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-          {/* Section: Dropdown groupings (centralized dropdown content) */}
-          <div className="flex flex-col gap-1 w-full items-center justify-center text-center">
-            {/* News Dropdown - mobile */}
-            <div className="w-full flex flex-col items-center text-center">
-              <button
-                className="flex items-center justify-center w-full py-2 px-2 text-[13px] rounded-xl font-black hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 transition uppercase tracking-wider text-center"
-                aria-expanded={serveOpen}
-                aria-controls="mobile-news-menu"
-                onClick={() => setServeOpen((open) => !open)}
-                type="button"
-                style={{ textAlign: "center" }}
-              >
-                <span className="flex-1 text-center">News</span>
-                <span className="flex-none ml-2">
-                  {serveOpen ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
-                </span>
-              </button>
-              {serveOpen && (
-                <div
-                  id="mobile-news-menu"
-                  className="flex flex-col items-center justify-center ml-4 pl-2 py-1 border-l-4 border-[color:var(--primary)]/40 text-center"
-                >
-                  <Link
-                    href="/news/naape"
-                    className="py-1.5 text-[13px] rounded font-bold hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 uppercase transition text-center flex justify-center items-center w-full"
-                    onClick={() => {
-                      setMobileOpen(false);
-                      setServeOpen(false);
-                    }}
-                    tabIndex={0}
-                    style={{ textAlign: "center" }}
-                  >
-                    NAAPE News
-                  </Link>
+                        <div className="p-2 flex flex-col gap-1">
+                          {item.submenu.map((sub, idx) => (
+                            <Link
+                              key={idx}
+                              href={sub.href}
+                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors group/item"
+                            >
+                              <div>
+                                <p className="text-sm font-bold text-gray-800 leading-none mb-1 group-hover/item:text-primary transition-colors">{sub.label}</p>
+                                {sub.desc && <p className="text-[11px] text-gray-500 line-clamp-1">{sub.desc}</p>}
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-              )}
-            </div>
-
-            {/* Publications Dropdown - mobile */}
-            <div className="w-full flex flex-col items-center text-center">
-              <button
-                className="flex items-center justify-center w-full py-2 px-2 text-[13px] rounded-xl font-black hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 transition uppercase tracking-wider text-center"
-                aria-expanded={publicationsOpen}
-                aria-controls="mobile-publications-menu"
-                onClick={() => setPublicationsOpen((open) => !open)}
-                type="button"
-                style={{ textAlign: "center" }}
-              >
-                <span className="flex-1 text-center">Publications</span>
-                <span className="flex-none ml-2">
-                  {publicationsOpen ? (
-                    <ChevronUp size={15} />
-                  ) : (
-                    <ChevronDown size={15} />
-                  )}
-                </span>
-              </button>
-              {publicationsOpen && (
-                <div
-                  id="mobile-publications-menu"
-                  className="flex flex-col items-center justify-center ml-4 pl-2 py-1 border-l-4 border-[color:var(--primary)]/40 text-center"
-                >
-                  <Link
-                    href="/publication/members"
-                    className="py-1.5 text-[13px] rounded font-bold hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 uppercase transition text-center flex justify-center items-center w-full"
-                    onClick={() => {
-                      setMobileOpen(false);
-                      setPublicationsOpen(false);
-                    }}
-                    tabIndex={0}
-                    style={{ textAlign: "center" }}
-                  >
-                    From Members
-                  </Link>
-                  <Link
-                    href="/publication/naape"
-                    className="py-1.5 text-[13px] rounded font-bold hover:text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 uppercase transition text-center flex justify-center items-center w-full"
-                    onClick={() => {
-                      setMobileOpen(false);
-                      setPublicationsOpen(false);
-                    }}
-                    tabIndex={0}
-                    style={{ textAlign: "center" }}
-                  >
-                    From NAAPE
-                  </Link>
-                </div>
-              )}
-            </div>
+              );
+            })}
           </div>
-          {/* Section: Authentication */}
-          <div className="flex flex-col gap-2 mt-6 w-full items-center justify-center text-center">
+
+          {/* User Auth Section */}
+          <div className="pl-4 border-l border-white/20 ml-2">
             {!isAuthenticated ? (
-              <div className="flex flex-col gap-2 w-full items-center justify-center text-center">
-                {/* REAL BUTTON ensures instant feedback on tap */}
+              <div className="flex items-center gap-3">
+                <Link href="/login" className={`hidden xl:block text-sm font-bold transition-colors ${isScrolled ? "text-gray-600 hover:text-primary" : "text-white/80 hover:text-white"}`}>
+                  Log In
+                </Link>
                 <NaapButton
-                  className="w-full border-[2.5px] border-[color:var(--primary)] bg-white text-[color:var(--primary)] hover:bg-[color:var(--primary)]/10 text-[13px] font-extrabold uppercase py-1.5 text-center flex justify-center items-center"
-                  onClick={handleMobileLoginClick}
+                  className={`py-2 px-6 rounded-full border border-gray-200 bg-white text-gray-700 hover:text-primary hover:border-primary hover:bg-primary/5 text-[14px] font-bold min-w-[100px] transition-all duration-300 shadow-sm hover:shadow-md ${!isScrolled ? "bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white" : ""}`}
+                  onClick={handleLoginClick}
                   disabled={loginLoading}
                 >
-                  {loginLoading ? "Logging In..." : "Log In"}
+                  {loginLoading ? "..." : "Join Now"}
                 </NaapButton>
-                <Link href="/register" onClick={() => setMobileOpen(false)} className="w-full flex justify-center">
-                  <NaapButton className="w-full px-2 bg-[color:var(--primary)] hover:bg-[color:var(--primary)]/90 text-white text-[13px] font-extrabold border-2 border-[color:var(--primary)] uppercase py-1.5 text-center flex justify-center items-center">
-                    Become a member
-                  </NaapButton>
-                </Link>
               </div>
             ) : (
-              <div className="flex flex-col items-center w-full text-center">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      className="flex items-center gap-2 px-2.5 py-1.5 rounded-2xl bg-white border-2 border-[color:var(--primary)] font-bold w-full uppercase transition justify-center text-center"
-                      aria-label="Open account menu"
-                      type="button"
-                    >
-                      <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-[color:var(--primary)] text-white font-extrabold text-xs uppercase border-4 border-white">
-                        {getInitials(user?.name)}
-                      </span>
-                      <span className="text-[12px] text-[color:var(--primary)] font-black truncate tracking-wide text-center max-w-[80px]">
-                        {user?.name}
-                      </span>
-                      <ChevronDown size={16} className="text-[color:var(--primary)]" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="start"
-                    sideOffset={7}
-                    className="min-w-[135px] mt-2 rounded-xl border-2 border-[color:var(--primary)]/[.22] !overflow-hidden bg-white text-center"
-                  >
-                    <DropdownMenuItem asChild>
-                      <Link
-                        href="/dashboard"
-                        className="font-bold text-[13px] flex items-center gap-2 py-1.5 hover:bg-[color:var(--primary)]/12 hover:text-[color:var(--primary)] transition-colors uppercase text-center w-full justify-center"
-                      >
-                        <User2 className="w-4 h-4" />
-                        Dashboard
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={handleLogoutClick}
-                      className="!text-red-600 cursor-pointer font-bold text-[13px] flex items-center gap-2 py-1.5 hover:bg-red-50 transition-all uppercase text-center w-full justify-center"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Log Out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-3 p-1 pr-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 transition-all group">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-blue-400 flex items-center justify-center text-white font-bold text-sm shadow-inner">
+                      {getInitials(user?.name)}
+                    </div>
+                    <div className="text-left hidden xl:block">
+                      <p className={`text-xs font-bold leading-none ${isScrolled ? "text-gray-800" : "text-white"}`}>{user?.name?.split(' ')[0] || "Member"}</p>
+                      <p className={`text-[10px] uppercase tracking-wider ${isScrolled ? "text-gray-500" : "text-white/60"}`}>{user?.role || "Member"}</p>
+                    </div>
+                    <ChevronDown size={14} className={`ml-1 transition-transform group-data-[state=open]:rotate-180 ${isScrolled ? "text-gray-400" : "text-white/60"}`} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl border-gray-100 shadow-xl bg-white/95 backdrop-blur-md">
+                  <DropdownMenuItem className="p-3 rounded-xl cursor-pointer hover:bg-primary/5 focus:bg-primary/5 group" onClick={() => router.push("/dashboard")}>
+                    <LayoutDashboard size={16} className="text-slate-400 group-hover:text-primary mr-3" />
+                    <span className="font-medium text-slate-700 group-hover:text-primary">Dashboard</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="p-3 rounded-xl cursor-pointer hover:bg-primary/5 focus:bg-primary/5 group" onClick={() => router.push("/profile")}>
+                    <User size={16} className="text-slate-400 group-hover:text-primary mr-3" />
+                    <span className="font-medium text-slate-700 group-hover:text-primary">My Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="my-1 bg-gray-100" />
+                  <DropdownMenuItem className="p-3 rounded-xl cursor-pointer hover:bg-red-50 focus:bg-red-50 group text-red-600" onClick={() => setShowLogoutDialog(true)}>
+                    <LogOut size={16} className="mr-3 opacity-70 group-hover:opacity-100" />
+                    <span className="font-medium">Sign Out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
         </div>
-      )}
-      <LogoutDialog
-        open={showLogoutDialog}
-        onOpenChange={setShowLogoutDialog}
-        onConfirm={confirmLogout}
-      />
+
+        {/* Mobile Menu Button - Right Aligned */}
+        <button
+          className="lg:hidden p-2 text-primary bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:shadow-md transition-all active:scale-95"
+          onClick={() => setMobileOpen(true)}
+          aria-label="Open Menu"
+        >
+          <Menu size={26} strokeWidth={2.5} />
+        </button>
+
+      </div>
+
+      {/* Mobile Drawer */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="lg:hidden bg-white border-t border-gray-100 absolute top-full left-0 w-full shadow-xl overflow-hidden"
+          >
+            <div className="p-4 flex flex-col gap-2">
+              {menuItems.map((item) => (
+                <div key={item.label} className="w-full">
+                  <Button variant="ghost" className="w-full justify-start font-bold text-gray-700" onClick={() => {
+                    if (item.href) router.push(item.href);
+                    setMobileOpen(false);
+                  }}>
+                    {item.label}
+                  </Button>
+                  {item.submenu && (
+                    <div className="pl-4 flex flex-col gap-1 border-l-2 border-gray-100 ml-4 mt-1">
+                      {item.submenu.map(sub => (
+                        <Link key={sub.label} href={sub.href} className="text-sm text-gray-500 py-1 hover:text-primary" onClick={() => setMobileOpen(false)}>
+                          {sub.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+              {!isAuthenticated ? (
+                <div className="mt-4 flex flex-col gap-2">
+                  <Button className="w-full justify-center" variant="outline" onClick={() => router.push("/login")}>Log In</Button>
+                  <Button className="w-full justify-center bg-primary text-white" onClick={() => router.push("/register")}>Join Now</Button>
+                </div>
+              ) : (
+                <Button className="w-full justify-center text-red-600 hover:bg-red-50" variant="ghost" onClick={() => setShowLogoutDialog(true)}>Log Out</Button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <LogoutDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog} onConfirm={confirmLogout} />
     </nav>
   );
 }
