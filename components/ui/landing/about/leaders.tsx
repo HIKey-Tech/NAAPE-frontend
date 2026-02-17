@@ -9,32 +9,24 @@ const leaders = [
         title: "National President",
         photoSrc: "/members/Abednego.jpg", // Ensure these paths exist or use placeholders
         socials: { twitter: "#", linkedin: "#" },
-        contactLabel: "Email President",
-        contactHref: "mailto:info@naape.org.ng", // Generic for safety
     },
     {
         name: "Engr. Adebayo Oluyemi",
         title: "Deputy National President",
         photoSrc: "/members/Adebayo.jpg",
         socials: { linkedin: "#" },
-        contactLabel: "Email Deputy",
-        contactHref: "mailto:info@naape.org.ng",
     },
     {
         name: "Engr. Richard Allison",
         title: "Vice President, Engineers",
         photoSrc: "/members/richard.jpg",
         socials: { twitter: "#" },
-        contactLabel: "Email VP",
-        contactHref: "mailto:info@naape.org.ng",
     },
     {
         name: "Capt. Yakubu Ducas",
         title: "Vice President, Pilots",
         photoSrc: "/members/yakubu.jpg",
         socials: { linkedin: "#" },
-        contactLabel: "Email VP",
-        contactHref: "mailto:info@naape.org.ng",
     },
 ];
 
