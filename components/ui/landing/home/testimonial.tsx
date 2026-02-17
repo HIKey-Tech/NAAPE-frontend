@@ -39,7 +39,7 @@ export default function TestimonialsSection() {
             <span>Member Stories</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
-            Voices of the <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Aviation Community</span>
+            Voices of the <br /><span className="text-white">Aviation Community</span>
           </h2>
           <p className="text-lg text-slate-400 font-medium mb-8 max-w-xl mx-auto md:mx-0">
             Real stories from members whose passion for aviation found purpose, support, and growth through NAAPE.
