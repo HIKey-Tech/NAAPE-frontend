@@ -111,9 +111,9 @@ export default function TopNavbar() {
 
   return (
     <nav
-      className={`w-full fixed top-0 left-0 z-50 flex items-center justify-center relative transition-all duration-500 ${isScrolled
-          ? "bg-[#0A1229]/95 backdrop-blur-md border-b border-white/10 shadow-lg"
-          : "bg-transparent border-b border-transparent"
+      className={`w-full fixed top-0 left-0 z-50 flex items-center justify-center relative transition-all duration-500 text-white ${isScrolled
+        ? "bg-slate-900/95 backdrop-blur-md border-b border-white/10 shadow-lg"
+        : "bg-transparent border-b border-transparent"
         }`}
     >
       {/* Outer centered container, limit width */}
