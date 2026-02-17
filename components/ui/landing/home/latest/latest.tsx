@@ -95,7 +95,7 @@ export default function LatestNews() {
 
             <div className="flex justify-center mt-12">
                 <Link href="/login">
-                    <NaapButton className="bg-white border-2 border-slate-200 text-slate-900 hover:border-primary hover:text-primary font-bold px-8 py-3 rounded-full flex items-center gap-2 transition-all hover:-translate-y-1">
+                    <NaapButton className="bg-white border-2 border-slate-200 text-slate-900 hover:border-primary hover:text-primary font-bold px-8 py-3 rounded-full flex items-center justify-center gap-2 transition-all hover:-translate-y-1 min-w-[280px]">
                         Submit Your Publication <ArrowRight size={18} />
                     </NaapButton>
                 </Link>
