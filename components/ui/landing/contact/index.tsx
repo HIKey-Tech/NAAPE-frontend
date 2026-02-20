@@ -19,6 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
+import api from "@/lib/axios";
 
 const contactSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -39,13 +40,21 @@ export default function ContactSection() {
 
     async function onSubmit(data: ContactFormValues) {
         setSubmitting(true);
-        // Simulate API call
-        await new Promise((res) => setTimeout(res, 1500));
-        setSubmitting(false);
-        form.reset();
-        toast.success("Message Sent Successfully!", {
-            description: "We'll get back to you within 1-2 business days."
-        });
+        try {
+            const response = await api.post("/contact", data);
+
+            form.reset();
+            toast.success("Message Sent Successfully!", {
+                description: "We'll get back to you within 1-2 business days."
+            });
+        } catch (error: any) {
+            console.error("Contact Form Error:", error);
+            toast.error("Message Failed", {
+                description: error?.response?.data?.message || error.message || "Please try again later."
+            });
+        } finally {
+            setSubmitting(false);
+        }
     }
 
     return (
