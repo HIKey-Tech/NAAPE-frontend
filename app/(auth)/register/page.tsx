@@ -22,14 +22,14 @@ export default function RegisterPage() {
     return (
         <main className="min-h-screen w-full flex items-center justify-center p-4 md:p-8 bg-[#f8fafc]">
             <motion.div
-                className="flex w-full max-w-5xl md:h-[800px] h-auto shadow-2xl rounded-3xl bg-white overflow-hidden border border-slate-200"
+                className="flex w-full max-w-5xl min-h-[700px] shadow-2xl rounded-3xl bg-white overflow-hidden border border-slate-200"
                 variants={parentVariants}
                 initial="hidden"
                 animate="visible"
             >
                 {/* Left: Register Form */}
-                <motion.div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative bg-white">
-                    <motion.div className="flex items-center gap-3 mb-8" variants={childVariants}>
+                <motion.div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center relative bg-white">
+                    <motion.div className="flex items-center gap-3 mb-6" variants={childVariants}>
                         <div className="p-2 bg-primary/5 rounded-xl">
                             <Image src={logo} alt="NAAPE logo" width={40} height={40} className="w-10 h-10" />
                         </div>
@@ -38,11 +38,11 @@ export default function RegisterPage() {
 
                     <motion.div variants={childVariants} className="mb-4">
                         <h1 className="text-3xl font-extrabold text-slate-900 mb-2">Create Account</h1>
-                        <p className="text-slate-500 font-medium">Join our community of aviation professionals.</p>
+                        <p className="text-slate-500 font-medium text-sm">Join our community of aviation professionals.</p>
                     </motion.div>
 
                     <MembershipRegisterForm />
-                    <p className="mt-8 text-center text-sm font-medium text-slate-500">
+                    <p className="mt-6 text-center text-sm font-medium text-slate-500">
                         Already have an account? <Link href="/login" className="text-primary font-bold hover:underline">Sign in</Link>
                     </p>
                 </motion.div>

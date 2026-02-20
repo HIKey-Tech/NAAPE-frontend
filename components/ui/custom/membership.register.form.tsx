@@ -151,7 +151,7 @@ export default function MembershipRegisterForm() {
             </div>
 
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 overflow-hidden relative min-h-[500px] flex items-start">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 overflow-hidden relative flex flex-col items-start w-full">
                     <AnimatePresence custom={step === 1 ? -1 : 1} mode="wait">
                         {step === 1 && (
                             <motion.div
@@ -162,101 +162,101 @@ export default function MembershipRegisterForm() {
                                 animate="center"
                                 exit="exit"
                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                className="space-y-4 absolute w-full"
+                                className="space-y-4 w-full"
                             >
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <FormField name="name" control={form.control} render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="font-bold text-slate-700">Full Name *</FormLabel>
+                                            <FormLabel className="font-bold text-slate-700 text-sm">Full Name *</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
-                                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                                    <Input {...field} className="pl-10 h-11 bg-slate-50 border-slate-200" placeholder="John Doe" />
+                                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                                    <Input {...field} className="pl-9 h-11 text-sm bg-slate-50 border-slate-200" placeholder="John Doe" />
                                                 </div>
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )} />
 
                                     <FormField name="email" control={form.control} render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="font-bold text-slate-700">Email *</FormLabel>
+                                            <FormLabel className="font-bold text-slate-700 text-sm">Email *</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
-                                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                                    <Input {...field} className="pl-10 h-11 bg-slate-50 border-slate-200" placeholder="you@example.com" />
+                                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                                    <Input {...field} className="pl-9 h-11 text-sm bg-slate-50 border-slate-200" placeholder="you@example.com" />
                                                 </div>
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )} />
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <FormField name="tel" control={form.control} render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="font-bold text-slate-700">Phone Number *</FormLabel>
+                                            <FormLabel className="font-bold text-slate-700 text-sm">Phone Number *</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
-                                                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                                    <Input {...field} className="pl-10 h-11 bg-slate-50 border-slate-200" placeholder="+234XXXXXXXXXX" />
+                                                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                                    <Input {...field} className="pl-9 h-11 text-sm bg-slate-50 border-slate-200" placeholder="+234..." />
                                                 </div>
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )} />
 
                                     <FormField name="address" control={form.control} render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="font-bold text-slate-700">Address *</FormLabel>
+                                            <FormLabel className="font-bold text-slate-700 text-sm">Address *</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
-                                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                                    <Input {...field} className="pl-10 h-11 bg-slate-50 border-slate-200" placeholder="Residence Address" />
+                                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                                    <Input {...field} className="pl-9 h-11 text-sm bg-slate-50 border-slate-200" placeholder="Address" />
                                                 </div>
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )} />
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <FormField name="password" control={form.control} render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="font-bold text-slate-700">Password *</FormLabel>
+                                            <FormLabel className="font-bold text-slate-700 text-sm">Password *</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
-                                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                                    <Input {...field} type={showPassword ? "text" : "password"} className="pl-10 pr-10 h-11 bg-slate-50 border-slate-200" placeholder="Create password" />
+                                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                                    <Input {...field} type={showPassword ? "text" : "password"} className="pl-9 pr-9 h-11 text-sm bg-slate-50 border-slate-200" placeholder="Password" />
                                                     <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                                     </button>
                                                 </div>
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )} />
 
                                     <FormField name="confirmPassword" control={form.control} render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="font-bold text-slate-700">Confirm Password *</FormLabel>
+                                            <FormLabel className="font-bold text-slate-700 text-sm">Confirm *</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
-                                                    <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                                    <Input {...field} type={showConfirmPassword ? "text" : "password"} className="pl-10 pr-10 h-11 bg-slate-50 border-slate-200" placeholder="Confirm password" />
+                                                    <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                                    <Input {...field} type={showConfirmPassword ? "text" : "password"} className="pl-9 pr-9 h-11 text-sm bg-slate-50 border-slate-200" placeholder="Confirm" />
                                                     <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                                                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                        {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                                     </button>
                                                 </div>
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )} />
                                 </div>
 
-                                <div className="pt-4 mt-8">
-                                    <Button type="button" onClick={triggerValidationForStep1} className="w-full h-12 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl text-lg shadow-lg flex items-center justify-center gap-2 transition-all">
-                                        Next (Professional Details) <ArrowRight size={18} />
+                                <div className="pt-2 mt-4">
+                                    <Button type="button" onClick={triggerValidationForStep1} className="w-full h-11 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl text-md shadow transition-all flex items-center justify-center gap-2">
+                                        Next (Professional Details) <ArrowRight size={16} />
                                     </Button>
                                 </div>
                             </motion.div>
@@ -271,110 +271,110 @@ export default function MembershipRegisterForm() {
                                 animate="center"
                                 exit="exit"
                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                className="space-y-4 absolute w-full"
+                                className="space-y-4 w-full"
                             >
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <FormField name="employer" control={form.control} render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="font-bold text-slate-700">Employer</FormLabel>
+                                            <FormLabel className="font-bold text-slate-700 text-sm">Employer</FormLabel>
                                             <FormControl>
-                                                <Input {...field} className="h-11 bg-slate-50 border-slate-200" placeholder="Company & address" />
+                                                <Input {...field} className="h-11 text-sm bg-slate-50 border-slate-200" placeholder="Company" />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )} />
 
                                     <FormField name="rank" control={form.control} render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="font-bold text-slate-700">Rank</FormLabel>
+                                            <FormLabel className="font-bold text-slate-700 text-sm">Rank</FormLabel>
                                             <FormControl>
-                                                <Input {...field} className="h-11 bg-slate-50 border-slate-200" placeholder="e.g. F/O, Capt, Engr." />
+                                                <Input {...field} className="h-11 text-sm bg-slate-50 border-slate-200" placeholder="F/O, Capt" />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )} />
 
                                     <FormField name="designation" control={form.control} render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="font-bold text-slate-700">Designation</FormLabel>
+                                            <FormLabel className="font-bold text-slate-700 text-sm">Designation</FormLabel>
                                             <FormControl>
-                                                <Input {...field} className="h-11 bg-slate-50 border-slate-200" placeholder="Your title (optional)" />
+                                                <Input {...field} className="h-11 text-sm bg-slate-50 border-slate-200" placeholder="Title" />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )} />
 
                                     <FormField name="section" control={form.control} render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="font-bold text-slate-700">Section</FormLabel>
+                                            <FormLabel className="font-bold text-slate-700 text-sm">Section</FormLabel>
                                             <FormControl>
-                                                <Input {...field} className="h-11 bg-slate-50 border-slate-200" placeholder="Section/department (optional)" />
+                                                <Input {...field} className="h-11 text-sm bg-slate-50 border-slate-200" placeholder="Dept" />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )} />
 
                                     <FormField name="qualification" control={form.control} render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="font-bold text-slate-700">Qualification</FormLabel>
+                                            <FormLabel className="font-bold text-slate-700 text-sm">Qualification</FormLabel>
                                             <FormControl>
-                                                <Input {...field} className="h-11 bg-slate-50 border-slate-200" placeholder="Qualifications & certifications" />
+                                                <Input {...field} className="h-11 text-sm bg-slate-50 border-slate-200" placeholder="Certs" />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )} />
 
                                     <FormField name="licenseNo" control={form.control} render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="font-bold text-slate-700">License No.</FormLabel>
+                                            <FormLabel className="font-bold text-slate-700 text-sm">License No.</FormLabel>
                                             <FormControl>
-                                                <Input {...field} className="h-11 bg-slate-50 border-slate-200" placeholder="If applicable" />
+                                                <Input {...field} className="h-11 text-sm bg-slate-50 border-slate-200" placeholder="If applicable" />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )} />
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 gap-3">
                                     <FormField name="dateOfEmployment" control={form.control} render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="font-bold text-slate-700">Date of Employment</FormLabel>
+                                            <FormLabel className="font-bold text-slate-700 text-sm">Date of Employment</FormLabel>
                                             <FormControl>
-                                                <Input {...field} type="date" className="h-11 bg-slate-50 border-slate-200" />
+                                                <Input {...field} type="date" className="h-11 text-sm bg-slate-50 border-slate-200" />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )} />
                                 </div>
 
-                                <div className="border border-slate-200 bg-slate-50 p-4 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                                <div className="border border-slate-200 bg-slate-50 p-4 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
                                     <FormField name="signature" control={form.control} render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="font-bold text-slate-700">Signature (Type Full Name) *</FormLabel>
+                                            <FormLabel className="font-bold text-slate-700 text-sm">Signature (Name) *</FormLabel>
                                             <FormControl>
-                                                <Input {...field} className="h-11 bg-white border-slate-200" placeholder="Type your full name" />
+                                                <Input {...field} className="h-11 text-sm bg-white border-slate-200" placeholder="Full name" />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )} />
 
                                     <FormField name="date" control={form.control} render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="font-bold text-slate-700">Date *</FormLabel>
+                                            <FormLabel className="font-bold text-slate-700 text-sm">Date *</FormLabel>
                                             <FormControl>
-                                                <Input {...field} type="date" className="h-11 bg-white border-slate-200" />
+                                                <Input {...field} type="date" className="h-11 text-sm bg-white border-slate-200" />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )} />
                                 </div>
 
-                                <div className="pt-4 flex gap-4 mt-8 w-full">
-                                    <Button type="button" variant="outline" onClick={() => setStep(1)} className="w-1/3 h-12 rounded-xl font-bold flex items-center justify-center gap-2">
-                                        <ArrowLeft size={18} /> Back
+                                <div className="pt-2 flex gap-4 mt-6 w-full">
+                                    <Button type="button" variant="outline" onClick={() => setStep(1)} className="w-1/3 h-11 rounded-xl font-bold flex items-center justify-center gap-2">
+                                        <ArrowLeft size={16} /> Back
                                     </Button>
-                                    <Button type="submit" disabled={loading} className="w-2/3 h-12 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl text-lg shadow-lg hover:shadow-xl transition-all">
-                                        {loading ? "Creating..." : "Submit Application"}
+                                    <Button type="submit" disabled={loading} className="w-2/3 h-11 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl text-md shadow transition-all">
+                                        {loading ? "Creating..." : "Submit"}
                                     </Button>
                                 </div>
                             </motion.div>
