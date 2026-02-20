@@ -20,9 +20,9 @@ export default function RegisterPage() {
     };
 
     return (
-        <main className="min-h-screen w-full flex items-center justify-center p-4 md:p-8 bg-[#f8fafc]">
+        <main className="min-h-screen w-full flex flex-col items-center justify-center p-4 py-24 md:p-8 bg-[#f8fafc]">
             <motion.div
-                className="flex w-full max-w-5xl min-h-[700px] shadow-2xl rounded-3xl bg-white overflow-hidden border border-slate-200"
+                className="flex w-full max-w-5xl my-auto min-h-[700px] shadow-2xl rounded-3xl bg-white overflow-hidden border border-slate-200"
                 variants={parentVariants}
                 initial="hidden"
                 animate="visible"

@@ -217,10 +217,9 @@ export default function TopNavbar() {
                 </Link>
                 <NaapButton
                   className={`py-2 px-6 rounded-full border border-slate-200 bg-white text-slate-700 hover:text-primary hover:border-primary hover:bg-primary/5 text-[14px] font-bold min-w-[100px] transition-all duration-300 shadow-sm hover:shadow-md ${!isNavbarSolid ? "bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white" : ""}`}
-                  onClick={handleLoginClick}
-                  disabled={loginLoading}
+                  onClick={() => router.push("/register")}
                 >
-                  {loginLoading ? "..." : "Join Now"}
+                  Join Now
                 </NaapButton>
               </div>
             ) : (
