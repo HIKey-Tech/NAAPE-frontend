@@ -22,7 +22,7 @@ const imageVariants = {
 export default function AboutHeroSection() {
   return (
     <motion.section
-      className="relative w-full min-h-[85vh] flex flex-col items-center justify-center py-20 px-6 bg-slate-50 overflow-hidden"
+      className="relative w-full min-h-[85vh] flex flex-col items-center justify-center pt-32 md:pt-40 pb-20 px-6 bg-slate-50 overflow-hidden"
       variants={containerVariants}
       initial="hidden"
       animate="show"

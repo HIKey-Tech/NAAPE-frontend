@@ -147,7 +147,7 @@ export default function PhotoGalleryTab() {
           defaultValue={activeTab}
           onTabChange={handleTabChange}
           showTabs={true}
-          showSearch={true}
+          showSearch={false}
           onSearch={handleSearch}
           searchPlaceholder="Search photos..."
           className="mb-0 w-full bg-transparent p-0"

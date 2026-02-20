@@ -91,7 +91,7 @@ export default function CustomHeroSection({
 
     return (
         <section
-            className={`w-full ${minHeightClass} bg-white flex flex-col items-center pt-16 pb-12 px-4 md:px-8 ${className}`}
+            className={`w-full ${minHeightClass} bg-white flex flex-col items-center pt-32 md:pt-40 pb-12 px-4 md:px-8 ${className}`}
         >
             <div className="max-w-4xl w-full flex flex-col items-center text-center gap-6 mb-4">
                 <motion.h1

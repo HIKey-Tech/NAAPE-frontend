@@ -63,7 +63,7 @@ export function NewsCard({
     const link = linkUrl || "#";
 
     return (
-        <Card className={`group overflow-hidden rounded-3xl border-0 shadow-lg shadow-slate-200/50 bg-white hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 flex flex-col h-full max-w-sm mx-auto ${className}`}>
+        <Card className={`group overflow-hidden rounded-3xl border-0 shadow-lg shadow-slate-200/50 bg-white hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 flex flex-col h-full ${className}`}>
 
             {/* Image Section */}
             <div className="relative h-60 w-full overflow-hidden">

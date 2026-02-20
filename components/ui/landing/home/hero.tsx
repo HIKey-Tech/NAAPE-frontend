@@ -94,17 +94,17 @@ export default function Hero() {
                 <div className="absolute inset-0 bg-slate-900/80" /> {/* Dark overlay for readability */}
             </div>
 
-            <main className="relative z-10 w-full max-w-7xl mx-auto px-6 py-24 md:py-0 min-h-screen flex flex-col justify-center">
+            <main className="relative z-10 w-full max-w-7xl mx-auto px-6 py-32 md:py-40 min-h-screen flex flex-col justify-center">
                 <div className="flex flex-col items-start justify-center text-left w-full">
                     {/* Left Aligned Content */}
                     <motion.div
-                        className="flex flex-col items-start gap-6 max-w-5xl"
+                        className="flex flex-col items-start gap-6 max-w-4xl"
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
                     >
                         <motion.h1
-                            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.1] text-white"
+                            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] text-white"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2, duration: 0.8 }}

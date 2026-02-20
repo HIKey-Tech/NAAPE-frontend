@@ -99,7 +99,7 @@ export default function MemberPublicationsComponent() {
                 <div className="mt-10 text-center">
                     <NaapButton
                         variant="primary"
-                        className="py-3 px-7 text-base font-semibold shadow"
+                        className="py-3 px-7 text-base font-semibold shadow rounded-full"
                         onClick={() => window.location.href = "/login"}
                         tooltip="Sign in to submit your publication"
                         fullWidth={false}

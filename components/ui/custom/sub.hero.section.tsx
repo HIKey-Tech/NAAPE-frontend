@@ -68,7 +68,7 @@ export default function SubHeroSection({
   imageAlt,
   imageWidth = 650,
   imageHeight = 650,
-  containerClassName = "w-full min-h-screen bg-white flex flex-col md:flex-row items-center justify-center pt-12 pb-10 px-4 md:px-6",
+  containerClassName = "w-full min-h-screen bg-white flex flex-col md:flex-row items-center justify-center pt-32 md:pt-40 pb-10 px-4 md:px-6",
   textClassName = "max-w-full w-full flex flex-col items-center md:items-start text-center md:text-left gap-4 mb-8 md:mb-0 md:pl-10",
   imageClassName = "object-cover w-full h-full md:h-80",
 }: SubHeroSectionProps) {

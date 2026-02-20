@@ -80,7 +80,7 @@ export default function LatestNews() {
             </motion.div>
 
             <motion.div
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
                 variants={containerVariants}
                 initial="hidden"
                 whileInView="show"

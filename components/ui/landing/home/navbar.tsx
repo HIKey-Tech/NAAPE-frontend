@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import { Menu, X, ChevronDown, LogOut, User2, LayoutDashboard, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ export default function TopNavbar() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const { user, logout, isAuthenticated } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [loginLoading, setLoginLoading] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -98,15 +99,17 @@ export default function TopNavbar() {
     return initials.toUpperCase();
   }
 
+  const isNavbarSolid = isScrolled || pathname !== "/";
+
   return (
-    <nav className={`w-full fixed top-0 left-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white/95 backdrop-blur-md shadow-md py-2 min-h-[64px] sm:min-h-[72px]" : "bg-transparent py-4 min-h-[80px] sm:min-h-[90px]"}`}>
+    <nav className={`w-full fixed top-0 left-0 z-50 transition-all duration-300 ${isNavbarSolid ? "bg-white/95 backdrop-blur-md shadow-md py-2 min-h-[64px] sm:min-h-[72px]" : "bg-transparent py-4 min-h-[80px] sm:min-h-[90px]"}`}>
       <div className="w-full max-w-[1400px] mx-auto px-4 md:px-8 flex items-center justify-between relative">
 
         {/* Logo Section - Left Aligned */}
         <Link href="/" className="flex items-center gap-3 group relative z-50 outline-none rounded-lg focus-visible:ring-2 focus-visible:ring-primary/50" aria-label="NAAPE Home">
-          <div className={`relative transition-all duration-500 ease-out-back ${isScrolled ? "scale-100" : "scale-110"}`}>
+          <div className={`relative transition-all duration-500 ease-out-back ${isNavbarSolid ? "scale-100" : "scale-110"}`}>
             {/* Glow effect */}
-            <div className={`absolute inset-0 rounded-full bg-primary/20 blur-xl transition-opacity duration-500 ${isScrolled ? "opacity-0" : "opacity-40 group-hover:opacity-60"}`} />
+            <div className={`absolute inset-0 rounded-full bg-primary/20 blur-xl transition-opacity duration-500 ${isNavbarSolid ? "opacity-0" : "opacity-40 group-hover:opacity-60"}`} />
 
             <Image
               src="/logo.png"
@@ -128,10 +131,12 @@ export default function TopNavbar() {
 
               // Determine color classes
               let colorClasses = "";
+              const isNavbarSolid = isScrolled || pathname !== "/";
+
               if (isActive) {
                 // Active/Open state - Always dark text (on white pill)
                 colorClasses = "text-primary";
-              } else if (isScrolled) {
+              } else if (isNavbarSolid) {
                 // Inactive + Scrolled (White Navbar)
                 colorClasses = "text-slate-600 hover:text-primary hover:bg-primary/10";
               } else {
@@ -207,11 +212,11 @@ export default function TopNavbar() {
           <div className="pl-4 border-l border-white/20 ml-2">
             {!isAuthenticated ? (
               <div className="flex items-center gap-3">
-                <Link href="/login" className={`hidden xl:block text-sm font-bold transition-colors ${isScrolled ? "text-slate-600 hover:text-primary" : "text-white/80 hover:text-white"}`}>
+                <Link href="/login" className={`hidden xl:block text-sm font-bold transition-colors ${isNavbarSolid ? "text-slate-600 hover:text-primary" : "text-white/80 hover:text-white"}`}>
                   Log In
                 </Link>
                 <NaapButton
-                  className={`py-2 px-6 rounded-full border border-slate-200 bg-white text-slate-700 hover:text-primary hover:border-primary hover:bg-primary/5 text-[14px] font-bold min-w-[100px] transition-all duration-300 shadow-sm hover:shadow-md ${!isScrolled ? "bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white" : ""}`}
+                  className={`py-2 px-6 rounded-full border border-slate-200 bg-white text-slate-700 hover:text-primary hover:border-primary hover:bg-primary/5 text-[14px] font-bold min-w-[100px] transition-all duration-300 shadow-sm hover:shadow-md ${!isNavbarSolid ? "bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white" : ""}`}
                   onClick={handleLoginClick}
                   disabled={loginLoading}
                 >
@@ -226,10 +231,10 @@ export default function TopNavbar() {
                       {getInitials(user?.name)}
                     </div>
                     <div className="text-left hidden xl:block">
-                      <p className={`text-xs font-bold leading-none ${isScrolled ? "text-slate-800" : "text-white"}`}>{user?.name?.split(' ')[0] || "Member"}</p>
-                      <p className={`text-[10px] uppercase tracking-wider ${isScrolled ? "text-slate-500" : "text-white/60"}`}>{user?.role || "Member"}</p>
+                      <p className={`text-xs font-bold leading-none ${isNavbarSolid ? "text-slate-800" : "text-white"}`}>{user?.name?.split(' ')[0] || "Member"}</p>
+                      <p className={`text-[10px] uppercase tracking-wider ${isNavbarSolid ? "text-slate-500" : "text-white/60"}`}>{user?.role || "Member"}</p>
                     </div>
-                    <ChevronDown size={14} className={`ml-1 transition-transform group-data-[state=open]:rotate-180 ${isScrolled ? "text-slate-400" : "text-white/60"}`} />
+                    <ChevronDown size={14} className={`ml-1 transition-transform group-data-[state=open]:rotate-180 ${isNavbarSolid ? "text-slate-400" : "text-white/60"}`} />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl border-slate-100 shadow-xl bg-white/95 backdrop-blur-md">
@@ -254,7 +259,7 @@ export default function TopNavbar() {
 
         {/* Mobile Menu Button - Right Aligned */}
         <button
-          className="lg:hidden p-2 text-primary bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:shadow-md transition-all active:scale-95"
+          className={`lg:hidden p-2 rounded-full shadow-sm hover:shadow-md transition-all active:scale-95 ${isNavbarSolid ? "text-primary bg-white/90 backdrop-blur-sm" : "text-white bg-black/20 backdrop-blur-sm hover:bg-black/30"}`}
           onClick={() => setMobileOpen(true)}
           aria-label="Open Menu"
         >
@@ -272,6 +277,11 @@ export default function TopNavbar() {
             exit={{ opacity: 0, height: 0 }}
             className="lg:hidden bg-white border-t border-slate-100 absolute top-full left-0 w-full shadow-xl overflow-hidden"
           >
+            <div className="flex justify-end p-4 pb-0">
+              <button onClick={() => setMobileOpen(false)} className="p-2 text-slate-500 hover:text-slate-800 bg-slate-100 rounded-full transition-colors" aria-label="Close Menu">
+                <X size={24} />
+              </button>
+            </div>
             <div className="p-4 flex flex-col gap-2">
               {menuItems.map((item) => (
                 <div key={item.label} className="w-full">
