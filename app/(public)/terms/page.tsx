@@ -5,7 +5,7 @@ import { FaArrowLeft } from "react-icons/fa";
 
 export default function TermsOfServicePage() {
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-[#f7fafc] to-[#e4ecfa] py-8 px-4 flex flex-col items-center">
+    <div className="relative min-h-screen bg-gradient-to-br from-[#f7fafc] to-[#e4ecfa] py-8 pt-32 md:pt-40 px-4 flex flex-col items-center">
       {/* Decorative blurred shapes */}
       <div
         aria-hidden
