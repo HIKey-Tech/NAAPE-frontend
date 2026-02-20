@@ -51,10 +51,11 @@ export default function TopNavbar() {
     },
     { label: "Membership", href: "/membership" },
     {
-      label: "News",
+      label: "News & Events",
       href: "/news",
       submenu: [
-        { label: "NAAPE News", href: "/news/naape", desc: "Latest updates" },
+        { label: "News", href: "/news", desc: "Latest news updates" },
+        { label: "Events", href: "/events", desc: "Upcoming NAAPE events" },
       ]
     },
     {
