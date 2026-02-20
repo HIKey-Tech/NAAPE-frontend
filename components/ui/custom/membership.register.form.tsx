@@ -91,23 +91,6 @@ export default function MembershipRegisterForm() {
                 }
             });
 
-            // 2. Submit the complex membership record
-            await api.post("/membership", {
-                name: values.name.trim(),
-                email: values.email.trim(),
-                tel: values.tel.trim(),
-                address: values.address.trim(),
-                designation: values.designation,
-                dateOfEmployment: values.dateOfEmployment ? new Date(values.dateOfEmployment) : undefined,
-                section: values.section,
-                qualification: values.qualification,
-                licenseNo: values.licenseNo,
-                employer: values.employer,
-                rank: values.rank,
-                signature: values.signature.trim(),
-                date: new Date(values.date)
-            });
-
             toast.success("Account created successfully! Please sign in.");
             router.replace("/login");
         } catch (error: any) {
