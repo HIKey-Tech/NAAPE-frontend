@@ -59,13 +59,12 @@ export default function NaapeNewsDetailsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F8FAFC] py-9 px-3 sm:px-0">
+    <main className="min-h-screen bg-[#F8FAFC] pt-32 pb-16 px-3 sm:px-0">
       <NewsDetails
         imageUrl={news.image || "/images/plane.jpg"}
         title={news.title}
         content={news.content}
         date={news.createdAt}
-        category={news.category}
         author={news.author || {
           name: "NAAPE Media Team",
           avatarUrl: "/logo.png"

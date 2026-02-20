@@ -29,7 +29,18 @@ export default function EventCard({
     ...rest
 }: EventCardProps) {
     const displayVenue = venue || location || "TBA";
-    const displayDate = typeof date === "string" ? date : date instanceof Date ? date.toLocaleDateString() : "TBA";
+
+    let displayDate = "TBA";
+    if (date) {
+        const d = typeof date === "string" ? new Date(date) : date;
+        if (!isNaN(d.valueOf())) {
+            displayDate = d.toLocaleDateString("en-GB", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+            });
+        }
+    }
     const displayTime = time || "";
     const displayImage = imageUrl || "/images/plane.jpg";
 

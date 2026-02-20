@@ -48,7 +48,7 @@ export default function UpcomingEvents() {
     };
 
     return (
-        <section className="w-full max-w-6xl mx-auto py-24 px-6">
+        <section className="w-full max-w-6xl mx-auto pt-32 pb-24 px-6">
             <motion.div
                 className="text-center mb-16"
                 initial={{ opacity: 0, y: 20 }}
