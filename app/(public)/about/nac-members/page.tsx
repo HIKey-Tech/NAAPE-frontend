@@ -188,7 +188,7 @@ function MemberCard({ member }: { member: NacMember }) {
             viewBox="0 0 448 512"
             aria-hidden="true"
           >
-            <path d="M100.28 448H7.4V148.9h92.88zm-46.44-340C24.61 108 0 83.39 0 53.21A53.34 53.34 0 0153.42 0C83.58 0 108 24.62 108 54.45c0 30.16-24.42 54.55-54.16 54.55zm384 340h-92.68V302.4c0-34.7-12.36-58.4-43.36-58.4-23.64 0-37.65 15.92-43.83 31.22-2.26 5.48-2.82 13.1-2.82 20.8V448h-92.74s1.2-264.26 0-291.1h92.74v41.3c12.3-18.9 34.36-45.81 83.48-45.81 60.86 0 106.72 39.57 106.72 124.55V448z"/>
+            <path d="M100.28 448H7.4V148.9h92.88zm-46.44-340C24.61 108 0 83.39 0 53.21A53.34 53.34 0 0153.42 0C83.58 0 108 24.62 108 54.45c0 30.16-24.42 54.55-54.16 54.55zm384 340h-92.68V302.4c0-34.7-12.36-58.4-43.36-58.4-23.64 0-37.65 15.92-43.83 31.22-2.26 5.48-2.82 13.1-2.82 20.8V448h-92.74s1.2-264.26 0-291.1h92.74v41.3c12.3-18.9 34.36-45.81 83.48-45.81 60.86 0 106.72 39.57 106.72 124.55V448z" />
           </svg>
           LinkedIn
         </a>
@@ -266,7 +266,7 @@ export default function NacMembersPage() {
   }, [search]);
 
   return (
-    <div className="mx-auto max-w-5xl justify-center items-center py-10 px-2 sm:px-4">
+    <div className="mx-auto max-w-5xl justify-center items-center pb-10 pt-32 md:pt-40 px-2 sm:px-4">
       <h1 className="text-4xl font-extrabold mb-4 text-center text-blue-900 tracking-tight">
         National Advisory Council
         <span className="block text-lg font-normal mt-2 text-blue-500">
