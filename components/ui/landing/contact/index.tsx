@@ -49,7 +49,7 @@ export default function ContactSection() {
     }
 
     return (
-        <section className="w-full max-w-7xl mx-auto py-16 px-6 lg:px-8">
+        <section className="w-full max-w-7xl mx-auto pt-32 md:pt-40 pb-16 px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row gap-12 lg:gap-24">
                 {/* Left: Contact Form */}
                 <div className="w-full lg:w-7/12">
