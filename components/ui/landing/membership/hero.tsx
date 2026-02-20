@@ -7,7 +7,7 @@ import { ArrowRight, Users, Shield, TrendingUp } from "lucide-react";
 
 export default function MembershipHeroSection() {
     return (
-        <section className="relative w-full min-h-[85vh] flex items-center justify-center bg-slate-50 overflow-hidden py-20 px-6">
+        <section className="relative w-full min-h-[85vh] flex items-center justify-center bg-slate-50 overflow-hidden py-20 pt-32 md:pt-40 px-6">
             {/* Background grid pattern */}
             <div className="absolute inset-0 opacity-[0.03]" style={{
                 backgroundImage: "radial-gradient(circle, #000 1px, transparent 1px)",
