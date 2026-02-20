@@ -46,8 +46,8 @@ export default function MembershipHeroSection() {
 
                     <div className="flex items-center gap-4 pt-4">
                         <div className="flex -space-x-3">
-                            {["/images/people1.jpg", "/images/people2.jpg", "/images/people3.jpg"].map((src, i) => (
-                                <Image key={i} src={src} alt="Member" width={40} height={40} className="w-10 h-10 rounded-full border-2 border-white object-cover" />
+                            {["/members/Abednego.jpg", "/members/Adebayo.jpg", "/members/yakubu.jpg"].map((src, i) => (
+                                <Image key={i} src={src} alt="Member" width={40} height={40} className="w-10 h-10 rounded-full border-2 border-white object-cover bg-slate-200" />
                             ))}
                         </div>
                         <div>
