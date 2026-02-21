@@ -83,14 +83,14 @@ function UserAvatar({ user }: { user: { name?: string, email?: string, avatarUrl
     const initials = getInitials(user.name);
 
     return (
-        <div className="flex items-center gap-3 px-3 py-3 border-t border-slate-100 mt-2">
+        <div className="flex items-center gap-3 px-3 py-3 border-t border-slate-100 dark:border-slate-800/60 mt-2">
             {user.avatarUrl ? (
                 <Image
                     src={user.avatarUrl}
                     alt={user.name || "User"}
                     width={36}
                     height={36}
-                    className="w-9 h-9 rounded-full border border-slate-200 object-cover"
+                    className="w-9 h-9 rounded-full border border-slate-200 dark:border-slate-700 object-cover"
                     priority
                 />
             ) : (
@@ -99,8 +99,8 @@ function UserAvatar({ user }: { user: { name?: string, email?: string, avatarUrl
                 </div>
             )}
             <div className="flex flex-col min-w-0">
-                <span className="text-sm font-bold text-slate-800 truncate">{user.name ?? "-"}</span>
-                <span className="text-[10px] text-slate-500 truncate">{user.email ?? ""}</span>
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">{user.name ?? "-"}</span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{user.email ?? ""}</span>
             </div>
         </div>
     );
@@ -108,8 +108,8 @@ function UserAvatar({ user }: { user: { name?: string, email?: string, avatarUrl
 
 // Reusable styling for nav items
 const navItemBase = "flex items-center w-full px-4 py-2.5 rounded-lg text-sm font-medium gap-3 transition-all duration-200 group";
-const navItemActive = "text-primary bg-primary/5 font-bold shadow-sm ring-1 ring-black/5";
-const navItemInactive = "text-slate-600 hover:bg-slate-50 hover:text-slate-900";
+const navItemActive = "text-primary bg-primary/5 dark:bg-primary/10 font-bold shadow-sm ring-1 ring-black/5 dark:ring-white/5";
+const navItemInactive = "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200";
 
 type NavItemProps = {
     icon: React.ElementType;
@@ -241,7 +241,7 @@ function SimpleDropdown({
             onClick={() => setOpen(!open)}
         >
             {open && (
-                <ul className="pl-4 mt-1 space-y-0.5 border-l-2 border-slate-100 ml-6 animate-in slide-in-from-top-1 duration-200">
+                <ul className="pl-4 mt-1 space-y-0.5 border-l-2 border-slate-100 dark:border-slate-800 ml-6 animate-in slide-in-from-top-1 duration-200">
                     {links.map(link => {
                         const isActive = pathname === link.href;
                         return (
@@ -250,7 +250,7 @@ function SimpleDropdown({
                                     href={link.href ?? "#"}
                                     className={`
                                         block px-3 py-2 rounded-md text-sm transition-colors
-                                        ${isActive ? "text-primary font-bold bg-primary/5" : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"}
+                                        ${isActive ? "text-primary font-bold bg-primary/5 dark:bg-primary/10" : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"}
                                     `}
                                 >
                                     {link.label}
@@ -323,15 +323,15 @@ export function AdminSidebar() {
     const [mobileOpen, setMobileOpen] = useState(false);
 
     const SidebarContent = (
-        <div className="flex flex-col h-full bg-white border-r border-slate-100 shadow-[2px_0_24px_-12px_rgba(0,0,0,0.1)]">
+        <div className="flex flex-col h-full bg-white dark:bg-[#0f121b] border-r border-slate-100 dark:border-slate-800/60 shadow-[2px_0_24px_-12px_rgba(0,0,0,0.1)]">
             {/* Header */}
-            <div className="p-6 border-b border-slate-50 flex items-center justify-center sm:justify-start">
+            <div className="p-6 border-b border-slate-50 dark:border-slate-800/60 flex items-center justify-center sm:justify-start">
                 <Link href="/" className="flex items-center gap-2 group">
                     <div className="relative">
                         <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                         <Image src="/logo.png" alt="NAAPE" width={40} height={40} className="relative z-10 object-contain w-10 h-10" priority />
                     </div>
-                    <span className="hidden sm:block text-lg font-black text-slate-800 tracking-tight ml-2">NAAPE <span className="text-primary">Admin</span></span>
+                    <span className="hidden sm:block text-lg font-black text-slate-800 dark:text-slate-200 tracking-tight ml-2">NAAPE <span className="text-primary">Admin</span></span>
                 </Link>
             </div>
 
@@ -388,7 +388,7 @@ export function AdminSidebar() {
 
             {/* Footer User */}
             {user && (
-                <div className="p-4 bg-slate-50/50">
+                <div className="p-4 bg-slate-50/50 dark:bg-[#0a0d14]/50">
                     <div className="flex items-center gap-3">
                         <UserAvatar user={user} />
                     </div>

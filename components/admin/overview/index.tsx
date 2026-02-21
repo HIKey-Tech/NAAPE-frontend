@@ -52,7 +52,7 @@ function StatCard({
   bgClass: string
 }) {
   return (
-    <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-shadow group">
+    <div className="bg-white dark:bg-card rounded-2xl p-6 border border-slate-100 dark:border-border shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-shadow group">
       <div className="flex items-start justify-between mb-4">
         <div className={`p-3 rounded-xl ${bgClass} ${colorClass} group-hover:scale-110 transition-transform duration-300`}>
           <Icon size={20} />
@@ -60,8 +60,8 @@ function StatCard({
         {/* Optional trend indicator could go here */}
       </div>
       <div>
-        <h3 className="text-3xl font-black text-slate-800 tracking-tight mb-1">{value}</h3>
-        <p className="text-sm font-semibold text-slate-400 uppercase tracking-wide">{label}</p>
+        <h3 className="text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight mb-1">{value}</h3>
+        <p className="text-sm font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">{label}</p>
       </div>
     </div>
   );
@@ -155,12 +155,12 @@ const AdminOverview: React.FC = () => {
   ];
 
   return (
-    <div className="p-6 sm:p-10 space-y-10 min-h-screen bg-slate-50">
+    <div className="p-6 sm:p-10 space-y-10 min-h-screen bg-slate-50 dark:bg-transparent">
 
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-black text-slate-800 tracking-tight">Dashboard Overview</h1>
-        <p className="text-slate-500 mt-2 font-medium">Welcome back, {user?.name || "Admin"}. Here's what's happening today.</p>
+        <h1 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">Dashboard Overview</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium">Welcome back, {user?.name || "Admin"}. Here's what's happening today.</p>
       </div>
 
       {/* Stats Grid */}
@@ -178,15 +178,15 @@ const AdminOverview: React.FC = () => {
       </div>
 
       {/* Recent Publications */}
-      <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm">
+      <div className="bg-white dark:bg-card rounded-3xl p-8 border border-slate-100 dark:border-border shadow-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div>
-            <h2 className="text-xl font-bold text-slate-800">Recent Publications</h2>
-            <p className="text-sm text-slate-400 font-medium mt-1">Review the latest submissions</p>
+            <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Recent Publications</h2>
+            <p className="text-sm text-slate-400 dark:text-slate-500 font-medium mt-1">Review the latest submissions</p>
           </div>
           <Link
             href="/admin/publications/all-publications"
-            className="px-5 py-2.5 bg-slate-50 text-slate-600 font-semibold rounded-xl hover:bg-slate-100 hover:text-primary transition-colors text-sm"
+            className="px-5 py-2.5 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary dark:hover:text-primary transition-colors text-sm"
           >
             View All
           </Link>

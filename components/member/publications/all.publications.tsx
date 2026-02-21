@@ -88,7 +88,7 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
                         status === s.value || (!status && !s.value)
                             ? s.highlight +
                             " border-primary/20 text-primary shadow-sm ring-1 ring-primary/10"
-                            : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300",
+                            : "bg-white dark:bg-card border-slate-200 dark:border-border text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-700",
                         "active:scale-95"
                     ].join(" ")}
                     onClick={() => setStatus(s.value)}
@@ -163,7 +163,7 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
                         }}
                     >
                         <div
-                            className="absolute inset-0 z-[-1] bg-gradient-to-br from-slate-50 to-white rounded-2xl opacity-80 group-hover:opacity-100 scale-[1.02] blur-[2.5px] pointer-events-none transition-all duration-200"
+                            className="absolute inset-0 z-[-1] bg-gradient-to-br from-slate-50 dark:from-slate-900 to-white dark:to-slate-800 rounded-2xl opacity-80 group-hover:opacity-100 scale-[1.02] blur-[2.5px] pointer-events-none transition-all duration-200"
                             aria-hidden="true"
                         />
                         <div className="h-full flex items-stretch">
@@ -179,7 +179,7 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
     };
 
     return (
-        <div className="w-full min-h-[75vh] bg-gradient-to-b from-slate-50/50 to-white pt-0 pb-28 sm:pb-12 relative flex flex-col">
+        <div className="w-full min-h-[75vh] bg-gradient-to-b from-slate-50/50 dark:from-[#0a0d14]/50 to-white dark:to-transparent pt-0 pb-28 sm:pb-12 relative flex flex-col">
             <div className="max-w-7xl mx-auto px-2 sm:px-7 w-full">
                 {/* Subscription Status Banner */}
                 {!subscriptionLoading && !hasActiveSubscription && (
@@ -194,10 +194,10 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
                 {/* Hero / Showcase header */}
                 <div className="pt-2 pb-3 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-y-2">
                     <div className="w-full sm:w-auto flex flex-col items-center sm:items-start text-center sm:text-left">
-                        <h1 className="text-[2.25rem] sm:text-4xl font-bold tracking-tight text-slate-900 leading-tight mb-2">
+                        <h1 className="text-[2.25rem] sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight mb-2">
                             Publications
                         </h1>
-                        <p className="text-slate-500 text-base sm:text-lg font-medium mb-1">
+                        <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg font-medium mb-1">
                             Discover and manage your scholarly work.
                         </p>
                     </div>

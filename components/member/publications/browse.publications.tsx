@@ -108,7 +108,7 @@ export default function BrowsePublicationsPage() {
                         }}
                     >
                         <div
-                            className="absolute inset-0 z-[-1] bg-gradient-to-br from-slate-50 to-white rounded-2xl opacity-80 group-hover:opacity-100 scale-[1.02] blur-[2.5px] pointer-events-none transition-all duration-200"
+                            className="absolute inset-0 z-[-1] bg-gradient-to-br from-slate-50 dark:from-[#0a0d14]/50 to-white dark:to-transparent rounded-2xl opacity-80 group-hover:opacity-100 scale-[1.02] blur-[2.5px] pointer-events-none transition-all duration-200"
                             aria-hidden="true"
                         />
                         <div className="h-full flex items-stretch">
@@ -125,13 +125,13 @@ export default function BrowsePublicationsPage() {
     };
 
     return (
-        <div className="bg-slate-50/50 w-full min-h-screen">
-            <div className="w-full pt-10 pb-8 bg-white border-b border-slate-100 px-6 sm:px-10 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-y-4">
+        <div className="bg-slate-50/50 dark:bg-transparent w-full min-h-screen">
+            <div className="w-full pt-10 pb-8 bg-white dark:bg-[#0f121b] border-b border-slate-100 dark:border-slate-800 px-6 sm:px-10 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-y-4">
                 <div className="w-full sm:w-auto flex flex-col items-start text-left">
-                    <h1 className="text-3xl font-black text-slate-900 mb-2">
-                        Browse <span className="text-primary">Publications</span>
+                    <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-2">
+                        Browse <span className="text-primary dark:text-blue-400">Publications</span>
                     </h1>
-                    <p className="text-sm text-slate-500 max-w-2xl">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
                         Explore scholarly work from NAAPE members.
                     </p>
                 </div>

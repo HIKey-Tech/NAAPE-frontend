@@ -90,8 +90,8 @@ function NavItem({
   const baseClass = `
     flex items-center w-full px-4 py-2.5 rounded-xl text-sm font-medium gap-3 transition-all duration-200 group relative
     ${active
-      ? "text-primary bg-primary/5 font-bold shadow-sm ring-1 ring-black/5"
-      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+      ? "text-primary bg-primary/5 font-bold shadow-sm ring-1 ring-black/5 dark:ring-white/5"
+      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
     }
     ${disabled ? "opacity-50 cursor-not-allowed" : ""}
   `;
@@ -143,7 +143,7 @@ function DropdownNavItem({
         onClick={() => setOpen(!open)}
         className={`
           flex items-center w-full px-4 py-2.5 rounded-xl text-sm font-medium gap-3 transition-all duration-200 group
-          ${isActive ? "text-primary bg-primary/5 font-bold" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}
+          ${isActive ? "text-primary bg-primary/5 font-bold" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"}
         `}
       >
         <Icon className={`w-5 h-5 flex-shrink-0 transition-colors ${isActive ? "text-primary" : "text-slate-400 group-hover:text-primary"}`} />
@@ -153,7 +153,7 @@ function DropdownNavItem({
         </span>
       </button>
       {open && (
-        <div className="pl-4 mt-1 space-y-0.5 border-l-2 border-slate-100 ml-6 animate-in slide-in-from-top-1 duration-200">
+        <div className="pl-4 mt-1 space-y-0.5 border-l-2 border-slate-100 dark:border-slate-800 ml-6 animate-in slide-in-from-top-1 duration-200">
           {children}
         </div>
       )}
@@ -180,7 +180,7 @@ function SidebarProfileCard({ user }: { user: User }) {
   };
 
   return (
-    <div className="flex items-center gap-3 px-3 py-3 border-t border-slate-100 mt-2 bg-slate-50/50 rounded-xl mx-2">
+    <div className="flex items-center gap-3 px-3 py-3 border-t border-slate-100 dark:border-slate-800 mt-2 bg-slate-50/50 dark:bg-slate-800/50 rounded-xl mx-2">
       <div className="relative">
         {user.avatarUrl ? (
           <Image
@@ -203,9 +203,9 @@ function SidebarProfileCard({ user }: { user: User }) {
       </div>
       <div className="flex flex-col min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-slate-800 truncate max-w-[120px]">{user.name || "User"}</span>
+          <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate max-w-[120px]">{user.name || "User"}</span>
           {showPremiumBadge && (
-            <span className="text-[9px] uppercase font-extrabold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full border border-amber-100">
+            <span className="text-[9px] uppercase font-extrabold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full border border-amber-100 dark:border-amber-900/50">
               {premiumText}
             </span>
           )}
@@ -243,9 +243,9 @@ export function AppSidebar() {
   const isNewsPubsDropdownActive = newsPublicationsLinks.some(l => pathname === l.href || pathname?.startsWith(l.href || ""));
 
   const SidebarContent = (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-white dark:bg-[#0f121b]">
       {/* Header */}
-      <div className="p-6 border-b border-slate-50 flex items-center justify-center sm:justify-start">
+      <div className="p-6 border-b border-slate-50 dark:border-slate-800 flex items-center justify-center sm:justify-start">
         <Link href="/" className="flex items-center gap-2 group">
           <div className="relative">
             <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -280,7 +280,7 @@ export function AppSidebar() {
               href={link.href ?? "#"}
               className={`
                         block px-3 py-2 rounded-lg text-sm transition-colors mb-0.5
-                        ${pathname === link.href ? "text-primary font-bold bg-primary/5" : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"}
+                        ${pathname === link.href ? "text-primary font-bold bg-primary/5" : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800"}
                     `}
             >
               {link.label}
@@ -321,7 +321,7 @@ export function AppSidebar() {
       <div className="hidden sm:block w-[260px] min-w-[260px] shrink-0 pointer-events-none transition-all duration-300 ease-in-out" />
 
       {/* Actual Fixed Sidebar */}
-      <aside className="hidden sm:flex flex-col w-[260px] fixed top-0 left-0 bottom-0 h-screen z-40 bg-white border-r border-slate-100 shadow-[2px_0_24px_-12px_rgba(0,0,0,0.1)] overflow-hidden transition-all duration-300 ease-in-out">
+      <aside className="hidden sm:flex flex-col w-[260px] fixed top-0 left-0 bottom-0 h-screen z-40 bg-white dark:bg-[#0f121b] border-r border-slate-100 dark:border-slate-800 shadow-[2px_0_24px_-12px_rgba(0,0,0,0.1)] dark:shadow-none overflow-hidden transition-all duration-300 ease-in-out">
         {SidebarContent}
       </aside>
 
@@ -339,7 +339,7 @@ export function AppSidebar() {
       {mobileOpen && (
         <div className="fixed inset-0 z-[60] sm:hidden">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-[80vw] max-w-[300px] bg-white shadow-2xl animate-in slide-in-from-left duration-200">
+          <div className="absolute inset-y-0 left-0 w-[80vw] max-w-[300px] bg-white dark:bg-[#0f121b] shadow-2xl animate-in slide-in-from-left duration-200">
             {SidebarContent}
             <button onClick={() => setMobileOpen(false)} className="absolute top-4 right-4 p-2 text-slate-400">
               <FaTimes />

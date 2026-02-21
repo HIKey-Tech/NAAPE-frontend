@@ -15,18 +15,18 @@ export default function AdminDashboardLayout({
 }) {
     const { user, token, isAuthenticated, loading, loggingOut } = useAuth();
     const router = useRouter();
-    
+
     // Redirect to login if not authenticated (after loading is complete)
     useEffect(() => {
         if (!loading && !isAuthenticated && !loggingOut) {
             router.replace('/login');
         }
     }, [loading, isAuthenticated, loggingOut, router]);
-    
+
     // Show loading state during initial load
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-[#f0f5fc] to-white">
+            <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-[#f0f5fc] dark:from-[#0a0d14] to-white dark:to-[#0f121b]">
                 <div className="flex flex-col items-center gap-4">
                     <svg
                         className="animate-spin"
@@ -55,11 +55,11 @@ export default function AdminDashboardLayout({
             </div>
         );
     }
-    
+
     // Show logging out state only when actually logging out
     if (loggingOut) {
         return (
-            <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-[#f0f5fc] to-white">
+            <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-[#f0f5fc] dark:from-[#0a0d14] to-white dark:to-[#0f121b]">
                 <div className="flex flex-col items-center gap-4">
                     <svg
                         className="animate-spin"
@@ -88,15 +88,15 @@ export default function AdminDashboardLayout({
             </div>
         );
     }
-    
+
     // Don't render dashboard if not authenticated
     if (!isAuthenticated) {
         return null;
     }
-    
+
     return (
         <SidebarProvider>
-            <AdminSidebar/>
+            <AdminSidebar />
             <main className="w-full min-h-screen flex flex-col">
                 <TopNavbar />
                 <div className="flex-1 w-full">

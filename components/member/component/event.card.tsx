@@ -98,15 +98,15 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void; isAdmin?:
     return (
         <div
             ref={cardRef}
-            className={`bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col min-h-[300px] hover:shadow-lg transition-all group cursor-pointer ${className}`}
+            className={`bg-white dark:bg-card rounded-2xl border border-slate-100 dark:border-border shadow-sm overflow-hidden flex flex-col min-h-[300px] hover:shadow-lg transition-all group cursor-pointer ${className}`}
             onClick={isCardClickable ? handleCardClick : undefined}
         >
             {/* Image */}
-            <div className="relative w-full h-36 bg-slate-100 overflow-hidden">
+            <div className="relative w-full h-36 bg-slate-100 dark:bg-slate-800 overflow-hidden">
                 {imageUrl ? (
                     <img src={imageUrl} alt={title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                 ) : (
-                    <div className="flex w-full h-full items-center justify-center text-slate-300 text-sm font-medium">No Image</div>
+                    <div className="flex w-full h-full items-center justify-center text-slate-300 dark:text-slate-600 text-sm font-medium">No Image</div>
                 )}
                 {isPaid && (
                     <div className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 font-bold text-xs">
@@ -118,28 +118,28 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void; isAdmin?:
             {/* Content */}
             <div className="px-5 pt-4 pb-5 flex flex-col flex-1">
                 <div className="flex items-center gap-2 mb-1.5">
-                    <CalendarClock size={14} className="text-slate-400" />
-                    <span className="text-xs font-bold text-slate-500">{formatEventDate(date)}</span>
-                    <span className="text-xs text-slate-400">{formatEventTime(date)}</span>
+                    <CalendarClock size={14} className="text-slate-400 dark:text-slate-500" />
+                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{formatEventDate(date)}</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500">{formatEventTime(date)}</span>
                 </div>
 
-                <h3 className="text-lg font-bold text-slate-800 mb-1.5 group-hover:text-primary transition-colors leading-snug">
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1.5 group-hover:text-primary transition-colors leading-snug">
                     {truncate(title, 48)}
                 </h3>
 
-                <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-2">
-                    <MapPin size={13} className="text-slate-400" />
-                    {location || <span className="italic text-slate-400">TBA</span>}
+                <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-2">
+                    <MapPin size={13} className="text-slate-400 dark:text-slate-500" />
+                    {location || <span className="italic text-slate-400 dark:text-slate-600">TBA</span>}
                 </div>
 
                 {description && (
-                    <p className="text-sm text-slate-500 line-clamp-2 mb-3 leading-relaxed">{description}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-3 leading-relaxed">{description}</p>
                 )}
 
                 {maxCapacity && (
                     <div className="flex items-center gap-2 mb-3 text-xs">
-                        <User2 size={13} className="text-slate-400" />
-                        <span className={`font-bold ${isFull ? 'text-red-600' : spotsRemaining && spotsRemaining <= 5 ? 'text-amber-600' : 'text-slate-600'}`}>
+                        <User2 size={13} className="text-slate-400 dark:text-slate-500" />
+                        <span className={`font-bold ${isFull ? 'text-red-600 dark:text-red-400' : spotsRemaining && spotsRemaining <= 5 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-600 dark:text-slate-300'}`}>
                             {isFull ? (
                                 <span className="inline-flex items-center gap-1"><XCircle size={12} /> Full</span>
                             ) : (
@@ -150,12 +150,12 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void; isAdmin?:
                     </div>
                 )}
 
-                <div className="flex justify-between mt-auto items-center pt-2 border-t border-slate-50">
+                <div className="flex justify-between mt-auto items-center pt-2 border-t border-slate-50 dark:border-slate-800/60">
                     <div>
-                        <span className="font-black text-lg text-primary">
+                        <span className="font-black text-lg text-primary dark:text-blue-400">
                             {isPaid && price > 0 ? `${currency === "NGN" ? "₦" : currency}${price.toLocaleString()}` : "FREE"}
                         </span>
-                        <div className="text-xs text-slate-400">{isPaid && price > 0 ? "Ticket" : "Open"}</div>
+                        <div className="text-xs text-slate-400 dark:text-slate-500">{isPaid && price > 0 ? "Ticket" : "Open"}</div>
                     </div>
 
                     {isFull && !isPaidByUser && !isRegisteredFree ? (

@@ -103,7 +103,7 @@ const PublicationComments = ({ publicationId }: { publicationId: string }) => {
                 <input
                     value={text}
                     onChange={(e) => setText(e.target.value)}
-                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
+                    className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
                     placeholder="Add a comment"
                 />
                 <button
@@ -124,10 +124,10 @@ const PublicationComments = ({ publicationId }: { publicationId: string }) => {
                 {comments.map((c) => (
                     <li
                         key={c._id}
-                        className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3"
+                        className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-xl px-4 py-3"
                     >
-                        <strong className="mr-2 text-slate-700 text-sm">{getAuthorLabel(c.author)}:</strong>
-                        <span className="text-slate-600 text-sm">{c.text || c.content}</span>
+                        <strong className="mr-2 text-slate-700 dark:text-slate-200 text-sm">{getAuthorLabel(c.author)}:</strong>
+                        <span className="text-slate-600 dark:text-slate-400 text-sm">{c.text || c.content}</span>
                     </li>
                 ))}
             </ul>
@@ -201,12 +201,12 @@ const PublicationActions = ({
     return (
         <form onSubmit={submit} className="space-y-3">
             <input
-                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 w-full text-sm focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
+                className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 w-full text-sm focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
             />
             <textarea
-                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 w-full text-sm focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
+                className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 w-full text-sm focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
                 rows={4}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
@@ -281,7 +281,7 @@ export default function PublicationDetail({ hideStatus = false }: { hideStatus?:
         STATUS_CONFIG.pending;
 
     return (
-        <article className="max-w-3xl mx-auto bg-white border border-slate-100 rounded-2xl overflow-hidden mt-10 shadow-sm">
+        <article className="max-w-3xl w-full mx-auto bg-white dark:bg-card border border-slate-100 dark:border-border rounded-2xl overflow-hidden mt-10 shadow-sm">
             <img
                 src={publication.image || FallbackImage}
                 className="w-full h-[300px] object-cover"
@@ -290,7 +290,7 @@ export default function PublicationDetail({ hideStatus = false }: { hideStatus?:
 
             <div className="p-8 space-y-6">
                 <div className="flex justify-between items-center">
-                    <h1 className="text-3xl font-bold text-slate-900">{publication.title}</h1>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">{publication.title}</h1>
                     {!hideStatus && (
                         <span
                             className={`px-4 py-1 rounded-full border text-xs font-bold ${status.bg} ${status.text}`}
@@ -308,7 +308,7 @@ export default function PublicationDetail({ hideStatus = false }: { hideStatus?:
                     />
                 )}
 
-                <p className="text-slate-600 whitespace-pre-line leading-relaxed">
+                <p className="text-slate-600 dark:text-slate-400 whitespace-pre-line leading-relaxed">
                     {publication.content}
                 </p>
 

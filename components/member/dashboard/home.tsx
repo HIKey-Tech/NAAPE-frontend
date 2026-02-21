@@ -37,7 +37,7 @@ const WelcomeBanner: React.FC = () => {
       <div className="relative z-10 w-full sm:w-auto mt-8 sm:mt-0 flex flex-col gap-3">
         <Link
           href="/publications/new"
-          className="px-8 py-4 bg-white text-primary rounded-xl font-bold shadow-lg shadow-black/5 hover:shadow-xl hover:-translate-y-1 transition-all text-center flex items-center justify-center gap-2 w-full sm:w-64"
+          className="px-8 py-4 bg-white dark:bg-slate-900 text-primary dark:text-blue-400 rounded-xl font-bold shadow-lg shadow-black/5 hover:shadow-xl hover:-translate-y-1 transition-all text-center flex items-center justify-center gap-2 w-full sm:w-64"
         >
           <FaBook size={16} />
           <span>New Publication</span>
@@ -56,7 +56,7 @@ const WelcomeBanner: React.FC = () => {
 
 const SectionHeader = ({ title, href }: { title: string, href?: string }) => (
   <div className="flex items-center justify-between mb-6">
-    <h2 className="text-xl font-bold text-slate-800 tracking-tight">{title}</h2>
+    <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">{title}</h2>
     {href && (
       <Link href={href} className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors group">
         View All <FaArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
@@ -85,11 +85,11 @@ const RecentPublications: React.FC = () => {
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-slate-200">
-          <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-300">
+        <div className="text-center py-12 bg-white dark:bg-[#0f121b] rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+          <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-300 dark:text-slate-600">
             <FaBook />
           </div>
-          <p className="text-slate-500 font-medium">No publications found</p>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">No publications found</p>
         </div>
       )}
     </section>
@@ -121,11 +121,11 @@ const UpcomingEvents: React.FC = () => {
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-slate-200">
-          <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-300">
+        <div className="text-center py-12 bg-white dark:bg-[#0f121b] rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+          <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-300 dark:text-slate-600">
             <FaCalendarAlt />
           </div>
-          <p className="text-slate-500 font-medium">No upcoming events</p>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">No upcoming events</p>
         </div>
       )}
     </section>
@@ -134,7 +134,7 @@ const UpcomingEvents: React.FC = () => {
 
 const MemberDashboardHome: React.FC = () => {
   return (
-    <main className="flex-1 bg-slate-50 min-h-screen">
+    <main className="flex-1 bg-slate-50 dark:bg-transparent min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10">
         <WelcomeBanner />
         <RecentPublications />

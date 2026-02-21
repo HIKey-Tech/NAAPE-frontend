@@ -129,7 +129,7 @@ export default function EventsComponent() {
     if (user?.role === null) return null;
 
     return (
-        <div className="px-4 sm:px-0 py-4 bg-white w-full">
+        <div className="px-4 sm:px-0 py-4 bg-white dark:bg-transparent w-full min-h-screen">
             <FilterHeader
                 title="Events"
                 search={search}

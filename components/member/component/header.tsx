@@ -32,30 +32,30 @@ export const FilterHeader: React.FC<CommonHeaderProps> = ({
   sortLabel,
   extraFilters,
 }) => (
-  <div className="sticky w-full bg-slate-50/80 backdrop-blur-xl pb-4 z-30" style={{ top: "0px" }}>
+  <div className="sticky w-full bg-slate-50/80 dark:bg-[#0a0d14]/80 backdrop-blur-xl pb-4 z-30" style={{ top: "0px" }}>
     <div className="w-full">
       {/* Title */}
       {title && (
         <div className="pt-6 pb-4">
-          <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight mb-0.5">{title}</h1>
-          <p className="text-sm text-slate-400">Find, filter, and sort your {title.toLowerCase()}.</p>
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-0.5">{title}</h1>
+          <p className="text-sm text-slate-400 dark:text-slate-500">Find, filter, and sort your {title.toLowerCase()}.</p>
         </div>
       )}
 
 
       {/* Filter Bar */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex flex-col gap-4">
+      <div className="bg-white dark:bg-card rounded-2xl border border-slate-100 dark:border-border shadow-sm p-4 flex flex-col gap-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           {/* Search */}
           <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
+            <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
               <FaSearch size={11} /> Search
             </label>
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={searchPlaceholder || `Search ${title}...`}
-              className="w-full max-w-sm bg-slate-50 border-slate-200 rounded-xl text-sm focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10"
+              className="w-full max-w-sm bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-4 focus:ring-primary/10"
             />
           </div>
 
@@ -63,8 +63,8 @@ export const FilterHeader: React.FC<CommonHeaderProps> = ({
           <div className="flex flex-col gap-2 items-stretch min-w-[265px] md:flex-row md:items-center md:gap-3">
             {/* Sort */}
             <div className="flex flex-col">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Sort</span>
-              <Button variant="secondary" className="rounded-xl px-4 text-sm font-bold bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200">
+              <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1">Sort</span>
+              <Button variant="secondary" className="rounded-xl px-4 text-sm font-bold bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700">
                 <span>{sortLabel || "Newest"}</span>
                 <ChevronDown className="ml-1 w-4 h-4" />
               </Button>
@@ -72,10 +72,10 @@ export const FilterHeader: React.FC<CommonHeaderProps> = ({
 
             {/* Filter */}
             <div className="flex flex-col">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Filter</span>
+              <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1">Filter</span>
               <Popover open={filterOpen} onOpenChange={setFilterOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="rounded-xl px-4 text-sm font-bold border-slate-200 hover:bg-slate-50">
+                  <Button variant="outline" className="rounded-xl px-4 text-sm font-bold border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">
                     <FaFilter size={12} className="mr-1.5" /> Filter
                   </Button>
                 </PopoverTrigger>
@@ -105,19 +105,19 @@ export const FilterHeader: React.FC<CommonHeaderProps> = ({
 
             {/* Date Display */}
             <div className="flex flex-col">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Date</span>
-              <div className="bg-slate-50 flex items-center gap-2 rounded-xl px-4 py-2 border border-slate-200 text-sm font-medium min-h-[38px] text-slate-600 border-l-4 border-l-primary/30">
+              <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1">Date</span>
+              <div className="bg-slate-50 dark:bg-slate-800 flex items-center gap-2 rounded-xl px-4 py-2 border border-slate-200 dark:border-slate-700 text-sm font-medium min-h-[38px] text-slate-600 dark:text-slate-300 border-l-4 border-l-primary/30 dark:border-l-primary/60">
                 {dateRange.from && dateRange.to
                   ? `${format(dateRange.from, "MMM d")} – ${format(dateRange.to, "MMM d, yyyy")}`
-                  : <span className="italic text-slate-400">No date selected</span>}
+                  : <span className="italic text-slate-400 dark:text-slate-500">No date selected</span>}
               </div>
             </div>
           </div>
         </div>
 
         {extraFilters && (
-          <div className="pt-4 border-t border-slate-100 mt-2">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wide block mb-3">Status filters</span>
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800/50 mt-2">
+            <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide block mb-3">Status filters</span>
             {extraFilters}
           </div>
         )}

@@ -179,7 +179,7 @@ export default function TopNavbar() {
 
     return (
         <nav
-            className="w-full h-[72px] flex items-center justify-between px-6 md:px-8 border-b border-slate-100 bg-white/80 sticky top-0 z-40 transition-all duration-300"
+            className="w-full h-[72px] flex items-center justify-between px-6 md:px-8 border-b border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-[#0f121b]/80 sticky top-0 z-40 transition-all duration-300"
             style={{
                 backdropFilter: "blur(12px)",
                 WebkitBackdropFilter: "blur(12px)",
@@ -214,8 +214,8 @@ export default function TopNavbar() {
                         className={`
                             relative p-2.5 rounded-full transition-all duration-200
                             focus:outline-none focus:ring-2 focus:ring-primary/20
-                            hover:bg-slate-100 active:scale-95
-                            ${showNotificationsDropdown ? "bg-slate-100 text-primary" : "text-slate-500 hover:text-slate-700"}
+                            hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95
+                            ${showNotificationsDropdown ? "bg-slate-100 dark:bg-slate-800 text-primary" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-100"}
                         `}
                         onClick={() => {
                             setShowUserDropdown(false);
@@ -235,10 +235,10 @@ export default function TopNavbar() {
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                 transition={{ duration: 0.2 }}
-                                className="absolute right-0 mt-3 w-80 sm:w-96 bg-white border border-slate-100 rounded-2xl shadow-xl shadow-slate-200/50 z-50 overflow-hidden origin-top-right ring-1 ring-slate-900/5"
+                                className="absolute right-0 mt-3 w-80 sm:w-96 bg-white dark:bg-[#0f121b] border border-slate-100 dark:border-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none z-50 overflow-hidden origin-top-right ring-1 ring-slate-900/5 dark:ring-white/5"
                             >
-                                <div className="p-4 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
-                                    <h3 className="text-sm font-bold text-slate-800">Notifications</h3>
+                                <div className="p-4 border-b border-slate-50 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+                                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">Notifications</h3>
                                     {notificationCount > 0 && (
                                         <button
                                             onClick={() => markAllNotificationsRead.mutate()}
@@ -265,15 +265,15 @@ export default function TopNavbar() {
                                                 <div
                                                     key={notif._id}
                                                     className={`
-                                                        p-4 hover:bg-slate-50 transition-colors cursor-pointer group relative
+                                                        p-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer group relative
                                                         ${!notif.read ? "bg-primary/[0.02]" : ""}
                                                     `}
                                                     onClick={() => !notif.read && markNotificationRead.mutate(notif._id)}
                                                 >
                                                     <div className="flex gap-3 items-start">
-                                                        <div className={`mt-1 h-2 w-2 rounded-full shrink-0 ${!notif.read ? "bg-primary" : "bg-slate-200"}`} />
+                                                        <div className={`mt-1 h-2 w-2 rounded-full shrink-0 ${!notif.read ? "bg-primary" : "bg-slate-200 dark:bg-slate-700"}`} />
                                                         <div className="flex-1 min-w-0">
-                                                            <p className={`text-sm ${!notif.read ? "font-semibold text-slate-800" : "text-slate-600"}`}>
+                                                            <p className={`text-sm ${!notif.read ? "font-semibold text-slate-800 dark:text-slate-100" : "text-slate-600 dark:text-slate-400"}`}>
                                                                 {notif.message}
                                                             </p>
                                                             <p className="text-xs text-slate-400 mt-1">
@@ -309,8 +309,8 @@ export default function TopNavbar() {
                     <button
                         className={`
                             flex items-center gap-3 p-1.5 pr-3 rounded-full transition-all duration-200 border border-transparent
-                            hover:bg-slate-100 focus:outline-none focus:bg-slate-100
-                            ${showUserDropdown ? "bg-slate-100 border-slate-200 shadow-sm" : ""}
+                            hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:bg-slate-100 dark:focus:bg-slate-800
+                            ${showUserDropdown ? "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-800 shadow-sm" : ""}
                         `}
                         onClick={() => setShowUserDropdown((open) => !open)}
                         aria-expanded={showUserDropdown}
@@ -324,7 +324,7 @@ export default function TopNavbar() {
                             className={showUserDropdown ? "ring-2 ring-primary/10" : ""}
                         />
                         <div className="hidden lg:block text-left">
-                            <p className="text-sm font-bold text-slate-700 leading-none mb-0.5 max-w-[120px] truncate">{user.name}</p>
+                            <p className="text-sm font-bold text-slate-700 dark:text-slate-200 leading-none mb-0.5 max-w-[120px] truncate">{user.name}</p>
                             <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">{user.role}</p>
                         </div>
                         <svg
@@ -347,19 +347,19 @@ export default function TopNavbar() {
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                 transition={{ duration: 0.2 }}
-                                className="absolute right-0 mt-3 w-64 bg-white border border-slate-100 rounded-2xl shadow-xl shadow-slate-200/50 z-50 overflow-hidden ring-1 ring-slate-900/5"
+                                className="absolute right-0 mt-3 w-64 bg-white dark:bg-[#0f121b] border border-slate-100 dark:border-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none z-50 overflow-hidden ring-1 ring-slate-900/5 dark:ring-white/5"
                             >
-                                <div className="p-2 border-b border-slate-50">
+                                <div className="p-2 border-b border-slate-50 dark:border-slate-800">
                                     <div className="px-3 py-2">
-                                        <p className="text-sm font-bold text-slate-800 truncate">{user.name}</p>
-                                        <p className="text-xs text-slate-500 truncate">{authUser?.email || "user@naape.org.ng"}</p>
+                                        <p className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{user.name}</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{authUser?.email || "user@naape.org.ng"}</p>
                                     </div>
                                 </div>
 
                                 <div className="p-1.5 flex flex-col gap-0.5">
                                     <button
                                         onClick={handleProfileClick}
-                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 hover:text-primary transition-colors text-left"
+                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors text-left"
                                     >
                                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -368,7 +368,7 @@ export default function TopNavbar() {
                                     </button>
                                     <button
                                         onClick={handleSettingsClick}
-                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 hover:text-primary transition-colors text-left"
+                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors text-left"
                                     >
                                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -378,10 +378,10 @@ export default function TopNavbar() {
                                     </button>
                                 </div>
 
-                                <div className="p-1.5 mt-1 border-t border-slate-50">
+                                <div className="p-1.5 mt-1 border-t border-slate-50 dark:border-slate-800">
                                     <button
                                         onClick={handleLogout}
-                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-red-600 rounded-xl hover:bg-red-50 transition-colors text-left"
+                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-red-600 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors text-left"
                                     >
                                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

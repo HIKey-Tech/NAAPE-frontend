@@ -127,7 +127,7 @@ export const PublicationCard: React.FC<PublicationCardProps> = ({
 
   if (!publication) {
     return (
-      <div className="bg-white border border-slate-100 rounded-2xl w-full flex flex-col items-center justify-center text-slate-400 py-14 px-6">
+      <div className="bg-white dark:bg-card border border-slate-100 dark:border-border rounded-2xl w-full flex flex-col items-center justify-center text-slate-400 py-14 px-6">
         Invalid publication data.
       </div>
     );
@@ -170,7 +170,7 @@ export const PublicationCard: React.FC<PublicationCardProps> = ({
 
   return (
     <div
-      className={`w-full max-w-md rounded-2xl overflow-hidden bg-white border border-slate-100 shadow-sm flex flex-col hover:shadow-lg transition-all group cursor-pointer ${className}`}
+      className={`w-full max-w-md rounded-2xl overflow-hidden bg-white dark:bg-card border border-slate-100 dark:border-border shadow-sm flex flex-col hover:shadow-lg transition-all group cursor-pointer ${className}`}
       tabIndex={0}
       onClick={handleCardClick}
       role="button"
@@ -178,7 +178,7 @@ export const PublicationCard: React.FC<PublicationCardProps> = ({
       style={{ minHeight: 340 }}
     >
       {/* Image */}
-      <div className="relative w-full aspect-[4/2.2] bg-slate-100 overflow-hidden">
+      <div className="relative w-full aspect-[4/2.2] bg-slate-100 dark:bg-slate-800 overflow-hidden">
         {image ? (
           <img src={image} alt={`Cover image for ${title}`} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" />
         ) : (
@@ -196,13 +196,13 @@ export const PublicationCard: React.FC<PublicationCardProps> = ({
 
       {/* Content */}
       <div className="flex flex-col gap-2 p-5 flex-1">
-        <h2 className="text-lg font-bold text-slate-800 truncate group-hover:text-primary transition-colors">{title}</h2>
-        <div className="text-xs text-slate-400 flex items-center gap-2">
-          <span>By <span className="font-bold text-slate-600">{getAuthorString(author?.name) || "Unknown"}</span></span>
+        <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 truncate group-hover:text-primary transition-colors">{title}</h2>
+        <div className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-2">
+          <span>By <span className="font-bold text-slate-600 dark:text-slate-300">{getAuthorString(author?.name) || "Unknown"}</span></span>
           <span>·</span>
           <span>{new Date(createdAt).toLocaleDateString()}</span>
         </div>
-        <p className="text-sm text-slate-600 line-clamp-3 whitespace-pre-line leading-relaxed">{content}</p>
+        <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-3 whitespace-pre-line leading-relaxed">{content}</p>
 
         {/* Footer */}
         <div className="mt-auto pt-3 flex justify-between items-center gap-4">
@@ -213,7 +213,7 @@ export const PublicationCard: React.FC<PublicationCardProps> = ({
             </div>
           )}
           <button
-            className={`inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl transition-colors ml-auto ${showComments ? "bg-primary/10 text-primary border border-primary/20" : "bg-slate-50 text-slate-500 hover:bg-slate-100 border border-slate-100"
+            className={`inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl transition-colors ml-auto ${showComments ? "bg-primary/10 text-primary border border-primary/20" : "bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-100 dark:border-slate-800"
               }`}
             onClick={(e) => { e.stopPropagation(); toggleComments(_id); }}
             data-stop-propagation
