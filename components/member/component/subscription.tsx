@@ -30,13 +30,31 @@ function MembershipSubscriptionContent() {
 
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
 
+  const currentTier = subscriptionStatus?.tier || "free";
+
+  // Effect to default selection to the current plan
+  useEffect(() => {
+    if (plans.length > 0 && !selectedPlanId) {
+      const currentPlan = plans.find(p => getTierFromPlan(p) === currentTier);
+      if (currentPlan) {
+        setSelectedPlanId(currentPlan._id);
+      }
+    }
+  }, [plans, currentTier, selectedPlanId]);
+
   const selectedPlan = useMemo(
     () => plans.find((p) => p._id === selectedPlanId),
     [plans, selectedPlanId]
   );
 
   const isFreePlanSelected = !!selectedPlan && selectedPlan.price === 0;
-  const hasActiveSubscription = subscriptionStatus?.hasSubscription && subscriptionStatus?.status === "active";
+
+  // Only show the "Active Details" view if they are PREMIUM and ACTIVE.
+  // If they are on FREE, we want to show the "Choose Your Plan" screen 
+  // with "Free" marked as "Current" to encourage upgrading.
+  const isPremiumActive = subscriptionStatus?.hasSubscription &&
+    subscriptionStatus?.status === "active" &&
+    subscriptionStatus?.tier === "premium";
 
   const handlePlanSelect = (plan: SubscriptionPlan) => setSelectedPlanId(plan._id);
 
@@ -44,94 +62,102 @@ function MembershipSubscriptionContent() {
     return (
       <div className="flex justify-center items-center py-32">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-2 border-slate-200 border-t-primary rounded-full animate-spin" />
-          <p className="text-slate-500 text-sm font-medium">Loading subscription status...</p>
+          <div className="w-12 h-12 border-4 border-slate-200 border-t-primary rounded-full animate-spin" />
+          <p className="text-slate-500 text-sm font-medium">Authenticating your access...</p>
         </div>
       </div>
     );
   }
 
-  // Active Subscription View
-  if (hasActiveSubscription) {
+  // Active Subscription View (Only for Premium Users)
+  if (isPremiumActive) {
     const daysRemaining = subscriptionStatus?.endDate
       ? Math.ceil((new Date(subscriptionStatus.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
       : 0;
 
     return (
-      <div className="max-w-2xl mx-auto px-4 py-10">
-        <div className="bg-white dark:bg-card rounded-2xl border border-slate-100 dark:border-border shadow-sm overflow-hidden">
-          {/* Hero */}
-          <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-slate-50 dark:to-transparent p-8 text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-amber-200/40">
-              {subscriptionStatus?.tier === "free" ? <FaStar className="text-white text-2xl" /> : <FaCrown className="text-white text-2xl" />}
+      <div className="max-w-3xl mx-auto px-4 py-12">
+        <div className="bg-white dark:bg-[#0a0d14] rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-2xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-12 text-center relative">
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+              <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+              <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
             </div>
-            <h1 className="text-2xl font-black text-slate-800 dark:text-slate-100 capitalize mb-1">
-              {subscriptionStatus?.tier === "free" ? "Free Plan Member" : `${subscriptionStatus?.tier || "Active"} Member`}
+
+            <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary-dark rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-primary/30 ring-8 ring-primary/5">
+              <FaCrown className="text-white text-3xl" />
+            </div>
+            <h1 className="text-3xl font-black text-slate-800 dark:text-slate-100 capitalize mb-2">
+              {subscriptionStatus?.planName || "Premium"} Member
             </h1>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 mt-2">
-              <FaCheck size={10} /> Active
-            </span>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Active Subscription
+            </div>
           </div>
 
-          {/* Details */}
-          <div className="p-6 space-y-5">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Status</p>
-                <p className="text-lg font-black text-emerald-600 dark:text-emerald-400 capitalize">{subscriptionStatus?.status}</p>
+          {/* Body */}
+          <div className="p-10 space-y-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="bg-slate-50 dark:bg-slate-800/40 rounded-3xl p-6 border border-slate-100 dark:border-slate-800">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Billing Cycle</p>
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
+                    <FaCalendarAlt className="text-primary" />
+                  </div>
+                  <p className="text-xl font-black text-slate-700 dark:text-slate-300 capitalize">{subscriptionStatus?.interval || "Monthly"}</p>
+                </div>
               </div>
-              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Billing</p>
-                <p className="text-lg font-black text-slate-700 dark:text-slate-300 capitalize">{subscriptionStatus?.interval || "Monthly"}</p>
+              <div className="bg-slate-50 dark:bg-slate-800/40 rounded-3xl p-6 border border-slate-100 dark:border-slate-800">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Time Remaining</p>
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
+                    <FaClock className="text-amber-500" />
+                  </div>
+                  <p className="text-xl font-black text-slate-700 dark:text-slate-300">
+                    {daysRemaining > 0 ? `${daysRemaining} Days` : "Expires Today"}
+                  </p>
+                </div>
               </div>
             </div>
 
-            {subscriptionStatus?.startDate && (
-              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Subscription Period</p>
-                <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
-                  <FaCalendarAlt size={12} className="text-slate-400" />
-                  <span><strong>Started:</strong> {new Date(subscriptionStatus.startDate).toLocaleDateString()}</span>
-                </div>
-                {subscriptionStatus?.endDate && (
-                  <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 mt-1.5">
-                    <FaClock size={12} className="text-slate-400" />
-                    <span>
-                      <strong>Expires:</strong> {new Date(subscriptionStatus.endDate).toLocaleDateString()}
-                      <span className="ml-2 text-amber-600 font-bold text-xs">
-                        ({daysRemaining > 0 ? `${daysRemaining} days left` : "Expires today"})
-                      </span>
-                    </span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {subscriptionStatus?.features && subscriptionStatus.features.length > 0 && (
-              <div>
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Your Benefits</h3>
-                <div className="space-y-2">
-                  {subscriptionStatus.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5">
-                      <FaCheck className="text-emerald-500 mt-0.5 shrink-0" size={12} />
-                      <span className="text-sm text-slate-700 dark:text-slate-300">{feature}</span>
+            <div className="bg-slate-900 dark:bg-slate-800/20 rounded-[2rem] p-8 text-white relative overflow-hidden">
+              <div className="relative z-10">
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+                  Your Exclusive Benefits
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {(subscriptionStatus?.features && subscriptionStatus.features.length > 0 ? subscriptionStatus.features : [
+                    "Full platform access",
+                    "Advanced analytics",
+                    "Priority support",
+                    "Premium content"
+                  ]).map((feature, idx) => (
+                    <div key={idx} className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                        <FaCheck size={8} />
+                      </div>
+                      <span className="text-sm font-medium text-slate-200">{feature}</span>
                     </div>
                   ))}
                 </div>
               </div>
-            )}
+              <div className="absolute top-0 right-0 p-8 opacity-10">
+                <FaGem size={120} />
+              </div>
+            </div>
 
-            <div className="pt-4 border-t border-slate-100 text-center">
-              {subscriptionStatus?.tier === "free" ? (
-                <button
-                  onClick={() => window.location.href = '/subscription'}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-xl shadow-md shadow-primary/20 hover:bg-primary/90 transition-colors text-sm"
-                >
-                  <FaGem size={14} /> Upgrade to Premium <FaArrowRight size={12} />
-                </button>
-              ) : (
-                <p className="text-sm text-slate-400">Need help? Contact support@naape.org</p>
-              )}
+            <div className="pt-6 text-center">
+              <p className="text-xs text-slate-400 font-medium tracking-wide">
+                Renewal Date: <span className="text-slate-600 dark:text-slate-300 font-bold">{subscriptionStatus?.endDate ? new Date(subscriptionStatus.endDate).toLocaleDateString() : "N/A"}</span>
+              </p>
+              <button
+                onClick={() => window.location.href = 'mailto:support@naape.org'}
+                className="mt-6 text-sm font-black text-primary hover:underline underline-offset-4 decoration-2"
+              >
+                Need assistance? Contact Support
+              </button>
             </div>
           </div>
         </div>
@@ -142,6 +168,10 @@ function MembershipSubscriptionContent() {
   // Plan Selection View
   const handleSubscribe = async () => {
     if (!selectedPlan || !userId) return;
+
+    // If selecting the current plan, do nothing
+    if (subscriptionStatus?.tier === getTierFromPlan(selectedPlan)) return;
+
     try {
       const tier = getTierFromPlan(selectedPlan);
       if (tier === "free") {
@@ -171,82 +201,130 @@ function MembershipSubscriptionContent() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
-      <div className="text-center mb-10">
-        <div className="w-14 h-14 bg-primary/5 dark:bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <FaGem size={24} />
+    <div className="max-w-4xl mx-auto px-4 py-12">
+      <div className="text-center mb-12">
+        <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-primary/10 text-primary mb-6 ring-8 ring-primary/5">
+          <FaGem size={28} className="animate-pulse" />
         </div>
-        <h1 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-2">Choose Your Plan</h1>
-        <p className="text-slate-500 dark:text-slate-400">Select the plan that works best for you.</p>
+        <h1 className="text-4xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-4">
+          Upgrade Your Experience
+        </h1>
+        <p className="text-lg text-slate-500 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
+          Choose the perfect plan for your professional journey with NAAPE.
+        </p>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-700 text-sm font-medium p-4 rounded-xl border border-red-100 mb-6 text-center">
-          Failed to load plans. Please try again.
+        <div className="bg-red-50 dark:bg-red-900/10 text-red-700 dark:text-red-400 text-sm font-medium p-4 rounded-2xl border border-red-100 dark:border-red-900/30 mb-8 text-center">
+          Failed to load plans. Please refresh the page.
         </div>
       )}
 
       {isPending ? (
-        <div className="flex flex-col items-center py-16 text-slate-400">
-          <FaSpinner className="animate-spin text-2xl mb-3" />
-          <span className="font-medium">Loading plans...</span>
+        <div className="flex flex-col items-center py-24 text-slate-400">
+          <div className="w-12 h-12 border-4 border-slate-200 border-t-primary rounded-full animate-spin mb-4" />
+          <span className="font-semibold tracking-wide">Crafting your options...</span>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
           {plans.map((plan) => {
-            const selected = selectedPlanId === plan._id;
-            const isFree = plan.price === 0;
+            const planTier = getTierFromPlan(plan);
+            const isSelected = selectedPlanId === plan._id;
+            const isCurrent = currentTier === planTier;
+            const isFree = planTier === "free";
+
             return (
               <button
                 key={plan._id}
                 onClick={() => handlePlanSelect(plan)}
                 type="button"
-                className={`text-left rounded-2xl border-2 p-6 transition-all relative overflow-hidden group hover:shadow-lg ${selected
+                className={`group relative text-left rounded-[2rem] border-2 p-8 transition-all duration-300 ease-out overflow-hidden flex flex-col h-full ${isSelected
                   ? isFree
-                    ? "border-emerald-400 bg-emerald-50/30 dark:bg-emerald-900/20 shadow-md shadow-emerald-100 dark:shadow-none"
-                    : "border-primary bg-primary/5 dark:bg-primary/10 shadow-md shadow-primary/10 dark:shadow-none"
-                  : "border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0a0d14] hover:border-slate-300 dark:hover:border-slate-600"
+                    ? "border-emerald-500 bg-emerald-50/10 dark:bg-emerald-500/5 shadow-2xl shadow-emerald-500/10 scale-[1.02]"
+                    : "border-primary bg-primary/5 dark:bg-primary/5 shadow-2xl shadow-primary/10 scale-[1.02]"
+                  : "border-slate-100 dark:border-slate-800 bg-white dark:bg-[#0a0d14] hover:border-slate-200 dark:hover:border-slate-700 hover:shadow-xl"
                   }`}
               >
-                {!isFree && (
-                  <div className="absolute top-4 right-4">
-                    <FaCrown className={`text-lg ${selected ? 'text-primary' : 'text-slate-300 dark:text-slate-600'} group-hover:text-primary transition-colors`} />
-                  </div>
-                )}
-                <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 capitalize mb-1">{plan.name}</h3>
-                <p className={`text-2xl font-black mb-4 ${isFree ? "text-emerald-600" : "text-primary"}`}>
-                  {isFree ? "Free" : `₦${plan.price.toLocaleString()} / ${plan.interval}`}
-                </p>
-                <ul className="space-y-2">
-                  {plan.features.map((f, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400">
-                      <FaCheck className={`mt-0.5 shrink-0 ${isFree ? 'text-emerald-500' : 'text-primary'}`} size={12} />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                {selected && (
-                  <div className={`absolute bottom-0 left-0 right-0 h-1 ${isFree ? 'bg-emerald-400' : 'bg-primary'}`} />
-                )}
+                {/* Badges */}
+                <div className="flex justify-between items-start mb-6">
+                  {isCurrent && (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
+                      <FaCheck size={8} /> Current Plan
+                    </span>
+                  )}
+                  {!isFree && (
+                    <div className={`p-2 rounded-xl ${isSelected ? 'bg-primary text-white' : 'bg-slate-50 dark:bg-slate-800 text-slate-400'} transition-colors ml-auto`}>
+                      <FaCrown size={16} />
+                    </div>
+                  )}
+                  {isFree && !isCurrent && (
+                    <div className={`p-2 rounded-xl ${isSelected ? 'bg-emerald-500 text-white' : 'bg-slate-50 dark:bg-slate-800 text-slate-400'} transition-colors ml-auto`}>
+                      <FaStar size={16} />
+                    </div>
+                  )}
+                </div>
+
+                <h3 className="text-2xl font-black text-slate-800 dark:text-slate-100 capitalize mb-1">
+                  {plan.name}
+                </h3>
+
+                <div className="flex items-baseline gap-1 mb-6">
+                  <span className={`text-4xl font-black tracking-tight ${isFree ? "text-emerald-600 dark:text-emerald-400" : "text-primary"}`}>
+                    {isFree ? "Free" : `₦${plan.price.toLocaleString()}`}
+                  </span>
+                  {!isFree && <span className="text-slate-400 font-medium">/{plan.interval}</span>}
+                </div>
+
+                <div className="space-y-4 mb-8 flex-grow">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Everything in {plan.name}:</p>
+                  <ul className="space-y-3">
+                    {plan.features.map((f, i) => (
+                      <li key={i} className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                        <div className={`mt-1 p-0.5 rounded-full ${isFree ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600' : 'bg-primary/10 text-primary'}`}>
+                          <FaCheck size={10} />
+                        </div>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Decorative background element */}
+                <div className={`absolute -right-8 -bottom-8 w-32 h-32 rounded-full blur-3xl opacity-10 transition-opacity group-hover:opacity-20 ${isFree ? 'bg-emerald-500' : 'bg-primary'}`} />
               </button>
             );
           })}
         </div>
       )}
 
-      <button
-        onClick={handleSubscribe}
-        disabled={!selectedPlan || !userId || initializingPayment}
-        className="w-full py-4 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-primary/20 hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-base flex items-center justify-center gap-2"
-      >
-        {initializingPayment ? (
-          <><FaSpinner className="animate-spin" /> Processing...</>
-        ) : selectedPlan?.price === 0 ? (
-          <><FaCheck /> Activate Free Plan</>
-        ) : (
-          <><FaArrowRight /> Proceed to Payment</>
-        )}
-      </button>
+      <div className="flex flex-col items-center gap-4">
+        <button
+          onClick={handleSubscribe}
+          disabled={!selectedPlan || !userId || initializingPayment || (selectedPlan && getTierFromPlan(selectedPlan) === currentTier)}
+          className={`w-full py-5 rounded-[1.5rem] font-black text-lg shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 active:scale-[0.98] ${!selectedPlan
+            ? "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none"
+            : selectedPlan && getTierFromPlan(selectedPlan) === currentTier
+              ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50 cursor-default shadow-none"
+              : "bg-primary text-white shadow-primary/25 hover:bg-primary/90 hover:-translate-y-1"
+            }`}
+        >
+          {initializingPayment ? (
+            <><FaSpinner className="animate-spin" size={20} /> Securing your plan...</>
+          ) : !selectedPlan ? (
+            "Select a plan to continue"
+          ) : getTierFromPlan(selectedPlan) === currentTier ? (
+            <><FaCheck size={20} /> Your Active Plan</>
+          ) : selectedPlan.price === 0 ? (
+            <><FaStar size={20} /> Downgrade to Free</>
+          ) : (
+            <><FaGem size={20} /> Upgrade to Premium Now</>
+          )}
+        </button>
+
+        <p className="text-[10px] text-slate-400 font-medium uppercase tracking-[0.2em]">
+          Securely processed via Flutterwave
+        </p>
+      </div>
     </div>
   );
 }
