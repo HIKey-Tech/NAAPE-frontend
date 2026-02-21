@@ -249,7 +249,7 @@ export function AppSidebar() {
             <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
             <Image src="/logo.png" alt="NAAPE" width={40} height={40} className="relative z-10 object-contain w-10 h-10" priority />
           </div>
-          <span className="hidden sm:block text-lg font-black text-slate-800 tracking-tight ml-2">NAAPE <span className="text-primary">Member</span></span>
+          <span className="hidden sm:block text-lg font-black text-slate-800 tracking-tight ml-2">NAAPE</span>
         </Link>
       </div>
 

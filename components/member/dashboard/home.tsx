@@ -24,9 +24,7 @@ const WelcomeBanner: React.FC = () => {
       <div className="absolute bottom-0 left-0 w-72 h-72 bg-black/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none hidden sm:block" />
 
       <div className="relative z-10 max-w-2xl w-full">
-        <div className="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-blue-50 text-sm font-bold tracking-wide uppercase mb-6 shadow-sm border border-white/10">
-          Member Dashboard
-        </div>
+
         <h1 className="text-4xl sm:text-5xl font-black tracking-tight mb-4 leading-tight">
           Welcome back, <br className="hidden sm:block" />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-100 to-white">{user?.name?.split(' ')[0] || "Member"}</span>!
