@@ -19,7 +19,8 @@ export default function DashboardLayout({
     // Redirect to login if not authenticated (after loading is complete)
     useEffect(() => {
         if (!loading && !isAuthenticated && !loggingOut) {
-            router.replace('/login');
+            const currentPath = window.location.pathname + window.location.search;
+            router.replace(`/login?redirect=${encodeURIComponent(currentPath)}`);
         }
     }, [loading, isAuthenticated, loggingOut, router]);
 

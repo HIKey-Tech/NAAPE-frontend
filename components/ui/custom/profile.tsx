@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 import {
     useMyProfile,
     useUpdateMyProfile,
@@ -162,6 +164,7 @@ function InputField({
 // --- Main Page Component ---
 
 export default function ProfilePage() {
+    const router = useRouter();
     const { data: profile, isLoading, error } = useMyProfile();
     const { data: subscriptionStatus } = useSubscriptionStatus();
     const updateProfile = useUpdateMyProfile();
@@ -391,7 +394,7 @@ export default function ProfilePage() {
                                 {!editMode ? (
                                     <>
                                         <button
-                                            onClick={() => window.location.href = `/members/${profile._id}`}
+                                            onClick={() => router.push(`/members/${profile._id}`)}
                                             className="px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-md shadow-primary/20 hover:bg-primary/90 transition-all border border-transparent"
                                         >
                                             View Public Profile

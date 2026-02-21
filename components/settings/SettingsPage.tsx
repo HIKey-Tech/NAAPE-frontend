@@ -81,8 +81,8 @@ export function SettingsPage({ basePath }: { basePath: string }) {
                             Manage your personal information and profile settings.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="p-6 pt-5">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <CardContent className="p-6 pt-5 space-y-6">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-6">
                             <div>
                                 <h3 className="font-semibold text-slate-800 dark:text-slate-200">Personal Information</h3>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Update your name, bio, and other public information.</p>
@@ -92,6 +92,35 @@ export function SettingsPage({ basePath }: { basePath: string }) {
                                     Edit Profile
                                 </Button>
                             </Link>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div className="flex-1">
+                                <h3 className="font-semibold text-slate-800 dark:text-slate-200">Public Profile Link</h3>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Share this link to show your professional profile to others.</p>
+                                <div className="mt-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 font-mono text-xs text-slate-600 dark:text-slate-400 break-all">
+                                    {typeof window !== 'undefined' ? `${window.location.origin}/members/${user?._id}` : `/members/${user?._id}`}
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                                    onClick={() => {
+                                        const url = `${window.location.origin}/members/${user?._id}`;
+                                        navigator.clipboard.writeText(url);
+                                        alert("Link copied to clipboard!");
+                                    }}
+                                >
+                                    Copy Link
+                                </Button>
+                                <Link href={`/members/${user?._id}`}>
+                                    <Button size="sm" className="bg-primary hover:bg-primary/90 text-white">
+                                        View Profile
+                                    </Button>
+                                </Link>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>

@@ -34,8 +34,13 @@ const formSchema = z.object({
         .max(64, "Password can't be longer than 64 characters"),
 });
 
-export default function LoginPage() {
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
+function LoginContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectPath = searchParams.get("redirect");
     const [loading, setLoading] = useState(false);
     const [signingIn, setSigningIn] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -70,7 +75,7 @@ export default function LoginPage() {
             });
             setTimeout(() => {
                 const dashboardPath = userData.role === "admin" ? "/admin/dashboard" : "/dashboard";
-                window.location.href = dashboardPath;
+                window.location.href = redirectPath || dashboardPath;
             }, 1000);
         } catch (error: any) {
             if (error?.response?.data?.message?.toLowerCase().includes("password")) {
@@ -196,7 +201,7 @@ export default function LoginPage() {
                     </Form>
 
                     <motion.p variants={childVariants} className="mt-8 text-center text-sm font-medium text-slate-500">
-                        Don't have an account? <Link href="/register" className="text-primary font-bold hover:underline">Register now</Link>
+                        Don't have an account? <Link href={redirectPath ? `/register?redirect=${encodeURIComponent(redirectPath)}` : "/register"} className="text-primary font-bold hover:underline">Register now</Link>
                     </motion.p>
                 </motion.div>
 
@@ -219,5 +224,20 @@ export default function LoginPage() {
                 </motion.div>
             </motion.div>
         </main>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex flex-col items-center justify-center bg-[#f8fafc]">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+                    <p className="text-lg font-bold text-slate-800">Loading...</p>
+                </div>
+            </div>
+        }>
+            <LoginContent />
+        </Suspense>
     );
 }

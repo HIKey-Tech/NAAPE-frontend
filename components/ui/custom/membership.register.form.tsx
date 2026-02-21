@@ -47,7 +47,8 @@ const step2Schema = z.object({
 
 const formSchema = step1Schema.and(step2Schema);
 
-export default function MembershipRegisterForm() {
+export default function MembershipRegisterForm({ redirect }: { redirect?: string | null }) {
+
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1);
@@ -92,7 +93,11 @@ export default function MembershipRegisterForm() {
             });
 
             toast.success("Account created successfully! Please sign in.");
-            router.replace("/login");
+            if (redirect) {
+                router.replace(`/login?redirect=${encodeURIComponent(redirect)}`);
+            } else {
+                router.replace("/login");
+            }
         } catch (error: any) {
             toast.error(error.response?.data?.message || error.response?.data?.error || "Registration failed");
         } finally {
