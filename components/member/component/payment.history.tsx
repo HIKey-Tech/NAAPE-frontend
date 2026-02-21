@@ -26,20 +26,14 @@ const STATUS_MAP: Record<string, { label: string; className: string; icon: React
   refunded: { label: "Refunded", className: "bg-primary/5 text-primary border border-primary/20 shadow-sm", icon: FaExchangeAlt },
 };
 
-const TYPE_LABELS: Record<PaymentType, string> = {
+const TYPE_LABELS: Record<string, string> = {
   event: "Event Payment",
   subscription: "Subscription",
-  "tokenized-payment": "Tokenized Payment",
-  transfer: "Bank Transfer",
-  other: "Other Payment",
 };
 
 const TABS: { key: PaymentType; label: string }[] = [
   { key: "event", label: "Events" },
   { key: "subscription", label: "Subscription" },
-  { key: "tokenized-payment", label: "Tokenized" },
-  { key: "transfer", label: "Transfer" },
-  { key: "other", label: "Other" },
 ];
 
 function formatAmount(amount: number, currency: string) {
@@ -61,7 +55,7 @@ const PaymentRow: React.FC<{ item: PaymentHistoryItem }> = ({ item }) => {
 
   const details: string[] = [];
   const md = item.metadata || {};
-  if (item.type === "event" && md.eventName) details.push(`Event: ${md.eventName}`);
+  if (item.type === "event" && (md.eventTitle || md.eventName)) details.push(`Event: ${md.eventTitle || md.eventName}`);
   if (item.type === "subscription" && md.planName) details.push(`Plan: ${md.planName}`);
   if (md.description) details.push(md.description);
 
@@ -72,10 +66,10 @@ const PaymentRow: React.FC<{ item: PaymentHistoryItem }> = ({ item }) => {
         {/* Left Side: Type and Date */}
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-lg font-black text-slate-400 group-hover:bg-primary/5 group-hover:text-primary transition-colors">
-            {TYPE_LABELS[item.type][0]}
+            {(TYPE_LABELS[item.type] || "Payment")[0]}
           </div>
           <div>
-            <p className="font-bold text-base text-slate-900">{TYPE_LABELS[item.type]}</p>
+            <p className="font-bold text-base text-slate-900">{TYPE_LABELS[item.type] || "Payment"}</p>
             <p className="text-sm font-medium text-slate-400 mt-0.5">{formatDate(item.createdAt)}</p>
           </div>
         </div>
