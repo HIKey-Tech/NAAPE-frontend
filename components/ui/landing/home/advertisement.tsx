@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaBullhorn, FaAward, FaRegEnvelopeOpen, FaPaperPlane } from "react-icons/fa";
 
-const CONTACT_EMAIL = "info@naape.org.ng";
+const CONTACT_EMAIL = "davidaiyewumi1@gmail.com";
 /**
  * Uses CSS var(--primary) as primary. Fallback to #ff004e if not available.
  */
@@ -241,12 +241,12 @@ export default function AdvertisementSection() {
               <span>Thank you! Your inquiry is being processed <br />via your email client.</span>
             </div>
           ) : (
-            <form 
-              onSubmit={handleSubmit} 
-              style={{ 
-                display: "flex", 
-                flexDirection: "column", 
-                gap: 15, 
+            <form
+              onSubmit={handleSubmit}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 15,
                 width: "100%",
                 boxSizing: "border-box"
               }}
