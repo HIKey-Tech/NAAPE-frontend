@@ -82,7 +82,7 @@ export default function MissionSection() {
                     </motion.div>
                     <h3 className="font-bold text-white text-2xl mb-4">Mission</h3>
                     <p className="text-slate-300 text-lg leading-relaxed">
-                        Championing safety, skill, and solidarity—advocating broadly, protecting our own, and nurturing aviation’s future.
+                        Championing safety, skill, and solidarity, advocating broadly, protecting our own, and nurturing aviation’s future.
                     </p>
                 </motion.div>
 
@@ -95,14 +95,14 @@ export default function MissionSection() {
                     animate="rest"
                 >
                     <motion.div
-                        className="bg-primary/20 p-4 rounded-2xl mb-6 group-hover:bg-primary/30 transition-colors"
+                        className="bg-accent/20 p-4 rounded-2xl mb-6 group-hover:bg-accent/30 transition-colors"
                         variants={iconMicroAnim as any}
                     >
-                        <Eye size={32} className="text-primary" />
+                        <Eye size={32} className="text-accent" />
                     </motion.div>
                     <h3 className="font-bold text-white text-2xl mb-4">Vision</h3>
                     <p className="text-slate-300 text-lg leading-relaxed">
-                        Together—pilots, engineers, stories—we are the horizon where tomorrow’s possibilities take flight.
+                        Together, pilots, engineers, stories, we are the horizon where tomorrow’s possibilities take flight.
                     </p>
                 </motion.div>
             </motion.div>
