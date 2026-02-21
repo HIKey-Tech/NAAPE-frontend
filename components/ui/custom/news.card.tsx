@@ -63,7 +63,7 @@ export function NewsCard({
     const link = linkUrl || "#";
 
     return (
-        <Card className={`group overflow-hidden rounded-3xl border-0 shadow-lg shadow-slate-200/50 bg-white hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 flex flex-col h-full ${className}`}>
+        <Card className={`group overflow-hidden rounded-3xl border-0 dark:border dark:border-border shadow-lg shadow-slate-200/50 dark:shadow-none bg-white dark:bg-card hover:shadow-2xl hover:shadow-primary/10 dark:hover:shadow-primary/5 transition-all duration-300 flex flex-col h-full ${className}`}>
 
             {/* Image Section */}
             <div className="relative h-60 w-full overflow-hidden">
@@ -78,7 +78,7 @@ export function NewsCard({
                 {/* Overlay Content */}
                 <div className="absolute top-4 left-4">
                     {category && (
-                        <Badge className="bg-white/90 text-slate-900 hover:bg-white backdrop-blur-sm font-bold shadow-sm">
+                        <Badge className="bg-white/90 dark:bg-black/80 text-slate-900 dark:text-slate-100 hover:bg-white dark:hover:bg-black backdrop-blur-sm font-bold shadow-sm">
                             {category}
                         </Badge>
                     )}
@@ -101,24 +101,24 @@ export function NewsCard({
             {/* Content Section */}
             <CardContent className="flex-1 flex flex-col gap-4 p-6">
                 <Link href={link} className="group-hover:text-primary transition-colors">
-                    <CardTitle className="text-xl font-bold leading-tight line-clamp-2 text-slate-900">
+                    <CardTitle className="text-xl font-bold leading-tight line-clamp-2 text-slate-900 dark:text-slate-100">
                         {title}
                     </CardTitle>
                 </Link>
-                <CardDescription className="text-slate-500 line-clamp-3 leading-relaxed">
+                <CardDescription className="text-slate-500 dark:text-slate-400 line-clamp-3 leading-relaxed">
                     {summary}
                 </CardDescription>
 
-                <div className="mt-auto pt-6 flex items-center gap-3 border-t border-slate-100 w-full">
-                    <Avatar className="h-10 w-10 border-2 border-white shadow-sm ring-1 ring-slate-100">
+                <div className="mt-auto pt-6 flex items-center gap-3 border-t border-slate-100 dark:border-slate-800/60 w-full">
+                    <Avatar className="h-10 w-10 border-2 border-white dark:border-card shadow-sm ring-1 ring-slate-100 dark:ring-slate-800">
                         <AvatarImage src={authorAvatarUrl} />
                         <AvatarFallback className="bg-primary/10 text-primary font-bold">
                             {getInitials(authorName)}
                         </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                        <span className="text-sm font-bold text-slate-900">{authorName || "NAAPE"}</span>
-                        {authorRole && <span className="text-xs text-slate-400 font-medium">{authorRole}</span>}
+                        <span className="text-sm font-bold text-slate-900 dark:text-slate-200">{authorName || "NAAPE"}</span>
+                        {authorRole && <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">{authorRole}</span>}
                     </div>
                 </div>
             </CardContent>

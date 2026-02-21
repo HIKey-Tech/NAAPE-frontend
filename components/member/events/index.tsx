@@ -129,7 +129,7 @@ export default function EventsComponent() {
     if (user?.role === null) return null;
 
     return (
-        <div className="px-4 sm:px-0 py-4 bg-white dark:bg-transparent w-full min-h-screen">
+        <div className="px-4 sm:px-8 max-w-7xl mx-auto py-4 bg-white dark:bg-transparent w-full min-h-screen">
             <FilterHeader
                 title="Events"
                 search={search}
@@ -142,7 +142,7 @@ export default function EventsComponent() {
                 sortLabel="Newest"
             />
 
-            <div className="grid gap-6 px-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {isLoading ? (
                     <div className="col-span-full text-center text-slate-400 text-base py-16 font-medium">
                         Loading...

@@ -10,7 +10,7 @@ const shimmer = "bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 anim
 
 const CategorySkeleton = () => (
     <motion.div
-        className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6"
+        className="bg-white dark:bg-card rounded-2xl border border-slate-100 dark:border-border shadow-sm p-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
     >
@@ -30,7 +30,7 @@ const CategoryCard: React.FC<{ category: ForumCategory }> = ({ category }) => {
 
     return (
         <motion.div
-            className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 cursor-pointer hover:border-primary/30 hover:shadow-lg transition-all group"
+            className="bg-white dark:bg-card rounded-2xl border border-slate-100 dark:border-border shadow-sm p-6 cursor-pointer hover:border-primary/30 dark:hover:border-primary/50 hover:shadow-lg transition-all group"
             whileHover={{ scale: 1.02, y: -4 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => router.push(`/forum/category/${category._id}`)}
@@ -45,11 +45,11 @@ const CategoryCard: React.FC<{ category: ForumCategory }> = ({ category }) => {
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-bold text-slate-900 mb-1 group-hover:text-primary transition-colors">
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-1 group-hover:text-primary transition-colors">
                         {category.name}
                     </h3>
-                    <p className="text-slate-500 text-sm mb-3 line-clamp-2">{category.description}</p>
-                    <div className="flex items-center gap-4 text-sm text-slate-400">
+                    <p className="text-slate-500 dark:text-slate-400 text-sm mb-3 line-clamp-2">{category.description}</p>
+                    <div className="flex items-center gap-4 text-sm text-slate-400 dark:text-slate-500">
                         <span className="flex items-center gap-1.5">
                             <MdForum className="text-primary" />
                             <span className="font-medium">{category.threadCount || 0}</span> threads
@@ -58,7 +58,7 @@ const CategoryCard: React.FC<{ category: ForumCategory }> = ({ category }) => {
                 </div>
 
                 {/* Arrow */}
-                <div className="text-slate-300 group-hover:text-primary group-hover:translate-x-1 transition-all">
+                <div className="text-slate-300 dark:text-slate-600 group-hover:text-primary group-hover:translate-x-1 transition-all">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
@@ -88,11 +88,11 @@ const Forum: React.FC = () => {
             >
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                     <div>
-                        <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2 flex items-center gap-3">
+                        <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-3">
                             <span className="text-4xl">💬</span>
                             Community Forum
                         </h1>
-                        <p className="text-slate-500 text-lg">
+                        <p className="text-slate-500 dark:text-slate-400 text-lg">
                             Connect, discuss, and share knowledge with fellow members
                         </p>
                     </div>
@@ -111,19 +111,19 @@ const Forum: React.FC = () => {
                 {/* Search & Stats */}
                 <div className="flex flex-col md:flex-row gap-4">
                     <div className="flex-1 relative">
-                        <MdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                        <MdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={20} />
                         <input
                             type="text"
                             placeholder="Search categories..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
+                            className="w-full pl-12 pr-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder-slate-400 dark:placeholder-slate-500"
                         />
                     </div>
 
-                    <div className="flex items-center gap-2 px-4 py-3 bg-primary/5 border border-primary/10 rounded-xl">
+                    <div className="flex items-center gap-2 px-4 py-3 bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/20 rounded-xl">
                         <MdTrendingUp className="text-primary" size={20} />
-                        <span className="font-bold text-slate-700">
+                        <span className="font-bold text-slate-700 dark:text-slate-200">
                             {categories?.length || 0} Categories
                         </span>
                     </div>
@@ -143,11 +143,11 @@ const Forum: React.FC = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                 >
-                    <div className="w-20 h-20 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
+                    <div className="w-20 h-20 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
                         <span className="text-4xl">😕</span>
                     </div>
-                    <h3 className="text-2xl font-bold text-slate-900 mb-2">Unable to load categories</h3>
-                    <p className="text-slate-500">Please try again later</p>
+                    <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Unable to load categories</h3>
+                    <p className="text-slate-500 dark:text-slate-400">Please try again later</p>
                 </motion.div>
             ) : filteredCategories && filteredCategories.length === 0 ? (
                 <motion.div
@@ -155,11 +155,11 @@ const Forum: React.FC = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                 >
-                    <div className="w-20 h-20 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
+                    <div className="w-20 h-20 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
                         <span className="text-4xl">🔍</span>
                     </div>
-                    <h3 className="text-2xl font-bold text-slate-900 mb-2">No categories found</h3>
-                    <p className="text-slate-500">Try a different search term</p>
+                    <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">No categories found</h3>
+                    <p className="text-slate-500 dark:text-slate-400">Try a different search term</p>
                 </motion.div>
             ) : (
                 <motion.div

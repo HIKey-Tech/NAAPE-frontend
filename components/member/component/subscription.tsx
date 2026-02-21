@@ -59,16 +59,16 @@ function MembershipSubscriptionContent() {
 
     return (
       <div className="max-w-2xl mx-auto px-4 py-10">
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-card rounded-2xl border border-slate-100 dark:border-border shadow-sm overflow-hidden">
           {/* Hero */}
-          <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-slate-50 p-8 text-center">
+          <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-slate-50 dark:to-transparent p-8 text-center">
             <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-amber-200/40">
               {subscriptionStatus?.tier === "free" ? <FaStar className="text-white text-2xl" /> : <FaCrown className="text-white text-2xl" />}
             </div>
-            <h1 className="text-2xl font-black text-slate-800 capitalize mb-1">
+            <h1 className="text-2xl font-black text-slate-800 dark:text-slate-100 capitalize mb-1">
               {subscriptionStatus?.tier === "free" ? "Free Plan Member" : `${subscriptionStatus?.tier || "Active"} Member`}
             </h1>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 mt-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 mt-2">
               <FaCheck size={10} /> Active
             </span>
           </div>
@@ -76,25 +76,25 @@ function MembershipSubscriptionContent() {
           {/* Details */}
           <div className="p-6 space-y-5">
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-slate-50 rounded-xl p-4">
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Status</p>
-                <p className="text-lg font-black text-emerald-600 capitalize">{subscriptionStatus?.status}</p>
+                <p className="text-lg font-black text-emerald-600 dark:text-emerald-400 capitalize">{subscriptionStatus?.status}</p>
               </div>
-              <div className="bg-slate-50 rounded-xl p-4">
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Billing</p>
-                <p className="text-lg font-black text-slate-700 capitalize">{subscriptionStatus?.interval || "Monthly"}</p>
+                <p className="text-lg font-black text-slate-700 dark:text-slate-300 capitalize">{subscriptionStatus?.interval || "Monthly"}</p>
               </div>
             </div>
 
             {subscriptionStatus?.startDate && (
-              <div className="bg-slate-50 rounded-xl p-4">
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Subscription Period</p>
-                <div className="flex items-center gap-2 text-sm text-slate-700">
+                <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                   <FaCalendarAlt size={12} className="text-slate-400" />
                   <span><strong>Started:</strong> {new Date(subscriptionStatus.startDate).toLocaleDateString()}</span>
                 </div>
                 {subscriptionStatus?.endDate && (
-                  <div className="flex items-center gap-2 text-sm text-slate-700 mt-1.5">
+                  <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 mt-1.5">
                     <FaClock size={12} className="text-slate-400" />
                     <span>
                       <strong>Expires:</strong> {new Date(subscriptionStatus.endDate).toLocaleDateString()}
@@ -114,7 +114,7 @@ function MembershipSubscriptionContent() {
                   {subscriptionStatus.features.map((feature, idx) => (
                     <div key={idx} className="flex items-start gap-2.5">
                       <FaCheck className="text-emerald-500 mt-0.5 shrink-0" size={12} />
-                      <span className="text-sm text-slate-700">{feature}</span>
+                      <span className="text-sm text-slate-700 dark:text-slate-300">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -173,11 +173,11 @@ function MembershipSubscriptionContent() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
       <div className="text-center mb-10">
-        <div className="w-14 h-14 bg-primary/5 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <div className="w-14 h-14 bg-primary/5 dark:bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
           <FaGem size={24} />
         </div>
-        <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Choose Your Plan</h1>
-        <p className="text-slate-500">Select the plan that works best for you.</p>
+        <h1 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-2">Choose Your Plan</h1>
+        <p className="text-slate-500 dark:text-slate-400">Select the plan that works best for you.</p>
       </div>
 
       {error && (
@@ -203,23 +203,23 @@ function MembershipSubscriptionContent() {
                 type="button"
                 className={`text-left rounded-2xl border-2 p-6 transition-all relative overflow-hidden group hover:shadow-lg ${selected
                   ? isFree
-                    ? "border-emerald-400 bg-emerald-50/30 shadow-md shadow-emerald-100"
-                    : "border-primary bg-primary/5 shadow-md shadow-primary/10"
-                  : "border-slate-200 bg-white hover:border-slate-300"
+                    ? "border-emerald-400 bg-emerald-50/30 dark:bg-emerald-900/20 shadow-md shadow-emerald-100 dark:shadow-none"
+                    : "border-primary bg-primary/5 dark:bg-primary/10 shadow-md shadow-primary/10 dark:shadow-none"
+                  : "border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0a0d14] hover:border-slate-300 dark:hover:border-slate-600"
                   }`}
               >
                 {!isFree && (
                   <div className="absolute top-4 right-4">
-                    <FaCrown className={`text-lg ${selected ? 'text-primary' : 'text-slate-300'} group-hover:text-primary transition-colors`} />
+                    <FaCrown className={`text-lg ${selected ? 'text-primary' : 'text-slate-300 dark:text-slate-600'} group-hover:text-primary transition-colors`} />
                   </div>
                 )}
-                <h3 className="text-xl font-black text-slate-800 capitalize mb-1">{plan.name}</h3>
+                <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 capitalize mb-1">{plan.name}</h3>
                 <p className={`text-2xl font-black mb-4 ${isFree ? "text-emerald-600" : "text-primary"}`}>
                   {isFree ? "Free" : `₦${plan.price.toLocaleString()} / ${plan.interval}`}
                 </p>
                 <ul className="space-y-2">
                   {plan.features.map((f, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
+                    <li key={i} className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400">
                       <FaCheck className={`mt-0.5 shrink-0 ${isFree ? 'text-emerald-500' : 'text-primary'}`} size={12} />
                       {f}
                     </li>

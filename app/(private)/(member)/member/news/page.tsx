@@ -33,20 +33,20 @@ export default function MemberNewsPage() {
     ).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     return (
-        <div className="bg-slate-50/50 w-full min-h-screen">
-            <div className="w-full pt-10 pb-8 bg-white border-b border-slate-100 px-6 sm:px-10">
-                <h1 className="text-3xl font-black text-slate-900 mb-2">
+        <div className="bg-slate-50/50 dark:bg-transparent w-full min-h-screen">
+            <div className="w-full pt-10 pb-8 bg-white dark:bg-transparent border-b border-slate-100 dark:border-border px-6 sm:px-10">
+                <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-2">
                     News <span className="text-primary">& Updates</span>
                 </h1>
-                <p className="text-sm text-slate-500 max-w-2xl">
+                <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
                     Stay up to date with the latest features and stories from NAAPE.
                 </p>
                 <div className="mt-6 flex max-w-md relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
                     <Input
                         type="text"
                         placeholder="Search news..."
-                        className="pl-10 h-10 w-full rounded-full border-slate-200 bg-slate-50 focus-visible:ring-primary shadow-sm text-sm"
+                        className="pl-10 h-10 w-full rounded-full border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus-visible:ring-primary shadow-sm text-sm"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -59,7 +59,7 @@ export default function MemberNewsPage() {
                         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
                     </div>
                 ) : filteredNews.length === 0 ? (
-                    <div className="py-20 text-center text-slate-500 bg-white rounded-2xl border border-slate-100 shadow-sm max-w-2xl mx-auto">
+                    <div className="py-20 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-card rounded-2xl border border-slate-100 dark:border-border shadow-sm max-w-2xl mx-auto">
                         <p className="text-sm font-medium">No news articles found.</p>
                         {searchTerm && (
                             <button onClick={() => setSearchTerm("")} className="mt-4 text-primary hover:underline font-bold text-sm">

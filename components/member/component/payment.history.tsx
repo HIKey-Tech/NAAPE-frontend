@@ -120,29 +120,29 @@ const PaymentHistory: React.FC = () => {
   const hasAny = Array.isArray(history) && history.length > 0;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 w-full pb-20">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-transparent w-full pb-20">
       {/* Header Section */}
-      <div className="w-full pt-10 pb-8 bg-white border-b border-slate-100 px-6 sm:px-10 mb-8">
+      <div className="w-full pt-10 pb-8 bg-white dark:bg-transparent border-b border-slate-100 dark:border-border px-6 sm:px-10 mb-8">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex flex-col gap-2">
-            <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center text-primary mb-2 border border-primary/10">
+            <div className="w-12 h-12 bg-primary/5 dark:bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-2 border border-primary/10 dark:border-primary/20">
               <FaCreditCard size={20} />
             </div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Payment <span className="text-primary">History</span></h1>
-            <p className="text-sm text-slate-500 max-w-xl">
+            <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Payment <span className="text-primary">History</span></h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xl">
               Track and manage all your past transactions, event bookings, and subscription payments in one place.
             </p>
           </div>
 
           {/* Tabs */}
-          <div className="bg-slate-50/80 backdrop-blur-sm p-1.5 rounded-2xl border border-slate-200/60 shadow-sm flex overflow-x-auto gap-1 scrollbar-hide shrink-0 max-w-full">
+          <div className="bg-slate-50/80 dark:bg-slate-800/80 backdrop-blur-sm p-1.5 rounded-2xl border border-slate-200/60 dark:border-slate-700/60 shadow-sm flex overflow-x-auto gap-1 scrollbar-hide shrink-0 max-w-full">
             {TABS.map(tab => (
               <button
                 key={tab.key}
                 onClick={() => setSelectedTab(tab.key)}
                 className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-primary/50 relative ${selectedTab === tab.key
-                  ? "bg-white text-primary shadow-sm ring-1 ring-slate-200"
-                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-100/50"
+                  ? "bg-white dark:bg-card text-primary shadow-sm ring-1 ring-slate-200 dark:ring-slate-700"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/50 dark:hover:bg-slate-700/50"
                   }`}
               >
                 {tab.label}
@@ -176,12 +176,12 @@ const PaymentHistory: React.FC = () => {
         )}
 
         {!loading && !hasAny && !hasError && (
-          <div className="text-center py-24 bg-white rounded-3xl border border-slate-100 shadow-sm px-6">
-            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-slate-100">
-              <FaReceipt className="text-3xl text-slate-300" />
+          <div className="text-center py-24 bg-white dark:bg-card rounded-3xl border border-slate-100 dark:border-border shadow-sm px-6">
+            <div className="w-20 h-20 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6 border border-slate-100 dark:border-slate-700">
+              <FaReceipt className="text-3xl text-slate-300 dark:text-slate-600" />
             </div>
-            <h3 className="text-xl font-black text-slate-800 mb-2">No Payment History found</h3>
-            <p className="text-sm font-medium text-slate-500 max-w-sm mx-auto leading-relaxed">
+            <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 mb-2">No Payment History found</h3>
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
               You haven't made any payments yet. All your completed transactions will securely appear here.
             </p>
           </div>

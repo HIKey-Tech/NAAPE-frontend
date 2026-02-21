@@ -74,11 +74,11 @@ export interface ProfileData {
 
 function SectionCard({ children, title, icon: Icon, action }: { children: React.ReactNode, title: string, icon?: React.ElementType, action?: React.ReactNode }) {
     return (
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sm:p-8 h-full">
+        <div className="bg-white dark:bg-card rounded-2xl border border-slate-100 dark:border-border shadow-sm p-6 sm:p-8 h-full">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                    {Icon && <div className="p-2 bg-slate-50 text-slate-500 rounded-lg"><Icon size={20} /></div>}
-                    <h3 className="font-bold text-lg text-slate-800">{title}</h3>
+                    {Icon && <div className="p-2 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-lg"><Icon size={20} /></div>}
+                    <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100">{title}</h3>
                 </div>
                 {action}
             </div>
@@ -99,7 +99,7 @@ function DetailRow({ label, value, icon: Icon, href }: { label: string, value: R
                         {value}
                     </a>
                 ) : (
-                    <div className="text-sm font-medium text-slate-800 break-words">{value}</div>
+                    <div className="text-sm font-medium text-slate-800 dark:text-slate-200 break-words">{value}</div>
                 )}
             </div>
         </div>
@@ -143,7 +143,7 @@ function InputField({
                     value={value}
                     onChange={onChange}
                     placeholder={placeholder}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none min-h-[100px] text-sm"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none min-h-[100px] text-sm placeholder-slate-400 dark:placeholder-slate-500"
                 />
             ) : (
                 <input
@@ -152,7 +152,7 @@ function InputField({
                     value={value}
                     onChange={onChange}
                     placeholder={placeholder}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-sm"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-sm placeholder-slate-400 dark:placeholder-slate-500"
                 />
             )}
         </div>
@@ -329,20 +329,20 @@ export default function ProfilePage() {
     const initials = getInitials(profile.name);
 
     return (
-        <div className="max-w-6xl mx-auto py-10 px-4 sm:px-6 space-y-8 min-h-screen bg-slate-50">
+        <div className="max-w-6xl mx-auto py-10 px-4 sm:px-6 space-y-8 min-h-screen bg-slate-50 dark:bg-transparent">
 
             {/* --- HEADER / HERO --- */}
-            <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-8 relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-primary/10 to-blue-50/50 -z-10" />
+            <div className="bg-white dark:bg-card rounded-3xl border border-slate-100 dark:border-border shadow-sm p-8 relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-primary/10 to-blue-50/50 dark:to-transparent -z-10" />
 
                 <div className="flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8 pt-4">
                     {/* Avatar */}
                     <div className="relative shrink-0">
-                        <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-white flex items-center justify-center text-4xl font-bold text-slate-300 overflow-hidden relative">
+                        <div className="w-32 h-32 rounded-full border-4 border-white dark:border-card shadow-lg bg-white dark:bg-slate-800 flex items-center justify-center text-4xl font-bold text-slate-300 dark:text-slate-600 overflow-hidden relative">
                             {imageUrl ? (
                                 <img src={imageUrl} alt={profile.name} className="w-full h-full object-cover" />
                             ) : (
-                                <div className="w-full h-full bg-slate-100 flex items-center justify-center">{initials}</div>
+                                <div className="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">{initials}</div>
                             )}
 
                             {editMode && (
@@ -368,13 +368,13 @@ export default function ProfilePage() {
                     <div className="flex-1 text-center md:text-left mb-2">
                         <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-4">
                             <div>
-                                <h1 className="text-3xl font-black text-slate-900 tracking-tight">{profile.name}</h1>
-                                <div className="flex items-center gap-2 justify-center md:justify-start text-slate-500 font-medium mt-1">
+                                <h1 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">{profile.name}</h1>
+                                <div className="flex items-center gap-2 justify-center md:justify-start text-slate-500 dark:text-slate-400 font-medium mt-1">
                                     <MdOutlineAlternateEmail size={16} />
                                     <span>{profile.email}</span>
                                 </div>
                                 <div className="flex items-center gap-2 mt-3 flex-wrap justify-center md:justify-start">
-                                    <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-bold uppercase tracking-wide">
+                                    <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold uppercase tracking-wide">
                                         {profile.role}
                                     </span>
                                     {(subscriptionStatus?.hasSubscription && subscriptionStatus?.status === "active") && (
@@ -390,7 +390,7 @@ export default function ProfilePage() {
                             <div className="flex items-center gap-3">
                                 {!editMode ? (
                                     <>
-                                        <button onClick={startEditing} className="px-5 py-2.5 rounded-xl bg-slate-50 text-slate-700 font-bold text-sm hover:bg-slate-100 transition-colors border border-slate-200">
+                                        <button onClick={startEditing} className="px-5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">
                                             Edit Profile
                                         </button>
                                         <button onClick={() => {
@@ -400,13 +400,13 @@ export default function ProfilePage() {
                                             } else {
                                                 window.location.href = "/settings";
                                             }
-                                        }} className="p-2.5 rounded-xl bg-white text-slate-500 hover:text-primary hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm">
+                                        }} className="p-2.5 rounded-xl bg-white dark:bg-card text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-700 shadow-sm">
                                             <MdOutlineSettings size={20} />
                                         </button>
                                     </>
                                 ) : (
                                     <div className="flex gap-2">
-                                        <button onClick={cancelEditing} className="px-5 py-2.5 rounded-xl bg-white text-slate-600 font-bold text-sm border border-slate-200 hover:bg-slate-50">
+                                        <button onClick={cancelEditing} className="px-5 py-2.5 rounded-xl bg-white dark:bg-card text-slate-600 dark:text-slate-400 font-bold text-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">
                                             Cancel
                                         </button>
                                         <button onClick={saveProfile} className="px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-md shadow-primary/20 hover:bg-blue-700">
@@ -429,9 +429,9 @@ export default function ProfilePage() {
                     {profile.stats && (
                         <SectionCard title="Publication Stats" icon={MdCreditCard}>
                             <div className="grid grid-cols-3 gap-3">
-                                <StatCard label="Total" value={profile.stats.total} colorClass="bg-blue-50 text-blue-700 border-blue-100" />
-                                <StatCard label="Approved" value={profile.stats.approved} colorClass="bg-emerald-50 text-emerald-700 border-emerald-100" />
-                                <StatCard label="Pending" value={profile.stats.pending} colorClass="bg-amber-50 text-amber-700 border-amber-100" />
+                                <StatCard label="Total" value={profile.stats.total} colorClass="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-800" />
+                                <StatCard label="Approved" value={profile.stats.approved} colorClass="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800" />
+                                <StatCard label="Pending" value={profile.stats.pending} colorClass="bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-800" />
                             </div>
                         </SectionCard>
                     )}
@@ -440,17 +440,17 @@ export default function ProfilePage() {
                     <SectionCard title="Membership Details" icon={MdBadge}>
                         <div className="space-y-4">
                             <DetailRow label="Member Since" value={new Date(profile.createdAt).toLocaleDateString()} icon={MdDateRange} />
-                            <DetailRow label="Member ID" value={<span className="font-mono bg-slate-100 px-2 py-0.5 rounded text-xs">{profile._id}</span>} icon={MdBadge} />
+                            <DetailRow label="Member ID" value={<span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-xs">{profile._id}</span>} icon={MdBadge} />
                             <DetailRow label="Status" value={profile.isVerified ? "Verified" : "Unverified"} icon={MdOutlineCheckCircle} />
-                            <div className="pt-4 mt-2 border-t border-slate-50">
+                            <div className="pt-4 mt-2 border-t border-slate-50 dark:border-slate-800/50">
                                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Subscription</h4>
                                 {subscriptionStatus?.hasSubscription ? (
-                                    <div className="bg-amber-50 p-3 rounded-lg border border-amber-100">
-                                        <p className="text-sm font-bold text-amber-800">{subscriptionStatus.planName || "Active Plan"}</p>
+                                    <div className="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg border border-amber-100 dark:border-amber-800">
+                                        <p className="text-sm font-bold text-amber-800 dark:text-amber-500">{subscriptionStatus.planName || "Active Plan"}</p>
                                         <p className="text-xs text-amber-600 mt-1">Expires: {new Date(subscriptionStatus.endDate!).toLocaleDateString()}</p>
                                     </div>
                                 ) : (
-                                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 text-center">
+                                    <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700 text-center">
                                         <p className="text-sm font-medium text-slate-500 mb-2">Basic Membership</p>
                                         <a href="/subscription" className="text-xs font-bold text-primary hover:underline">Upgrade to Premium</a>
                                     </div>
@@ -480,7 +480,7 @@ export default function ProfilePage() {
                                     <DetailRow label="Phone" value={profile.profile?.phone} icon={MdPhone} />
                                     <DetailRow label="Organization" value={profile.profile?.organization} icon={FaBuilding} />
                                 </div>
-                                <div className="pt-4 border-t border-slate-50">
+                                <div className="pt-4 border-t border-slate-50 dark:border-slate-800/50">
                                     <DetailRow label="Bio" value={profile.profile?.bio || <span className="text-slate-400 italic">No bio added yet.</span>} />
                                 </div>
                             </div>
@@ -554,22 +554,22 @@ export default function ProfilePage() {
             {showPersonalSettings && (
                 <div className="fixed inset-0 z-50 flex justify-end">
                     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowPersonalSettings(false)} />
-                    <div className="relative w-full max-w-sm bg-white h-full shadow-2xl p-8 flex flex-col animate-in slide-in-from-right duration-200">
+                    <div className="relative w-full max-w-sm bg-white dark:bg-card h-full shadow-2xl p-8 flex flex-col animate-in slide-in-from-right duration-200 border-l dark:border-border">
                         <div className="flex items-center justify-between mb-8">
-                            <h2 className="text-xl font-bold text-slate-800">Settings</h2>
-                            <button onClick={() => setShowPersonalSettings(false)} className="p-2 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-full"><MdClose /></button>
+                            <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Settings</h2>
+                            <button onClick={() => setShowPersonalSettings(false)} className="p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded-full"><MdClose /></button>
                         </div>
 
                         <div className="space-y-6 flex-1">
                             <div>
                                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Account</h3>
                                 <div className="space-y-2">
-                                    <button onClick={() => { setShowPasswordFields(true); setShowPersonalSettings(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-left transition-colors text-slate-700 font-medium">
-                                        <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><MdOutlineLockReset size={18} /></div>
+                                    <button onClick={() => { setShowPasswordFields(true); setShowPersonalSettings(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors text-slate-700 dark:text-slate-300 font-medium">
+                                        <div className="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg"><MdOutlineLockReset size={18} /></div>
                                         Change Password
                                     </button>
-                                    <button onClick={() => { startEditing(); setShowPersonalSettings(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-left transition-colors text-slate-700 font-medium">
-                                        <div className="p-2 bg-purple-50 text-purple-600 rounded-lg"><MdEdit size={18} /></div>
+                                    <button onClick={() => { startEditing(); setShowPersonalSettings(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors text-slate-700 dark:text-slate-300 font-medium">
+                                        <div className="p-2 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg"><MdEdit size={18} /></div>
                                         Edit Profile
                                     </button>
                                 </div>
@@ -577,8 +577,8 @@ export default function ProfilePage() {
 
                             <div>
                                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Session</h3>
-                                <button onClick={handleLogoutClick} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 text-left transition-colors text-red-600 font-medium">
-                                    <div className="p-2 bg-red-100 text-red-600 rounded-lg"><MdLogout size={18} /></div>
+                                <button onClick={handleLogoutClick} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/30 text-left transition-colors text-red-600 dark:text-red-400 font-medium">
+                                    <div className="p-2 bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg"><MdLogout size={18} /></div>
                                     Sign Out
                                 </button>
                             </div>
@@ -591,17 +591,17 @@ export default function ProfilePage() {
             {showPasswordFields && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowPasswordFields(false)} />
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative z-10 animate-in zoom-in-95 duration-200">
+                    <div className="bg-white dark:bg-card border dark:border-border rounded-2xl shadow-xl w-full max-w-md p-6 relative z-10 animate-in zoom-in-95 duration-200">
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-lg font-bold text-slate-800">Change Password</h3>
-                            <button onClick={() => setShowPasswordFields(false)} className="text-slate-400 hover:text-slate-600"><MdClose size={20} /></button>
+                            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Change Password</h3>
+                            <button onClick={() => setShowPasswordFields(false)} className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"><MdClose size={20} /></button>
                         </div>
                         <form onSubmit={handlePasswordSubmit} className="space-y-4">
                             <InputField label="Current Password" name="oldPassword" type="password" value={passwordFields.oldPassword} onChange={(e: any) => setPasswordFields(p => ({ ...p, oldPassword: e.target.value }))} />
                             <InputField label="New Password" name="newPassword" type="password" value={passwordFields.newPassword} onChange={(e: any) => setPasswordFields(p => ({ ...p, newPassword: e.target.value }))} />
                             <InputField label="Confirm Password" name="confirmPassword" type="password" value={passwordFields.confirmPassword} onChange={(e: any) => setPasswordFields(p => ({ ...p, confirmPassword: e.target.value }))} />
                             <div className="pt-4 flex gap-3">
-                                <button type="button" onClick={() => setShowPasswordFields(false)} className="flex-1 py-2.5 rounded-xl border border-slate-200 font-bold text-slate-600 hover:bg-slate-50">Cancel</button>
+                                <button type="button" onClick={() => setShowPasswordFields(false)} className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">Cancel</button>
                                 <button type="submit" disabled={updatePassword.isPending} className="flex-1 py-2.5 rounded-xl bg-primary text-white font-bold hover:bg-blue-700 shadow-md shadow-primary/20 disabled:opacity-50">
                                     {updatePassword.isPending ? "Updating..." : "Update Password"}
                                 </button>

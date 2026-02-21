@@ -162,18 +162,18 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
 
   return (
     <div
-      className="max-w-2xl mx-auto px-4 py-10 bg-white shadow-sm border border-slate-100 rounded-2xl md:px-8"
+      className="max-w-2xl mx-auto px-4 py-10 bg-white dark:bg-card shadow-sm border border-slate-100 dark:border-border rounded-2xl md:px-8"
       role="region"
       aria-labelledby="edit-publication-heading"
     >
       <header className="mb-7">
         <h1
           id="edit-publication-heading"
-          className="text-3xl md:text-4xl font-bold text-slate-900 mb-2 leading-tight"
+          className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-2 leading-tight"
         >
           Edit Publication
         </h1>
-        <p className="text-base md:text-lg text-slate-500 font-medium">
+        <p className="text-base md:text-lg text-slate-500 dark:text-slate-400 font-medium">
           Update your publication and save as draft or submit for review.
         </p>
       </header>
@@ -187,7 +187,7 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">
+                  <FormLabel className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1.5 block">
                     Publication Title <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
@@ -195,10 +195,10 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
                       {...field}
                       maxLength={100}
                       placeholder="e.g., The Future of Education in STEM in Nigeria"
-                      className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 h-12 text-base focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                      className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 h-12 text-base focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     />
                   </FormControl>
-                  <FormMessage className="text-xs text-red-600 mt-1" />
+                  <FormMessage className="text-xs text-red-600 dark:text-red-400 mt-1" />
                 </FormItem>
               )}
             />
@@ -211,12 +211,12 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">
+                  <FormLabel className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1.5 block">
                     Category <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 h-12 text-base focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all">
+                      <SelectTrigger className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 h-12 text-base focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-slate-900 dark:text-slate-100">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
@@ -228,7 +228,7 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
                       </SelectContent>
                     </Select>
                   </FormControl>
-                  <FormMessage className="text-xs text-red-600 mt-1" />
+                  <FormMessage className="text-xs text-red-600 dark:text-red-400 mt-1" />
                 </FormItem>
               )}
             />
@@ -241,7 +241,7 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
               name="content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">
+                  <FormLabel className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1.5 block">
                     Description <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
@@ -249,11 +249,11 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
                       {...field}
                       maxLength={4000}
                       placeholder="Describe your publication and its usefulness"
-                      className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-base min-h-[120px] focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                      className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-base min-h-[120px] focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                       rows={5}
                     />
                   </FormControl>
-                  <FormMessage className="text-xs text-red-600 mt-1" />
+                  <FormMessage className="text-xs text-red-600 dark:text-red-400 mt-1" />
                 </FormItem>
               )}
             />
@@ -266,12 +266,12 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
               name="imageFile"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2 block">
+                  <FormLabel className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-2 block">
                     Upload Cover Image <span className="text-slate-300 font-normal text-xs normal-case">(optional)</span>
                   </FormLabel>
                   {imagePreviewUrl && !field.value && (
                     <div className="mb-4">
-                      <p className="text-sm text-slate-500 mb-2">Current image:</p>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">Current image:</p>
                       <img src={imagePreviewUrl} alt="Current" className="w-full max-w-md h-48 object-cover rounded-xl" />
                     </div>
                   )}
@@ -284,18 +284,18 @@ const EditPublicationComponent: React.FC<EditPublicationProps> = ({ publication 
                     inputRef={imageInputRef as React.RefObject<HTMLInputElement>}
                     disabled={submitting}
                   />
-                  <FormMessage className="text-xs text-red-600 mt-1" />
+                  <FormMessage className="text-xs text-red-600 dark:text-red-400 mt-1" />
                 </FormItem>
               )}
             />
           </section>
 
           {/* Action buttons */}
-          <section className="flex flex-row flex-wrap items-center justify-end gap-4 pt-6 border-t border-slate-100 mt-4">
+          <section className="flex flex-row flex-wrap items-center justify-end gap-4 pt-6 border-t border-slate-100 dark:border-slate-800/50 mt-4">
             <NaapButton
               type="button"
               variant="ghost"
-              className="rounded-xl h-11 px-8 border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold"
+              className="rounded-xl h-11 px-8 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold"
               onClick={handleDraft}
               disabled={submitting}
             >

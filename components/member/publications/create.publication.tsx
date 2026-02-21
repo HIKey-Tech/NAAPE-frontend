@@ -211,7 +211,7 @@ const CreatePublicationComponent: React.FC = () => {
 
   return (
     <div
-      className="max-w-2xl mx-auto px-4 py-10 bg-white shadow-sm border border-slate-100 rounded-2xl md:px-8"
+      className="max-w-2xl mx-auto px-4 py-10 bg-white dark:bg-card shadow-sm border border-slate-100 dark:border-border rounded-2xl md:px-8"
       role="region"
       aria-labelledby="create-publication-heading"
       tabIndex={-1}
@@ -231,11 +231,11 @@ const CreatePublicationComponent: React.FC = () => {
             <h1
               id="create-publication-heading"
               tabIndex={-1}
-              className="text-3xl md:text-4xl font-bold text-slate-900 mb-2 leading-tight"
+              className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-2 leading-tight"
             >
               Create a New Publication
             </h1>
-            <p className="text-base md:text-lg text-slate-500 font-medium">
+            <p className="text-base md:text-lg text-slate-500 dark:text-slate-400 font-medium">
               Submit your article to share expertise and ideas with NAAPE members.
             </p>
           </header>
@@ -256,7 +256,7 @@ const CreatePublicationComponent: React.FC = () => {
                       <FormLabel
                         id="publication-title-label"
                         htmlFor="publication-title-input"
-                        className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5 block"
+                        className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1.5 block"
                       >
                         Publication Title <span className="text-red-500" aria-hidden="true">*</span>
                       </FormLabel>
@@ -269,16 +269,16 @@ const CreatePublicationComponent: React.FC = () => {
                           placeholder="e.g., The Future of Education in STEM in Nigeria"
                           aria-required="true"
                           aria-describedby="publication-title-hint"
-                          className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 h-12 text-base focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                          className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 h-12 text-base focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                         />
                       </FormControl>
                       <span
                         id="publication-title-hint"
-                        className="text-xs text-slate-400 block my-0.5"
+                        className="text-xs text-slate-400 dark:text-slate-500 block my-0.5"
                       >
                         Enter a concise and descriptive title (max 100 characters).
                       </span>
-                      <FormMessage className="text-xs text-red-600 mt-1" />
+                      <FormMessage className="text-xs text-red-600 dark:text-red-400 mt-1" />
                     </FormItem>
                   )}
                 />
@@ -294,7 +294,7 @@ const CreatePublicationComponent: React.FC = () => {
                       <FormLabel
                         id="publication-category-label"
                         htmlFor="publication-category"
-                        className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5 block"
+                        className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1.5 block"
                       >
                         Category <span className="text-red-500" aria-hidden="true">*</span>
                       </FormLabel>
@@ -304,7 +304,7 @@ const CreatePublicationComponent: React.FC = () => {
                             id="publication-category"
                             aria-required="true"
                             aria-describedby="publication-category-hint"
-                            className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 h-12 text-base focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all w-full"
+                            className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 h-12 text-base focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all w-full text-slate-900 dark:text-slate-100"
                           >
                             <SelectValue placeholder="Select category" />
                           </SelectTrigger>
@@ -319,11 +319,11 @@ const CreatePublicationComponent: React.FC = () => {
                       </FormControl>
                       <span
                         id="publication-category-hint"
-                        className="text-xs text-slate-400 block my-0.5"
+                        className="text-xs text-slate-400 dark:text-slate-500 block my-0.5"
                       >
                         Select the category that best fits your publication.
                       </span>
-                      <FormMessage className="text-xs text-red-600 mt-1" />
+                      <FormMessage className="text-xs text-red-600 dark:text-red-400 mt-1" />
                     </FormItem>
                   )}
                 />
@@ -339,7 +339,7 @@ const CreatePublicationComponent: React.FC = () => {
                       <FormLabel
                         id="publication-description-label"
                         htmlFor="publication-description"
-                        className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5 block"
+                        className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1.5 block"
                       >
                         Description <span className="text-red-500" aria-hidden="true">*</span>
                       </FormLabel>
@@ -351,17 +351,17 @@ const CreatePublicationComponent: React.FC = () => {
                           placeholder="Describe your publication and its usefulness"
                           aria-required="true"
                           aria-describedby="publication-description-hint"
-                          className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-base min-h-[120px] focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                          className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-base min-h-[120px] focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                           rows={5}
                         />
                       </FormControl>
                       <span
                         id="publication-description-hint"
-                        className="text-xs text-slate-400 block my-0.5"
+                        className="text-xs text-slate-400 dark:text-slate-500 block my-0.5"
                       >
                         Share what this publication covers and why it matters, up to 4000 characters.
                       </span>
-                      <FormMessage className="text-xs text-red-600 mt-1" />
+                      <FormMessage className="text-xs text-red-600 dark:text-red-400 mt-1" />
                     </FormItem>
                   )}
                 />
@@ -407,11 +407,11 @@ const CreatePublicationComponent: React.FC = () => {
               </section>
 
               {/* Action buttons */}
-              <section aria-label="Publication Actions" className="flex flex-row flex-wrap items-center justify-end gap-4 pt-6 border-t border-slate-100 mt-4">
+              <section aria-label="Publication Actions" className="flex flex-row flex-wrap items-center justify-end gap-4 pt-6 border-t border-slate-100 dark:border-slate-800/50 mt-4">
                 <NaapButton
                   type="button"
                   variant="ghost"
-                  className="rounded-xl h-11 px-8 border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold outline-offset-2 focus-visible:outline-primary focus-visible:outline-2"
+                  className="rounded-xl h-11 px-8 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold outline-offset-2 focus-visible:outline-primary focus-visible:outline-2"
                   style={{ minWidth: 130 }}
                   onClick={handleDraft}
                   disabled={submitting}
@@ -437,7 +437,7 @@ const CreatePublicationComponent: React.FC = () => {
         </>
       ) : (
         <div className="text-center py-8">
-          <p className="text-slate-500">
+          <p className="text-slate-500 dark:text-slate-400">
             Please subscribe to create publications.
           </p>
         </div>

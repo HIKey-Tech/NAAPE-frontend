@@ -9,11 +9,11 @@ import { SubscriptionBanner } from "../component/subscription.banner";
 import { useSubscriptionStatus } from "@/hooks/useSubscription";
 
 const PUBLICATION_STATUSES: { label: string; value?: string; icon?: React.ReactNode; highlight?: string }[] = [
-    { label: "All", value: undefined, icon: <FaLayerGroup className="inline mr-1" />, highlight: "bg-slate-50" },
-    { label: "Published", value: "approved", icon: <FaBookOpen className="inline mr-1 text-primary" />, highlight: "bg-primary/5" },
-    { label: "Draft", value: "draft", icon: <FaEdit className="inline mr-1 text-violet-500" />, highlight: "bg-violet-50" },
-    { label: "Pending Review", value: "pending", icon: <FaHourglassHalf className="inline mr-1 text-amber-500" />, highlight: "bg-amber-50" },
-    { label: "Rejected", value: "rejected", icon: <FaTimesCircle className="inline mr-1 text-red-500" />, highlight: "bg-red-50" },
+    { label: "All", value: undefined, icon: <FaLayerGroup className="inline mr-1" />, highlight: "bg-slate-50 dark:bg-slate-800" },
+    { label: "Published", value: "approved", icon: <FaBookOpen className="inline mr-1 text-primary" />, highlight: "bg-primary/5 dark:bg-primary/10" },
+    { label: "Draft", value: "draft", icon: <FaEdit className="inline mr-1 text-violet-500 dark:text-violet-400" />, highlight: "bg-violet-50 dark:bg-violet-900/20" },
+    { label: "Pending Review", value: "pending", icon: <FaHourglassHalf className="inline mr-1 text-amber-500 dark:text-amber-400" />, highlight: "bg-amber-50 dark:bg-amber-900/20" },
+    { label: "Rejected", value: "rejected", icon: <FaTimesCircle className="inline mr-1 text-red-500 dark:text-red-400" />, highlight: "bg-red-50 dark:bg-red-900/20" },
 ];
 
 interface PubProps {
@@ -129,9 +129,9 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
         if (isError) {
             return (
                 <div className="col-span-full flex justify-center items-center py-20">
-                    <div className="inline-flex flex-col items-center px-8 py-6 bg-red-50 border border-red-100 rounded-2xl transition-all duration-200">
+                    <div className="inline-flex flex-col items-center px-8 py-6 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-2xl transition-all duration-200">
                         <FaTimesCircle className="text-3xl text-red-500" />
-                        <span className="text-red-600 text-lg font-bold mt-2 text-center">Failed to load publications.</span>
+                        <span className="text-red-600 dark:text-red-400 text-lg font-bold mt-2 text-center">Failed to load publications.</span>
                         <span className="text-sm text-red-400 mt-1 text-center">Please try again or refresh the page.</span>
                     </div>
                 </div>
@@ -140,10 +140,10 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
         if (!filteredPublications.length) {
             return (
                 <div className="col-span-full flex justify-center items-center py-20">
-                    <div className="inline-flex flex-col items-center px-8 py-8 bg-slate-50 border border-slate-100 rounded-2xl gap-2 transition-all duration-200">
-                        <FaBookOpen className="text-4xl text-slate-300" />
-                        <span className="font-bold text-lg text-slate-400 text-center">No publications found.</span>
-                        <span className="text-xs text-slate-400 max-w-[260px] leading-relaxed mt-1 text-center">
+                    <div className="inline-flex flex-col items-center px-8 py-8 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl gap-2 transition-all duration-200">
+                        <FaBookOpen className="text-4xl text-slate-300 dark:text-slate-600" />
+                        <span className="font-bold text-lg text-slate-400 dark:text-slate-500 text-center">No publications found.</span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500 max-w-[260px] leading-relaxed mt-1 text-center">
                             Try adjusting your <span className="font-bold text-primary">search</span>, <span className="font-bold text-primary">status</span>, or <span className="font-bold text-primary">date filters</span>.
                         </span>
                     </div>
