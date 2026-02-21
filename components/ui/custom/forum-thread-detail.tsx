@@ -71,9 +71,17 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
                 {/* Author Info */}
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-bold shadow-sm">
-                            {reply.author.name.charAt(0).toUpperCase()}
-                        </div>
+                        {reply.author.profile?.image?.url ? (
+                            <img
+                                src={reply.author.profile.image.url}
+                                alt={reply.author.name}
+                                className="w-10 h-10 rounded-xl object-cover shadow-sm bg-white"
+                            />
+                        ) : (
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-bold shadow-sm">
+                                {reply.author.name.charAt(0).toUpperCase()}
+                            </div>
+                        )}
                         <div>
                             <div className="flex items-center gap-2">
                                 <span className="font-bold text-sm text-slate-900">{reply.author.name}</span>
@@ -378,9 +386,17 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
 
                 {/* Author & Meta */}
                 <div className="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-primary/20">
-                        {thread.author.name.charAt(0).toUpperCase()}
-                    </div>
+                    {thread.author.profile?.image?.url ? (
+                        <img
+                            src={thread.author.profile.image.url}
+                            alt={thread.author.name}
+                            className="w-12 h-12 rounded-xl object-cover shadow-md shadow-primary/20 bg-white"
+                        />
+                    ) : (
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-primary/20">
+                            {thread.author.name.charAt(0).toUpperCase()}
+                        </div>
+                    )}
                     <div>
                         <div className="flex items-center gap-2">
                             <span className="font-bold text-slate-900">{thread.author.name}</span>

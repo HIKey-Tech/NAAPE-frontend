@@ -20,6 +20,11 @@ export interface ForumThread {
         name: string;
         email: string;
         role: string;
+        profile?: {
+            image?: {
+                url: string;
+            };
+        };
     };
     isPinned: boolean;
     isLocked: boolean;
@@ -45,6 +50,11 @@ export interface ForumReply {
         name: string;
         email: string;
         role: string;
+        profile?: {
+            image?: {
+                url: string;
+            };
+        };
     };
     content: string;
     parentReply?: string;
