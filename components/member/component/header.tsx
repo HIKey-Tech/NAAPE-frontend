@@ -21,7 +21,7 @@ interface CommonHeaderProps {
 }
 
 export const FilterHeader: React.FC<CommonHeaderProps> = ({
-  title = "Items",
+  title,
   search,
   setSearch,
   filterOpen,
@@ -32,13 +32,16 @@ export const FilterHeader: React.FC<CommonHeaderProps> = ({
   sortLabel,
   extraFilters,
 }) => (
-  <div className="sticky w-full bg-white/80 backdrop-blur-xl pb-4 mb-8 z-30 border-b border-slate-100" style={{ top: "56px" }}>
-    <div className="max-w-5xl mx-auto px-4 sm:px-6">
+  <div className="sticky w-full bg-slate-50/80 backdrop-blur-xl pb-4 z-30" style={{ top: "0px" }}>
+    <div className="w-full">
       {/* Title */}
-      <div className="pt-6 pb-4">
-        <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight mb-0.5">{title}</h1>
-        <p className="text-sm text-slate-400">Find, filter, and sort your {title.toLowerCase()}.</p>
-      </div>
+      {title && (
+        <div className="pt-6 pb-4">
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight mb-0.5">{title}</h1>
+          <p className="text-sm text-slate-400">Find, filter, and sort your {title.toLowerCase()}.</p>
+        </div>
+      )}
+
 
       {/* Filter Bar */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">

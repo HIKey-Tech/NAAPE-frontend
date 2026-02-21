@@ -125,34 +125,25 @@ export default function BrowsePublicationsPage() {
     };
 
     return (
-        <div className="w-full min-h-[75vh] bg-gradient-to-b from-slate-50/50 to-white pt-0 pb-28 sm:pb-12 relative flex flex-col">
-            <div className="max-w-7xl mx-auto px-2 sm:px-7 w-full">
-                {/* Premium Badge */}
-                <div className="mt-4 mb-2 flex items-center justify-center">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-full">
-                        <FaStar className="text-amber-500" />
-                        <span className="text-sm font-bold text-amber-700">Premium Content</span>
-                    </div>
+        <div className="bg-slate-50/50 w-full min-h-screen">
+            <div className="w-full pt-10 pb-8 bg-white border-b border-slate-100 px-6 sm:px-10 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-y-4">
+                <div className="w-full sm:w-auto flex flex-col items-start text-left">
+                    <h1 className="text-3xl font-black text-slate-900 mb-2">
+                        Browse <span className="text-primary">Publications</span>
+                    </h1>
+                    <p className="text-sm text-slate-500 max-w-2xl">
+                        Explore scholarly work from NAAPE members.
+                    </p>
                 </div>
-
-                {/* Hero / Showcase header */}
-                <div className="pt-2 pb-3 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-y-2">
-                    <div className="w-full sm:w-auto flex flex-col items-center sm:items-start text-center sm:text-left">
-                        <h1 className="text-[2.25rem] sm:text-4xl font-bold tracking-tight text-slate-900 leading-tight mb-2">
-                            Browse Publications
-                        </h1>
-                        <p className="text-slate-500 text-base sm:text-lg font-medium mb-1">
-                            Explore scholarly work from NAAPE members.
-                        </p>
-                    </div>
-                    <div className="shrink-0 mt-2 sm:mt-0 sm:ml-4 flex items-center">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/5 text-primary border border-primary/10 transition-all duration-200">
-                            {filteredPublications?.length ?? 0} shown
-                        </span>
-                    </div>
+                <div className="shrink-0 flex items-center">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/5 text-primary border border-primary/10 transition-all duration-200">
+                        {filteredPublications?.length ?? 0} shown
+                    </span>
                 </div>
+            </div>
 
-                <div className="mb-4 sm:mb-6">
+            <div className="px-6 sm:px-10 py-6 max-w-[1400px] mx-auto w-full">
+                <div className="mb-6 relative z-30">
                     <FilterHeader
                         title={undefined}
                         search={search}
