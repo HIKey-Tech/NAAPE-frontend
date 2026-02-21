@@ -97,7 +97,7 @@ export default function DashboardLayout({
     return (
         <SidebarProvider>
             <AppSidebar />
-            <main className="flex-1 w-full min-h-screen flex flex-col min-w-0 overflow-x-hidden">
+            <main className="flex-1 w-full min-h-screen flex flex-col min-w-0">
                 <TopNavbar />
                 <div className="flex-1 w-full relative">
                     {children}

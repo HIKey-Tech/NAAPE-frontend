@@ -393,7 +393,14 @@ export default function ProfilePage() {
                                         <button onClick={startEditing} className="px-5 py-2.5 rounded-xl bg-slate-50 text-slate-700 font-bold text-sm hover:bg-slate-100 transition-colors border border-slate-200">
                                             Edit Profile
                                         </button>
-                                        <button onClick={() => setShowPersonalSettings(true)} className="p-2.5 rounded-xl bg-white text-slate-500 hover:text-primary hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm">
+                                        <button onClick={() => {
+                                            const roleStr = typeof profile.role === "string" ? profile.role.trim().toLowerCase() : "";
+                                            if (roleStr === "admin") {
+                                                window.location.href = "/admin/settings";
+                                            } else {
+                                                window.location.href = "/settings";
+                                            }
+                                        }} className="p-2.5 rounded-xl bg-white text-slate-500 hover:text-primary hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm">
                                             <MdOutlineSettings size={20} />
                                         </button>
                                     </>
