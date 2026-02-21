@@ -7,7 +7,9 @@ import { MdPushPin, MdLock, MdVisibility, MdComment, MdMoreVert, MdEdit, MdDelet
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { useAuthStore } from "@/hook/store/useAuthStore";
+import Link from "next/link";
 import ReportModal from "./report-modal";
+
 
 const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ thread, isAdmin }) => {
     const router = useRouter();
@@ -71,7 +73,13 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
 
             {/* Meta Info */}
             <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400 dark:text-slate-500">
-                <span className="font-bold text-slate-700 dark:text-slate-300">{thread.author.name}</span>
+                <Link
+                    href={`/members/${thread.author._id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="font-bold text-slate-700 dark:text-slate-300 hover:text-primary transition-colors"
+                >
+                    {thread.author.name}
+                </Link>
                 <span>·</span>
                 <span>{formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })}</span>
                 <span className="flex items-center gap-1">
@@ -87,7 +95,14 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
             {/* Last Reply */}
             {thread.lastReply && (
                 <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/50 text-xs text-slate-400 dark:text-slate-500">
-                    Last reply by <span className="font-bold text-slate-600 dark:text-slate-300">{thread.lastReply.author.name}</span>{" "}
+                    Last reply by{" "}
+                    <Link
+                        href={`/members/${(thread.lastReply.author as any)._id || thread.lastReply.author}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors"
+                    >
+                        {thread.lastReply.author.name}
+                    </Link>{" "}
                     {formatDistanceToNow(new Date(thread.lastReply.createdAt), { addSuffix: true })}
                 </div>
             )}

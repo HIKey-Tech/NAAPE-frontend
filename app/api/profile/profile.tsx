@@ -8,11 +8,16 @@ export interface UpdateProfilePayload {
     experience?: number;
     organization?: string;
     licenseNumber?: string;
-    image?: File; 
+    image?: File;
 }
 
 export const getMyProfile = async () => {
     const response = await api.get("/users/profile");
+    return response.data.data;
+}
+
+export const getPublicProfileData = async (userId: string) => {
+    const response = await api.get(`/users/public/${userId}`);
     return response.data.data;
 }
 
@@ -21,10 +26,10 @@ export const updateMyProfile = async (data: ProfileData) => {
     if (!token) throw new Error("Not authenticated");
 
     const formData = new FormData();
-    
+
 
     for (const [key, value] of Object.entries(data)) {
-        if (value !== undefined && value !== null) { 
+        if (value !== undefined && value !== null) {
             formData.append(key, value instanceof File ? value : String(value))
         }
     }

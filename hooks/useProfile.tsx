@@ -1,5 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMyProfile, updateMyProfile, updateMyPassword } from "@/app/api/profile/profile";
+import { getMyProfile, updateMyProfile, updateMyPassword, getPublicProfileData } from "@/app/api/profile/profile";
+
+// Query: get public profile
+export function usePublicProfile(userId: string) {
+  return useQuery({
+    queryKey: ["publicProfile", userId],
+    queryFn: () => getPublicProfileData(userId),
+    enabled: !!userId,
+  });
+}
+
 
 // Query: get my profile
 export function useMyProfile() {

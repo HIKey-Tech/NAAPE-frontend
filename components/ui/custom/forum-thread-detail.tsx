@@ -8,7 +8,9 @@ import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/context/authcontext";
 import { toast } from "sonner";
+import Link from "next/link";
 import ReportModal from "./report-modal";
+
 
 const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: boolean }> = ({ reply, threadId, isNested = false }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -70,21 +72,24 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
             <div className="bg-slate-50/80 rounded-2xl border border-slate-100 p-5 hover:border-slate-200 transition-colors">
                 {/* Author Info */}
                 <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
+                    <Link
+                        href={`/members/${reply.author._id}`}
+                        className="flex items-center gap-3 group/author"
+                    >
                         {reply.author.profile?.image?.url ? (
                             <img
                                 src={reply.author.profile.image.url}
                                 alt={reply.author.name}
-                                className="w-10 h-10 rounded-xl object-cover shadow-sm bg-white"
+                                className="w-10 h-10 rounded-xl object-cover shadow-sm bg-white group-hover/author:ring-2 ring-primary/20 transition-all"
                             />
                         ) : (
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-bold shadow-sm">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-bold shadow-sm group-hover/author:scale-105 transition-transform">
                                 {reply.author.name.charAt(0).toUpperCase()}
                             </div>
                         )}
                         <div>
                             <div className="flex items-center gap-2">
-                                <span className="font-bold text-sm text-slate-900">{reply.author.name}</span>
+                                <span className="font-bold text-sm text-slate-900 group-hover/author:text-primary transition-colors">{reply.author.name}</span>
                                 {reply.author.role === "admin" && (
                                     <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
                                         Admin
@@ -96,7 +101,7 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
                                 {reply.isEdited && " (edited)"}
                             </span>
                         </div>
-                    </div>
+                    </Link>
 
                     {/* Actions */}
                     <div className="flex gap-1">
@@ -386,40 +391,45 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
 
                 {/* Author & Meta */}
                 <div className="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100">
-                    {thread.author.profile?.image?.url ? (
-                        <img
-                            src={thread.author.profile.image.url}
-                            alt={thread.author.name}
-                            className="w-12 h-12 rounded-xl object-cover shadow-md shadow-primary/20 bg-white"
-                        />
-                    ) : (
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-primary/20">
-                            {thread.author.name.charAt(0).toUpperCase()}
-                        </div>
-                    )}
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-900">{thread.author.name}</span>
-                            {thread.author.role === "admin" && (
-                                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
-                                    Admin
+                    <Link
+                        href={`/members/${thread.author._id}`}
+                        className="flex items-center gap-4 group/author"
+                    >
+                        {thread.author.profile?.image?.url ? (
+                            <img
+                                src={thread.author.profile.image.url}
+                                alt={thread.author.name}
+                                className="w-12 h-12 rounded-xl object-cover shadow-md shadow-primary/20 bg-white group-hover/author:ring-2 ring-primary/20 transition-all"
+                            />
+                        ) : (
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-primary/20 group-hover/author:scale-105 transition-transform">
+                                {thread.author.name.charAt(0).toUpperCase()}
+                            </div>
+                        )}
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <span className="font-bold text-slate-900 group-hover/author:text-primary transition-colors">{thread.author.name}</span>
+                                {thread.author.role === "admin" && (
+                                    <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
+                                        Admin
+                                    </span>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-3 text-sm text-slate-400">
+                                <span>{formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })}</span>
+                                <span>·</span>
+                                <span className="flex items-center gap-1">
+                                    <MdVisibility />
+                                    {thread.views} views
                                 </span>
-                            )}
+                                <span>·</span>
+                                <span className="flex items-center gap-1">
+                                    <MdComment />
+                                    {thread.replyCount || 0} replies
+                                </span>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-3 text-sm text-slate-400">
-                            <span>{formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })}</span>
-                            <span>·</span>
-                            <span className="flex items-center gap-1">
-                                <MdVisibility />
-                                {thread.views} views
-                            </span>
-                            <span>·</span>
-                            <span className="flex items-center gap-1">
-                                <MdComment />
-                                {thread.replyCount || 0} replies
-                            </span>
-                        </div>
-                    </div>
+                    </Link>
                 </div>
 
                 {/* Content */}

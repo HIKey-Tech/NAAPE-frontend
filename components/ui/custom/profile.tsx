@@ -390,6 +390,12 @@ export default function ProfilePage() {
                             <div className="flex items-center gap-3">
                                 {!editMode ? (
                                     <>
+                                        <button
+                                            onClick={() => window.location.href = `/members/${profile._id}`}
+                                            className="px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-md shadow-primary/20 hover:bg-primary/90 transition-all border border-transparent"
+                                        >
+                                            View Public Profile
+                                        </button>
                                         <button onClick={startEditing} className="px-5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">
                                             Edit Profile
                                         </button>
