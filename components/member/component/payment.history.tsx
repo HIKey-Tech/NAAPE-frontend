@@ -17,20 +17,21 @@ interface PaymentHistoryItem {
 }
 
 const STATUS_MAP: Record<string, { label: string; className: string; icon: React.ElementType }> = {
-  completed: { label: "Completed", className: "bg-emerald-50 text-emerald-700 border border-emerald-100", icon: FaCheckCircle },
-  success: { label: "Success", className: "bg-emerald-50 text-emerald-700 border border-emerald-100", icon: FaCheckCircle },
-  pending: { label: "Pending", className: "bg-amber-50 text-amber-700 border border-amber-100", icon: FaClock },
-  failed: { label: "Failed", className: "bg-red-50 text-red-700 border border-red-100", icon: FaTimesCircle },
-  cancelled: { label: "Cancelled", className: "bg-red-50 text-red-700 border border-red-100", icon: FaTimesCircle },
-  refunded: { label: "Refunded", className: "bg-primary/5 text-primary border border-primary/10", icon: FaExchangeAlt },
+  successful: { label: "Successful", className: "bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm", icon: FaCheckCircle },
+  completed: { label: "Completed", className: "bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm", icon: FaCheckCircle },
+  success: { label: "Success", className: "bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm", icon: FaCheckCircle },
+  pending: { label: "Pending", className: "bg-amber-50 text-amber-700 border border-amber-200 shadow-sm", icon: FaClock },
+  failed: { label: "Failed", className: "bg-red-50 text-red-700 border border-red-200 shadow-sm", icon: FaTimesCircle },
+  cancelled: { label: "Cancelled", className: "bg-red-50 text-red-700 border border-red-200 shadow-sm", icon: FaTimesCircle },
+  refunded: { label: "Refunded", className: "bg-primary/5 text-primary border border-primary/20 shadow-sm", icon: FaExchangeAlt },
 };
 
 const TYPE_LABELS: Record<PaymentType, string> = {
-  event: "Event",
+  event: "Event Payment",
   subscription: "Subscription",
-  "tokenized-payment": "Tokenized",
-  transfer: "Transfer",
-  other: "Other",
+  "tokenized-payment": "Tokenized Payment",
+  transfer: "Bank Transfer",
+  other: "Other Payment",
 };
 
 const TABS: { key: PaymentType; label: string }[] = [
@@ -55,7 +56,7 @@ function formatDate(dateStr: string) {
 
 const PaymentRow: React.FC<{ item: PaymentHistoryItem }> = ({ item }) => {
   const statusKey = (item.status || "").toLowerCase();
-  const status = STATUS_MAP[statusKey] || { label: item.status, className: "bg-slate-100 text-slate-600", icon: FaClock };
+  const status = STATUS_MAP[statusKey] || { label: item.status, className: "bg-slate-100 text-slate-600 border border-slate-200 shadow-sm", icon: FaClock };
   const StatusIcon = status.icon;
 
   const details: string[] = [];
@@ -65,28 +66,48 @@ const PaymentRow: React.FC<{ item: PaymentHistoryItem }> = ({ item }) => {
   if (md.description) details.push(md.description);
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 mb-4 hover:shadow-md transition-all" title={`Transaction ID: ${item.transactionId}`}>
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-sm font-black text-slate-500">
+    <div className="bg-white rounded-3xl border border-slate-200/60 shadow-sm p-6 mb-4 hover:shadow-md hover:border-slate-300 transition-all duration-300 group" title={`Transaction ID: ${item.transactionId}`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+
+        {/* Left Side: Type and Date */}
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-lg font-black text-slate-400 group-hover:bg-primary/5 group-hover:text-primary transition-colors">
             {TYPE_LABELS[item.type][0]}
           </div>
           <div>
-            <p className="font-bold text-sm text-slate-800">{TYPE_LABELS[item.type]}</p>
-            <p className="text-xs text-slate-400">{formatDate(item.createdAt)}</p>
+            <p className="font-bold text-base text-slate-900">{TYPE_LABELS[item.type]}</p>
+            <p className="text-sm font-medium text-slate-400 mt-0.5">{formatDate(item.createdAt)}</p>
           </div>
         </div>
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${status.className}`}>
-          <StatusIcon size={10} /> {status.label}
-        </span>
-      </div>
-      <div className="text-2xl font-black text-slate-800 tracking-tight mb-2">{formatAmount(item.amount, item.currency)}</div>
-      <div className="text-xs text-slate-400 font-mono">TX: {item.transactionId || "—"}</div>
-      {details.length > 0 && (
-        <div className="mt-3 bg-slate-50 rounded-xl px-4 py-2.5 text-xs text-slate-500 space-y-1 border border-slate-100">
-          {details.map((line, idx) => <div key={idx}>{line}</div>)}
+
+        {/* Right Side: Amount and Status */}
+        <div className="flex flex-col sm:items-end gap-2">
+          <div className="flex flex-row sm:flex-col items-center sm:items-end gap-3 sm:gap-1.5 justify-between w-full sm:w-auto">
+            <div className="text-2xl font-black text-slate-900 tracking-tight">{formatAmount(item.amount, item.currency)}</div>
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${status.className}`}>
+              <StatusIcon size={12} /> {status.label}
+            </span>
+          </div>
         </div>
-      )}
+      </div>
+
+      <div className="w-full h-px bg-slate-100 my-4" />
+
+      {/* Details Footer */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm text-slate-500">
+        <div className="font-mono bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100 text-xs text-slate-400">
+          TX: <span className="text-slate-600 font-medium">{item.transactionId || "—"}</span>
+        </div>
+        {details.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {details.map((line, idx) => (
+              <span key={idx} className="bg-primary/5 text-primary px-3 py-1.5 rounded-lg border border-primary/10 text-xs font-bold">
+                {line}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -105,75 +126,87 @@ const PaymentHistory: React.FC = () => {
   const hasAny = Array.isArray(history) && history.length > 0;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2.5 bg-primary/5 text-primary rounded-xl">
-            <FaCreditCard size={20} />
+    <div className="min-h-screen bg-slate-50/50 w-full pb-20">
+      {/* Header Section */}
+      <div className="w-full pt-10 pb-8 bg-white border-b border-slate-100 px-6 sm:px-10 mb-8">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="flex flex-col gap-2">
+            <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center text-primary mb-2 border border-primary/10">
+              <FaCreditCard size={20} />
+            </div>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Payment <span className="text-primary">History</span></h1>
+            <p className="text-sm text-slate-500 max-w-xl">
+              Track and manage all your past transactions, event bookings, and subscription payments in one place.
+            </p>
           </div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Payment History</h1>
+
+          {/* Tabs */}
+          <div className="bg-slate-50/80 backdrop-blur-sm p-1.5 rounded-2xl border border-slate-200/60 shadow-sm flex overflow-x-auto gap-1 scrollbar-hide shrink-0 max-w-full">
+            {TABS.map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setSelectedTab(tab.key)}
+                className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-primary/50 relative ${selectedTab === tab.key
+                  ? "bg-white text-primary shadow-sm ring-1 ring-slate-200"
+                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-100/50"
+                  }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-2 mb-6 flex overflow-x-auto gap-1 scrollbar-hide">
-        {TABS.map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => setSelectedTab(tab.key)}
-            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${selectedTab === tab.key
-              ? "bg-primary text-white shadow-md shadow-primary/20"
-              : "text-slate-500 hover:bg-slate-50"
-              }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* Main Content Area */}
+      <div className="max-w-5xl mx-auto px-6 sm:px-10">
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-24 text-slate-400 bg-white rounded-3xl border border-slate-100 shadow-sm">
+            <FaSpinner className="animate-spin text-4xl mb-4 text-primary/40" />
+            <span className="font-bold text-lg text-slate-600">Loading payment records...</span>
+            <span className="text-sm text-slate-400 mt-1">Please wait while we fetch your history.</span>
+          </div>
+        )}
+
+        {hasError && (
+          <div className="text-center py-20 bg-white rounded-3xl border border-red-100 shadow-sm">
+            <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-red-100 shadow-sm">
+              <FaTimesCircle className="text-2xl text-red-500" />
+            </div>
+            <h3 className="text-xl font-black text-slate-800 mb-2 mt-4">Unable to Load Records</h3>
+            <p className="text-sm font-medium text-slate-500 mb-6 max-w-sm mx-auto">{error || "There was an error loading your payment history."}</p>
+            <button onClick={() => refetch} className="px-8 py-3 bg-slate-900 text-white font-bold rounded-xl shadow-md hover:bg-slate-800 transition-colors text-sm">
+              Retry Connection
+            </button>
+          </div>
+        )}
+
+        {!loading && !hasAny && !hasError && (
+          <div className="text-center py-24 bg-white rounded-3xl border border-slate-100 shadow-sm px-6">
+            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-slate-100">
+              <FaReceipt className="text-3xl text-slate-300" />
+            </div>
+            <h3 className="text-xl font-black text-slate-800 mb-2">No Payment History found</h3>
+            <p className="text-sm font-medium text-slate-500 max-w-sm mx-auto leading-relaxed">
+              You haven't made any payments yet. All your completed transactions will securely appear here.
+            </p>
+          </div>
+        )}
+
+        {!loading && hasAny && filtered.length === 0 && (
+          <div className="text-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm px-6 border-dashed">
+            <h3 className="text-lg font-bold text-slate-600 mb-2">No {TYPE_LABELS[selectedTab]}</h3>
+            <p className="text-sm text-slate-500 font-medium">You don't have any payments under this category.</p>
+          </div>
+        )}
+
+        {/* List */}
+        {!loading && filtered.length > 0 && (
+          <div className="flex flex-col gap-1">
+            {filtered.map(item => <PaymentRow key={item._id || item.transactionId} item={item} />)}
+          </div>
+        )}
       </div>
-
-      {/* Content */}
-      {loading && (
-        <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-          <FaSpinner className="animate-spin text-2xl mb-3" />
-          <span className="font-medium">Loading payment history...</span>
-        </div>
-      )}
-
-      {hasError && (
-        <div className="text-center py-16">
-          <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FaTimesCircle className="text-xl text-red-400" />
-          </div>
-          <h3 className="text-lg font-bold text-slate-700 mb-2">Unable to Load</h3>
-          <p className="text-sm text-slate-500 mb-4">{error || "There was an error loading your payment history."}</p>
-          <button onClick={() => refetch} className="px-6 py-2.5 bg-primary text-white font-bold rounded-xl shadow-md shadow-primary/20 hover:bg-primary/90 transition-colors text-sm">
-            Retry
-          </button>
-        </div>
-      )}
-
-      {!loading && !hasAny && !hasError && (
-        <div className="text-center py-20">
-          <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FaReceipt className="text-2xl text-slate-300" />
-          </div>
-          <h3 className="text-lg font-bold text-slate-700 mb-2">No Payment History</h3>
-          <p className="text-sm text-slate-400 max-w-xs mx-auto">You haven't made any payments yet. Completed payments will appear here.</p>
-        </div>
-      )}
-
-      {!loading && hasAny && filtered.length === 0 && (
-        <div className="text-center py-16">
-          <h3 className="text-lg font-bold text-slate-600 mb-1">No "{TYPE_LABELS[selectedTab]}" payments</h3>
-          <p className="text-sm text-slate-400">Switch tabs or try refreshing.</p>
-        </div>
-      )}
-
-      {!loading && filtered.length > 0 && (
-        <div>
-          {filtered.map(item => <PaymentRow key={item._id || item.transactionId} item={item} />)}
-        </div>
-      )}
     </div>
   );
 };
