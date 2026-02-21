@@ -315,8 +315,10 @@ export function AppSidebar() {
 
   return (
     <>
-      <aside className="hidden sm:block w-[260px] h-screen sticky top-0 self-start z-30 font-sans border-r border-slate-100 shadow-[2px_0_24px_-12px_rgba(0,0,0,0.1)] bg-white">
-        {SidebarContent}
+      <aside className="hidden sm:block w-[260px] bg-white border-r border-slate-100 shadow-[2px_0_24px_-12px_rgba(0,0,0,0.1)]">
+        <div className="sticky top-0 h-screen w-full flex flex-col">
+          {SidebarContent}
+        </div>
       </aside>
 
       {/* Mobile Trigger - if not handled by TopNavbar */}
