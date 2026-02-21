@@ -42,9 +42,9 @@ export default function MemberNewsDetailsPage() {
     if (!news) {
         return (
             <div className="min-h-[80vh] flex flex-col items-center justify-center px-6">
-                <div className="max-w-md text-center bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-                    <h1 className="text-xl font-bold mb-2 text-slate-800">News article not found</h1>
-                    <p className="mb-6 text-slate-500 text-sm">
+                <div className="max-w-md text-center bg-white dark:bg-card p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-border">
+                    <h1 className="text-xl font-bold mb-2 text-slate-800 dark:text-slate-100">News article not found</h1>
+                    <p className="mb-6 text-slate-500 dark:text-slate-400 text-sm">
                         Sorry, we couldn't find that news article.
                     </p>
                     <button
@@ -59,10 +59,10 @@ export default function MemberNewsDetailsPage() {
     }
 
     return (
-        <main className="bg-slate-50/50 min-h-screen pt-4 pb-16 px-4 sm:px-6">
+        <main className="bg-slate-50/50 dark:bg-transparent min-h-screen pt-4 pb-16 px-4 sm:px-6">
             <div className="max-w-4xl mx-auto mb-4">
                 <button
-                    className="text-sm font-semibold text-slate-500 hover:text-primary transition-colors flex items-center gap-2"
+                    className="text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors flex items-center gap-2"
                     onClick={() => router.push("/member/news")}
                 >
                     &larr; Back to News

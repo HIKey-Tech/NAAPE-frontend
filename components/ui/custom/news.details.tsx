@@ -77,7 +77,7 @@ const NewsDetails: React.FC<NewsDetailsProps> = ({
 
     return (
         <article
-            className={`bg-white border border-slate-100 max-w-3xl mx-auto rounded-2xl shadow-sm overflow-hidden ${className}`}
+            className={`bg-white dark:bg-card border border-slate-100 dark:border-border max-w-3xl mx-auto rounded-2xl shadow-sm overflow-hidden ${className}`}
         >
             {/* Header image section */}
             <div className="relative w-full aspect-[2.2/1] min-h-[200px] max-h-[380px] overflow-hidden group">
@@ -101,7 +101,7 @@ const NewsDetails: React.FC<NewsDetailsProps> = ({
             </div>
             {/* Body */}
             <div className="flex flex-col gap-0 p-7 pt-7 md:pt-8">
-                <h1 className="text-[1.95rem] md:text-[2.7rem] font-extrabold leading-tight mb-2.5 text-slate-900 tracking-tight">
+                <h1 className="text-[1.95rem] md:text-[2.7rem] font-extrabold leading-tight mb-2.5 text-slate-900 dark:text-slate-100 tracking-tight">
                     {title}
                 </h1>
                 <div className="flex items-center gap-5 mb-3 mt-1">
@@ -126,11 +126,11 @@ const NewsDetails: React.FC<NewsDetailsProps> = ({
                                 )}
                             </div>
                             <div className="flex flex-col justify-center ml-1">
-                                <span className="text-base md:text-lg font-bold text-slate-900 leading-tight">
+                                <span className="text-base md:text-lg font-bold text-slate-900 dark:text-slate-100 leading-tight">
                                     {author.name}
                                 </span>
                                 {author.role && (
-                                    <span className="text-xs md:text-sm text-slate-400 font-medium leading-none uppercase tracking-wide">
+                                    <span className="text-xs md:text-sm text-slate-400 dark:text-slate-500 font-medium leading-none uppercase tracking-wide">
                                         {author.role}
                                     </span>
                                 )}
@@ -140,7 +140,7 @@ const NewsDetails: React.FC<NewsDetailsProps> = ({
                     {/* Date & Time */}
                     {(displayDate || displayTime) && (
                         <span
-                            className="flex items-center bg-slate-50 px-3 py-1 md:py-1.5 rounded-lg text-primary font-medium text-xs md:text-sm ml-auto border border-slate-100"
+                            className="flex items-center bg-slate-50 dark:bg-slate-800/50 px-3 py-1 md:py-1.5 rounded-lg text-primary font-medium text-xs md:text-sm ml-auto border border-slate-100 dark:border-slate-800"
                             title={displayDate + (displayTime ? ` at ${displayTime}` : "")}
                         >
                             <svg
@@ -172,7 +172,7 @@ const NewsDetails: React.FC<NewsDetailsProps> = ({
                                 {displayDate}
                                 {displayTime && (
                                     <>
-                                        <span className="mx-1 text-slate-300 font-bold">•</span>
+                                        <span className="mx-1 text-slate-300 dark:text-slate-600 font-bold">•</span>
                                         {displayTime}
                                     </>
                                 )}
@@ -181,9 +181,9 @@ const NewsDetails: React.FC<NewsDetailsProps> = ({
                     )}
                 </div>
                 {/* Divider */}
-                <div className="my-6 mb-7 w-full border-t border-dashed border-slate-200" />
+                <div className="my-6 mb-7 w-full border-t border-dashed border-slate-200 dark:border-slate-700" />
                 {/* Content Body */}
-                <section className="prose md:prose-lg max-w-none text-slate-700 leading-relaxed prose-headings:font-semibold prose-h2:text-[1.3rem] prose-h2:mt-7 prose-h2:mb-2 prose-img:rounded-lg prose-img:shadow prose-p:my-3 prose-a:text-primary prose-a:underline underline-offset-2 selection:bg-primary/10">
+                <section className="prose md:prose-lg max-w-none text-slate-700 dark:text-slate-300 leading-relaxed prose-headings:font-semibold prose-headings:text-slate-900 dark:prose-headings:text-slate-100 prose-h2:text-[1.3rem] prose-h2:mt-7 prose-h2:mb-2 prose-img:rounded-lg prose-img:shadow prose-p:my-3 prose-a:text-primary prose-a:underline underline-offset-2 selection:bg-primary/10">
                     {typeof content === "string" ? (
                         <div dangerouslySetInnerHTML={{ __html: content }} />
                     ) : (
@@ -199,7 +199,7 @@ const NewsDetails: React.FC<NewsDetailsProps> = ({
                 )}
             </div>
             {/* Footer / Back */}
-            <footer className="px-7 pt-0 pb-6 flex items-center justify-between border-t border-slate-100 mt-0">
+            <footer className="px-7 pt-0 pb-6 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/50 mt-0">
                 <Link
                     href={backHref}
                     className="inline-flex items-center gap-1.5 text-primary text-base font-bold hover:underline hover:text-primary/80 transition-colors duration-200 group/link"

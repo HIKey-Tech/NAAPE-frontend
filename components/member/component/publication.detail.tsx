@@ -23,8 +23,8 @@ import { parseAppSegmentConfig } from "next/dist/build/segment-config/app/app-se
 const STATUS_CONFIG = {
     draft: {
         label: "Draft",
-        bg: "bg-slate-50 border-slate-200",
-        text: "text-slate-700",
+        bg: "bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700",
+        text: "text-slate-700 dark:text-slate-300",
         icon: (
             <svg width="20" height="20" viewBox="0 0 20 20">
                 <circle cx="10" cy="10" r="8" stroke="#94a3b8" strokeWidth="2" />
@@ -34,8 +34,8 @@ const STATUS_CONFIG = {
     },
     pending: {
         label: "Pending",
-        bg: "bg-amber-50 border-amber-200",
-        text: "text-amber-700",
+        bg: "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800",
+        text: "text-amber-700 dark:text-amber-400",
         icon: (
             <svg width="20" height="20" viewBox="0 0 20 20">
                 <circle cx="10" cy="10" r="8" stroke="#f59e0b" strokeWidth="2" />
@@ -46,8 +46,8 @@ const STATUS_CONFIG = {
     },
     approved: {
         label: "Published",
-        bg: "bg-emerald-50 border-emerald-200",
-        text: "text-emerald-700",
+        bg: "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800",
+        text: "text-emerald-700 dark:text-emerald-400",
         icon: (
             <svg width="20" height="20" viewBox="0 0 20 20">
                 <circle cx="10" cy="10" r="8" stroke="#10b981" strokeWidth="2" />
@@ -57,8 +57,8 @@ const STATUS_CONFIG = {
     },
     rejected: {
         label: "Rejected",
-        bg: "bg-red-50 border-red-200",
-        text: "text-red-700",
+        bg: "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800",
+        text: "text-red-700 dark:text-red-400",
         icon: (
             <svg width="20" height="20" viewBox="0 0 20 20">
                 <circle cx="10" cy="10" r="8" stroke="#ef4444" strokeWidth="2" />
@@ -184,13 +184,13 @@ const PublicationActions = ({
             <div className="flex gap-2">
                 <button
                     onClick={() => setEditing(true)}
-                    className="px-4 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl font-bold text-sm hover:bg-amber-100 transition-colors"
+                    className="px-4 py-1.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800 rounded-xl font-bold text-sm hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
                 >
                     Edit
                 </button>
                 <button
                     onClick={remove}
-                    className="px-4 py-1.5 bg-red-50 text-red-700 border border-red-200 rounded-xl font-bold text-sm hover:bg-red-100 transition-colors"
+                    className="px-4 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-xl font-bold text-sm hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
                 >
                     Delete
                 </button>
@@ -218,7 +218,7 @@ const PublicationActions = ({
                 <button
                     type="button"
                     onClick={() => setEditing(false)}
-                    className="bg-slate-100 text-slate-600 px-4 py-1.5 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors"
+                    className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-4 py-1.5 rounded-xl font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                 >
                     Cancel
                 </button>
@@ -262,15 +262,15 @@ export default function PublicationDetail({ hideStatus = false }: { hideStatus?:
     if (isPending || subscriptionLoading)
         return (
             <div className="text-center py-20">
-                <div className="w-10 h-10 border-2 border-slate-200 border-t-primary rounded-full animate-spin mx-auto mb-3" />
-                <span className="text-slate-400 font-medium text-sm">Loading…</span>
+                <div className="w-10 h-10 border-2 border-slate-200 dark:border-slate-700 border-t-primary rounded-full animate-spin mx-auto mb-3" />
+                <span className="text-slate-400 dark:text-slate-500 font-medium text-sm">Loading…</span>
             </div>
         );
 
     if (error || !publication)
         return (
             <div className="text-center py-20">
-                <span className="text-slate-400 font-medium text-sm">Not found</span>
+                <span className="text-slate-400 dark:text-slate-500 font-medium text-sm">Not found</span>
             </div>
         );
 
