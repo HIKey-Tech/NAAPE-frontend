@@ -6,13 +6,16 @@ import EventCard from "../component/event.card";
 import {
   FaBook,
   FaCalendarAlt,
-  FaArrowRight
+  FaArrowRight,
+  FaLink,
+  FaCopy
 } from "react-icons/fa";
 import { usePublications } from "@/hooks/usePublications";
 
 import { useEvents } from "@/hooks/useEvents";
 import { useAuth } from "@/context/authcontext";
 import Link from "next/link";
+import { toast } from "sonner";
 
 const WelcomeBanner: React.FC = () => {
   const { user } = useAuth();
@@ -133,10 +136,54 @@ const UpcomingEvents: React.FC = () => {
 };
 
 const MemberDashboardHome: React.FC = () => {
+  const { user } = useAuth();
+
   return (
     <main className="flex-1 bg-slate-50 dark:bg-transparent min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10">
         <WelcomeBanner />
+        
+        {/* Profile Link Card */}
+        {user?.profileSlug && (
+          <div className="mb-10 bg-white dark:bg-card rounded-2xl border border-slate-100 dark:border-border shadow-sm p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <FaLink className="text-primary" size={18} />
+                  <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100">Your Profile Link</h3>
+                </div>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                  Share your professional profile with colleagues and peers
+                </p>
+                <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <code className="flex-1 text-sm font-mono text-primary dark:text-blue-400 truncate">
+                    {typeof window !== 'undefined' ? `${window.location.origin}/dashboard/members/${user.profileSlug}` : `/dashboard/members/${user.profileSlug}`}
+                  </code>
+                  <button
+                    onClick={() => {
+                      const url = `${window.location.origin}/dashboard/members/${user.profileSlug}`;
+                      navigator.clipboard.writeText(url);
+                      toast.success("Profile link copied!");
+                    }}
+                    className="shrink-0 p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                    title="Copy link"
+                  >
+                    <FaCopy className="text-slate-600 dark:text-slate-400" size={16} />
+                  </button>
+                </div>
+              </div>
+              <Link
+                href={`/dashboard/members/${user.profileSlug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-semibold transition-colors"
+              >
+                View Profile
+              </Link>
+            </div>
+          </div>
+        )}
+        
         <RecentPublications />
         <UpcomingEvents />
       </div>

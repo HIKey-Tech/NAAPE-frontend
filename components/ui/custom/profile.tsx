@@ -49,6 +49,7 @@ export interface ProfileData {
     isVerified: boolean;
     createdAt: string;
     updatedAt: string;
+    profileSlug?: string;
     profile: {
         image?: {
             url: string;
@@ -495,6 +496,40 @@ export default function ProfilePage() {
                             </div>
                         )}
                     </SectionCard>
+
+                    {/* Profile Link Section */}
+                    {profile.profileSlug && (
+                        <SectionCard title="Your Profile Link" icon={MdOutlineAlternateEmail}>
+                            <div className="space-y-4">
+                                <p className="text-sm text-slate-600 dark:text-slate-400">
+                                    Share this link to showcase your professional profile to others
+                                </p>
+                                <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+                                    <code className="flex-1 text-sm font-mono text-primary dark:text-blue-400 break-all">
+                                        {typeof window !== 'undefined' ? `${window.location.origin}/dashboard/members/${profile.profileSlug}` : `/dashboard/members/${profile.profileSlug}`}
+                                    </code>
+                                    <button
+                                        onClick={() => {
+                                            const url = `${window.location.origin}/dashboard/members/${profile.profileSlug}`;
+                                            navigator.clipboard.writeText(url);
+                                            toast.success("Profile link copied to clipboard!");
+                                        }}
+                                        className="shrink-0 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-semibold transition-colors"
+                                    >
+                                        Copy Link
+                                    </button>
+                                </div>
+                                <a
+                                    href={`/dashboard/members/${profile.profileSlug}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium"
+                                >
+                                    View Public Profile →
+                                </a>
+                            </div>
+                        </SectionCard>
+                    )}
 
                     {/* Professional Details */}
                     <SectionCard title="Professional Details" icon={MdOutlineWorkOutline}>
