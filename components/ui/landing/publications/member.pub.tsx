@@ -1,102 +1,107 @@
 "use client";
 
-import React from "react";
-import CustomHeroSection from "../../custom/hero.section";
+import React, { useState, useEffect } from "react";
 import PublishedPublicationCard from "@/components/ui/custom/publication.card";
 import Link from "next/link";
+import api from "@/lib/axios";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 import { NaapButton } from "../../custom/button.naap";
 
-// Example hero slides for publications page
-const heroSlides = [
-    {
-        src: "/images/plane.jpg",
-        alt: "Member writing an aviation article",
-        caption: "Member insight: Publications that move the industry forward.",
-    },
-    {
-        src: "/images/handplane.jpg",
-        alt: "Aircraft and pilot documentation",
-        caption: "Explore, contribute, and elevate pilot & engineer knowledge.",
-    },
-    {
-        src: "/images/loginpic.jpg",
-        alt: "Engineers collaborating on research",
-        caption: "Collaboration and excellence in every page.",
-    },
-];
-
-// Publications data, IDs must match dynamic page names and routing
-const publications = [
-    {
-        id: "safety-protocols",
-        imageUrl: "/publications/modern.jpg",
-        title: "Safety Protocols in Modern Aviation",
-        summary: "A deep dive into protocols ensuring flight safety in today's advanced aviation sector.",
-        authorName: "Capt Grace Oluwatobi",
-        authorRole: "Pilot",
-        category: "Safety",
-        publishedDate: "2024-03-21",
-    },
-    {
-        id: "maintaining-avionics",
-        imageUrl: "/publications/fly.jpg",
-        title: "Maintaining Avionics: A Modern Perspective",
-        summary: "Best practices for avionics maintenance based on latest industry research.",
-        authorName: "Engr. Ifeanyi Okeke",
-        authorRole: "Avionics Engineer",
-        category: "Avionics",
-        publishedDate: "2023-12-17",
-    },
-];
-
 export default function MemberPublicationsComponent() {
-    return (
-        <main className="w-full min-h-screen flex flex-col">
-            <CustomHeroSection
-                heading={<>Member Publications</>}
-                subheading={
-                    <>
-                        Dive into a curated library of articles, research, and technical reports authored by members of the National Association of Aircraft Pilots and Engineers. Stay informed, inspired, and connected with the latest developments and thought leadership in the aviation community.
-                    </>
-                }
-                slides={heroSlides}
-                minHeightClass="min-h-[400px]"
-                showArrows={true}
-                pauseOnHover={true}
-            />
+    const [publications, setPublications] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
 
-            <section className="max-w-6xl mx-auto w-full px-4 md:px-8 py-12 flex flex-col gap-8">
-                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
-                    Browse Publications
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {publications.map((pub) => (
-                        <PublishedPublicationCard
-                            key={pub.id}
-                            imageUrl={pub.imageUrl}
-                            title={pub.title}
-                            summary={pub.summary}
-                            authorName={pub.authorName}
-                            authorRole={pub.authorRole}
-                            // Route to the detail page by ID per dynamic route [id]
-                            linkUrl={`/publication/members/${pub.id}`}
-                            category={pub.category}
-                            publishedDate={
-                                // Format as "Mar 21, 2024" if available, else raw
-                                pub.publishedDate
-                                    ? (new Date(pub.publishedDate)).toLocaleDateString("en-US", {
-                                        year: "numeric",
-                                        month: "short",
-                                        day: "numeric",
-                                    })
-                                    : ""
-                            }
-                            className=""
-                        />
-                    ))}
+    useEffect(() => {
+        const fetchPublications = async () => {
+            try {
+                const response = await api.get("/publications");
+                const allPubs = response.data.data || response.data || [];
+                // Members are non-admins
+                const memberPubs = allPubs.filter((pub: any) => pub.author?.role?.toLowerCase() !== "admin");
+                setPublications(memberPubs);
+            } catch (error) {
+                console.error("Failed to fetch publications:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPublications();
+    }, []);
+
+    const filteredPublications = publications.filter((item) =>
+        item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.summary?.toLowerCase().includes(searchTerm.toLowerCase())
+    ).sort((a, b) => new Date(b.createdAt || b.publishedDate).getTime() - new Date(a.createdAt || a.publishedDate).getTime());
+
+    return (
+        <div className="min-h-screen bg-gray-50 w-full flex flex-col items-center">
+            {/* Simple Hero Section */}
+            <div className="w-full pt-32 pb-16 bg-white border-b border-slate-100 text-center px-4">
+                <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">
+                    Member <span className="text-primary">Publications</span>
+                </h1>
+                <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+                    Dive into a curated library of articles, research, and technical reports authored by members of NAAPE.
+                </p>
+                <div className="mt-8 flex justify-center max-w-md mx-auto relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <Input
+                        type="text"
+                        placeholder="Search publications..."
+                        className="pl-10 h-12 rounded-full border-slate-200 bg-slate-50 focus-visible:ring-primary shadow-sm"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
-                {/* Call to Action or Upload/Submit new Publication (optional, for members) */}
-                <div className="mt-10 text-center">
+            </div>
+
+            <section className="w-full max-w-7xl mx-auto px-4 py-16">
+                {loading ? (
+                    <div className="flex justify-center py-20">
+                        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                    </div>
+                ) : filteredPublications.length === 0 ? (
+                    <div className="py-20 text-center text-slate-500 bg-white rounded-3xl border border-slate-100 shadow-sm max-w-2xl mx-auto">
+                        <p className="text-lg font-medium">No publications found.</p>
+                        {searchTerm && (
+                            <button onClick={() => setSearchTerm("")} className="mt-4 text-primary hover:underline font-bold">
+                                Clear search
+                            </button>
+                        )}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {filteredPublications.map((pub) => (
+                            <Link href={`/publication/members/${pub._id || pub.id}`} key={pub._id || pub.id} className="block group focus:outline-none focus:ring-2 focus:ring-primary rounded-3xl transition-transform hover:-translate-y-1">
+                                <PublishedPublicationCard
+                                    imageUrl={pub.image || pub.imageUrl || "/images/plane.jpg"}
+                                    title={pub.title}
+                                    summary={pub.summary || (pub.content?.substring(0, 150) + "...")}
+                                    authorName={pub.author?.name || pub.authorName || "NAAPE Member"}
+                                    authorRole={pub.author?.role || pub.authorRole || "Member"}
+                                    linkUrl={`/publication/members/${pub._id || pub.id}`}
+                                    category={pub.category}
+                                    publishedDate={
+                                        (pub.createdAt || pub.publishedDate)
+                                            ? new Date(pub.createdAt || pub.publishedDate).toLocaleDateString("en-US", {
+                                                year: "numeric",
+                                                month: "short",
+                                                day: "numeric",
+                                            })
+                                            : ""
+                                    }
+                                    className=""
+                                />
+                            </Link>
+                        ))}
+                    </div>
+                )}
+
+                <div className="mt-16 text-center">
                     <NaapButton
                         variant="primary"
                         className="py-3 px-7 text-base font-semibold shadow rounded-full"
@@ -108,6 +113,7 @@ export default function MemberPublicationsComponent() {
                     </NaapButton>
                 </div>
             </section>
-        </main>
+        </div>
     );
 }
+
