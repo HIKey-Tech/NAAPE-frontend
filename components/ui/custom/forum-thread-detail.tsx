@@ -73,7 +73,7 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
                 {/* Author Info */}
                 <div className="flex items-start justify-between mb-3">
                     <Link
-                        href={`/members/${reply.author._id}`}
+                        href={`/dashboard/members/${reply.author._id}`}
                         className="flex items-center gap-3 group/author"
                     >
                         {reply.author.profile?.image?.url ? (
@@ -392,7 +392,7 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
                 {/* Author & Meta */}
                 <div className="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100">
                     <Link
-                        href={`/members/${thread.author._id}`}
+                        href={`/dashboard/members/${thread.author._id}`}
                         className="flex items-center gap-4 group/author"
                     >
                         {thread.author.profile?.image?.url ? (

@@ -394,7 +394,7 @@ export default function ProfilePage() {
                                 {!editMode ? (
                                     <>
                                         <button
-                                            onClick={() => router.push(`/members/${profile._id}`)}
+                                            onClick={() => router.push(`/dashboard/members/${profile._id}`)}
                                             className="px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-md shadow-primary/20 hover:bg-primary/90 transition-all border border-transparent"
                                         >
                                             View Public Profile

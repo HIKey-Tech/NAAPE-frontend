@@ -74,7 +74,7 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
             {/* Meta Info */}
             <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400 dark:text-slate-500">
                 <Link
-                    href={`/members/${thread.author._id}`}
+                    href={`/dashboard/members/${thread.author._id}`}
                     onClick={(e) => e.stopPropagation()}
                     className="font-bold text-slate-700 dark:text-slate-300 hover:text-primary transition-colors"
                 >
@@ -97,7 +97,7 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
                 <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/50 text-xs text-slate-400 dark:text-slate-500">
                     Last reply by{" "}
                     <Link
-                        href={`/members/${(thread.lastReply.author as any)._id || thread.lastReply.author}`}
+                        href={`/dashboard/members/${(thread.lastReply.author as any)._id || thread.lastReply.author}`}
                         onClick={(e) => e.stopPropagation()}
                         className="font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors"
                     >
