@@ -23,7 +23,7 @@ const slides = [
 export default function GalleryHeroSection() {
     return (
         <CustomHeroSection
-            heading="NAAPE Media Gallery"
+            heading={<span>NAAPE Media <span className="text-primary">Gallery</span></span>}
             subheading={
                 "Dive into our curated collection of photos, videos, and podcasts—featuring memorable events, vibrant moments, and inspiring stories from our members."
             }
