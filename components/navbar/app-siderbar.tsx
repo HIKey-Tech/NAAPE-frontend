@@ -315,10 +315,12 @@ export function AppSidebar() {
 
   return (
     <>
-      <aside className="hidden sm:block w-[260px] min-w-[260px] shrink-0 bg-white border-r border-slate-100 shadow-[2px_0_24px_-12px_rgba(0,0,0,0.1)] self-stretch min-h-screen">
-        <div className="sticky top-0 h-screen w-full flex flex-col">
-          {SidebarContent}
-        </div>
+      {/* Spacer for Flex Layout */}
+      <div className="hidden sm:block w-[260px] min-w-[260px] shrink-0 pointer-events-none transition-all duration-300 ease-in-out" />
+
+      {/* Actual Fixed Sidebar */}
+      <aside className="hidden sm:flex flex-col w-[260px] fixed top-0 left-0 bottom-0 h-screen z-40 bg-white border-r border-slate-100 shadow-[2px_0_24px_-12px_rgba(0,0,0,0.1)] overflow-hidden transition-all duration-300 ease-in-out">
+        {SidebarContent}
       </aside>
 
       {/* Mobile Trigger - if not handled by TopNavbar */}

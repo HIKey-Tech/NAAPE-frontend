@@ -15,14 +15,14 @@ export default function DashboardLayout({
 }) {
     const { user, token, isAuthenticated, loading, loggingOut } = useAuth();
     const router = useRouter();
-    
+
     // Redirect to login if not authenticated (after loading is complete)
     useEffect(() => {
         if (!loading && !isAuthenticated && !loggingOut) {
             router.replace('/login');
         }
     }, [loading, isAuthenticated, loggingOut, router]);
-    
+
     // Show loading state during initial load
     if (loading) {
         return (
@@ -55,7 +55,7 @@ export default function DashboardLayout({
             </div>
         );
     }
-    
+
     // Show logging out state only when actually logging out
     if (loggingOut) {
         return (
@@ -88,18 +88,18 @@ export default function DashboardLayout({
             </div>
         );
     }
-    
+
     // Don't render dashboard if not authenticated
     if (!isAuthenticated) {
         return null;
     }
-    
+
     return (
         <SidebarProvider>
             <AppSidebar />
-            <main className="w-full min-h-screen flex flex-col">
+            <main className="flex-1 w-full min-h-screen flex flex-col min-w-0 overflow-x-hidden">
                 <TopNavbar />
-                <div className="flex-1 w-full">
+                <div className="flex-1 w-full relative">
                     {children}
                 </div>
             </main>
