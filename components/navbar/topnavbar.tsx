@@ -154,6 +154,18 @@ export default function TopNavbar() {
         }
     }
 
+    function handleSettingsClick() {
+        setShowUserDropdown(false);
+        if (
+            typeof user.rawRole === "string" &&
+            user.rawRole.trim().toLowerCase() === "admin"
+        ) {
+            router.push("/admin/settings");
+        } else {
+            router.push("/settings");
+        }
+    }
+
     function handleLogout() {
         setShowUserDropdown(false);
         setShowLogoutDialog(true);
@@ -355,6 +367,7 @@ export default function TopNavbar() {
                                         My Profile
                                     </button>
                                     <button
+                                        onClick={handleSettingsClick}
                                         className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 hover:text-primary transition-colors text-left"
                                     >
                                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

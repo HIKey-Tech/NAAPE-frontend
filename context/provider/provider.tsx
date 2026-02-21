@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "../authcontext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+
 // Lazily create QueryClient to avoid recreating on every render
 function useStableQueryClient() {
     const [client] = useState(() => new QueryClient());
@@ -17,13 +19,20 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
     const queryClient = useStableQueryClient();
-    
+
 
     return (
         <QueryClientProvider client={queryClient}>
             <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
                 <AuthProvider>
-                    {children}
+                    <NextThemesProvider
+                        attribute="class"
+                        defaultTheme="light"
+                        enableSystem
+                        disableTransitionOnChange
+                    >
+                        {children}
+                    </NextThemesProvider>
                 </AuthProvider>
             </GoogleOAuthProvider>
         </QueryClientProvider>

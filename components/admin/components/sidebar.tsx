@@ -24,7 +24,8 @@ import {
     FaPlusSquare,
     FaChalkboardTeacher,
     FaBars,
-    FaTimes
+    FaTimes,
+    FaCog
 } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
@@ -370,6 +371,12 @@ export function AdminSidebar() {
                 ))}
 
                 <GroupLabel label="System" />
+                <NavItem
+                    icon={FaCog}
+                    label="Settings"
+                    href="/admin/settings"
+                    active={pathname === "/admin/settings"}
+                />
                 <NavItem
                     icon={FaSignOutAlt}
                     label="Sign Out"

@@ -10,6 +10,7 @@ import {
   FaSignOutAlt,
   FaCreditCard,
   FaIdBadge,
+  FaCog,
   FaChevronDown,
   FaChevronUp,
   FaBars,
@@ -56,6 +57,7 @@ const navLinksMain: NavLink[] = [
 const navLinksSecondary: NavLink[] = [
   { label: "Subscription", icon: FaIdBadge, href: "/subscription" },
   { label: "Payment History", icon: FaCreditCard, href: "/payments" },
+  { label: "Settings", icon: FaCog, href: "/settings" },
 ];
 
 // --- Components ---
