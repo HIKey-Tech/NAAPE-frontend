@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { FaBullhorn, FaAward, FaRegEnvelopeOpen, FaPaperPlane } from "react-icons/fa";
-import api from "@/lib/axios";
-import { toast } from "sonner";
 
-const CONTACT_EMAIL = "davidaiyewumi1@gmail.com";
+const CONTACT_EMAIL = "info@naape.org.ng";
 /**
  * Uses CSS var(--primary) as primary. Fallback to #ff004e if not available.
  */
@@ -56,6 +54,14 @@ export default function AdvertisementSection() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  function createMailtoLink() {
+    const subject = encodeURIComponent("Advertising/Partnership Inquiry via Website");
+    const body = encodeURIComponent(
+      `Name: ${form.name}\nOrganization: ${form.organization}\nEmail: ${form.email}\n\nMessage:\n${form.message}`
+    );
+    return `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+  }
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setForm({
       ...form,
@@ -63,29 +69,14 @@ export default function AdvertisementSection() {
     });
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
-    try {
-      const payload = {
-        name: form.name,
-        email: form.email,
-        message: `Organization: ${form.organization || "N/A"}\n\nMessage:\n${form.message}`
-      };
-      await api.post("/contact", payload);
-      setSubmitted(true);
-      toast.success("Inquiry Sent Successfully!", {
-        description: "We'll get back to you soon.",
-      });
-      setForm({ name: "", email: "", organization: "", message: "" });
-    } catch (error: any) {
-      console.error("Advertisement Inquiry Error:", error);
-      toast.error("Inquiry Failed", {
-        description: error?.response?.data?.message || "Please try again later."
-      });
-    } finally {
+    window.location.href = createMailtoLink();
+    setTimeout(() => {
       setSubmitting(false);
-    }
+      setSubmitted(true);
+    }, 500);
   }
 
   return (
@@ -247,7 +238,7 @@ export default function AdvertisementSection() {
               textAlign: "center", fontSize: 17.3, display: "flex", flexDirection: "column", alignItems: "center", gap: 7
             }}>
               <FaPaperPlane size={26} color="var(--primary, #ff004e)" style={{ marginBottom: 2 }} />
-              <span>Thank you! Your inquiry has been sent successfully. <br />We will get back to you soon.</span>
+              <span>Thank you! Your inquiry is being processed <br />via your email client.</span>
             </div>
           ) : (
             <form
@@ -423,7 +414,7 @@ export default function AdvertisementSection() {
             </form>
           )}
           <div style={{ fontSize: 13.5, color: PRIMARY, textAlign: "center", marginTop: 9, opacity: 0.77 }}>
-            Your details are safe with us. We'll be in touch soon.
+            Submitting opens your email app with all details pre-filled.
           </div>
         </div>
 
