@@ -217,9 +217,9 @@ const CreatePublicationComponent: React.FC = () => {
       tabIndex={-1}
     >
       {/* Subscription Status Banner */}
-      {showSubscriptionCheck && (
+      {showSubscriptionCheck && !hasActiveSubscription && (
         <SubscriptionBanner
-          showUpgradePrompt={!hasActiveSubscription}
+          showUpgradePrompt={true}
           feature="create publications"
         />
       )}
