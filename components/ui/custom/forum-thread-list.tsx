@@ -33,7 +33,7 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
 
     return (
         <motion.div
-            className={`bg-white rounded-2xl border p-6 cursor-pointer hover:shadow-lg transition-all relative ${thread.isPinned ? "border-amber-300 bg-amber-50/30" : "border-slate-100 shadow-sm"
+            className={`bg-white dark:bg-card rounded-2xl border p-6 cursor-pointer hover:shadow-lg transition-all relative ${thread.isPinned ? "border-amber-300 dark:border-amber-700 bg-amber-50/30 dark:bg-amber-900/10" : "border-slate-100 dark:border-border shadow-sm"
                 }`}
             whileHover={{ scale: 1.01, y: -2 }}
             onClick={() => router.push(`/forum/threads/${thread._id}`)}
@@ -62,16 +62,16 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
             </div>
 
             {/* Title */}
-            <h3 className="text-lg font-bold text-slate-900 mb-2 hover:text-primary transition-colors">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2 hover:text-primary dark:hover:text-primary transition-colors">
                 {thread.title}
             </h3>
 
             {/* Content Preview */}
-            <p className="text-slate-500 text-sm mb-4 line-clamp-2">{thread.content}</p>
+            <p className="text-slate-500 dark:text-slate-400 text-sm mb-4 line-clamp-2">{thread.content}</p>
 
             {/* Meta Info */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400">
-                <span className="font-bold text-slate-700">{thread.author.name}</span>
+            <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400 dark:text-slate-500">
+                <span className="font-bold text-slate-700 dark:text-slate-300">{thread.author.name}</span>
                 <span>·</span>
                 <span>{formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })}</span>
                 <span className="flex items-center gap-1">
@@ -86,8 +86,8 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
 
             {/* Last Reply */}
             {thread.lastReply && (
-                <div className="mt-3 pt-3 border-t border-slate-100 text-xs text-slate-400">
-                    Last reply by <span className="font-bold text-slate-600">{thread.lastReply.author.name}</span>{" "}
+                <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/50 text-xs text-slate-400 dark:text-slate-500">
+                    Last reply by <span className="font-bold text-slate-600 dark:text-slate-300">{thread.lastReply.author.name}</span>{" "}
                     {formatDistanceToNow(new Date(thread.lastReply.createdAt), { addSuffix: true })}
                 </div>
             )}
@@ -122,21 +122,21 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
             {(isAdmin || isAuthor) && (
                 <div className="absolute top-4 right-4">
                     <button
-                        className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
+                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
                         onClick={(e) => {
                             e.stopPropagation();
                             setShowMenu(!showMenu);
                         }}
                     >
-                        <MdMoreVert size={20} className="text-slate-400" />
+                        <MdMoreVert size={20} className="text-slate-400 dark:text-slate-500" />
                     </button>
 
                     {showMenu && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-2 z-10">
+                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 py-2 z-10">
                             {isAdmin && (
                                 <>
                                     <button
-                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-slate-50 flex items-center gap-2 text-slate-700 transition-colors"
+                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-300 transition-colors"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             togglePin.mutate(thread._id);
@@ -147,14 +147,14 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
                                         {thread.isPinned ? "Unpin" : "Pin"}
                                     </button>
                                     <button
-                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-slate-50 flex items-center gap-2 text-slate-700 transition-colors"
+                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-300 transition-colors"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             toggleLock.mutate(thread._id);
                                             setShowMenu(false);
                                         }}
                                     >
-                                        <MdLock className="text-slate-500" />
+                                        <MdLock className="text-slate-500 dark:text-slate-400" />
                                         {thread.isLocked ? "Unlock" : "Lock"}
                                     </button>
                                 </>
@@ -162,7 +162,7 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
                             {(isAdmin || isAuthor) && (
                                 <>
                                     <button
-                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-slate-50 flex items-center gap-2 text-slate-700 transition-colors"
+                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-300 transition-colors"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             router.push(`/forum/threads/${thread._id}/edit`);
@@ -172,7 +172,7 @@ const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ threa
                                         Edit
                                     </button>
                                     <button
-                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-red-50 text-red-600 flex items-center gap-2 transition-colors"
+                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center gap-2 transition-colors"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             if (confirm("Are you sure you want to delete this thread?")) {
@@ -234,9 +234,9 @@ const ForumThreadList: React.FC<ForumThreadListProps> = ({ categoryId, categoryN
                 >
                     ← Back to Categories
                 </button>
-                <h1 className="text-3xl font-bold text-slate-900 mb-2">{categoryName || "Threads"}</h1>
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">{categoryName || "Threads"}</h1>
                 <div className="flex justify-between items-center">
-                    <p className="text-slate-500">
+                    <p className="text-slate-500 dark:text-slate-400">
                         {data?.pagination.total || 0} threads
                     </p>
                     <button

@@ -78,7 +78,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
     return (
         <div className={`${depth > 0 ? 'ml-8 mt-3' : 'mt-4'}`}>
-            <div className={`bg-white border ${depth > 0 ? 'border-l-4 border-l-primary/40' : 'border-slate-100'} rounded-2xl p-4 hover:shadow-sm transition-shadow`}>
+            <div className={`bg-white dark:bg-card border ${depth > 0 ? 'border-l-4 border-l-primary/40' : 'border-slate-100 dark:border-border'} rounded-2xl p-4 hover:shadow-sm transition-shadow`}>
                 <div className="flex items-start gap-3">
                     {/* Avatar */}
                     <Avatar className="w-10 h-10 shrink-0">
@@ -97,17 +97,17 @@ const CommentItem: React.FC<CommentItemProps> = ({
                     {/* Comment Content */}
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <span className="font-bold text-sm text-slate-900">
+                            <span className="font-bold text-sm text-slate-900 dark:text-slate-100">
                                 {comment.user.name}
                             </span>
-                            <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wide px-2 py-0.5 bg-slate-100 rounded-full">
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wide px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded-full">
                                 {comment.user.role}
                             </span>
-                            <span className="text-xs text-slate-400">
+                            <span className="text-xs text-slate-400 dark:text-slate-500">
                                 {formatDate(comment.createdAt)}
                             </span>
                         </div>
-                        <p className="text-slate-700 whitespace-pre-wrap break-words mb-2 text-sm leading-relaxed">
+                        <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap break-words mb-2 text-sm leading-relaxed">
                             {comment.text}
                         </p>
 
@@ -135,12 +135,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
                         {/* Reply Box */}
                         {showReplyBox && (
-                            <div className="mt-3 space-y-2 bg-slate-50 p-3 rounded-xl">
+                            <div className="mt-3 space-y-2 bg-slate-50 dark:bg-slate-800 p-3 rounded-xl">
                                 <Textarea
                                     value={replyText}
                                     onChange={(e) => setReplyText(e.target.value)}
                                     placeholder={`Reply to ${comment.user.name}...`}
-                                    className="min-h-[80px] resize-none rounded-xl border-slate-200 bg-white focus:border-primary"
+                                    className="min-h-[80px] resize-none rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-primary text-slate-900 dark:text-slate-100"
                                 />
                                 <div className="flex gap-2">
                                     <Button
@@ -278,8 +278,8 @@ const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
     }
 
     return (
-        <div className="mt-8 border-t border-slate-100 pt-6">
-            <h2 className="text-xl font-bold mb-6 text-slate-900">
+        <div className="mt-8 border-t border-slate-100 dark:border-border pt-6">
+            <h2 className="text-xl font-bold mb-6 text-slate-900 dark:text-slate-100">
                 Comments ({comments.length})
             </h2>
 
@@ -290,7 +290,7 @@ const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
                     onChange={(e) => setCommentText(e.target.value)}
                     onFocus={handleTextareaFocus}
                     placeholder="Share your thoughts..."
-                    className="min-h-[100px] mb-3 resize-none rounded-xl border-slate-200 bg-slate-50 focus:bg-white focus:border-primary"
+                    className="min-h-[100px] mb-3 resize-none rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-primary text-slate-900 dark:text-slate-100"
                     disabled={submitting}
                 />
                 <Button
@@ -305,11 +305,11 @@ const NewsComments: React.FC<NewsCommentsProps> = ({ newsId }) => {
             {/* Comments List */}
             {loading ? (
                 <div className="text-center py-8">
-                    <p className="text-slate-400">Loading comments...</p>
+                    <p className="text-slate-400 dark:text-slate-500">Loading comments...</p>
                 </div>
             ) : comments.length === 0 ? (
-                <div className="text-center py-8 bg-slate-50 rounded-2xl">
-                    <p className="text-slate-400 font-medium">No comments yet. Be the first to comment!</p>
+                <div className="text-center py-8 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+                    <p className="text-slate-400 dark:text-slate-500 font-medium">No comments yet. Be the first to comment!</p>
                 </div>
             ) : (
                 <div className="space-y-4">

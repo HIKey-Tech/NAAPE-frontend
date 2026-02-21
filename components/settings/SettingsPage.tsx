@@ -33,8 +33,8 @@ export function SettingsPage({ basePath }: { basePath: string }) {
 
             <div className="grid gap-6">
                 {/* Appearance Menu */}
-                <Card className="border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
-                    <CardHeader className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <Card className="border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden p-0 gap-0">
+                    <CardHeader className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 pt-6 pb-4">
                         <CardTitle className="text-lg flex items-center gap-2">
                             {isDark ? <FaMoon className="text-primary" /> : <FaSun className="text-primary" />}
                             Appearance
@@ -43,7 +43,7 @@ export function SettingsPage({ basePath }: { basePath: string }) {
                             Customize how NAAPE looks on your device.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="p-6">
+                    <CardContent className="p-6 pt-5">
                         <div className="flex items-center justify-between">
                             <div>
                                 <h3 className="font-semibold text-slate-800 dark:text-slate-200">Theme Preference</h3>
@@ -71,8 +71,8 @@ export function SettingsPage({ basePath }: { basePath: string }) {
                 </Card>
 
                 {/* Account Settings */}
-                <Card className="border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
-                    <CardHeader className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <Card className="border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden p-0 gap-0">
+                    <CardHeader className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 pt-6 pb-4">
                         <CardTitle className="text-lg flex items-center gap-2">
                             <FaUser className="text-primary" />
                             Account Profile
@@ -81,7 +81,7 @@ export function SettingsPage({ basePath }: { basePath: string }) {
                             Manage your personal information and profile settings.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="p-6">
+                    <CardContent className="p-6 pt-5">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div>
                                 <h3 className="font-semibold text-slate-800 dark:text-slate-200">Personal Information</h3>
@@ -97,8 +97,8 @@ export function SettingsPage({ basePath }: { basePath: string }) {
                 </Card>
 
                 {/* Security Settings */}
-                <Card className="border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
-                    <CardHeader className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <Card className="border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden p-0 gap-0">
+                    <CardHeader className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 pt-6 pb-4">
                         <CardTitle className="text-lg flex items-center gap-2">
                             <FaLock className="text-primary" />
                             Security
@@ -107,7 +107,7 @@ export function SettingsPage({ basePath }: { basePath: string }) {
                             Ensure your account stays secure.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="p-6">
+                    <CardContent className="p-6 pt-5">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-6 mb-6">
                             <div>
                                 <h3 className="font-semibold text-slate-800 dark:text-slate-200">Change Password</h3>
@@ -136,8 +136,8 @@ export function SettingsPage({ basePath }: { basePath: string }) {
                 </Card>
 
                 {/* Notifications */}
-                <Card className="border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
-                    <CardHeader className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <Card className="border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden p-0 gap-0">
+                    <CardHeader className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 pt-6 pb-4">
                         <CardTitle className="text-lg flex items-center gap-2">
                             <FaBell className="text-primary" />
                             Notifications
@@ -146,7 +146,7 @@ export function SettingsPage({ basePath }: { basePath: string }) {
                             Manage the alerts and emails you receive.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="p-6">
+                    <CardContent className="p-6 pt-5">
                         <div className="flex items-center justify-between">
                             <div>
                                 <h3 className="font-semibold text-slate-800 dark:text-slate-200">Email Notifications</h3>

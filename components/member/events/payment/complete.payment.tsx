@@ -277,10 +277,10 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
             </AnimatePresence>
             <motion.h2
                 className={`text-3xl font-extrabold mb-3 text-center ${state === "success"
-                        ? "text-green-800"
-                        : state === "error"
-                            ? "text-red-800"
-                            : "text-primary"
+                    ? "text-green-800 dark:text-green-400"
+                    : state === "error"
+                        ? "text-red-800 dark:text-red-400"
+                        : "text-primary dark:text-blue-400"
                     }`}
                 initial={{ y: 15, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -289,7 +289,7 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                 {title}
             </motion.h2>
             <motion.p
-                className="text-base sm:text-lg text-slate-700 mb-8 text-center max-w-xl"
+                className="text-base sm:text-lg text-slate-700 dark:text-slate-300 mb-8 text-center max-w-xl"
                 initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.21, type: "spring" as const, stiffness: 60, damping: 13 }}
@@ -300,12 +300,12 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
             {/* Display event details if available */}
             {state === "success" && eventDetails && (
                 <motion.div
-                    className="bg-white border border-slate-200 rounded-lg p-6 mb-6 max-w-xl w-full shadow-sm"
+                    className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-lg p-6 mb-6 max-w-xl w-full shadow-sm"
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
                 >
-                    <h3 className="text-lg font-semibold text-slate-800 mb-4">Event Details</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">Event Details</h3>
                     {eventDetails.imageUrl && (
                         <img
                             src={eventDetails.imageUrl}
@@ -314,9 +314,9 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                         />
                     )}
                     <div className="space-y-2 text-sm">
-                        <p className="text-slate-900 font-semibold text-base">{eventDetails.title}</p>
+                        <p className="text-slate-900 dark:text-slate-100 font-semibold text-base">{eventDetails.title}</p>
                         {eventDetails.date && (
-                            <p className="text-slate-600">
+                            <p className="text-slate-600 dark:text-slate-400">
                                 <span className="font-medium">Date:</span> {new Date(eventDetails.date).toLocaleDateString(undefined, {
                                     year: 'numeric',
                                     month: 'long',
@@ -327,7 +327,7 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                             </p>
                         )}
                         {eventDetails.location && (
-                            <p className="text-slate-600">
+                            <p className="text-slate-600 dark:text-slate-400">
                                 <span className="font-medium">Location:</span> {eventDetails.location}
                             </p>
                         )}
@@ -338,16 +338,16 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
             {/* Display error message if present */}
             {state === "error" && verificationState.message && (
                 <motion.div
-                    className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 max-w-xl"
+                    className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6 max-w-xl"
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
                 >
-                    <p className="text-sm text-red-800 text-center">
+                    <p className="text-sm text-red-800 dark:text-red-400 text-center">
                         {verificationState.message}
                     </p>
                     {verificationState.transactionId && (
-                        <p className="text-xs text-red-600 text-center mt-2">
+                        <p className="text-xs text-red-600 dark:text-red-500 text-center mt-2">
                             Transaction ID: {verificationState.transactionId}
                         </p>
                     )}
@@ -357,12 +357,12 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
             {/* Show retry exhaustion message */}
             {state === "error" && retryCount >= MAX_RETRIES && (
                 <motion.div
-                    className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 max-w-xl"
+                    className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-6 max-w-xl"
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
                 >
-                    <p className="text-sm text-amber-800 text-center font-medium">
+                    <p className="text-sm text-amber-800 dark:text-amber-400 text-center font-medium">
                         Maximum retry attempts reached. Please contact support for assistance.
                     </p>
                 </motion.div>
@@ -384,7 +384,7 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                     <Link
                         href="/dashboard"
                         prefetch
-                        className="inline-block px-6 py-2.5 bg-slate-100 text-slate-800 rounded-lg font-semibold shadow-md hover:bg-slate-200 focus:ring-2 focus:ring-slate-200/90 transition-all duration-150 active:scale-[0.99]"
+                        className="inline-block px-6 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg font-semibold shadow-md hover:bg-slate-200 dark:hover:bg-slate-700 focus:ring-2 focus:ring-slate-200/90 transition-all duration-150 active:scale-[0.99]"
                         aria-label="Go to Dashboard"
                     >
                         Go to Dashboard

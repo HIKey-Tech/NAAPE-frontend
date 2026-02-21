@@ -101,10 +101,10 @@ const ForumThreadFormContent: React.FC<ForumThreadFormProps> = ({ threadId }) =>
                     <MdArrowBack />
                     Back
                 </button>
-                <h1 className="text-3xl font-bold text-slate-900 mb-2">
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
                     {isEditMode ? "Edit Thread" : "Create New Thread"}
                 </h1>
-                <p className="text-slate-500">
+                <p className="text-slate-500 dark:text-slate-400">
                     {isEditMode ? "Update your thread" : "Start a new discussion with the community"}
                 </p>
             </motion.div>
@@ -112,7 +112,7 @@ const ForumThreadFormContent: React.FC<ForumThreadFormProps> = ({ threadId }) =>
             {/* Form */}
             <motion.form
                 onSubmit={handleSubmit}
-                className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 space-y-6"
+                className="bg-white dark:bg-card rounded-2xl border border-slate-100 dark:border-border shadow-sm p-8 space-y-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
             >
@@ -126,7 +126,7 @@ const ForumThreadFormContent: React.FC<ForumThreadFormProps> = ({ threadId }) =>
                         value={categoryId}
                         onChange={(e) => setCategoryId(e.target.value)}
                         disabled={isEditMode}
-                        className="w-full border border-slate-200 rounded-xl p-3 bg-slate-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none disabled:bg-slate-100 disabled:cursor-not-allowed transition-all"
+                        className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none disabled:bg-slate-100 dark:disabled:bg-slate-900 disabled:cursor-not-allowed transition-all text-slate-900 dark:text-slate-100"
                         required
                     >
                         <option value="">Select a category</option>
@@ -156,7 +156,7 @@ const ForumThreadFormContent: React.FC<ForumThreadFormProps> = ({ threadId }) =>
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="Enter a descriptive title..."
-                        className="w-full border border-slate-200 rounded-xl p-3 bg-slate-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
+                        className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-slate-900 dark:text-slate-100"
                         maxLength={200}
                         required
                     />
@@ -173,7 +173,7 @@ const ForumThreadFormContent: React.FC<ForumThreadFormProps> = ({ threadId }) =>
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         placeholder="Share your thoughts, ask questions, or start a discussion..."
-                        className="w-full border border-slate-200 rounded-xl p-4 bg-slate-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
+                        className="w-full border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-slate-900 dark:text-slate-100"
                         rows={12}
                         required
                     />
@@ -183,9 +183,9 @@ const ForumThreadFormContent: React.FC<ForumThreadFormProps> = ({ threadId }) =>
                 </div>
 
                 {/* Guidelines */}
-                <div className="bg-primary/5 border border-primary/10 rounded-xl p-4">
-                    <h4 className="font-bold text-slate-900 mb-2">📝 Posting Guidelines</h4>
-                    <ul className="text-sm text-slate-600 space-y-1">
+                <div className="bg-primary/5 border border-primary/10 dark:border-primary/20 rounded-xl p-4">
+                    <h4 className="font-bold text-slate-900 dark:text-slate-100 mb-2">📝 Posting Guidelines</h4>
+                    <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
                         <li>• Be respectful and constructive</li>
                         <li>• Stay on topic for the selected category</li>
                         <li>• Search for existing threads before posting</li>
@@ -194,7 +194,7 @@ const ForumThreadFormContent: React.FC<ForumThreadFormProps> = ({ threadId }) =>
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-4 pt-4 border-t border-slate-100">
+                <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-border">
                     <button
                         type="submit"
                         disabled={createThread.isPending || updateThread.isPending}
@@ -206,7 +206,7 @@ const ForumThreadFormContent: React.FC<ForumThreadFormProps> = ({ threadId }) =>
                     <button
                         type="button"
                         onClick={() => router.back()}
-                        className="px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition-colors"
+                        className="px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                     >
                         Cancel
                     </button>
