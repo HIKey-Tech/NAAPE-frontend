@@ -6,74 +6,52 @@ import EventCard from "../component/event.card";
 import {
   FaBook,
   FaCalendarAlt,
-  FaBriefcase,
   FaArrowRight
 } from "react-icons/fa";
 import { usePublications } from "@/hooks/usePublications";
-import { useMemberStats } from "@/hooks/useMembers";
+
 import { useEvents } from "@/hooks/useEvents";
 import { useAuth } from "@/context/authcontext";
 import Link from "next/link";
 
-// --- Components ---
+const WelcomeBanner: React.FC = () => {
+  const { user } = useAuth();
 
-function StatCard({
-  label,
-  value,
-  icon: Icon,
-  colorClass,
-  bgClass
-}: {
-  label: string,
-  value: number,
-  icon: React.ElementType,
-  colorClass: string,
-  bgClass: string
-}) {
   return (
-    <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-all duration-200 group">
-      <div className="flex items-start justify-between mb-4">
-        <div className={`p-3 rounded-xl ${bgClass} ${colorClass} group-hover:scale-110 transition-transform duration-300`}>
-          <Icon size={20} />
+    <div className="bg-gradient-to-br from-primary via-blue-700 to-indigo-800 rounded-3xl p-8 sm:p-12 mb-10 text-white shadow-xl shadow-primary/20 flex flex-col sm:flex-row items-center justify-between relative overflow-hidden group">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none transition-transform duration-700 group-hover:scale-110" />
+      <div className="absolute bottom-0 left-0 w-72 h-72 bg-black/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none hidden sm:block" />
+
+      <div className="relative z-10 max-w-2xl w-full">
+        <div className="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-blue-50 text-sm font-bold tracking-wide uppercase mb-6 shadow-sm border border-white/10">
+          Member Dashboard
         </div>
+        <h1 className="text-4xl sm:text-5xl font-black tracking-tight mb-4 leading-tight">
+          Welcome back, <br className="hidden sm:block" />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-100 to-white">{user?.name?.split(' ')[0] || "Member"}</span>!
+        </h1>
+        <p className="text-blue-100/90 text-lg sm:text-xl font-medium max-w-xl leading-relaxed">
+          Stay connected with the NAAPE community. Explore the latest insights, connect with peers, and prepare for upcoming events.
+        </p>
       </div>
-      <div>
-        <h3 className="text-3xl font-black text-slate-800 tracking-tight mb-1 group-hover:text-primary transition-colors">{value}</h3>
-        <p className="text-sm font-semibold text-slate-400 uppercase tracking-wide">{label}</p>
+
+      <div className="relative z-10 w-full sm:w-auto mt-8 sm:mt-0 flex flex-col gap-3">
+        <Link
+          href="/member/publications/new"
+          className="px-8 py-4 bg-white text-primary rounded-xl font-bold shadow-lg shadow-black/5 hover:shadow-xl hover:-translate-y-1 transition-all text-center flex items-center justify-center gap-2 w-full sm:w-64"
+        >
+          <FaBook size={16} />
+          <span>New Publication</span>
+        </Link>
+        <Link
+          href="/member/events"
+          className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl font-bold hover:bg-white/20 transition-all text-center flex items-center justify-center gap-2 w-full sm:w-64"
+        >
+          <FaCalendarAlt size={16} />
+          <span>Browse Events</span>
+        </Link>
       </div>
-    </div>
-  );
-}
-
-const DashboardStats: React.FC = () => {
-  const { data: stats, isPending } = useMemberStats();
-
-  if (isPending) {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="bg-white rounded-2xl p-6 border border-slate-100 h-32 animate-pulse" />
-        ))}
-      </div>
-    );
-  }
-
-  const items = [
-    { label: "Publications", value: stats?.publicationCount ?? 0, icon: FaBook, color: "text-primary", bg: "bg-primary/5" },
-    { label: "Events", value: stats?.eventsRegistered ?? 0, icon: FaCalendarAlt, color: "text-amber-600", bg: "bg-amber-50" },
-    { label: "Jobs", value: stats?.jobMatches ?? 0, icon: FaBriefcase, color: "text-slate-600", bg: "bg-slate-100" },
-  ];
-
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-      {items.map((item) => (
-        <StatCard
-          key={item.label}
-          {...item}
-          colorClass={item.color}
-          bgClass={item.bg}
-        />
-      ))}
     </div>
   );
 };
@@ -157,17 +135,10 @@ const UpcomingEvents: React.FC = () => {
 };
 
 const MemberDashboardHome: React.FC = () => {
-  const { user } = useAuth();
-
   return (
     <main className="flex-1 bg-slate-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10">
-        <div className="mb-10">
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Dashboard</h1>
-          <p className="text-slate-500 mt-2 text-lg">Welcome back, {user?.name?.split(' ')[0] || "Member"}</p>
-        </div>
-
-        <DashboardStats />
+        <WelcomeBanner />
         <RecentPublications />
         <UpcomingEvents />
       </div>
