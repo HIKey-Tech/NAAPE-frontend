@@ -315,7 +315,7 @@ export function AppSidebar() {
 
   return (
     <>
-      <aside className="hidden sm:block w-[260px] bg-white border-r border-slate-100 shadow-[2px_0_24px_-12px_rgba(0,0,0,0.1)]">
+      <aside className="hidden sm:flex flex-col w-[260px] min-w-[260px] shrink-0 bg-white border-r border-slate-100 shadow-[2px_0_24px_-12px_rgba(0,0,0,0.1)] h-full">
         <div className="sticky top-0 h-screen w-full flex flex-col">
           {SidebarContent}
         </div>
