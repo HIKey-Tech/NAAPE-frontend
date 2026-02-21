@@ -77,42 +77,39 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
     }, [publications, search, dateRange, isInRange]);
 
     const renderStatusFilters = () => (
-        <div className="mb-4 flex flex-wrap gap-x-2 gap-y-3 items-center w-full">
+        <div className="flex flex-wrap gap-2 items-center w-full">
             {PUBLICATION_STATUSES.map((s) => (
                 <button
                     key={s.label}
                     className={[
-                        "flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl border",
-                        "transition-all duration-200 font-bold text-sm sm:text-[15px]",
+                        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg border",
+                        "transition-all duration-200 font-medium text-xs sm:text-sm",
                         "focus:outline-none",
                         status === s.value || (!status && !s.value)
                             ? s.highlight +
-                            " border-primary text-primary ring-2 ring-primary/20 scale-105"
-                            : "bg-white border-slate-100 text-slate-500 hover:bg-slate-50 hover:scale-105",
-                        "hover:ring-1 hover:ring-primary/10",
-                        "active:scale-98 transition-transform"
+                            " border-primary/20 text-primary shadow-sm ring-1 ring-primary/10"
+                            : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300",
+                        "active:scale-95"
                     ].join(" ")}
-                    style={{ minWidth: 120, justifyContent: "center" }}
                     onClick={() => setStatus(s.value)}
                     type="button"
-                    tabIndex={0}
                 >
-                    <span className="text-lg flex items-center justify-center transition-transform duration-200">{s.icon}</span>
-                    <span className="leading-none transition-colors duration-200">{s.label}</span>
+                    <span className="text-sm flex items-center justify-center opacity-80">{s.icon}</span>
+                    <span className="leading-none">{s.label}</span>
                 </button>
             ))}
             {(search || dateRange.from || dateRange.to || status) && (
                 <button
                     type="button"
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl border text-sm bg-slate-50 text-slate-500 hover:bg-slate-100 border-slate-100 ml-1 transition-all duration-200 active:scale-98"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs bg-slate-50 text-slate-500 hover:bg-slate-100 border-slate-200 ml-1 transition-all duration-200 active:scale-95"
                     onClick={() => {
                         setSearch("");
                         setDateRange({});
                         setStatus(undefined);
                     }}
                 >
-                    <FaTimesCircle className="inline text-red-400 opacity-70 transition-transform duration-200" />
-                    Clear filters
+                    <FaTimesCircle className="inline text-red-400 opacity-70" />
+                    Clear defaults
                 </button>
             )}
         </div>
@@ -185,10 +182,10 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
         <div className="w-full min-h-[75vh] bg-gradient-to-b from-slate-50/50 to-white pt-0 pb-28 sm:pb-12 relative flex flex-col">
             <div className="max-w-7xl mx-auto px-2 sm:px-7 w-full">
                 {/* Subscription Status Banner */}
-                {!subscriptionLoading && (
-                    <div className="mt-4">
+                {!subscriptionLoading && !hasActiveSubscription && (
+                    <div className="mt-4 mb-2">
                         <SubscriptionBanner
-                            showUpgradePrompt={!hasActiveSubscription}
+                            showUpgradePrompt={true}
                             feature="view and create publications"
                         />
                     </div>
