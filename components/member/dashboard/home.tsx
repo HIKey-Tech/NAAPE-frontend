@@ -36,7 +36,7 @@ const WelcomeBanner: React.FC = () => {
 
       <div className="relative z-10 w-full sm:w-auto mt-8 sm:mt-0 flex flex-col gap-3">
         <Link
-          href="/member/publications/new"
+          href="/publications/new"
           className="px-8 py-4 bg-white text-primary rounded-xl font-bold shadow-lg shadow-black/5 hover:shadow-xl hover:-translate-y-1 transition-all text-center flex items-center justify-center gap-2 w-full sm:w-64"
         >
           <FaBook size={16} />
