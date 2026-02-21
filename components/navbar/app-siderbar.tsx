@@ -315,8 +315,7 @@ export function AppSidebar() {
 
   return (
     <>
-      {/* Desktop */}
-      <aside className="hidden sm:block w-[260px] h-screen sticky top-0 z-30 font-sans border-r border-slate-100 shadow-[2px_0_24px_-12px_rgba(0,0,0,0.1)]">
+      <aside className="hidden sm:block w-[260px] h-screen sticky top-0 self-start z-30 font-sans border-r border-slate-100 shadow-[2px_0_24px_-12px_rgba(0,0,0,0.1)] bg-white">
         {SidebarContent}
       </aside>
 
