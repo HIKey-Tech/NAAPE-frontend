@@ -213,7 +213,7 @@ export default function PhotoGalleryTab() {
   return (
     <>
       <section
-        className="w-full bg-background flex flex-col items-center py-16 md:py-24 px-4 sm:px-6 relative z-10"
+        className="w-full bg-background flex flex-col items-center pt-32 pb-16 md:pt-40 md:pb-24 px-4 sm:px-6 relative z-10"
         aria-label="Photo Gallery"
       >
         <header className="w-full max-w-7xl mx-auto mb-12 flex flex-col items-center text-center">
