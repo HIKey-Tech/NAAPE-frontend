@@ -1,81 +1,77 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { useState, useEffect } from "react";
 import PublicationDetail from "@/components/ui/custom/publication.detail";
+import { getSinglePublicationPublic } from "@/app/api/publication/publication";
+import { useAuth } from "@/context/authcontext";
+import { NaapButton } from "@/components/ui/custom/button.naap";
 
-// Dummy data source for publications; in production use a data fetcher/API.
-const PUBLICATIONS: Array<{
-  id: string;
-  imageUrl: string;
+interface Publication {
+  _id: string;
   title: string;
-  summary?: string;
   content: string;
-  authorName: string;
-  authorRole?: string;
-  authorAvatarUrl?: string;
+  summary?: string;
+  image?: string;
+  author: {
+    name: string;
+    role: string;
+    email: string;
+  };
   category?: string;
-  publishedDate?: string;
-}> = [
-    {
-      id: "safety-protocols",
-      imageUrl: "/images/event1.jpg",
-      title: "Safety Protocols in Modern Aviation",
-      summary: "A deep dive into protocols ensuring flight safety in today's advanced aviation sector.",
-      content: `<p>This article examines crucial safety measures adopted in the modern aviation industry, highlighting real-world implementation and continuous improvement strategies. From pre-flight checks to emergency protocols, pilots and engineers share insights into best practices.</p>
-      <ul>
-        <li>Detailed walkthroughs of mandatory safety checklists</li>
-        <li>Recent case studies of incident prevention</li>
-        <li>Recommendations for continuous safety education</li>
-      </ul>
-      <p>Adherence to robust safety protocols has cemented the reputation of aviation as the safest mode of transport globally.</p>`,
-      authorName: "Jane Doe",
-      authorRole: "Pilot",
-      authorAvatarUrl: "/images/leader.png",
-      category: "Safety",
-      publishedDate: "2024-03-21"
-    },
-    {
-      id: "maintaining-avionics",
-      imageUrl: "/images/plane.jpg",
-      title: "Maintaining Avionics: A Modern Perspective",
-      summary: "Best practices for avionics maintenance based on latest industry research.",
-      content: `<p>Modern avionics systems require a blend of traditional discipline and up-to-date digital knowhow. This article covers:</p>
-      <ol>
-        <li>Diagnostic tools for digital avionics suites</li>
-        <li>Maintenance log workflows and software</li>
-        <li>How to keep up with evolving OEM guidance</li>
-      </ol>
-      <p>Featuring expert interviews and actionable maintenance checklists for engineers.</p>`,
-      authorName: "Engr. Ifeanyi Okeke",
-      authorRole: "Avionics Engineer",
-      authorAvatarUrl: "/images/leader.png",
-      category: "Avionics",
-      publishedDate: "2023-12-17"
-    }
-  ];
-
-// Util to fetch publication by id
-function getPublicationById(id: string | undefined) {
-  if (!id) return null;
-  return PUBLICATIONS.find((p) => p.id === id) || null;
+  createdAt: string;
+  isPreview?: boolean;
+  requiresSubscription?: boolean;
 }
 
 export default function MemberPublicationDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { user } = useAuth();
+  const [publication, setPublication] = useState<Publication | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   // Next.js dynamic route params: [id]
   const id = Array.isArray(params?.id) ? params.id[0] : params?.id;
 
-  const publication = useMemo(() => getPublicationById(id), [id]);
+  useEffect(() => {
+    const fetchPublication = async () => {
+      if (!id) return;
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const data = await getSinglePublicationPublic(id);
+        setPublication(data);
+      } catch (err: any) {
+        console.error("Failed to fetch publication:", err);
+        setError(err.response?.data?.message || "Failed to load publication");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!publication) {
+    fetchPublication();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-[#F8FAFC]">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <p className="mt-4 text-gray-600">Loading publication...</p>
+      </div>
+    );
+  }
+
+  if (error || !publication) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-[#F8FAFC]">
         <div className="max-w-md text-center">
           <h1 className="text-2xl font-semibold mb-2 text-[#2852B4]">Publication not found</h1>
           <p className="mb-6 text-gray-500">
-            Sorry, we couldn't find that publication.
+            {error || "Sorry, we couldn't find that publication."}
           </p>
           <button
             className="bg-[#2043A2] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#183077] transition-colors"
@@ -91,17 +87,57 @@ export default function MemberPublicationDetailPage() {
   return (
     <main className="min-h-screen bg-[#F8FAFC] py-10 px-2 sm:px-0 flex flex-col items-center">
       <PublicationDetail
-        imageUrl={publication.imageUrl}
+        imageUrl={publication.image || "/images/plane.jpg"}
         title={publication.title}
         summary={publication.summary}
         content={publication.content}
-        authorName={publication.authorName}
-        authorRole={publication.authorRole}
-        authorAvatarUrl={publication.authorAvatarUrl}
+        authorName={publication.author?.name || "NAAPE Member"}
+        authorRole={publication.author?.role || "Member"}
+        authorAvatarUrl="/images/leader.png"
         category={publication.category}
-        publishedDate={publication.publishedDate}
+        publishedDate={publication.createdAt}
         backHref="/publication/members"
       />
+      
+      {/* Premium Access Prompt */}
+      {publication.isPreview && publication.requiresSubscription && (
+        <div className="w-full max-w-3xl mx-auto mt-8 bg-white border border-slate-200 rounded-2xl p-8 text-center shadow-sm">
+          <h3 className="text-xl font-bold text-slate-900 mb-3">
+            Continue Reading with Premium Access
+          </h3>
+          <p className="text-slate-600 mb-6">
+            This is a preview of the full publication. Sign in or subscribe to read the complete article and access our full library of member publications.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {!user ? (
+              <>
+                <NaapButton
+                  variant="primary"
+                  onClick={() => router.push("/login")}
+                  className="px-6 py-3 rounded-lg font-semibold"
+                >
+                  Sign In
+                </NaapButton>
+                <NaapButton
+                  variant="ghost"
+                  onClick={() => router.push("/register")}
+                  className="px-6 py-3 rounded-lg font-semibold"
+                >
+                  Create Account
+                </NaapButton>
+              </>
+            ) : (
+              <NaapButton
+                variant="primary"
+                onClick={() => router.push("/dashboard")}
+                className="px-6 py-3 rounded-lg font-semibold"
+              >
+                Upgrade to Premium
+              </NaapButton>
+            )}
+          </div>
+        </div>
+      )}
     </main>
   );
 }

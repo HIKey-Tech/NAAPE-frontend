@@ -35,7 +35,7 @@ export async function getSinglePublication(id: string) {
 export async function getSinglePublicationPublic(id: string) {
     try {
         // Make request without auth token for public access
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/publications/${id}`)
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/publications/${id}`)
         return response.data.data;
 
     } catch (error) {
