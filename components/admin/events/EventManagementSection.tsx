@@ -10,6 +10,14 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface EnhancedEvent extends EventCardProps { status?: EventStatus; }
 enum EventStatus { DRAFT = 'draft', PUBLISHED = 'published', CANCELLED = 'cancelled', COMPLETED = 'completed' }
@@ -24,9 +32,12 @@ const statusConfig: Record<string, { className: string; icon: React.ElementType 
 };
 
 const EventManagementSection: React.FC<EventManagementSectionProps> = ({ onCreateEvent }) => {
-    const { data: events = [], isLoading, error, refetch } = useEvents();
-    const deleteEventMutation = useDeleteEvent();
+    const [page, setPage] = useState(1);
     const [filters, setFilters] = useState<EventFilters>({ search: '', status: 'all', isPaid: 'all', dateRange: 'all' });
+    const { data: queryData, isLoading, error, refetch } = useEvents({ page, limit: 10, search: filters.search || undefined });
+    const events = queryData?.events || [];
+    const totalPages = queryData?.pagination?.pages || 1;
+    const deleteEventMutation = useDeleteEvent();
     const [selectedEvent, setSelectedEvent] = useState<EnhancedEvent | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -180,6 +191,49 @@ const EventManagementSection: React.FC<EventManagementSectionProps> = ({ onCreat
                     })
                 )}
             </div>
+
+            {!isLoading && totalPages > 1 && (
+                <div className="mt-8 flex justify-center">
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        if (page > 1) setPage(page - 1);
+                                    }}
+                                    className={page <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                />
+                            </PaginationItem>
+
+                            {Array.from({ length: totalPages }).map((_, i) => (
+                                <PaginationItem key={i}>
+                                    <PaginationLink
+                                        isActive={page === i + 1}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setPage(i + 1);
+                                        }}
+                                        className="cursor-pointer"
+                                    >
+                                        {i + 1}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
+
+                            <PaginationItem>
+                                <PaginationNext
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        if (page < totalPages) setPage(page + 1);
+                                    }}
+                                    className={page >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                </div>
+            )}
 
             {selectedEvent && <EditEventModal event={selectedEvent} isOpen={isEditModalOpen} onClose={() => { setIsEditModalOpen(false); setSelectedEvent(null); }} />}
         </div>

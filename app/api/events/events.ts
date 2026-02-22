@@ -7,22 +7,31 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
     : "http://localhost:5000/api";
 
 // Fetch all events (GET /v1/events)
-export const fetchEvents = async () => {
+export const fetchEvents = async (params?: { page?: number; limit?: number; search?: string }) => {
     try {
-        const response = await api.get(`/events`);
-        
-        // Check if response.data is an array
-        if (!Array.isArray(response.data)) {
-            console.error("Events API returned non-array data:", response.data);
-            return [];
+        const response = await api.get(`/events`, { params });
+
+        let rawEvents = response.data;
+        let pagination = null;
+
+        if (response.data && !Array.isArray(response.data) && response.data.data) {
+            rawEvents = response.data.data;
+            pagination = response.data.pagination;
         }
-        
+
+        // Check if rawEvents is an array
+        if (!Array.isArray(rawEvents)) {
+            console.error("Events API returned non-array data:", response.data);
+            return { events: [], pagination: null };
+        }
+
         // Normalize the data to ensure both _id and id are available
-        const events = response.data.map((event: any) => ({
+        const events = rawEvents.map((event: any) => ({
             ...event,
             id: event._id || event.id, // Ensure id field exists
         }));
-        return events;
+
+        return { events, pagination };
     } catch (error: any) {
         console.error("Events API error:", error);
         throw new Error(error?.response?.data?.message || error.message || "Failed to fetch events.");
@@ -79,11 +88,11 @@ export const payForEvent = async (eventId: string) => {
         const response = await axios.post(
             `${BASE_URL}/v1/payments/events/register`,
             { eventId },
-            { 
+            {
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
-                withCredentials: true 
+                withCredentials: true
             }
         );
         return response.data;
@@ -123,7 +132,7 @@ export const getStatus = async (eventId: string) => {
     if (!eventId) {
         throw new Error("Event ID is required to get payment status.");
     }
-    
+
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : undefined;
     if (!token) {
         throw new Error("Authentication required.");
@@ -188,7 +197,7 @@ export const getEventsForAttendeeManagement = async () => {
             },
             withCredentials: true,
         });
-        
+
         return response.data;
     } catch (error: any) {
         const message =
@@ -261,7 +270,7 @@ export const updateAttendeeAttendance = async (eventId: string, userId: string, 
 
 // Admin-only: Export event attendees
 export const exportEventAttendees = async (
-    eventId: string, 
+    eventId: string,
     format: 'csv' | 'excel' = 'csv',
     filters?: {
         paymentStatus?: string;

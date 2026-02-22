@@ -100,7 +100,8 @@ const RecentPublications: React.FC = () => {
 };
 
 const UpcomingEvents: React.FC = () => {
-  const { data: events, isPending, error } = useEvents();
+  const { data: queryData, isPending, error } = useEvents();
+  const events = queryData?.events || [];
 
   return (
     <section className="mb-8">
@@ -142,7 +143,7 @@ const MemberDashboardHome: React.FC = () => {
     <main className="flex-1 bg-slate-50 dark:bg-transparent min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10">
         <WelcomeBanner />
-        
+
         {/* Profile Link Card */}
         {user?.profileSlug && (
           <div className="mb-10 bg-white dark:bg-card rounded-2xl border border-slate-100 dark:border-border shadow-sm p-6">
@@ -183,7 +184,7 @@ const MemberDashboardHome: React.FC = () => {
             </div>
           </div>
         )}
-        
+
         <RecentPublications />
         <UpcomingEvents />
       </div>

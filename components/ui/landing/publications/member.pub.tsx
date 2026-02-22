@@ -7,20 +7,40 @@ import api from "@/lib/axios";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { NaapButton } from "../../custom/button.naap";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function MemberPublicationsComponent() {
     const [publications, setPublications] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
         const fetchPublications = async () => {
+            setLoading(true);
             try {
-                const response = await api.get("/publications");
-                const allPubs = response.data.data || response.data || [];
-                // Members are non-admins
-                const memberPubs = allPubs.filter((pub: any) => pub.author?.role?.toLowerCase() !== "admin");
-                setPublications(memberPubs);
+                const response = await api.get("/publications", {
+                    params: {
+                        page,
+                        limit: 9,
+                        search: searchTerm || undefined,
+                        authorRole: "member",
+                    }
+                });
+                setPublications(response.data.data || []);
+                if (response.data.pagination) {
+                    setTotalPages(response.data.pagination.pages || 1);
+                } else {
+                    setTotalPages(1);
+                }
             } catch (error) {
                 console.error("Failed to fetch publications:", error);
             } finally {
@@ -28,14 +48,11 @@ export default function MemberPublicationsComponent() {
             }
         };
 
-        fetchPublications();
-    }, []);
-
-    const filteredPublications = publications.filter((item) =>
-        item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.summary?.toLowerCase().includes(searchTerm.toLowerCase())
-    ).sort((a, b) => new Date(b.createdAt || b.publishedDate).getTime() - new Date(a.createdAt || a.publishedDate).getTime());
+        const timer = setTimeout(() => {
+            fetchPublications();
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [page, searchTerm]);
 
     return (
         <div className="min-h-screen bg-gray-50 w-full flex flex-col items-center">
@@ -54,7 +71,10 @@ export default function MemberPublicationsComponent() {
                         placeholder="Search publications..."
                         className="pl-10 h-12 rounded-full border-slate-200 bg-slate-50 focus-visible:ring-primary shadow-sm"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setPage(1);
+                        }}
                     />
                 </div>
             </div>
@@ -64,41 +84,86 @@ export default function MemberPublicationsComponent() {
                     <div className="flex justify-center py-20">
                         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
                     </div>
-                ) : filteredPublications.length === 0 ? (
+                ) : publications.length === 0 ? (
                     <div className="py-20 text-center text-slate-500 bg-white rounded-3xl border border-slate-100 shadow-sm max-w-2xl mx-auto">
                         <p className="text-lg font-medium">No publications found.</p>
                         {searchTerm && (
-                            <button onClick={() => setSearchTerm("")} className="mt-4 text-primary hover:underline font-bold">
+                            <button onClick={() => { setSearchTerm(""); setPage(1); }} className="mt-4 text-primary hover:underline font-bold">
                                 Clear search
                             </button>
                         )}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {filteredPublications.map((pub) => (
-                            <Link href={`/publication/members/${pub._id || pub.id}`} key={pub._id || pub.id} className="block group focus:outline-none focus:ring-2 focus:ring-primary rounded-3xl transition-transform hover:-translate-y-1">
-                                <PublishedPublicationCard
-                                    imageUrl={pub.image || pub.imageUrl || "/images/plane.jpg"}
-                                    title={pub.title}
-                                    summary={pub.summary || (pub.content?.substring(0, 150) + "...")}
-                                    authorName={pub.author?.name || pub.authorName || "NAAPE Member"}
-                                    authorRole={pub.author?.role || pub.authorRole || "Member"}
-                                    linkUrl={`/publication/members/${pub._id || pub.id}`}
-                                    category={pub.category}
-                                    publishedDate={
-                                        (pub.createdAt || pub.publishedDate)
-                                            ? new Date(pub.createdAt || pub.publishedDate).toLocaleDateString("en-US", {
-                                                year: "numeric",
-                                                month: "short",
-                                                day: "numeric",
-                                            })
-                                            : ""
-                                    }
-                                    className=""
-                                />
-                            </Link>
-                        ))}
-                    </div>
+                    <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {publications.map((pub) => (
+                                <Link href={`/publication/members/${pub._id || pub.id}`} key={pub._id || pub.id} className="block group focus:outline-none focus:ring-2 focus:ring-primary rounded-3xl transition-transform hover:-translate-y-1">
+                                    <PublishedPublicationCard
+                                        imageUrl={pub.image || pub.imageUrl || "/images/plane.jpg"}
+                                        title={pub.title}
+                                        summary={pub.summary || (pub.content?.substring(0, 150) + "...")}
+                                        authorName={pub.author?.name || pub.authorName || "NAAPE Member"}
+                                        authorRole={pub.author?.role || pub.authorRole || "Member"}
+                                        linkUrl={`/publication/members/${pub._id || pub.id}`}
+                                        category={pub.category}
+                                        publishedDate={
+                                            (pub.createdAt || pub.publishedDate)
+                                                ? new Date(pub.createdAt || pub.publishedDate).toLocaleDateString("en-US", {
+                                                    year: "numeric",
+                                                    month: "short",
+                                                    day: "numeric",
+                                                })
+                                                : ""
+                                        }
+                                        className=""
+                                    />
+                                </Link>
+                            ))}
+                        </div>
+
+                        {!loading && totalPages > 1 && (
+                            <div className="mt-12 flex justify-center">
+                                <Pagination>
+                                    <PaginationContent>
+                                        <PaginationItem>
+                                            <PaginationPrevious
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    if (page > 1) setPage(page - 1);
+                                                }}
+                                                className={page <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                            />
+                                        </PaginationItem>
+
+                                        {Array.from({ length: totalPages }).map((_, i) => (
+                                            <PaginationItem key={i}>
+                                                <PaginationLink
+                                                    isActive={page === i + 1}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        setPage(i + 1);
+                                                    }}
+                                                    className="cursor-pointer"
+                                                >
+                                                    {i + 1}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        ))}
+
+                                        <PaginationItem>
+                                            <PaginationNext
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    if (page < totalPages) setPage(page + 1);
+                                                }}
+                                                className={page >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                            />
+                                        </PaginationItem>
+                                    </PaginationContent>
+                                </Pagination>
+                            </div>
+                        )}
+                    </>
                 )}
 
                 <div className="mt-16 text-center">
@@ -116,4 +181,3 @@ export default function MemberPublicationsComponent() {
         </div>
     );
 }
-

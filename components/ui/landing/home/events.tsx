@@ -24,15 +24,16 @@ const itemVariants = {
 };
 
 export default function UpcomingEvents() {
-    const { data, isLoading, isError } = useEvents();
+    const { data, isLoading, isError } = useEvents({ page: 1, limit: 4 });
     const [selectedEvent, setSelectedEvent] = useState<EventCardProps | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState<any>(null);
 
-    // Normalization logic remains same as before...
+    // Normalization logic
     let eventsList: EventCardProps[] = [];
-    if (Array.isArray(data)) {
-        eventsList = data.map((e: any): EventCardProps => ({
+    const rawEvents = data?.events || (Array.isArray(data) ? data : []);
+    if (Array.isArray(rawEvents)) {
+        eventsList = rawEvents.map((e: any): EventCardProps => ({
             ...e,
             id: e.id ?? e._id ?? "",
             createdBy: e.createdBy ?? "",

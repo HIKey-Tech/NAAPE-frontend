@@ -7,17 +7,39 @@ import api from "@/lib/axios";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
+
 export default function NewsPage() {
     const [news, setNews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
         const fetchNews = async () => {
+            setLoading(true);
             try {
-                const response = await api.get("/news");
-                // Assuming backend returns an array or response.data.data
+                const response = await api.get("/news", {
+                    params: {
+                        page,
+                        limit: 9,
+                        search: searchTerm || undefined
+                    }
+                });
                 setNews(response.data.data || response.data || []);
+                if (response.data.pagination) {
+                    setTotalPages(response.data.pagination.pages || 1);
+                } else {
+                    setTotalPages(1);
+                }
             } catch (error) {
                 console.error("Failed to fetch news:", error);
             } finally {
@@ -25,13 +47,14 @@ export default function NewsPage() {
             }
         };
 
-        fetchNews();
-    }, []);
+        const timer = setTimeout(() => {
+            fetchNews();
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [page, searchTerm]);
 
-    const filteredNews = news.filter((item) =>
-        item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.content?.toLowerCase().includes(searchTerm.toLowerCase())
-    ).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    // The backend now filters and sorts
+    const filteredNews = news;
 
     return (
         <div className="min-h-screen bg-gray-50 w-full flex flex-col items-center">
@@ -50,7 +73,10 @@ export default function NewsPage() {
                         placeholder="Search news..."
                         className="pl-10 h-12 rounded-full border-slate-200 bg-slate-50 focus-visible:ring-primary shadow-sm"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setPage(1); // Reset to page 1 on search
+                        }}
                     />
                 </div>
             </div>
@@ -70,7 +96,7 @@ export default function NewsPage() {
                         )}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                         {filteredNews.map((item) => (
                             <Link href={`/news/${item._id || item.id}`} key={item._id || item.id} className="block group focus:outline-none focus:ring-2 focus:ring-primary rounded-3xl transition-transform hover:-translate-y-1">
                                 <NewsCard
@@ -85,6 +111,49 @@ export default function NewsPage() {
                                 />
                             </Link>
                         ))}
+                    </div>
+                )}
+
+                {!loading && totalPages > 1 && (
+                    <div className="mt-8 flex justify-center">
+                        <Pagination>
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            if (page > 1) setPage(page - 1);
+                                        }}
+                                        className={page <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                    />
+                                </PaginationItem>
+
+                                {Array.from({ length: totalPages }).map((_, i) => (
+                                    <PaginationItem key={i}>
+                                        <PaginationLink
+                                            isActive={page === i + 1}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                setPage(i + 1);
+                                            }}
+                                            className="cursor-pointer"
+                                        >
+                                            {i + 1}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
+
+                                <PaginationItem>
+                                    <PaginationNext
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            if (page < totalPages) setPage(page + 1);
+                                        }}
+                                        className={page >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
                     </div>
                 )}
             </section>

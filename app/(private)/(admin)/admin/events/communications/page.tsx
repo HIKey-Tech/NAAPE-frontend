@@ -10,7 +10,7 @@ import { toast } from "sonner";
 export default function EventCommunicationsPage() {
     const [activeSection, setActiveSection] = useState<EventSection>(EventSection.COMMUNICATIONS);
     const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-    
+
     const {
         attendees,
         templates,
@@ -24,9 +24,9 @@ export default function EventCommunicationsPage() {
         updateTemplate,
         deleteTemplate
     } = useEventCommunications();
-    
+
     const eventsQuery = useEvents();
-    const events = eventsQuery.data || [];
+    const events = eventsQuery.data?.events || [];
 
     // Log any errors with events loading
     if (eventsQuery.error) {
@@ -112,8 +112,8 @@ export default function EventCommunicationsPage() {
     };
 
     return (
-        <AdminEventsLayout 
-            activeSection={activeSection} 
+        <AdminEventsLayout
+            activeSection={activeSection}
             onSectionChange={setActiveSection}
         >
             <div className="px-4 sm:px-6 py-4 bg-white w-full">

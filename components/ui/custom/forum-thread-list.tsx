@@ -9,6 +9,14 @@ import { formatDistanceToNow } from "date-fns";
 import { useAuthStore } from "@/hook/store/useAuthStore";
 import Link from "next/link";
 import ReportModal from "./report-modal";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
 
 
 const ThreadCard: React.FC<{ thread: ForumThread; isAdmin: boolean }> = ({ thread, isAdmin }) => {
@@ -306,24 +314,45 @@ const ForumThreadList: React.FC<ForumThreadListProps> = ({ categoryId, categoryN
 
                     {/* Pagination */}
                     {data && data.pagination.pages > 1 && (
-                        <div className="flex justify-center items-center gap-3 mt-8">
-                            <button
-                                onClick={() => setPage(page - 1)}
-                                disabled={page === 1}
-                                className="px-5 py-2.5 border border-slate-200 rounded-xl font-bold text-sm disabled:opacity-50 hover:bg-slate-50 transition-colors"
-                            >
-                                Previous
-                            </button>
-                            <span className="px-4 py-2 text-sm font-medium text-slate-500">
-                                Page {page} of {data.pagination.pages}
-                            </span>
-                            <button
-                                onClick={() => setPage(page + 1)}
-                                disabled={page === data.pagination.pages}
-                                className="px-5 py-2.5 border border-slate-200 rounded-xl font-bold text-sm disabled:opacity-50 hover:bg-slate-50 transition-colors"
-                            >
-                                Next
-                            </button>
+                        <div className="mt-12 flex justify-center">
+                            <Pagination>
+                                <PaginationContent>
+                                    <PaginationItem>
+                                        <PaginationPrevious
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                if (page > 1) setPage(page - 1);
+                                            }}
+                                            className={page <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                        />
+                                    </PaginationItem>
+
+                                    {Array.from({ length: data.pagination.pages }).map((_, i) => (
+                                        <PaginationItem key={i}>
+                                            <PaginationLink
+                                                isActive={page === i + 1}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setPage(i + 1);
+                                                }}
+                                                className="cursor-pointer"
+                                            >
+                                                {i + 1}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    ))}
+
+                                    <PaginationItem>
+                                        <PaginationNext
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                if (page < data.pagination.pages) setPage(page + 1);
+                                            }}
+                                            className={page >= data.pagination.pages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                        />
+                                    </PaginationItem>
+                                </PaginationContent>
+                            </Pagination>
                         </div>
                     )}
                 </>

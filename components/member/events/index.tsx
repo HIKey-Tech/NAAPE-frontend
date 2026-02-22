@@ -10,6 +10,14 @@ import { useRouter } from "next/navigation";
 import { parseJwt } from "@/proxy";
 import { payForEvent, verifyPayment, getStatus } from "@/app/api/events/events";
 import type { EventCardProps } from "@/app/api/events/type";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
 
 // Utility to normalize events array structure
 function getArrayFromEvents(events: any): any[] {
@@ -46,16 +54,17 @@ export default function EventsComponent() {
     }, []);
 
     const [search, setSearch] = useState("");
+    const [page, setPage] = useState(1);
     const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
     const [filterOpen, setFilterOpen] = useState(false);
     const router = useRouter();
 
-    const { data: events, isPending: isLoading, isError } = useEvents();
+    const { data: events, isPending: isLoading, isError } = useEvents({ page, limit: 12, search: search || undefined });
     const eventsArr = getArrayFromEvents(events);
+    const totalPages = events?.pagination?.pages || 1;
 
-    const filteredEvents = eventsArr.filter((evt: any) =>
-        evt?.title?.toLowerCase().includes(search.toLowerCase())
-    );
+    // The backend now filters, so we just pass the array
+    const filteredEvents = eventsArr;
 
     // Only admins should see the create button
     const isAdmin = user?.role === "admin";
@@ -207,6 +216,49 @@ export default function EventsComponent() {
                     ))
                 )}
             </div>
+
+            {!isLoading && totalPages > 1 && (
+                <div className="mt-8 mb-6 flex justify-center">
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        if (page > 1) setPage(page - 1);
+                                    }}
+                                    className={page <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                />
+                            </PaginationItem>
+
+                            {Array.from({ length: totalPages }).map((_, i) => (
+                                <PaginationItem key={i}>
+                                    <PaginationLink
+                                        isActive={page === i + 1}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setPage(i + 1);
+                                        }}
+                                        className="cursor-pointer"
+                                    >
+                                        {i + 1}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
+
+                            <PaginationItem>
+                                <PaginationNext
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        if (page < totalPages) setPage(page + 1);
+                                    }}
+                                    className={page >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                </div>
+            )}
 
             {/* Event Details Modal */}
             <EventDetailsModal

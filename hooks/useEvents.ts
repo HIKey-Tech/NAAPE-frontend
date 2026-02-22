@@ -12,10 +12,10 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 // Fetch all events
-export const useEvents = () =>
+export const useEvents = (params?: { page?: number; limit?: number; search?: string }) =>
     useQuery({
-        queryKey: ["events"],
-        queryFn: fetchEvents,
+        queryKey: ["events", params],
+        queryFn: () => fetchEvents(params),
     });
 
 // Fetch a single event by id
@@ -48,7 +48,7 @@ export const useCreateEvent = () => {
 export const useUpdateEvent = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ eventId, data }: { eventId: string; data: FormData }) => 
+        mutationFn: ({ eventId, data }: { eventId: string; data: FormData }) =>
             updateEvent(eventId, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["events"] });

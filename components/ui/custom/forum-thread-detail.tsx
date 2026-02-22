@@ -10,6 +10,14 @@ import { useAuth } from "@/context/authcontext";
 import { toast } from "sonner";
 import Link from "next/link";
 import ReportModal from "./report-modal";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
 
 
 const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: boolean }> = ({ reply, threadId, isNested = false }) => {
@@ -266,8 +274,10 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
     const [showThreadReportModal, setShowThreadReportModal] = useState(false);
     const [showUserReportModal, setShowUserReportModal] = useState(false);
 
+    const [page, setPage] = useState(1);
+
     const { data: thread, isPending: threadLoading, error: threadError } = useForumThread(threadId);
-    const { data: repliesData, isPending: repliesLoading } = useThreadReplies(threadId);
+    const { data: repliesData, isPending: repliesLoading } = useThreadReplies(threadId, { page, limit: 10 });
     const createReply = useCreateForumReply();
     const reportThreadMutation = useReportThread();
     const reportUserMutation = useReportUser();
@@ -521,6 +531,49 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
                         {repliesData?.data.map((reply) => (
                             <ReplyItem key={reply._id} reply={reply} threadId={threadId} />
                         ))}
+
+                        {repliesData?.pagination && repliesData.pagination.pages > 1 && (
+                            <div className="mt-8 flex justify-center">
+                                <Pagination>
+                                    <PaginationContent>
+                                        <PaginationItem>
+                                            <PaginationPrevious
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    if (page > 1) setPage(page - 1);
+                                                }}
+                                                className={page <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                            />
+                                        </PaginationItem>
+
+                                        {Array.from({ length: repliesData.pagination.pages }).map((_, i) => (
+                                            <PaginationItem key={i}>
+                                                <PaginationLink
+                                                    isActive={page === i + 1}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        setPage(i + 1);
+                                                    }}
+                                                    className="cursor-pointer"
+                                                >
+                                                    {i + 1}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        ))}
+
+                                        <PaginationItem>
+                                            <PaginationNext
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    if (page < repliesData.pagination.pages) setPage(page + 1);
+                                                }}
+                                                className={page >= repliesData.pagination.pages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                            />
+                                        </PaginationItem>
+                                    </PaginationContent>
+                                </Pagination>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
