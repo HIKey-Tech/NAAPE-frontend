@@ -32,6 +32,18 @@ export async function getSinglePublication(id: string) {
     }
 }
 
+export async function getSinglePublicationPublic(id: string) {
+    try {
+        // Make request without auth token for public access
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/publications/${id}`)
+        return response.data.data;
+
+    } catch (error) {
+        throw error;
+
+    }
+}
+
 export async function createPublication(data: FormData) {
     const token = localStorage.getItem("token");
     console.log("TOKEN FROM LOCALSTORAGE:", token);
