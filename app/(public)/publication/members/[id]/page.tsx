@@ -1,84 +1,67 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useMemo } from "react";
-import PublicationDetail from "@/components/ui/custom/publication.detail";
+import { useState, useEffect } from "react";
+import api from "@/lib/axios";
+import Image from "next/image";
+import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-// Dummy data source for publications; in production use a data fetcher/API.
-const PUBLICATIONS: Array<{
-  id: string;
-  imageUrl: string;
-  title: string;
-  summary?: string;
-  content: string;
-  authorName: string;
-  authorRole?: string;
-  authorAvatarUrl?: string;
-  category?: string;
-  publishedDate?: string;
-}> = [
-  {
-    id: "safety-protocols",
-    imageUrl: "/images/event1.jpg",
-    title: "Safety Protocols in Modern Aviation",
-    summary: "A deep dive into protocols ensuring flight safety in today's advanced aviation sector.",
-    content: `<p>This article examines crucial safety measures adopted in the modern aviation industry, highlighting real-world implementation and continuous improvement strategies. From pre-flight checks to emergency protocols, pilots and engineers share insights into best practices.</p>
-      <ul>
-        <li>Detailed walkthroughs of mandatory safety checklists</li>
-        <li>Recent case studies of incident prevention</li>
-        <li>Recommendations for continuous safety education</li>
-      </ul>
-      <p>Adherence to robust safety protocols has cemented the reputation of aviation as the safest mode of transport globally.</p>`,
-    authorName: "Jane Doe",
-    authorRole: "Pilot",
-    authorAvatarUrl: "/images/leader.png",
-    category: "Safety",
-    publishedDate: "2024-03-21"
-  },
-  {
-    id: "maintaining-avionics",
-    imageUrl: "/images/plane.jpg",
-    title: "Maintaining Avionics: A Modern Perspective",
-    summary: "Best practices for avionics maintenance based on latest industry research.",
-    content: `<p>Modern avionics systems require a blend of traditional discipline and up-to-date digital knowhow. This article covers:</p>
-      <ol>
-        <li>Diagnostic tools for digital avionics suites</li>
-        <li>Maintenance log workflows and software</li>
-        <li>How to keep up with evolving OEM guidance</li>
-      </ol>
-      <p>Featuring expert interviews and actionable maintenance checklists for engineers.</p>`,
-    authorName: "Engr. Ifeanyi Okeke",
-    authorRole: "Avionics Engineer",
-    authorAvatarUrl: "/images/leader.png",
-    category: "Avionics",
-    publishedDate: "2023-12-17"
-  }
-];
-
-// Util to fetch publication by id
-function getPublicationById(id: string | undefined) {
-  if (!id) return null;
-  return PUBLICATIONS.find((p) => p.id === id) || null;
+function getInitials(name?: string) {
+  if (!name || typeof name !== "string" || !name.trim()) return "NA";
+  const parts = name.trim().split(/\s+/);
+  return parts.map((s) => s[0]?.toUpperCase() || "").join("").slice(0, 2) || "NA";
 }
 
 export default function MemberPublicationDetailPage() {
   const params = useParams();
   const router = useRouter();
-  // Next.js dynamic route params: [id]
   const id = Array.isArray(params?.id) ? params.id[0] : params?.id;
 
-  const publication = useMemo(() => getPublicationById(id), [id]);
+  const [publication, setPublication] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  if (!publication) {
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    setIsLoggedIn(!!token);
+  }, []);
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchPublication = async () => {
+      setLoading(true);
+      setError(false);
+      try {
+        const response = await api.get(`/publications/${id}`);
+        setPublication(response.data.data || response.data);
+      } catch (err) {
+        console.error("Failed to fetch publication:", err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPublication();
+  }, [id]);
+
+  if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-[#F8FAFC]">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !publication) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-slate-50">
         <div className="max-w-md text-center">
-          <h1 className="text-2xl font-semibold mb-2 text-[#2852B4]">Publication not found</h1>
-          <p className="mb-6 text-gray-500">
-            Sorry, we couldn't find that publication.
-          </p>
+          <h1 className="text-2xl font-bold mb-2 text-primary">Publication not found</h1>
+          <p className="mb-6 text-slate-500">Sorry, we couldn&apos;t find that publication.</p>
           <button
-            className="bg-[#2043A2] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#183077] transition-colors"
+            className="bg-primary text-white px-6 py-2.5 rounded-xl font-bold hover:bg-primary/90 transition-colors"
             onClick={() => router.push("/publication/members")}
           >
             Back to Publications
@@ -88,20 +71,128 @@ export default function MemberPublicationDetailPage() {
     );
   }
 
+  const authorName = publication.author?.name || "NAAPE Member";
+  const authorRole = publication.author?.role || "Member";
+  const authorAvatar = publication.author?.profile?.image?.url || null;
+  const category = publication.category;
+  const displayDate = publication.createdAt
+    ? new Date(publication.createdAt).toLocaleDateString("en-US", {
+      year: "numeric", month: "long", day: "numeric",
+    })
+    : "";
+
+  // Medium-style: show partial content if not logged in
+  const contentHtml = publication.content || "";
+  const showPaywall = !isLoggedIn;
+
   return (
-    <main className="min-h-screen bg-[#F8FAFC] py-10 px-2 sm:px-0 flex flex-col items-center">
-      <PublicationDetail
-        imageUrl={publication.imageUrl}
-        title={publication.title}
-        summary={publication.summary}
-        content={publication.content}
-        authorName={publication.authorName}
-        authorRole={publication.authorRole}
-        authorAvatarUrl={publication.authorAvatarUrl}
-        category={publication.category}
-        publishedDate={publication.publishedDate}
-        backHref="/publication/members"
-      />
+    <main className="min-h-screen bg-slate-50 pt-28 pb-16 px-4 flex flex-col items-center">
+      <article className="w-full max-w-3xl mx-auto bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+        {/* Header Image */}
+        <div className="relative w-full h-64 md:h-80 bg-slate-100">
+          {publication.image ? (
+            <Image
+              src={publication.image}
+              alt={publication.title}
+              fill
+              priority
+              className="object-cover"
+              sizes="(max-width:900px) 100vw, 900px"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-slate-400 text-xl">No Image</div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+          {category && (
+            <div className="absolute top-4 left-4 z-10">
+              <span className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold shadow-sm">
+                {category}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Body */}
+        <div className="flex flex-col gap-3 p-7 pt-6">
+          <h1 className="text-2xl md:text-3xl font-bold leading-tight mb-2 text-slate-900">
+            {publication.title}
+          </h1>
+
+          {displayDate && (
+            <div className="flex items-center gap-5 mb-2">
+              <span className="text-xs text-slate-400 font-medium">{displayDate}</span>
+            </div>
+          )}
+
+          {/* Author */}
+          <div className="flex items-center gap-3 mb-4">
+            <Avatar className="w-11 h-11 border border-slate-100">
+              {authorAvatar ? (
+                <AvatarImage src={authorAvatar} alt={authorName} />
+              ) : (
+                <AvatarFallback className="bg-slate-100 text-slate-600 text-sm font-bold">
+                  {getInitials(authorName)}
+                </AvatarFallback>
+              )}
+            </Avatar>
+            <div className="flex flex-col justify-center">
+              <span className="text-sm font-bold text-slate-900 leading-tight">{authorName}</span>
+              <span className="text-xs text-slate-400 font-medium capitalize">{authorRole}</span>
+            </div>
+          </div>
+
+          {/* Content with Medium-style paywall */}
+          <div className="relative">
+            <section
+              className={`prose md:prose-lg max-w-none text-slate-800 ${showPaywall ? "max-h-[400px] overflow-hidden" : ""}`}
+            >
+              <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
+            </section>
+
+            {/* Paywall gradient overlay */}
+            {showPaywall && (
+              <div className="absolute bottom-0 left-0 right-0">
+                <div className="h-48 bg-gradient-to-t from-white via-white/95 to-transparent" />
+                <div className="bg-white pt-2 pb-8 text-center">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">Continue Reading</h3>
+                  <p className="text-slate-500 mb-6 max-w-md mx-auto">
+                    Log in or create a free account to read the full publication.
+                  </p>
+                  <div className="flex items-center justify-center gap-3">
+                    <Link
+                      href="/login"
+                      className="px-8 py-3 bg-primary text-white rounded-xl font-bold shadow-md shadow-primary/20 hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                    >
+                      Log In
+                    </Link>
+                    <Link
+                      href="/register"
+                      className="px-8 py-3 bg-white text-primary border-2 border-primary/20 rounded-xl font-bold hover:border-primary/40 hover:-translate-y-0.5 transition-all"
+                    >
+                      Join Now
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Footer / Back */}
+        <footer className="px-7 pt-0 pb-6">
+          <Link
+            href="/publication/members"
+            className="inline-flex items-center gap-1 text-primary text-sm font-bold hover:text-primary/80 transition-colors"
+          >
+            ← Back to Publications
+          </Link>
+        </footer>
+      </article>
     </main>
   );
 }
