@@ -33,6 +33,7 @@ export default function MemberPublicationsComponent() {
                         limit: 9,
                         search: searchTerm || undefined,
                         authorRole: "member",
+                        status: "approved",
                     }
                 });
                 setPublications(response.data.data || []);

@@ -32,6 +32,7 @@ export default function NaapePublicationsComponent() {
                         limit: 9,
                         search: searchTerm || undefined,
                         authorRole: "admin",
+                        status: "approved",
                     }
                 });
                 setPublications(response.data.data || []);
