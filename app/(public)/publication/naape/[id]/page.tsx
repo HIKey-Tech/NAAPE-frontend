@@ -47,14 +47,6 @@ export default function NaapePublicationDetailPage() {
         const data = user 
           ? await getSinglePublication(id)
           : await getSinglePublicationPublic(id);
-        
-        console.log("=== FRONTEND PUBLICATION DEBUG ===");
-        console.log("User logged in:", !!user);
-        console.log("Publication data:", data);
-        console.log("isPreview:", data.isPreview);
-        console.log("requiresSubscription:", data.requiresSubscription);
-        console.log("Content length:", data.content?.length);
-        
         setPublication(data);
       } catch (err: any) {
         console.error("Failed to fetch publication:", err);
