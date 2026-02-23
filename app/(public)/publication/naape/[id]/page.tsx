@@ -3,7 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import PublicationDetail from "@/components/ui/custom/publication.detail";
-import { getSinglePublicationPublic } from "@/app/api/publication/publication";
+import { getSinglePublicationPublic, getSinglePublication } from "@/app/api/publication/publication";
 import { useAuth } from "@/context/authcontext";
 import { NaapButton } from "@/components/ui/custom/button.naap";
 
@@ -43,7 +43,10 @@ export default function NaapePublicationDetailPage() {
       setError(null);
       
       try {
-        const data = await getSinglePublicationPublic(id);
+        // Use authenticated API if user is logged in, otherwise use public API
+        const data = user 
+          ? await getSinglePublication(id)
+          : await getSinglePublicationPublic(id);
         setPublication(data);
       } catch (err: any) {
         console.error("Failed to fetch publication:", err);
@@ -54,7 +57,7 @@ export default function NaapePublicationDetailPage() {
     };
 
     fetchPublication();
-  }, [id]);
+  }, [id, user]);
 
   if (loading) {
     return (
