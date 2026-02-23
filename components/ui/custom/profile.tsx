@@ -431,10 +431,10 @@ export default function ProfilePage() {
             </div>
 
             {/* --- CONTENT GRID --- */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
                 {/* LEFT COL: Personal & Stats */}
-                <div className="space-y-8">
+                <div className="space-y-4">
                     {/* Stats */}
                     {profile.stats && (
                         <SectionCard title="Publication Stats" icon={MdCreditCard}>
@@ -452,16 +452,16 @@ export default function ProfilePage() {
                             <DetailRow label="Member Since" value={new Date(profile.createdAt).toLocaleDateString()} icon={MdDateRange} />
                             <DetailRow label="Member ID" value={<span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-xs">{profile._id}</span>} icon={MdBadge} />
                             <DetailRow label="Status" value={profile.isVerified ? "Verified" : "Unverified"} icon={MdOutlineCheckCircle} />
-                            <div className="pt-3 mt-2 border-t border-slate-50 dark:border-slate-800/50">
-                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Subscription</h4>
+                            <div className="pt-2 mt-1 border-t border-slate-50 dark:border-slate-800/50">
+                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">Subscription</h4>
                                 {subscriptionStatus?.hasSubscription ? (
-                                    <div className="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg border border-amber-100 dark:border-amber-800">
+                                    <div className="bg-amber-50 dark:bg-amber-900/20 p-2.5 rounded-lg border border-amber-100 dark:border-amber-800">
                                         <p className="text-sm font-bold text-amber-800 dark:text-amber-500">{subscriptionStatus.planName || "Active Plan"}</p>
-                                        <p className="text-xs text-amber-600 mt-1">Expires: {new Date(subscriptionStatus.endDate!).toLocaleDateString()}</p>
+                                        <p className="text-xs text-amber-600 mt-0.5">Expires: {new Date(subscriptionStatus.endDate!).toLocaleDateString()}</p>
                                     </div>
                                 ) : (
-                                    <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700 text-center">
-                                        <p className="text-sm font-medium text-slate-500 mb-2">Basic Membership</p>
+                                    <div className="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-lg border border-slate-100 dark:border-slate-700 text-center">
+                                        <p className="text-sm font-medium text-slate-500 mb-1.5">Basic Membership</p>
                                         <a href="/subscription" className="text-xs font-bold text-primary hover:underline">Upgrade to Premium</a>
                                     </div>
                                 )}
@@ -471,7 +471,7 @@ export default function ProfilePage() {
                 </div>
 
                 {/* RIGHT COL: Detailed Form Info */}
-                <div className="lg:col-span-2 space-y-8">
+                <div className="lg:col-span-2 space-y-4">
 
                     {/* Personal Information */}
                     <SectionCard title="Personal Information" icon={MdOutlinePerson}>
@@ -500,11 +500,11 @@ export default function ProfilePage() {
                     {/* Profile Link Section */}
                     {profile.profileSlug && (
                         <SectionCard title="Your Profile Link" icon={MdOutlineAlternateEmail}>
-                            <div className="space-y-4">
+                            <div className="space-y-2">
                                 <p className="text-sm text-slate-600 dark:text-slate-400">
                                     Share this link to showcase your professional profile to others
                                 </p>
-                                <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+                                <div className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
                                     <code className="flex-1 text-sm font-mono text-primary dark:text-blue-400 break-all">
                                         {typeof window !== 'undefined' ? `${window.location.origin}/dashboard/members/${profile.profileSlug}` : `/dashboard/members/${profile.profileSlug}`}
                                     </code>
@@ -514,7 +514,7 @@ export default function ProfilePage() {
                                             navigator.clipboard.writeText(url);
                                             toast.success("Profile link copied to clipboard!");
                                         }}
-                                        className="shrink-0 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-semibold transition-colors"
+                                        className="shrink-0 px-3 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-semibold transition-colors"
                                     >
                                         Copy Link
                                     </button>
