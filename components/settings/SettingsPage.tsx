@@ -53,17 +53,10 @@ export function SettingsPage({ basePath }: { basePath: string }) {
                             <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-full border border-slate-200 dark:border-slate-700">
                                 <button
                                     onClick={() => setTheme("light")}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${!isDark ? "bg-white text-primary shadow-sm ring-1 ring-slate-900/5" : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"}`}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${!isDark ? "bg-white text-primary shadow-sm ring-1 ring-slate-900/5" : "text-slate-500 hover:text-slate-700"}`}
                                 >
                                     <FaSun size={14} />
-                                    Light
-                                </button>
-                                <button
-                                    onClick={() => setTheme("dark")}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${isDark ? "bg-slate-700 text-white shadow-sm ring-1 ring-white/10" : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"}`}
-                                >
-                                    <FaMoon size={14} />
-                                    Dark
+                                    Light Theme Active
                                 </button>
                             </div>
                         </div>

@@ -5,11 +5,20 @@ import { MembersTable } from "./components/members.table";
 import { useMembers } from "@/hooks/useMembers";
 import { useMakeAdmin } from "@/hooks/useMakeAdmin";
 import { FaUsers, FaExclamationTriangle } from "react-icons/fa";
+import MemberDetailsModal from "./components/member.details.modal";
+import { IMember } from "@/app/api/member/type";
 
 const AdminMembersPage: React.FC = () => {
     const { data: members = [], isLoading, error: fetchError } = useMembers();
     const { mutate: makeAdmin, isPending, error: mutationError } = useMakeAdmin();
     const [makingAdminId, setMakingAdminId] = useState<string | null>(null);
+    const [selectedMember, setSelectedMember] = useState<IMember | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleRowClick = (member: IMember) => {
+        setSelectedMember(member);
+        setIsModalOpen(true);
+    };
 
     const handleMakeAdmin = (memberId: string) => {
         setMakingAdminId(memberId);
@@ -53,8 +62,15 @@ const AdminMembersPage: React.FC = () => {
                     isLoading={isLoading}
                     onMakeAdmin={handleMakeAdmin}
                     makeAdminLoadingId={isPending ? makingAdminId : null}
+                    onRowClick={handleRowClick}
                 />
             </div>
+
+            <MemberDetailsModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                member={selectedMember}
+            />
         </div>
     );
 };

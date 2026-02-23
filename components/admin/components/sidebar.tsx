@@ -57,6 +57,7 @@ const userManagementLinks: NavLink[] = [
 
 const contentLinks: NavLink[] = [
     { label: "Communications", icon: FaEnvelope, href: "/admin/communications", group: "Content" },
+    { label: "Gallery", icon: FaSearch, href: "/admin/gallery", group: "Content" },
 ];
 
 const publicationsDropdownLinks: NavLink[] = [

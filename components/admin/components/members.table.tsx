@@ -42,6 +42,7 @@ export interface MembersTableProps {
     onMakeAdmin?: (memberId: string) => void;
     isLoading?: boolean;
     makeAdminLoadingId?: string | null;
+    onRowClick?: (member: IMember) => void;
 }
 
 export const MembersTable: React.FC<MembersTableProps> = ({
@@ -49,6 +50,7 @@ export const MembersTable: React.FC<MembersTableProps> = ({
     onMakeAdmin,
     isLoading,
     makeAdminLoadingId,
+    onRowClick,
 }) => {
     if (isLoading) {
         return (
@@ -86,7 +88,11 @@ export const MembersTable: React.FC<MembersTableProps> = ({
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                     {members.map((member, idx) => (
-                        <tr key={member._id} className="group hover:bg-slate-50/50 transition-colors">
+                        <tr
+                            key={member._id}
+                            className={`group hover:bg-slate-50/50 transition-colors ${onRowClick ? "cursor-pointer" : ""}`}
+                            onClick={() => onRowClick && onRowClick(member)}
+                        >
                             <td className="py-4 px-5 text-xs text-slate-400 font-mono">{idx + 1}</td>
                             <td className="py-4 px-5">
                                 <div className="flex items-center gap-3">
@@ -104,8 +110,8 @@ export const MembersTable: React.FC<MembersTableProps> = ({
                             </td>
                             <td className="py-4 px-5">
                                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${member.role === "admin"
-                                        ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
-                                        : "bg-slate-100 text-slate-600"
+                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                                    : "bg-slate-100 text-slate-600"
                                     }`}>
                                     {member.role === "admin" && <FaShieldAlt size={10} />}
                                     <span className="capitalize">{member.role}</span>
@@ -114,7 +120,7 @@ export const MembersTable: React.FC<MembersTableProps> = ({
                             <td className="py-4 px-5 hidden sm:table-cell">
                                 <span className="text-sm text-slate-500 font-medium">{formatDate(member.createdAt)}</span>
                             </td>
-                            <td className="py-4 px-5 text-right">
+                            <td className="py-4 px-5 text-right" onClick={(e) => e.stopPropagation()}>
                                 {member.role === "admin" ? (
                                     <span className="text-xs text-slate-400 italic font-medium">Admin</span>
                                 ) : onMakeAdmin ? (
