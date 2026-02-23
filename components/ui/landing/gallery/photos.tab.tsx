@@ -3,6 +3,7 @@
 import * as React from "react";
 import { LandingTabs, TabItem } from "@/components/ui/custom/landing.tab";
 import { motion, AnimatePresence } from "framer-motion";
+import api from "@/lib/axios";
 
 // --- Photo Card ---
 function PhotoCard({ photo, index, onClick }: { photo: { src: string; alt: string }, index: number, onClick: (photo: { src: string; alt: string }) => void }) {
@@ -112,11 +113,8 @@ export default function PhotoGalleryTab() {
   React.useEffect(() => {
     const fetchGallery = async () => {
       try {
-        // Fetch from our new backend gallery route
-        // Assuming we set up a proxy or the base URL is handled internally, but for now we'll just hit the NEXT_PUBLIC_API_URL or relative
-        const res = await fetch(process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1/gallery` : '/api/v1/gallery');
-        const data = await res.json();
-        if (res.ok && data.data && data.data.length > 0) {
+        const { data } = await api.get("/gallery");
+        if (data.data && data.data.length > 0) {
           const tabs: TabItem[] = data.data.map((cat: any) => ({
             value: cat.title,
             label: cat.title.charAt(0).toUpperCase() + cat.title.slice(1),

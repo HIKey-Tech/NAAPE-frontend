@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { FaTrash, FaUpload, FaImages } from "react-icons/fa";
+import api from "@/lib/axios";
 
 interface GalleryImage {
     _id: string;
@@ -24,13 +25,10 @@ export default function AdminGalleryPage() {
 
     const fetchGallery = async () => {
         try {
-            const res = await fetch("/api/v1/gallery");
-            const data = await res.json();
-            if (res.ok) {
-                setImages(data.rawImages || []);
-                const cats = data.data.map((d: any) => d.title) as string[];
-                setCategories(cats);
-            }
+            const { data } = await api.get("/gallery");
+            setImages(data.rawImages || []);
+            const cats = data.data.map((d: any) => d.title) as string[];
+            setCategories(cats);
         } catch (error) {
             console.error(error);
         }
@@ -56,28 +54,20 @@ export default function AdminGalleryPage() {
 
         setIsUploading(true);
         try {
-            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-            const res = await fetch("/api/v1/gallery", {
-                method: "POST",
+            await api.post("/gallery", formData, {
                 headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                body: formData
+                    "Content-Type": "multipart/form-data"
+                }
             });
 
-            if (res.ok) {
-                setFiles([]);
-                setCategory("");
-                setNewCategory("");
-                setCaption("");
-                await fetchGallery();
-            } else {
-                const data = await res.json();
-                alert(data.message || "Upload failed");
-            }
-        } catch (error) {
+            setFiles([]);
+            setCategory("");
+            setNewCategory("");
+            setCaption("");
+            await fetchGallery();
+        } catch (error: any) {
             console.error(error);
-            alert("Upload failed");
+            alert(error?.response?.data?.message || "Upload failed");
         } finally {
             setIsUploading(false);
         }
@@ -86,21 +76,11 @@ export default function AdminGalleryPage() {
     const handleDelete = async (id: string) => {
         if (!confirm("Are you sure you want to delete this image?")) return;
         try {
-            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-            const res = await fetch(`/api/v1/gallery/${id}`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            if (res.ok) {
-                await fetchGallery();
-            } else {
-                alert("Failed to delete image.");
-            }
+            await api.delete(`/gallery/${id}`);
+            await fetchGallery();
         } catch (error) {
             console.error(error);
+            alert("Failed to delete image.");
         }
     };
 
