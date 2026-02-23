@@ -79,7 +79,7 @@ const ReplyItem: React.FC<{ reply: ForumReply; threadId: string; isNested?: bool
         <div className={`${isNested ? "ml-8 mt-4" : "mt-6"}`}>
             <div className="bg-slate-50/80 rounded-2xl border border-slate-100 p-5 hover:border-slate-200 transition-colors">
                 {/* Author Info */}
-                <div className="flex items-start justify-between mb-3">
+                <div className="flex flex-wrap items-start justify-between gap-y-2 mb-3">
                     <Link
                         href={`/dashboard/members/${reply.author._id}`}
                         className="flex items-center gap-3 group/author"
@@ -425,7 +425,7 @@ const ForumThreadDetail: React.FC<ForumThreadDetailProps> = ({ threadId }) => {
                                     </span>
                                 )}
                             </div>
-                            <div className="flex items-center gap-3 text-sm text-slate-400">
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-400">
                                 <span>{formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })}</span>
                                 <span>·</span>
                                 <span className="flex items-center gap-1">

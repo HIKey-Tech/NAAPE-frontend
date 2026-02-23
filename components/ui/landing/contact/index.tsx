@@ -174,8 +174,8 @@ export default function ContactSection() {
                             className="object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
-                        <div className="absolute bottom-6 left-6 right-6 text-white text-center">
-                            <p className="font-bold text-lg">"We are dedicated to serving our members with excellence and integrity."</p>
+                        <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 text-white text-center">
+                            <p className="font-bold text-sm sm:text-lg">"We are dedicated to serving our members with excellence and integrity."</p>
                         </div>
                     </div>
 

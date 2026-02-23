@@ -116,13 +116,13 @@ const UserManagementSection: React.FC = () => {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div><h1 className="text-2xl font-bold text-slate-900">User Management</h1><p className="text-slate-500">Manage forum users and permissions</p></div>
                 <Button onClick={fetchUsers} disabled={isLoading} variant="outline" size="sm" className="rounded-xl font-bold border-slate-200"><FaSyncAlt className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />Refresh</Button>
             </div>
 
             {/* Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {statCards.map((s, i) => (
                     <div key={i} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
                         <div className="flex items-center justify-between mb-3">

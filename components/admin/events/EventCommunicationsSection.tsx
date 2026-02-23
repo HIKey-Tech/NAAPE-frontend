@@ -81,7 +81,7 @@ export function EventCommunicationsSection({ selectedEventId, attendees, templat
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div><h2 className="text-2xl font-black text-slate-900">Event Communications</h2><p className="text-slate-500 text-sm">Send notifications and updates to attendees</p></div>
                 <Select value={selectedEventId || ""} onValueChange={onEventSelect}>
-                    <SelectTrigger className="w-64 rounded-xl border-slate-200"><SelectValue placeholder="Select an event" /></SelectTrigger>
+                    <SelectTrigger className="w-full sm:w-64 rounded-xl border-slate-200"><SelectValue placeholder="Select an event" /></SelectTrigger>
                     <SelectContent>{events.map(e => <SelectItem key={e._id} value={e._id}>{e.title}</SelectItem>)}</SelectContent>
                 </Select>
             </div>
@@ -94,9 +94,9 @@ export function EventCommunicationsSection({ selectedEventId, attendees, templat
                 </div>
             ) : (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                    <TabsList className="grid w-full grid-cols-5 bg-slate-100 rounded-xl p-1">
+                    <TabsList className="flex w-full overflow-x-auto bg-slate-100 rounded-xl p-1 gap-1">
                         {[{ v: "compose", icon: FaEnvelope, l: "Compose" }, { v: "templates", icon: FaFileAlt, l: "Templates" }, { v: "new-template", icon: FaPlus, l: "New" }, { v: "recipients", icon: FaUsers, l: "Recipients" }, { v: "history", icon: FaHistory, l: "History" }].map(t => (
-                            <TabsTrigger key={t.v} value={t.v} className="flex items-center gap-1.5 rounded-lg text-xs font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm"><t.icon size={12} />{t.l}</TabsTrigger>
+                            <TabsTrigger key={t.v} value={t.v} className="flex items-center gap-1.5 rounded-lg text-xs font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm whitespace-nowrap flex-1 min-w-0 justify-center"><t.icon size={12} />{t.l}</TabsTrigger>
                         ))}
                     </TabsList>
 

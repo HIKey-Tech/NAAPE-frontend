@@ -54,7 +54,7 @@ const ForumAnalyticsSection: React.FC = () => {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex justify-between items-start">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div><h1 className="text-2xl font-black text-slate-900">Forum Analytics</h1><p className="text-slate-500 text-sm">Statistics and insights about forum activity</p></div>
                 <div className="flex gap-2">
                     <Button onClick={applyFilters} disabled={isRefreshing} variant="outline" size="sm" className="rounded-xl font-bold"><FaSyncAlt className={`w-3 h-3 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} /> Refresh</Button>
@@ -92,7 +92,7 @@ const ForumAnalyticsSection: React.FC = () => {
 
             {/* Key Metrics */}
             {analyticsOverview && (
-                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {metricStats.map(s => (
                         <div key={s.label} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${s.iconClass}`}><s.icon size={16} /></div>

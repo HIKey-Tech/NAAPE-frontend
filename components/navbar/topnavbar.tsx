@@ -235,7 +235,7 @@ export default function TopNavbar() {
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                 transition={{ duration: 0.2 }}
-                                className="absolute right-0 mt-3 w-80 sm:w-96 bg-white dark:bg-[#0f121b] border border-slate-100 dark:border-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none z-50 overflow-hidden origin-top-right ring-1 ring-slate-900/5 dark:ring-white/5"
+                                className="absolute right-0 mt-3 w-80 sm:w-96 max-w-[calc(100vw-2rem)] bg-white dark:bg-[#0f121b] border border-slate-100 dark:border-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none z-50 overflow-hidden origin-top-right ring-1 ring-slate-900/5 dark:ring-white/5"
                             >
                                 <div className="p-4 border-b border-slate-50 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
                                     <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">Notifications</h3>
@@ -347,7 +347,7 @@ export default function TopNavbar() {
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                 transition={{ duration: 0.2 }}
-                                className="absolute right-0 mt-3 w-64 bg-white dark:bg-[#0f121b] border border-slate-100 dark:border-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none z-50 overflow-hidden ring-1 ring-slate-900/5 dark:ring-white/5"
+                                className="absolute right-0 mt-3 w-64 max-w-[calc(100vw-2rem)] bg-white dark:bg-[#0f121b] border border-slate-100 dark:border-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none z-50 overflow-hidden ring-1 ring-slate-900/5 dark:ring-white/5"
                             >
                                 <div className="p-2 border-b border-slate-50 dark:border-slate-800">
                                     <div className="px-3 py-2">

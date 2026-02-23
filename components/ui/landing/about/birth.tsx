@@ -36,7 +36,7 @@ export default function BirthSection() {
                         <div className="absolute inset-0 bg-primary/10 mix-blend-multiply" />
                     </div>
                     {/* Floating Caption */}
-                    <div className="absolute -bottom-6 -right-6 md:right-10 bg-white p-4 rounded-xl shadow-xl border border-slate-100 max-w-xs">
+                    <div className="absolute bottom-2 right-2 sm:bottom-[-1.5rem] sm:right-[-1.5rem] md:right-10 bg-white p-3 sm:p-4 rounded-xl shadow-xl border border-slate-100 max-w-[200px] sm:max-w-xs z-10">
                         <div className="flex items-center gap-3 mb-2">
                             <div className="p-2 bg-accent/10 rounded-full text-accent">
                                 <Calendar size={18} />

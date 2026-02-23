@@ -172,8 +172,8 @@ export default function AdvertisementSection() {
             maxWidth: 570,
             marginBottom: 28,
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "0 20px",
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gap: "20px",
             position: "relative",
           }}
         >

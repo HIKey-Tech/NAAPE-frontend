@@ -190,12 +190,12 @@ export default function CustomHeroSection({
                                 />
                                 {slides[current].caption && (
                                     <motion.div
-                                        className="absolute bottom-0 left-0 w-full p-4 bg-white/95 border-t-2 border-primary"
+                                        className="absolute bottom-0 left-0 w-full p-3 md:p-4 bg-white/95 border-t-2 border-primary"
                                         initial={{ opacity: 0, y: 30 }}
                                         animate={{ opacity: 1, y: 0, transition: { delay: 0.13, duration: 0.38 } }}
                                         exit={{ opacity: 0, y: 30, transition: { duration: 0.21 } }}
                                     >
-                                        <span className="text-slate-900 text-base md:text-lg font-bold">
+                                        <span className="text-slate-900 text-sm md:text-lg font-bold line-clamp-2">
                                             {slides[current].caption}
                                         </span>
                                     </motion.div>

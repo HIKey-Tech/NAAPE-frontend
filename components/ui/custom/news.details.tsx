@@ -104,7 +104,7 @@ const NewsDetails: React.FC<NewsDetailsProps> = ({
                 <h1 className="text-[1.95rem] md:text-[2.7rem] font-extrabold leading-tight mb-2.5 text-slate-900 dark:text-slate-100 tracking-tight">
                     {title}
                 </h1>
-                <div className="flex items-center gap-5 mb-3 mt-1">
+                <div className="flex flex-wrap items-center gap-3 md:gap-5 mb-3 mt-1">
                     {/* Author */}
                     {author && (
                         <div className="flex items-center gap-2">

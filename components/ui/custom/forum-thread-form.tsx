@@ -194,7 +194,7 @@ const ForumThreadFormContent: React.FC<ForumThreadFormProps> = ({ threadId }) =>
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-border">
+                <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-100 dark:border-border">
                     <button
                         type="submit"
                         disabled={createThread.isPending || updateThread.isPending}

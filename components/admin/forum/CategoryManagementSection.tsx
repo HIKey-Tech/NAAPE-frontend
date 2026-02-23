@@ -57,7 +57,7 @@ const CategoryManagementSection: React.FC = () => {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div><h1 className="text-2xl font-black text-slate-900">Category Management</h1><p className="text-slate-500 text-sm">Create, edit, and organize forum categories</p></div>
                 <div className="flex gap-2">
                     <Button onClick={fetchCategories} disabled={isLoading} variant="outline" size="sm" className="rounded-xl font-bold"><FaSyncAlt className={`w-3 h-3 mr-2 ${isLoading ? 'animate-spin' : ''}`} /> Refresh</Button>
@@ -66,7 +66,7 @@ const CategoryManagementSection: React.FC = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {stats.map(s => (
                     <div key={s.label} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex items-center gap-4">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${s.iconClass}`}><s.icon size={16} /></div>
@@ -97,7 +97,7 @@ const CategoryManagementSection: React.FC = () => {
                         <div className="space-y-2">
                             {categoriesWithCounts.map((category, index) => (
                                 <div key={category._id}
-                                    className={`flex items-center gap-4 p-4 border rounded-xl transition-all duration-200 ${draggedCategory?._id === category._id ? 'bg-primary/5 border-primary/20 shadow-lg scale-[1.02]' : 'bg-white hover:bg-slate-50 border-slate-100 hover:border-slate-200'} ${!category.isActive ? 'opacity-60' : ''}`}
+                                    className={`flex flex-wrap items-center gap-3 sm:gap-4 p-4 border rounded-xl transition-all duration-200 ${draggedCategory?._id === category._id ? 'bg-primary/5 border-primary/20 shadow-lg scale-[1.02]' : 'bg-white hover:bg-slate-50 border-slate-100 hover:border-slate-200'} ${!category.isActive ? 'opacity-60' : ''}`}
                                     draggable={!isReordering} onDragStart={e => !isReordering && handleDragStart(e, category)} onDragEnd={handleDragEnd}
                                     onDragOver={!isReordering ? handleDragOver : undefined} onDragEnter={!isReordering ? handleDragEnter : undefined}
                                     onDragLeave={!isReordering ? handleDragLeave : undefined} onDrop={!isReordering ? e => handleDrop(e, category) : undefined}

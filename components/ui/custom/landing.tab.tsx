@@ -249,7 +249,8 @@ export function LandingTabs({
                     >
                         <TabsList
                             className={`
-                                bg-transparent p-0 flex flex-row space-x-1 md:space-x-2 w-full md:w-fit overflow-x-auto scrollbar-hide
+                                bg-transparent p-0 flex flex-row flex-nowrap space-x-1 md:space-x-2 w-full md:w-fit overflow-x-auto scrollbar-hide snap-x snap-mandatory
+                                [-webkit-overflow-scrolling:touch]
                                 ${tabListClassName}
                             `}
                             tabIndex={-1}
@@ -259,7 +260,7 @@ export function LandingTabs({
                                     key={tab.value}
                                     value={tab.value}
                                     className={`
-                                        text-sm md:text-base w-full md:w-auto min-w-[80px] md:min-w-[100px]
+                                        text-sm md:text-base w-auto min-w-[80px] md:min-w-[100px] shrink-0 snap-start
                                         text-slate-700 hover:text-primary px-2 md:px-3 py-2 md:py-2 font-semibold
                                         focus-visible:ring-2 focus-visible:ring-primary/30 rounded-xl transition-colors border-b-2 border-transparent
                                         data-[state=active]:border-primary data-[state=active]:text-primary

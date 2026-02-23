@@ -120,7 +120,7 @@ export default function Hero() {
                         />
 
                         <motion.div
-                            className="text-xl sm:text-2xl md:text-3xl font-medium text-slate-200 min-h-[3rem]"
+                            className="text-xl sm:text-2xl md:text-3xl font-medium text-slate-200 min-h-[6rem] sm:min-h-[4.5rem] md:min-h-[3rem]"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.4, duration: 0.8 }}
@@ -142,7 +142,7 @@ export default function Hero() {
                         </motion.p>
 
                         <motion.div
-                            className="flex flex-row gap-4 mt-8"
+                            className="flex flex-col sm:flex-row gap-4 mt-8 w-full sm:w-auto"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.8, duration: 0.8 }}

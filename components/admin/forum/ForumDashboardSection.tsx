@@ -62,7 +62,7 @@ const ForumDashboardSection: React.FC = () => {
         <ErrorBoundary>
             <div className="space-y-6">
                 {/* Header */}
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     <div>
                         <h1 className="text-2xl font-black text-slate-900">Forum Dashboard</h1>
                         <p className="text-slate-500 text-sm">Overview of forum activity and key metrics</p>

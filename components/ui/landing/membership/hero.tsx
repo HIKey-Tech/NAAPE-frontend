@@ -80,7 +80,7 @@ export default function MembershipHeroSection() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5 }}
-                        className="absolute -left-8 bottom-20 bg-white p-4 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-3"
+                        className="absolute hidden sm:flex -left-4 md:-left-8 bottom-10 md:bottom-20 bg-white p-4 rounded-2xl shadow-xl border border-slate-100 items-center gap-3"
                     >
                         <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                             <Shield className="text-primary" size={20} />
@@ -95,7 +95,7 @@ export default function MembershipHeroSection() {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.7 }}
-                        className="absolute -right-4 top-20 bg-white p-4 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-3"
+                        className="absolute hidden sm:flex -right-2 md:-right-4 top-10 md:top-20 bg-white p-4 rounded-2xl shadow-xl border border-slate-100 items-center gap-3"
                     >
                         <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center">
                             <TrendingUp className="text-accent" size={20} />

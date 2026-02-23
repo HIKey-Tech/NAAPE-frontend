@@ -123,7 +123,7 @@ const ReportManagementSection: React.FC = () => {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900">Report Management</h1>
                     <p className="text-slate-500">Review and process user reports</p>
@@ -134,7 +134,7 @@ const ReportManagementSection: React.FC = () => {
             </div>
 
             {/* Statistics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {statCards.map((s, i) => (
                     <div key={i} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
                         <div className="flex items-center justify-between mb-3">
@@ -193,7 +193,7 @@ const ReportManagementSection: React.FC = () => {
             {/* Bulk Actions */}
             {selectedReports.length > 0 && (
                 <div className="bg-primary/5 rounded-2xl border border-primary/20 shadow-sm p-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                         <span className="text-sm font-bold text-primary/90">{selectedReports.length} report{selectedReports.length !== 1 ? 's' : ''} selected</span>
                         <div className="flex gap-2">
                             <Button size="sm" onClick={() => handleBulkAction('resolve')} disabled={isProcessing} className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-md shadow-emerald-600/20"><FaCheckCircle className="w-4 h-4 mr-2" />Bulk Resolve</Button>
@@ -226,7 +226,7 @@ const ReportManagementSection: React.FC = () => {
                     ) : (
                         <div className="space-y-3">
                             {filteredReports.map((report) => (
-                                <div key={report._id} className="flex items-center gap-4 p-4 rounded-xl bg-slate-50/50 border border-slate-100 hover:border-slate-200 hover:bg-slate-50 transition-all duration-200">
+                                <div key={report._id} className="flex flex-wrap items-center gap-3 sm:gap-4 p-4 rounded-xl bg-slate-50/50 border border-slate-100 hover:border-slate-200 hover:bg-slate-50 transition-all duration-200">
                                     <Checkbox checked={selectedReports.includes(report._id)} onCheckedChange={(checked) => handleSelectReport(report._id, checked as boolean)} />
                                     <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-slate-100">{getTypeIcon(report.reportType)}</div>
                                     <div className="flex-1 min-w-0">

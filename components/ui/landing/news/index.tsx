@@ -129,7 +129,7 @@ export default function NewsHeroSection({
                                 style={{ visibility: total < 2 ? "hidden" : undefined }}
                             >
                                 <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                                    <circle cx="11" cy="11" r="10" stroke="#357AA8" strokeWidth="1" fill="none"/>
+                                    <circle cx="11" cy="11" r="10" stroke="#357AA8" strokeWidth="1" fill="none" />
                                     <path d="M13.5 16L9.5 11L13.5 6" stroke="#357AA8" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
                             </button>
@@ -141,7 +141,7 @@ export default function NewsHeroSection({
                                 style={{ visibility: total < 2 ? "hidden" : undefined }}
                             >
                                 <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                                    <circle cx="11" cy="11" r="10" stroke="#357AA8" strokeWidth="1" fill="none"/>
+                                    <circle cx="11" cy="11" r="10" stroke="#357AA8" strokeWidth="1" fill="none" />
                                     <path d="M8.5 6L12.5 11L8.5 16" stroke="#357AA8" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
                             </button>
@@ -183,7 +183,7 @@ export default function NewsHeroSection({
                                 />
                                 {(slides[current].caption || slides[current].headline || slides[current].excerpt) && (
                                     <motion.div
-                                        className="absolute bottom-0 left-0 w-full flex flex-col items-start p-5 bg-white/75 md:bg-white/85 border-t-4 border-primary min-h-[6.2rem]"
+                                        className="absolute bottom-0 left-0 w-full flex flex-col items-start p-5 pb-10 sm:pb-8 bg-white/75 md:bg-white/85 border-t-4 border-primary min-h-[6.2rem]"
                                         initial={{ opacity: 0, y: 40 }}
                                         animate={{ opacity: 1, y: 0, transition: { delay: 0.13, duration: 0.5 } }}
                                         exit={{ opacity: 0, y: 40, transition: { duration: 0.28 } }}

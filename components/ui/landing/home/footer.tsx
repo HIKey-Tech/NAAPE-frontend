@@ -7,7 +7,7 @@ export default function Footer() {
     return (
         <footer className="bg-[#1a1f36] text-white text-sm w-full mt-auto pt-16 pb-6 px-6 md:px-12 transition-all border-t border-slate-800">
             {/* Top Section */}
-            <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-12 md:gap-24 mb-16 relative">
+            <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-start lg:justify-between gap-12 lg:gap-24 mb-16 relative">
 
                 {/* Brand + Title */}
                 <div className="flex flex-row items-center gap-4 mb-7 md:mb-0">

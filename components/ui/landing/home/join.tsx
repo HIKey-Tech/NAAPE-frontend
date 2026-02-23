@@ -7,7 +7,7 @@ import { ArrowRight, Mail } from "lucide-react";
 export default function JoinCommunitySection() {
   return (
     <section className="w-full px-6 py-20">
-      <div className="max-w-7xl mx-auto rounded-[3rem] bg-slate-900 overflow-hidden relative isolate">
+      <div className="max-w-7xl mx-auto rounded-2xl md:rounded-[3rem] bg-slate-900 overflow-hidden relative isolate">
 
         {/* Abstract Background Shapes */}
         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[500px] h-[500px] bg-primary/30 rounded-full blur-3xl opacity-50" />

@@ -282,7 +282,7 @@ export default function TopNavbar() {
                 <X size={24} />
               </button>
             </div>
-            <div className="p-4 flex flex-col gap-2">
+            <div className="p-4 flex flex-col gap-2 overflow-y-auto max-h-[80vh] scrollbar-hide">
               {menuItems.map((item) => (
                 <div key={item.label} className="w-full">
                   <Button variant="ghost" className="w-full justify-start font-bold text-slate-700" onClick={() => {

@@ -16,7 +16,7 @@ export default function AboutSection() {
             <div className="relative z-10 flex flex-col md:flex-row justify-center items-center gap-16 w-full max-w-7xl mx-auto">
                 {/* Left: Card-like video preview */}
                 <div className="flex-shrink-0 w-full md:w-1/2 group">
-                    <div className="relative rounded-3xl overflow-hidden bg-slate-900 border border-white/10 shadow-2xl shadow-indigo-500/10 min-h-[500px]">
+                    <div className="relative rounded-3xl overflow-hidden bg-slate-900 border border-white/10 shadow-2xl shadow-indigo-500/10 min-h-[300px] md:min-h-[500px]">
                         <Image
                             src="/images/handplane.jpg"
                             alt="Nigerian pilots in cockpit"

@@ -258,7 +258,7 @@ const ForumThreadList: React.FC<ForumThreadListProps> = ({ categoryId, categoryN
                     ← Back to Categories
                 </button>
                 <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">{categoryName || "Threads"}</h1>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     <p className="text-slate-500 dark:text-slate-400">
                         {data?.pagination.total || 0} threads
                     </p>
