@@ -88,7 +88,7 @@ export default function NaapePublicationDetailPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F8FAFC] py-10 px-2 sm:px-0 flex flex-col items-center">
+    <main className="min-h-screen bg-[#F8FAFC] pt-24 pb-10 px-2 sm:px-0 flex flex-col items-center">
       <PublicationDetail
         imageUrl={publication.image || "/logo.png"}
         title={publication.title}
