@@ -77,11 +77,11 @@ export interface ProfileData {
 
 function SectionCard({ children, title, icon: Icon, action }: { children: React.ReactNode, title: string, icon?: React.ElementType, action?: React.ReactNode }) {
     return (
-        <div className="bg-white dark:bg-card rounded-2xl border border-slate-100 dark:border-border shadow-sm p-6 sm:p-8 h-full">
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                    {Icon && <div className="p-2 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-lg"><Icon size={20} /></div>}
-                    <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100">{title}</h3>
+        <div className="bg-white dark:bg-card rounded-2xl border border-slate-100 dark:border-border shadow-sm p-4 sm:p-5 h-full">
+            <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                    {Icon && <div className="p-1.5 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-lg"><Icon size={18} /></div>}
+                    <h3 className="font-bold text-base text-slate-800 dark:text-slate-100">{title}</h3>
                 </div>
                 {action}
             </div>
@@ -93,8 +93,8 @@ function SectionCard({ children, title, icon: Icon, action }: { children: React.
 function DetailRow({ label, value, icon: Icon, href }: { label: string, value: React.ReactNode, icon?: React.ElementType, href?: string }) {
     if (!value && value !== 0) return null;
     return (
-        <div className="flex items-start gap-4 py-2">
-            {Icon && <Icon className="text-slate-400 mt-1 shrink-0" size={18} />}
+        <div className="flex items-start gap-3 py-1.5">
+            {Icon && <Icon className="text-slate-400 mt-0.5 shrink-0" size={16} />}
             <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-0.5">{label}</p>
                 {href ? (
@@ -438,7 +438,7 @@ export default function ProfilePage() {
                     {/* Stats */}
                     {profile.stats && (
                         <SectionCard title="Publication Stats" icon={MdCreditCard}>
-                            <div className="grid grid-cols-3 gap-3">
+                            <div className="grid grid-cols-3 gap-2">
                                 <StatCard label="Total" value={profile.stats.total} colorClass="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-800" />
                                 <StatCard label="Approved" value={profile.stats.approved} colorClass="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800" />
                                 <StatCard label="Pending" value={profile.stats.pending} colorClass="bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-800" />
@@ -448,11 +448,11 @@ export default function ProfilePage() {
 
                     {/* Membership Info */}
                     <SectionCard title="Membership Details" icon={MdBadge}>
-                        <div className="space-y-4">
+                        <div className="space-y-2">
                             <DetailRow label="Member Since" value={new Date(profile.createdAt).toLocaleDateString()} icon={MdDateRange} />
                             <DetailRow label="Member ID" value={<span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-xs">{profile._id}</span>} icon={MdBadge} />
                             <DetailRow label="Status" value={profile.isVerified ? "Verified" : "Unverified"} icon={MdOutlineCheckCircle} />
-                            <div className="pt-4 mt-2 border-t border-slate-50 dark:border-slate-800/50">
+                            <div className="pt-3 mt-2 border-t border-slate-50 dark:border-slate-800/50">
                                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Subscription</h4>
                                 {subscriptionStatus?.hasSubscription ? (
                                     <div className="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg border border-amber-100 dark:border-amber-800">
@@ -483,14 +483,14 @@ export default function ProfilePage() {
                                 <div className="col-span-2"><InputField label="Bio" name="profile.bio" value={form.profile?.bio} onChange={handleFieldChange} type="textarea" placeholder="Tell us about yourself..." icon={MdDescription} /></div>
                             </div>
                         ) : (
-                            <div className="space-y-5">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8">
                                     <DetailRow label="Full Name" value={profile.name} icon={MdOutlinePerson} />
                                     <DetailRow label="Email" value={profile.email} icon={MdOutlineAlternateEmail} />
                                     <DetailRow label="Phone" value={profile.profile?.phone} icon={MdPhone} />
                                     <DetailRow label="Organization" value={profile.profile?.organization} icon={FaBuilding} />
                                 </div>
-                                <div className="pt-4 border-t border-slate-50 dark:border-slate-800/50">
+                                <div className="pt-3 border-t border-slate-50 dark:border-slate-800/50">
                                     <DetailRow label="Bio" value={profile.profile?.bio || <span className="text-slate-400 italic">No bio added yet.</span>} />
                                 </div>
                             </div>
@@ -567,14 +567,14 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8">
                                     <DetailRow label="Specialization" value={profile.profile?.specialization} icon={FaUserTie} />
                                     <DetailRow label="Experience" value={profile.professional?.yearsOfExperience ? `${profile.professional.yearsOfExperience} Years` : null} icon={MdDateRange} />
                                     <DetailRow label="License Number" value={profile.professional?.licenseNumber} icon={MdCreditCard} />
                                     <DetailRow label="License Document" value="View Document" href={profile.professional?.licenseDocument} icon={MdDescription} />
                                 </div>
-                                <div className="pt-4 border-t border-slate-50">
+                                <div className="pt-3 border-t border-slate-50">
                                     <DetailRow
                                         label="Certifications"
                                         icon={MdSchool}
