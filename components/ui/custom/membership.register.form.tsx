@@ -93,8 +93,15 @@ export default function MembershipRegisterForm({ redirect }: { redirect?: string
             });
 
             toast.success("Account created successfully! Please sign in.");
-            if (redirect) {
-                router.replace(`/login?redirect=${encodeURIComponent(redirect)}`);
+            let redirectPath = redirect;
+            if (redirectPath) {
+                if (!redirectPath.startsWith("/") || redirectPath.startsWith("//") || redirectPath.startsWith("\\")) {
+                    redirectPath = null;
+                }
+            }
+
+            if (redirectPath) {
+                router.replace(`/login?redirect=${encodeURIComponent(redirectPath)}`);
             } else {
                 router.replace("/login");
             }

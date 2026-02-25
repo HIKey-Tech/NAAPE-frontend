@@ -36,10 +36,16 @@ export default function SubscriptionCallback() {
           );
 
           // Check for stored redirect URL
-          const redirectUrl = localStorage.getItem("postSubscriptionRedirect");
+          let redirectUrl = localStorage.getItem("postSubscriptionRedirect");
           if (redirectUrl) {
             localStorage.removeItem("postSubscriptionRedirect");
-            setTimeout(() => router.replace(redirectUrl), 2000);
+
+            // Validate that the redirect path is a safe internal route
+            if (!redirectUrl.startsWith("/") || redirectUrl.startsWith("//") || redirectUrl.startsWith("\\")) {
+              redirectUrl = "/dashboard";
+            }
+
+            setTimeout(() => router.replace(redirectUrl as string), 2000);
           } else {
             setTimeout(() => router.replace("/dashboard"), 2000);
           }
