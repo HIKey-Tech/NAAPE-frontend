@@ -8,6 +8,7 @@ export default function SubscriptionCallback() {
   const router = useRouter();
   const [status, setStatus] = useState<"processing" | "success" | "failed">("processing");
   const [message, setMessage] = useState("Processing your payment...");
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const verifyPayment = async () => {
@@ -16,11 +17,16 @@ export default function SubscriptionCallback() {
         const params = new URLSearchParams(window.location.search);
         const paymentStatus = params.get("status");
         const transactionId = params.get("transaction_id");
+        const fromMobile = params.get("mobile") === "true";
+        setIsMobile(fromMobile);
 
         if (paymentStatus !== "successful" || !transactionId) {
           setStatus("failed");
           setMessage("Payment was not successful. Please try again.");
-          setTimeout(() => router.replace("/subscription"), 3000);
+          if (!fromMobile) {
+            setTimeout(() => router.replace("/subscription"), 3000);
+          }
+          // On mobile: just show the error — user will close the browser manually
           return;
         }
 
@@ -31,28 +37,32 @@ export default function SubscriptionCallback() {
           setStatus("success");
           setMessage(
             response.data.alreadyProcessed
-              ? "Payment already processed. Redirecting..."
-              : "Payment successful! Your subscription is now active. Redirecting..."
+              ? "Payment already processed!"
+              : "Payment successful! Your subscription is now active."
           );
 
-          // Check for stored redirect URL
-          let redirectUrl = localStorage.getItem("postSubscriptionRedirect");
-          if (redirectUrl) {
-            localStorage.removeItem("postSubscriptionRedirect");
-
-            // Validate that the redirect path is a safe internal route
-            if (!redirectUrl.startsWith("/") || redirectUrl.startsWith("//") || redirectUrl.startsWith("\\")) {
-              redirectUrl = "/dashboard";
-            }
-
-            setTimeout(() => router.replace(redirectUrl as string), 2000);
+          if (fromMobile) {
+            // Close the in-app browser so the user returns to the mobile app immediately
+            setTimeout(() => window.close(), 1500);
           } else {
-            setTimeout(() => router.replace("/dashboard"), 2000);
+            // Web: redirect to the intended page
+            let redirectUrl = localStorage.getItem("postSubscriptionRedirect");
+            if (redirectUrl) {
+              localStorage.removeItem("postSubscriptionRedirect");
+              if (!redirectUrl.startsWith("/") || redirectUrl.startsWith("//") || redirectUrl.startsWith("\\")) {
+                redirectUrl = "/dashboard";
+              }
+              setTimeout(() => router.replace(redirectUrl as string), 2000);
+            } else {
+              setTimeout(() => router.replace("/dashboard"), 2000);
+            }
           }
         } else {
           setStatus("failed");
           setMessage("Payment verification failed. Please contact support.");
-          setTimeout(() => router.replace("/subscription"), 3000);
+          if (!fromMobile) {
+            setTimeout(() => router.replace("/subscription"), 3000);
+          }
         }
       } catch (error: any) {
         console.error("Payment verification error:", error);
@@ -61,7 +71,9 @@ export default function SubscriptionCallback() {
           error.response?.data?.message ||
           "An error occurred while verifying your payment. Please contact support."
         );
-        setTimeout(() => router.replace("/subscription"), 3000);
+        if (!isMobile) {
+          setTimeout(() => router.replace("/subscription"), 3000);
+        }
       }
     };
 
@@ -69,8 +81,8 @@ export default function SubscriptionCallback() {
   }, [router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-slate-950">
-      <div className="bg-white dark:bg-card p-8 rounded-lg shadow-xl max-w-md w-full mx-4 border border-transparent dark:border-border">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-slate-950">
+      <div className="bg-white dark:bg-card p-8 rounded-2xl shadow-xl max-w-md w-full mx-4 border border-transparent dark:border-border">
         <div className="text-center">
           {status === "processing" && (
             <>
@@ -88,7 +100,12 @@ export default function SubscriptionCallback() {
                 </svg>
               </div>
               <h2 className="text-2xl font-bold text-green-600 dark:text-green-400 mb-2">Payment Successful!</h2>
-              <p className="text-gray-600 dark:text-slate-400">{message}</p>
+              <p className="text-gray-600 dark:text-slate-400 mb-2">{message}</p>
+              {isMobile && (
+                <p className="text-sm text-gray-400 dark:text-slate-500 mt-3">
+                  Returning you to the app...
+                </p>
+              )}
             </>
           )}
 
@@ -101,6 +118,11 @@ export default function SubscriptionCallback() {
               </div>
               <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-2">Payment Failed</h2>
               <p className="text-gray-600 dark:text-slate-400">{message}</p>
+              {isMobile && (
+                <p className="text-sm text-gray-400 dark:text-slate-500 mt-3">
+                  You can close this and try again.
+                </p>
+              )}
             </>
           )}
         </div>

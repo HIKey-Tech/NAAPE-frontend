@@ -69,6 +69,7 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
     const [isReady, setIsReady] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
     const [eventDetails, setEventDetails] = useState<any>(null);
+    const isMobile = params.get("mobile") === "true";
     const MAX_RETRIES = 3;
 
     // Determine dynamic event name: precedence is query param > prop > fallback
@@ -165,6 +166,11 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                 }
 
                 setVerificationState(newState);
+
+                // On mobile in-app browser: close after success so user returns to app
+                if (newState.status === 'success' && isMobile) {
+                    setTimeout(() => window.close(), 1500);
+                }
 
                 // Cache the verification result in sessionStorage
                 try {
@@ -368,8 +374,8 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                 </motion.div>
             )}
 
-            {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-2">
+            {/* Actions — hidden on mobile since browser will auto-close */}
+            {!isMobile && <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-2">
                 {state === "success" && (
                     <Link
                         href="/member/events"
@@ -409,7 +415,14 @@ export default function PaymentComplete({ eventName: propEventName }: { eventNam
                         Try Again
                     </Link>
                 )}
-            </div>
+            </div>}
+
+            {/* Mobile: show close instruction */}
+            {isMobile && state !== 'loading' && (
+                <p className="text-sm text-slate-400 dark:text-slate-500 mt-6 text-center">
+                    {state === 'success' ? 'Returning you to the app...' : 'You can close this and try again.'}
+                </p>
+            )}
             <div className="mt-9 text-center">
                 <span className="text-sm text-slate-500">
                     Need assistance?{" "}
