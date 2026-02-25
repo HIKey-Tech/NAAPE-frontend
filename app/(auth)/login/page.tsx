@@ -75,7 +75,23 @@ function LoginContent() {
             });
             setTimeout(() => {
                 const dashboardPath = userData.role === "admin" ? "/admin/dashboard" : "/dashboard";
-                window.location.href = redirectPath || dashboardPath;
+
+                let finalPath = dashboardPath;
+
+                // Validate that the redirect path is a safe internal route
+                // It must start with a slash and not contain another slash or backslash immediately after (e.g. //evil.com or \/evil.com)
+                if (redirectPath && redirectPath.startsWith("/") && !redirectPath.startsWith("//") && !redirectPath.startsWith("\\")) {
+                    finalPath = redirectPath;
+                }
+
+                // Prevent admins from being accidentally redirected to member pages, and vice versa
+                if (userData.role === "admin" && finalPath !== dashboardPath && !finalPath.startsWith("/admin")) {
+                    finalPath = dashboardPath;
+                } else if (userData.role !== "admin" && finalPath !== dashboardPath && finalPath.startsWith("/admin")) {
+                    finalPath = dashboardPath;
+                }
+
+                window.location.href = finalPath;
             }, 1000);
         } catch (error: any) {
             if (error?.response?.data?.message?.toLowerCase().includes("password")) {
