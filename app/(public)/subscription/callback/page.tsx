@@ -30,7 +30,7 @@ export default function SubscriptionCallback() {
           return;
         }
 
-        // Verify payment with backend
+        // Verify payment with unauthenticated backend instance (or plain axios)
         const response = await api.get(`/payments/subscription/verify?transaction_id=${transactionId}`);
 
         if (response.data.status === "successful") {
