@@ -20,7 +20,7 @@ export default function SubscriptionCallback() {
         const fromMobile = params.get("mobile") === "true";
         setIsMobile(fromMobile);
 
-        if (paymentStatus !== "successful" || !transactionId) {
+        if ((paymentStatus !== "successful" && paymentStatus !== "completed") || !transactionId) {
           setStatus("failed");
           setMessage("Payment was not successful. Please try again.");
           if (!fromMobile) {
