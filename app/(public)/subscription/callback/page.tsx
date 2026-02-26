@@ -30,16 +30,10 @@ export default function SubscriptionCallback() {
           return;
         }
 
-        if (fromMobile) {
-          // Skip frontend verification for mobile since it has no tokens in the in-app browser.
-          // The backend webhook will process the payment securely.
-          setStatus("success");
-          setMessage("Payment successful! Please wait...");
-          setTimeout(() => window.close(), 1500);
-          return;
-        }
+        // Check if we need to skip for some legacy reason, but we shouldn't now
+        // since verification works without token. Mobile will verify here!
 
-        // Verify payment with backend (Web only)
+        // Verify payment with backend (Works for both Web and Mobile now)
         const response = await api.get(`/payments/subscription/verify?transaction_id=${transactionId}`);
 
         if (response.data.status === "successful") {
@@ -49,6 +43,12 @@ export default function SubscriptionCallback() {
               ? "Payment already processed!"
               : "Payment successful! Your subscription is now active."
           );
+
+          if (fromMobile) {
+            // Mobile: Close the in-app browser and let the app resume
+            setTimeout(() => window.close(), 1500);
+            return;
+          }
 
           // Web: redirect to the intended page
           let redirectUrl = localStorage.getItem("postSubscriptionRedirect");
