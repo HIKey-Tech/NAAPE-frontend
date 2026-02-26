@@ -30,7 +30,16 @@ export default function SubscriptionCallback() {
           return;
         }
 
-        // Verify payment with unauthenticated backend instance (or plain axios)
+        if (fromMobile) {
+          // Skip frontend verification for mobile since it has no tokens in the in-app browser.
+          // The backend webhook will process the payment securely.
+          setStatus("success");
+          setMessage("Payment successful! Please wait...");
+          setTimeout(() => window.close(), 1500);
+          return;
+        }
+
+        // Verify payment with backend (Web only)
         const response = await api.get(`/payments/subscription/verify?transaction_id=${transactionId}`);
 
         if (response.data.status === "successful") {
@@ -41,21 +50,16 @@ export default function SubscriptionCallback() {
               : "Payment successful! Your subscription is now active."
           );
 
-          if (fromMobile) {
-            // Close the in-app browser so the user returns to the mobile app immediately
-            setTimeout(() => window.close(), 1500);
-          } else {
-            // Web: redirect to the intended page
-            let redirectUrl = localStorage.getItem("postSubscriptionRedirect");
-            if (redirectUrl) {
-              localStorage.removeItem("postSubscriptionRedirect");
-              if (!redirectUrl.startsWith("/") || redirectUrl.startsWith("//") || redirectUrl.startsWith("\\")) {
-                redirectUrl = "/dashboard";
-              }
-              setTimeout(() => router.replace(redirectUrl as string), 2000);
-            } else {
-              setTimeout(() => router.replace("/dashboard"), 2000);
+          // Web: redirect to the intended page
+          let redirectUrl = localStorage.getItem("postSubscriptionRedirect");
+          if (redirectUrl) {
+            localStorage.removeItem("postSubscriptionRedirect");
+            if (!redirectUrl.startsWith("/") || redirectUrl.startsWith("//") || redirectUrl.startsWith("\\")) {
+              redirectUrl = "/dashboard";
             }
+            setTimeout(() => router.replace(redirectUrl as string), 2000);
+          } else {
+            setTimeout(() => router.replace("/dashboard"), 2000);
           }
         } else {
           setStatus("failed");
@@ -71,6 +75,7 @@ export default function SubscriptionCallback() {
           error.response?.data?.message ||
           "An error occurred while verifying your payment. Please contact support."
         );
+        // We use isMobile state here because fromMobile might not be defined if error happened early
         if (!isMobile) {
           setTimeout(() => router.replace("/subscription"), 3000);
         }
@@ -78,7 +83,7 @@ export default function SubscriptionCallback() {
     };
 
     verifyPayment();
-  }, [router]);
+  }, [router, isMobile]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-slate-950">
