@@ -5,9 +5,9 @@ import { motion } from "framer-motion";
 
 const leaders = [
     {
-        name: "Engr. Abednego Galadima",
+        name: "Captain Bunmi Gindeh",
         title: "National President",
-        photoSrc: "/members/Abednego.jpg", // Ensure these paths exist or use placeholders
+        photoSrc: "/members/captain bunmi.png",
         socials: { twitter: "#", linkedin: "#" },
     },
     {

@@ -34,11 +34,11 @@ const hierarchySections: HierarchySection[] = [
     description: "Overall leadership and strategic direction of the council.",
     members: [
       {
-        name: "Engr. Abednego Galadima",
+        name: "Captain Bunmi Gindeh",
         position: "National President",
-        photo: "/members/Abednego.jpg",
-        linkedin: "https://www.linkedin.com/in/abednego-galadima",
-        bio: "Engr. Galadima leads the NAC with a vision for excellence in civil aviation engineering and administration.",
+        photo: "/members/captain bunmi.png",
+        linkedin: "https://www.linkedin.com/in/bunmi-gindeh",
+        bio: "Capt. Gindeh leads the NAC with a vision for excellence in civil aviation and the advancement of aviation professionals in Nigeria.",
       },
     ],
   },

@@ -46,7 +46,7 @@ export default function FutureSection() {
                         </p>
                         <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
                             <h4 className="font-bold text-slate-900 mb-2">Current Leadership</h4>
-                            <p className="text-slate-600 mb-1"><span className="font-bold text-primary">President:</span> Engr. Abednego Galadima (since July 2018)</p>
+                            <p className="text-slate-600 mb-1"><span className="font-bold text-primary">President:</span> Captain Bunmi Gindeh</p>
                             <p className="text-slate-600"><span className="font-bold text-primary">Affiliation:</span> Nigeria Labour Congress (NLC)</p>
                         </div>
                     </motion.div>
