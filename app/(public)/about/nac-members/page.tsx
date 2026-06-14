@@ -39,86 +39,155 @@ const hierarchySections: HierarchySection[] = [
     ],
   },
   {
-    title: "Deputy & Vice Presidents",
-    description: "Supporting leadership, engineering, and pilot excellence.",
+    title: "Deputy President",
+    description: "Supporting overall leadership and strategic direction.",
     members: [
       {
-        name: "Engr. Adebayo Oluyemi",
-        position: "Deputy National President",
-        photo: "/members/Adebayo.jpg",
-        linkedin: "https://www.linkedin.com/in/adebayo-oluyemi",
-        bio: "A core member driving national technical advancements in the industry.",
-      },
-      {
-        name: "Engr. Richard Allison",
-        position: "Vice President, Engineers",
-        photo: "/members/richard.jpg",
-        bio: "Coordinates engineering teams and ensures professional standards.",
-      },
-      {
-        name: "Capt. Yakubu Ducas",
-        position: "Vice President, Pilots",
-        photo: "/members/yakubu.jpg",
-        bio: "Represents pilot interests and ensures professional training standards.",
+        name: "Engr. Mudi Mohammad",
+        position: "Deputy President",
+        photo: "/members/Engr. Mudi Mohammad - Deputy president.jpeg",
       },
     ],
   },
   {
-    title: "Trustees",
-    description: "Providing governance and compliance oversight.",
+    title: "Secretariat",
+    description: "Finance and administrative secretariat leadership.",
     members: [
       {
-        name: "Engr. Numaliya T. Kwasau",
-        position: "1st Trustee",
-        photo: "/members/numalia.png",
-        bio: "Experienced trustee, specialises in engineering management and governance.",
+        name: "Comrade Uduak Etukudoh",
+        position: "Deputy Gen. Secretary (Finance)",
+        photo: "/members/Comrade Uduak Etukudoh.jpeg",
       },
       {
-        name: "SFO. Tienama Obireke",
-        position: "2nd Trustee",
-        photo: "/members/tiemenan.jpg",
-        bio: "Senior Flight Officer overseeing trust and compliance matters within NAC.",
+        name: "Comrade Umoh Ofonime T.",
+        position: "Deputy Gen. Secretary (Admin)",
+        photo: "/members/Comrade Umoh Ofonime T. Deputy Gen Secretary (Admin).jpeg",
       },
     ],
   },
   {
-    title: "Secretaries & Other Leadership",
-    description: "Finance, public relations, and inclusivity leadership.",
+    title: "Finance & Audit",
+    description: "Financial oversight, treasury, and internal audit.",
     members: [
       {
-        name: "Engr. Charles Erhueh",
+        name: "Engr. Edwin Udoh",
         position: "Financial Secretary",
-        photo: "/members/charles.jpg",
-        bio: "Manages financial affairs and ensures transparency in all NAC transactions.",
-      },
-      {
-        name: "Engr. Francis N. Igwe",
-        position: "Public Relations Officer",
-        photo: "/members/igwe.jpg",
-        bio: "Strategises and communicates NAC's public image and initiatives.",
-        linkedin: "https://www.linkedin.com/in/francis-n-igwe",
+        photo: "/members/Engr. Edwin Udoh - Financial Secretary.jpeg",
       },
       {
         name: "Engr. Kyola Dyaji",
-        position: "Women Leader",
+        position: "Treasurer",
         photo: "/members/kyola.jpg",
-        bio: "Advocates for and empowers women in the engineering sector.",
-        linkedin: "https://www.linkedin.com/in/kyola-dyaji",
+      },
+      {
+        name: "Engr. Alao Joseph",
+        position: "Internal Auditor",
+        photo: "/members/Engr. Alao Joseph - internal Auditor.jpeg",
       },
     ],
   },
   {
-    title: "Ex-Officio",
-    description: "Providing counsel and experienced support.",
+    title: "Communications & Trustees",
+    description: "Public relations and governance oversight.",
     members: [
       {
+        name: "Engr. Blessing Ahmadu",
+        position: "Public Relations Officer",
+        photo: "/members/Engr. Blessing Ahmadu - PRO.jpeg",
+      },
+      {
         name: "Capt. Abbas Ambursa",
-        position: "Ex-Officio",
+        position: "3rd Trustee",
         photo: "/members/abbas.jpg",
-        bio: "A seasoned pilot, providing ex-officio counsel and experience to NAC.",
+      },
+      {
+        name: "Engr. Galadima Abednego",
+        position: "1st Ex-Officio",
+        photo: "/members/Engr. Galadima Abednego - 1st Ex-officio.jpeg",
       },
     ],
   },
+  // {
+  //   title: "Deputy & Vice Presidents",
+  //   description: "Supporting leadership, engineering, and pilot excellence.",
+  //   members: [
+  //     {
+  //       name: "Engr. Adebayo Oluyemi",
+  //       position: "Deputy National President",
+  //       photo: "/members/Adebayo.jpg",
+  //       linkedin: "https://www.linkedin.com/in/adebayo-oluyemi",
+  //       bio: "A core member driving national technical advancements in the industry.",
+  //     },
+  //     {
+  //       name: "Engr. Richard Allison",
+  //       position: "Vice President, Engineers",
+  //       photo: "/members/richard.jpg",
+  //       bio: "Coordinates engineering teams and ensures professional standards.",
+  //     },
+  //     {
+  //       name: "Capt. Yakubu Ducas",
+  //       position: "Vice President, Pilots",
+  //       photo: "/members/yakubu.jpg",
+  //       bio: "Represents pilot interests and ensures professional training standards.",
+  //     },
+  //   ],
+  // },
+  // {
+  //   title: "Trustees",
+  //   description: "Providing governance and compliance oversight.",
+  //   members: [
+  //     {
+  //       name: "Engr. Numaliya T. Kwasau",
+  //       position: "1st Trustee",
+  //       photo: "/members/numalia.png",
+  //       bio: "Experienced trustee, specialises in engineering management and governance.",
+  //     },
+  //     {
+  //       name: "SFO. Tienama Obireke",
+  //       position: "2nd Trustee",
+  //       photo: "/members/tiemenan.jpg",
+  //       bio: "Senior Flight Officer overseeing trust and compliance matters within NAC.",
+  //     },
+  //   ],
+  // },
+  // {
+  //   title: "Secretaries & Other Leadership",
+  //   description: "Finance, public relations, and inclusivity leadership.",
+  //   members: [
+  //     {
+  //       name: "Engr. Charles Erhueh",
+  //       position: "Financial Secretary",
+  //       photo: "/members/charles.jpg",
+  //       bio: "Manages financial affairs and ensures transparency in all NAC transactions.",
+  //     },
+  //     {
+  //       name: "Engr. Francis N. Igwe",
+  //       position: "Public Relations Officer",
+  //       photo: "/members/igwe.jpg",
+  //       bio: "Strategises and communicates NAC's public image and initiatives.",
+  //       linkedin: "https://www.linkedin.com/in/francis-n-igwe",
+  //     },
+  //     {
+  //       name: "Engr. Kyola Dyaji",
+  //       position: "Women Leader",
+  //       photo: "/members/kyola.jpg",
+  //       bio: "Advocates for and empowers women in the engineering sector.",
+  //       linkedin: "https://www.linkedin.com/in/kyola-dyaji",
+  //     },
+  //   ],
+  // },
+  // {
+  //   title: "Ex-Officio",
+  //   description: "Providing counsel and experienced support.",
+  //   members: [
+  //     {
+  //       name: "Capt. Abbas Ambursa",
+  //       position: "Ex-Officio",
+  //       photo: "/members/abbas.jpg",
+  //       bio: "A seasoned pilot, providing ex-officio counsel and experience to NAC.",
+  //     },
+  //   ],
+  // },
 ];
 
 // ── Animation variants ────────────────────────────────────────────────────────
@@ -135,7 +204,7 @@ const fadeUpVariants = {
 
 // ── Avatar ────────────────────────────────────────────────────────────────────
 
-function AvatarWithFallback({ src, alt, sizePx }: { src: string; alt: string; sizePx: number }) {
+function AvatarWithFallback({ src, alt }: { src: string; alt: string }) {
   const [imgError, setImgError] = useState(false);
   const initials = useMemo(() => {
     const words = alt.trim().split(" ").filter(Boolean);
@@ -145,11 +214,7 @@ function AvatarWithFallback({ src, alt, sizePx }: { src: string; alt: string; si
 
   if (imgError) {
     return (
-      <div
-        className="w-full h-full flex items-center justify-center bg-secondary text-secondary-foreground font-black text-2xl"
-        aria-label={alt}
-        role="img"
-      >
+      <div className="absolute inset-0 flex items-center justify-center bg-secondary text-secondary-foreground font-black text-3xl" aria-label={alt} role="img">
         {initials}
       </div>
     );
@@ -161,7 +226,7 @@ function AvatarWithFallback({ src, alt, sizePx }: { src: string; alt: string; si
       alt={alt}
       fill
       className="object-cover object-top"
-      sizes={`${sizePx}px`}
+      sizes="280px"
       priority
       onError={() => setImgError(true)}
     />
@@ -178,97 +243,39 @@ function LinkedInIcon({ className }: { className?: string }) {
   );
 }
 
-// ── President Card ────────────────────────────────────────────────────────────
+// ── Unified Member Card ───────────────────────────────────────────────────────
 
-function PresidentCard({ member }: { member: NacMember }) {
+function MemberCard({ member, large }: { member: NacMember; large?: boolean }) {
   return (
     <motion.div
       variants={fadeUpVariants as any}
-      className="max-w-2xl mx-auto bg-card border border-border rounded-2xl shadow-xl shadow-primary/10 overflow-hidden hover:shadow-2xl hover:shadow-primary/15 transition-shadow duration-300"
-    >
-      {/* Accent top bar */}
-      <div className="h-1.5 bg-gradient-to-r from-primary to-primary/60" />
-
-      <div className="flex flex-col sm:flex-row gap-8 p-8 sm:p-10 items-center sm:items-start">
-        {/* Photo */}
-        <div className="relative w-[320px] h-[320px] rounded-2xl overflow-hidden border-4 border-secondary shadow-lg shrink-0">
-          <AvatarWithFallback src={member.photo} alt={member.name} sizePx={320} />
-        </div>
-
-        {/* Info */}
-        <div className="flex flex-col gap-3 text-center sm:text-left">
-          <span className="self-center sm:self-start inline-block px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-bold tracking-widest uppercase">
-            {member.position}
-          </span>
-          <h2 className="text-3xl font-black text-foreground leading-tight">
-            {member.name}
-          </h2>
-          {member.bio && (
-            <p className="text-base text-muted-foreground leading-relaxed max-w-md">
-              {member.bio}
-            </p>
-          )}
-          {member.linkedin && (
-            <a
-              href={member.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 self-center sm:self-start inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-bold hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-              aria-label={`LinkedIn profile of ${member.name} (opens in new tab)`}
-            >
-              <LinkedInIcon className="w-4 h-4" />
-              Connect on LinkedIn
-            </a>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-// ── Member Card ───────────────────────────────────────────────────────────────
-
-function MemberCard({ member }: { member: NacMember }) {
-  return (
-    <motion.div
-      variants={fadeUpVariants as any}
-      className="group flex flex-col bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary/10 hover:border-primary/20 hover:-translate-y-1.5 transition-all duration-300 w-full cursor-pointer focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2"
+      className="flex flex-col bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:border-primary/20 hover:-translate-y-1 transition-all duration-300 cursor-pointer focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2"
       tabIndex={0}
       aria-label={`${member.name}, ${member.position}`}
     >
-      {/* Photo */}
-      <div className="relative w-full h-[380px] bg-muted overflow-hidden">
-        <AvatarWithFallback src={member.photo} alt={member.name} sizePx={380} />
-        {/* Gradient at bottom of photo */}
-        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/30 to-transparent" />
+      {/* Fixed-ratio photo — same for every card */}
+      <div className={`relative w-full bg-muted overflow-hidden ${large ? "aspect-[3/4]" : "aspect-[3/4]"}`}>
+        <AvatarWithFallback src={member.photo} alt={member.name} />
       </div>
 
-      {/* Content */}
-      <div className="flex flex-col flex-1 p-5 gap-2">
-        <span className="inline-block self-start px-2.5 py-1 rounded-full bg-secondary text-secondary-foreground text-[11px] font-bold tracking-wide">
+      {/* Info */}
+      <div className="p-4 flex flex-col gap-1">
+        <span className="inline-block self-start px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-wide uppercase">
           {member.position}
         </span>
-
-        <h3 className="text-base font-black text-foreground group-hover:text-primary transition-colors duration-200 leading-snug">
+        <h3 className="text-sm font-black text-foreground leading-snug mt-1">
           {member.name}
         </h3>
-
-        {member.bio && (
-          <p className="text-xs text-muted-foreground leading-relaxed flex-1">
-            {member.bio}
-          </p>
-        )}
-
         {member.linkedin && (
           <a
             href={member.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-3 self-start inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-bold text-primary border border-primary/30 hover:bg-primary hover:text-primary-foreground transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
-            aria-label={`LinkedIn profile of ${member.name} (opens in new tab)`}
+            className="mt-2 self-start inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-primary border border-primary/30 hover:bg-primary hover:text-primary-foreground transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
+            aria-label={`LinkedIn profile of ${member.name}`}
             onClick={(e) => e.stopPropagation()}
           >
-            <LinkedInIcon className="w-3.5 h-3.5" />
+            <LinkedInIcon className="w-3 h-3" />
             LinkedIn
           </a>
         )}
@@ -380,46 +387,50 @@ export default function NacMembersPage() {
             <p className="text-sm text-muted-foreground">Try a different name or position.</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-24">
+          <div className="flex flex-col items-center gap-0">
             {filteredSections.map((section, idx) => {
-              const sectionId = `section-${section.title.replace(/[\s&]+/g, "-").toLowerCase()}`;
+              const isFirst = idx === 0;
+              const showConnector = idx < filteredSections.length - 1;
+
               return (
-                <motion.section
-                  key={section.title}
-                  aria-labelledby={sectionId}
-                  variants={containerVariants}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, amount: 0.1 }}
-                >
-                  {/* Section header — matches site style */}
-                  <motion.div variants={fadeUpVariants as any} className="mb-12 text-center">
-                    <span className="text-secondary-foreground font-bold tracking-widest uppercase text-sm mb-3 block">
-                      {section.description}
-                    </span>
-                    <h2
-                      id={sectionId}
-                      className="text-3xl md:text-4xl font-black text-slate-900 mb-4"
-                    >
+                <div key={section.title} className="flex flex-col items-center w-full">
+                  {/* Tier label */}
+                  <motion.div
+                    variants={fadeUpVariants as any}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true }}
+                    className="mb-6 text-center"
+                  >
+                    <h2 className="text-xl md:text-2xl font-black text-slate-900">
                       {section.title}
                     </h2>
-                    <div className="w-16 h-1 bg-accent rounded-full mx-auto" />
+                    <div className="w-10 h-1 bg-accent rounded-full mx-auto mt-2" />
                   </motion.div>
 
-                  {/* President → special horizontal card */}
-                  {idx === 0 ? (
-                    <PresidentCard member={section.members[0]} />
-                  ) : (
-                    <div
-                      className={`grid gap-6 ${section.members.length === 1 ? "max-w-sm mx-auto" : ""}`}
-                      style={{ gridTemplateColumns: `repeat(${section.members.length}, 1fr)` }}
-                    >
-                      {section.members.map((member) => (
-                        <MemberCard key={member.name} member={member} />
-                      ))}
+                  {/* Cards row */}
+                  <motion.div
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, amount: 0.1 }}
+                    className="flex flex-wrap justify-center gap-5 w-full"
+                  >
+                    {section.members.map((member) => (
+                      <div key={member.name} className={isFirst ? "w-[240px]" : "w-[200px]"}>
+                        <MemberCard member={member} large={isFirst} />
+                      </div>
+                    ))}
+                  </motion.div>
+
+                  {/* Connector */}
+                  {showConnector && (
+                    <div className="flex flex-col items-center my-6">
+                      <div className="w-0.5 h-8 bg-border" />
+                      <div className="w-2 h-2 rounded-full bg-primary/50" />
                     </div>
                   )}
-                </motion.section>
+                </div>
               );
             })}
           </div>

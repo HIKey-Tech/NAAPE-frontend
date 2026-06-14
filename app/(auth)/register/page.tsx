@@ -34,11 +34,17 @@ function RegisterContent() {
         >
             {/* Left: Register Form */}
             <motion.div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center relative bg-white">
-                <motion.div className="flex items-center gap-3 mb-6" variants={childVariants}>
-                    <div className="p-2 bg-primary/5 rounded-xl">
-                        <Image src={logo} alt="NAAPE logo" width={40} height={40} className="w-10 h-10" />
+                <motion.div className="flex items-center justify-between gap-3 mb-6" variants={childVariants}>
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-primary/5 rounded-xl">
+                            <Image src={logo} alt="NAAPE logo" width={40} height={40} className="w-10 h-10" />
+                        </div>
+                        <span className="text-2xl font-black tracking-tight text-slate-900">NAAPE</span>
                     </div>
-                    <span className="text-2xl font-black tracking-tight text-slate-900">NAAPE</span>
+                    <Link href="/home" className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-primary transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                        Back to home
+                    </Link>
                 </motion.div>
 
                 <motion.div variants={childVariants} className="mb-4">

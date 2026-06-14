@@ -79,16 +79,11 @@ export default function WhatsAppFloat() {
         };
         repeatPulse();
 
-        // CLEANUP: Only call controls.set after mount and in cleanup.
+        // CLEANUP
         return () => {
             running = false;
             if (pulseTimeout) clearTimeout(pulseTimeout);
-            if (hasMounted.current) {
-                // Place controls.set in Promise microtask to ensure after unmount/layout
-                setTimeout(() => {
-                    controls.set({ scale: 1, boxShadow: "2px 2px 10px rgba(0,0,0,0.3)" });
-                }, 0);
-            }
+            controls.stop();
         };
     }, [controls, isOpen]);
 
