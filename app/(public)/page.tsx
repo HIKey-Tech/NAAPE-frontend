@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useRef, useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
@@ -11,10 +11,10 @@ import TestimonialsSection from "@/components/ui/landing/home/testimonial";
 import FAQSection from "@/components/ui/landing/home/faq";
 import JoinCommunitySection from "@/components/ui/landing/home/join";
 import WhyJoinSection from "@/components/ui/landing/home/why";
-import LatestNews from "../latest/page";
+import LatestNews from "./latest/page";
 // Add mission section import
 import MissionSection from "@/components/ui/landing/about/mission";
-import EventsPage from "../events/page";
+import EventsPage from "./events/page";
 import Image from "next/image";
 
 // Updated SECTIONS to insert "mission" before "why"
