@@ -3,9 +3,9 @@
 import { useAuth } from "@/context/authcontext";
 import DashboardLayout from "@/app/(private)/(member)/layout";
 import AdminDashboardLayout from "@/app/(private)/(admin)/layout";
-import TopNavbar from '@/components/ui/landing/home/navbar';
-import Footer from '@/components/ui/landing/home/footer';
-import WhatsAppFloat from '@/components/ui/custom/whatsapp';
+import TopNavbar from "@/components/ui/landing/home/navbar";
+import Footer from "@/components/ui/landing/home/footer";
+import WhatsAppFloat from "@/components/ui/custom/whatsapp";
 import React from "react";
 
 export default function EventsIdLayout({ children }: { children: React.ReactNode }) {
@@ -30,13 +30,11 @@ export default function EventsIdLayout({ children }: { children: React.ReactNode
         return <DashboardLayout>{children}</DashboardLayout>;
     }
 
-    // Public/unauthenticated users get public layout
+    // Public/unauthenticated users get the public chrome (parent layout skips it for /events/[id])
     return (
         <>
             <TopNavbar />
-            <main className="min-h-screen">
-                {children}
-            </main>
+            <main className="min-h-screen">{children}</main>
             <Footer />
             <WhatsAppFloat />
         </>

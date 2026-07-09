@@ -1,7 +1,5 @@
 "use client"
 
-import TopNavbar from "@/components/ui/landing/home/navbar";
-import Footer from "@/components/ui/landing/home/footer";
 import { useRef, useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { LuPlane } from "react-icons/lu";
@@ -16,7 +14,6 @@ import WhyJoinSection from "@/components/ui/landing/home/why";
 import LatestNews from "../latest/page";
 // Add mission section import
 import MissionSection from "@/components/ui/landing/about/mission";
-import WhatsAppFloat from "@/components/ui/custom/whatsapp";
 import EventsPage from "../events/page";
 import Image from "next/image";
 
@@ -260,12 +257,9 @@ export default function LandingPage() {
             {loading && <Loader />}
             {!loading && (
                 <>
-                    <TopNavbar />
                     <div className="relative">
                         <PlaneTrail />
                     </div>
-                    <WhatsAppFloat />
-                    <Footer />
                 </>
             )}
         </main>

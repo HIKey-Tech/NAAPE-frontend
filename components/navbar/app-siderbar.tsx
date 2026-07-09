@@ -234,7 +234,10 @@ export function AppSidebar() {
     setMobileOpen(false);
   }, [pathname]);
 
-  const handleSignOut = () => setShowLogoutDialog(true);
+  const handleSignOut = () => {
+    setMobileOpen(false);
+    setShowLogoutDialog(true);
+  };
   const confirmLogout = () => {
     setShowLogoutDialog(false);
     logout();

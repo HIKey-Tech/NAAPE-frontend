@@ -308,7 +308,7 @@ export default function TopNavbar() {
                   <Button className="w-full justify-center bg-primary text-white" onClick={() => router.push("/register")}>Join Now</Button>
                 </div>
               ) : (
-                <Button className="w-full justify-center text-red-600 hover:bg-red-50" variant="ghost" onClick={() => setShowLogoutDialog(true)}>Log Out</Button>
+                <Button className="w-full justify-center text-red-600 hover:bg-red-50" variant="ghost" onClick={() => { setMobileOpen(false); setShowLogoutDialog(true); }}>Log Out</Button>
               )}
             </div>
           </motion.div>

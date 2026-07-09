@@ -314,14 +314,17 @@ export function AdminSidebar() {
 
     if (loading) return null;
 
-    const handleSignOut = () => setShowLogoutDialog(true);
+    // Mobile specific
+    const [mobileOpen, setMobileOpen] = useState(false);
+
+    const handleSignOut = () => {
+        setMobileOpen(false);
+        setShowLogoutDialog(true);
+    };
     const confirmLogout = () => {
         setShowLogoutDialog(false);
         logout();
     };
-
-    // Mobile specific
-    const [mobileOpen, setMobileOpen] = useState(false);
 
     const SidebarContent = (
         <div className="flex flex-col h-full bg-white dark:bg-[#0f121b] border-r border-slate-100 dark:border-slate-800/60 shadow-[2px_0_24px_-12px_rgba(0,0,0,0.1)]">
