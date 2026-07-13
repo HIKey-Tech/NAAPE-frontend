@@ -141,7 +141,7 @@ function LoginContent() {
                             </div>
                             <span className="text-2xl font-black tracking-tight text-slate-900">NAAPE</span>
                         </div>
-                        <Link href="/home" className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-primary transition-colors">
+                        <Link href="/" className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-primary transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
                             Back to home
                         </Link>
