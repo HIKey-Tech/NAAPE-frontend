@@ -1,98 +1,145 @@
 "use client";
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import CertCard from "../component/cert.card";
-import { FilterHeader } from "../component/header";
+import { useState } from "react";
+import { useTrainings, useMyTrainings } from "@/hooks/useTrainings";
+import TrainingCard from "@/components/trainings/training-card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Search, Calendar, Video, MapPin } from "lucide-react";
+import Link from "next/link";
 
-// Sample data - replace with real API integration as needed
-const NEWS = Array.from({ length: 100 }).map((_, i) => ({
-    imageUrl: "/images/plane.jpg",
-    title: "Aero Certification " + (i + 1),
-    author: "Engr. Jane Smith",
-    date: "Mar 22, 2024",
-    status: "published",
-}));
+const TYPE_FILTERS = [
+    { label: "All formats", value: "" },
+    { label: "Online", value: "online" },
+    { label: "In-Person", value: "in-person" },
+] as const;
 
-// Animation variants for card grid items
-const cardVariants = {
-    hidden: { opacity: 0, y: 30, scale: 0.97 },
-    visible: (i: number) => ({
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        transition: {
-            delay: i * 0.08,
-            duration: 0.48,
-            type: "spring" as const,
-            stiffness: 70,
-            damping: 18,
-        }
-    }),
-    exit: { opacity: 0, y: 24, scale: 0.97, transition: { duration: 0.25 } }
-};
+const PRICING_FILTERS = [
+    { label: "All prices", value: "" },
+    { label: "Free", value: "free" },
+    { label: "Paid", value: "paid" },
+] as const;
 
 export default function TrainingsComponent() {
+    const [tab, setTab] = useState<"browse" | "mine">("browse");
     const [search, setSearch] = useState("");
-    const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({
-        from: undefined,
-        to: undefined,
-    });
-    const [filterOpen, setFilterOpen] = useState(false);
+    const [type, setType] = useState<"" | "online" | "in-person">("");
+    const [pricing, setPricing] = useState<"" | "free" | "paid">("");
 
-    // For UI simplicity, don't apply real date or filter logic
-    const filteredTrainings = NEWS.filter((pub) =>
-        pub.title.toLowerCase().includes(search.toLowerCase())
-    );
+    const { data, isLoading } = useTrainings({
+        search: search || undefined,
+        type: type || undefined,
+        pricing: pricing || undefined,
+        limit: 30,
+    });
+    const { data: myData, isLoading: myLoading } = useMyTrainings(tab === "mine");
+
+    const trainings = data?.trainings || [];
+    const myTrainings = myData?.trainings || [];
+
+    const chipClass = (active: boolean) =>
+        `px-3 py-1 rounded-full text-sm font-medium border transition-colors ${
+            active
+                ? "bg-primary text-white border-primary"
+                : "bg-white text-slate-600 border-slate-200 hover:border-primary/50"
+        }`;
 
     return (
-        <div className="px-4 sm:px-0 py-4 bg-white w-full">
-            <FilterHeader
-                title="Training & Certifications"
-                search={search}
-                setSearch={setSearch}
-                filterOpen={filterOpen}
-                setFilterOpen={setFilterOpen}
-                dateRange={dateRange}
-                setDateRange={setDateRange}
-                searchPlaceholder="Search for Trainings and Cert here..."
-                sortLabel="Newest"
-            />
-            <div className="grid gap-8 px-6 sm:grid-cols-2 lg:grid-cols-3">
-                <AnimatePresence>
-                    {filteredTrainings.length === 0 ? (
-                        <motion.div
-                            className="col-span-full text-center text-slate-400 text-base py-20 font-medium"
-                            key="no-trainings"
-                            initial={{ opacity: 0, y: 14 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 14 }}
-                            transition={{ duration: 0.33 }}
-                        >
-                            Nothing New
-                        </motion.div>
-                    ) : (
-                        filteredTrainings.map((training, idx) => (
-                            <motion.div
-                                key={training.title + idx}
-                                className="flex"
-                                custom={idx}
-                                variants={cardVariants as any}
-                                initial="hidden"
-                                animate="visible"
-                                exit="exit"
-                            >
-                                <CertCard
-                                    title={training.title}
-                                    startDate={training.date}
-                                    description={"This is a dummy description for the training or certification. Replace with real data as needed."}
-                                    status={"ongoing"}
-                                    progress={25}
-                                />
-                            </motion.div>
-                        ))
-                    )}
-                </AnimatePresence>
+        <div className="px-4 sm:px-6 py-6 bg-white w-full min-h-screen">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <h1 className="text-2xl font-bold text-slate-900">Trainings & Certifications</h1>
+                <div className="flex gap-2">
+                    <button className={chipClass(tab === "browse")} onClick={() => setTab("browse")}>
+                        Browse
+                    </button>
+                    <button className={chipClass(tab === "mine")} onClick={() => setTab("mine")}>
+                        My Trainings
+                    </button>
+                </div>
             </div>
+
+            {tab === "browse" && (
+                <>
+                    <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                        <div className="relative flex-1 max-w-md">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                            <Input
+                                placeholder="Search trainings..."
+                                className="pl-9"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex flex-wrap gap-2 items-center">
+                            {TYPE_FILTERS.map((f) => (
+                                <button key={f.value} className={chipClass(type === f.value)} onClick={() => setType(f.value)}>
+                                    {f.label}
+                                </button>
+                            ))}
+                            {PRICING_FILTERS.map((f) => (
+                                <button key={f.value} className={chipClass(pricing === f.value)} onClick={() => setPricing(f.value)}>
+                                    {f.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {isLoading ? (
+                        <div className="flex justify-center py-20">
+                            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                        </div>
+                    ) : trainings.length === 0 ? (
+                        <div className="text-center text-slate-400 py-20 font-medium">No trainings found</div>
+                    ) : (
+                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            {trainings.map((training: any) => (
+                                <TrainingCard key={training._id} training={training} />
+                            ))}
+                        </div>
+                    )}
+                </>
+            )}
+
+            {tab === "mine" && (
+                myLoading ? (
+                    <div className="flex justify-center py-20">
+                        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                    </div>
+                ) : myTrainings.length === 0 ? (
+                    <div className="text-center text-slate-400 py-20 font-medium">
+                        You haven&apos;t registered for any trainings yet.
+                        <button onClick={() => setTab("browse")} className="block mx-auto mt-3 text-primary hover:underline font-semibold">
+                            Browse trainings
+                        </button>
+                    </div>
+                ) : (
+                    <div className="space-y-4 max-w-3xl">
+                        {myTrainings.map((t: any) => (
+                            <Link
+                                key={t._id}
+                                href={`/trainings/${t._id}`}
+                                className="flex items-center justify-between gap-4 bg-white border border-slate-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
+                            >
+                                <div className="min-w-0">
+                                    <p className="font-semibold text-slate-900 truncate">{t.title}</p>
+                                    <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500 mt-1">
+                                        <span className="flex items-center gap-1">
+                                            <Calendar size={13} />
+                                            {new Date(t.date).toLocaleDateString()}
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            {t.type === "online" ? <Video size={13} /> : <MapPin size={13} />}
+                                            {t.type === "online" ? "Online" : t.address || "In-Person"}
+                                        </span>
+                                    </div>
+                                </div>
+                                <Badge className={t.registration?.paymentStatus === "successful" ? "bg-green-600" : "bg-slate-500"}>
+                                    {t.registration?.paymentStatus === "successful" ? "Paid" : "Registered"}
+                                </Badge>
+                            </Link>
+                        ))}
+                    </div>
+                )
+            )}
         </div>
     );
 }
