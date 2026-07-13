@@ -92,7 +92,7 @@ export default function TrainingsComponent() {
                     ) : (
                         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                             {trainings.map((training: any) => (
-                                <TrainingCard key={training._id} training={training} />
+                                <TrainingCard key={training._id} training={training} hrefBase="/training" />
                             ))}
                         </div>
                     )}
@@ -116,7 +116,7 @@ export default function TrainingsComponent() {
                         {myTrainings.map((t: any) => (
                             <Link
                                 key={t._id}
-                                href={`/trainings/${t._id}`}
+                                href={`/training/${t._id}`}
                                 className="flex items-center justify-between gap-4 bg-white border border-slate-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
                             >
                                 <div className="min-w-0">
