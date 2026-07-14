@@ -57,6 +57,7 @@ export default function TopNavbar() {
         { label: "News", href: "/news", desc: "Latest news updates" },
         { label: "Events", href: "/events", desc: "Upcoming NAAPE events" },
         { label: "Trainings", href: "/trainings", desc: "Professional trainings & certifications" },
+        { label: "Courses", href: "/courses", desc: "Online courses with quizzes & certificates" },
       ]
     },
     {
