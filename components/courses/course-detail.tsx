@@ -139,7 +139,7 @@ export default function CourseDetail({ id }: { id?: string }) {
                                         {redirecting ? "Redirecting to payment..." : "Please wait..."}
                                     </>
                                 ) : course.isPaid ? (
-                                    `Buy course — ${price}`
+                                    `Buy course for ${price}`
                                 ) : (
                                     "Enroll for free"
                                 )}

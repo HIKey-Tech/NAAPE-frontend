@@ -48,7 +48,7 @@ export default function AdminCoursesPage() {
         data?.courses || [];
     const totalPages = data?.pagination?.pages || 1;
 
-    // Create dialog (basics only — modules are added in the builder)
+    // Create dialog (basics only; modules are added in the builder)
     const [createOpen, setCreateOpen] = useState(false);
     const [form, setForm] = useState({ title: "", description: "", isPaid: false, price: "", currency: "NGN" });
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -82,7 +82,7 @@ export default function AdminCoursesPage() {
 
         createMutation.mutate(fd, {
             onSuccess: (res) => {
-                toast.success("Course created — now add modules");
+                toast.success("Course created. Now add modules");
                 setCreateOpen(false);
                 setForm({ title: "", description: "", isPaid: false, price: "", currency: "NGN" });
                 setImageFile(null);
@@ -203,7 +203,7 @@ export default function AdminCoursesPage() {
                                     <TableCell>
                                         {c.totalRevenue > 0
                                             ? `${c.currency === "NGN" ? "₦" : c.currency}${c.totalRevenue.toLocaleString()}`
-                                            : "—"}
+                                            : "-"}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-1">
@@ -255,7 +255,7 @@ export default function AdminCoursesPage() {
                 <DialogContent className="max-w-lg">
                     <DialogHeader>
                         <DialogTitle>New course</DialogTitle>
-                        <DialogDescription>Set the basics — you&apos;ll add modules and quizzes next.</DialogDescription>
+                        <DialogDescription>Set the basics. You&apos;ll add modules and quizzes next.</DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleCreate} className="space-y-4">
                         <div>
@@ -315,7 +315,7 @@ export default function AdminCoursesPage() {
                         <DialogTitle>Delete course?</DialogTitle>
                         <DialogDescription>
                             &quot;{deleting?.title}&quot; and its module videos will be permanently deleted. Courses with enrolled
-                            members cannot be deleted — archive them instead.
+                            members cannot be deleted; archive them instead.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -334,7 +334,7 @@ export default function AdminCoursesPage() {
             <Dialog open={!!enrollmentsFor} onOpenChange={(open) => !open && setEnrollmentsFor(null)}>
                 <DialogContent className="max-w-3xl">
                     <DialogHeader>
-                        <DialogTitle>Enrolled members — {enrollmentsFor?.title}</DialogTitle>
+                        <DialogTitle>Enrolled members: {enrollmentsFor?.title}</DialogTitle>
                     </DialogHeader>
                     {enrollmentsLoading ? (
                         <div className="flex justify-center py-10">
@@ -357,7 +357,7 @@ export default function AdminCoursesPage() {
                                     {enrollmentsData.enrollments.map((e: any) => (
                                         <TableRow key={e._id}>
                                             <TableCell>
-                                                <p className="font-medium">{e.user?.name || "—"}</p>
+                                                <p className="font-medium">{e.user?.name || "-"}</p>
                                                 <p className="text-xs text-slate-500">{e.user?.email || ""}</p>
                                             </TableCell>
                                             <TableCell>
@@ -366,7 +366,7 @@ export default function AdminCoursesPage() {
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>{e.progress}</TableCell>
-                                            <TableCell>{e.certificateId || "—"}</TableCell>
+                                            <TableCell>{e.certificateId || "-"}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

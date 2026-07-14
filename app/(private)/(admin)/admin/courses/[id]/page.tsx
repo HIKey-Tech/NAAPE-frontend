@@ -82,7 +82,7 @@ function ModuleDialog({
     const handleVideoFile = async (file: File | null) => {
         if (!file) return;
         if (file.size > MAX_VIDEO_MB * 1024 * 1024) {
-            toast.error(`Video must be under ${MAX_VIDEO_MB}MB. Export at 720p and keep lessons to 4–6 minutes.`);
+            toast.error(`Video must be under ${MAX_VIDEO_MB}MB. Export at 720p and keep lessons to 4-6 minutes.`);
             return;
         }
         setUploading(true);
@@ -137,7 +137,7 @@ function ModuleDialog({
                 <DialogHeader>
                     <DialogTitle>{initial.title ? "Edit module" : "Add module"}</DialogTitle>
                     <DialogDescription>
-                        A module is one lesson: a short video (max {MAX_VIDEO_MB}MB, ~4–6 min at 720p) and/or text, with an
+                        A module is one lesson: a short video (max {MAX_VIDEO_MB}MB, ~4-6 min at 720p) and/or text, with an
                         optional quiz.
                     </DialogDescription>
                 </DialogHeader>
@@ -185,7 +185,7 @@ function ModuleDialog({
                                 <>
                                     <Input type="file" accept="video/mp4,video/webm,video/quicktime" onChange={(e) => handleVideoFile(e.target.files?.[0] || null)} />
                                     <p className="text-xs text-slate-400 mt-1">
-                                        Max {MAX_VIDEO_MB}MB · recommended 4–6 minutes at 720p (mp4)
+                                        Max {MAX_VIDEO_MB}MB. Recommended 4-6 minutes at 720p (mp4)
                                     </p>
                                 </>
                             )}
@@ -527,7 +527,7 @@ export default function AdminCourseBuilderPage() {
 
                 {(course.modules || []).length === 0 ? (
                     <p className="text-center text-slate-500 py-10 text-sm">
-                        No modules yet. Add your first lesson — members work through modules in the order listed here.
+                        No modules yet. Add your first lesson. Members work through modules in the order listed here.
                     </p>
                 ) : (
                     <div className="divide-y divide-slate-100 border border-slate-100 rounded-lg overflow-hidden">

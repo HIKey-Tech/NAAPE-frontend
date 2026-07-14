@@ -81,7 +81,7 @@ function QuizSection({
             const res = await submitMutation.mutateAsync({ moduleId: module._id, answers: answers as number[] });
             setResult(res);
             if (res.passed) toast.success(`Passed with ${res.score}%`);
-            else toast.error(`Scored ${res.score}% — pass mark is ${res.passMark}%`);
+            else toast.error(`Scored ${res.score}%. Pass mark is ${res.passMark}%`);
         } catch (err: any) {
             toast.error(err?.response?.data?.message || "Failed to submit quiz");
         }
@@ -233,7 +233,7 @@ export default function CourseLearnPage() {
                 {courseCompleted && (
                     <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex flex-wrap items-center justify-between gap-3">
                         <p className="text-green-800 font-medium flex items-center gap-2">
-                            <Award size={18} /> Congratulations — you completed this course!
+                            <Award size={18} /> Congratulations! You completed this course.
                         </p>
                         <Button asChild size="sm" variant="outline" className="border-green-300 text-green-800 hover:bg-green-100">
                             <Link href={`/courses/${id}/certificate`}>View certificate</Link>

@@ -57,7 +57,7 @@ export default function CoursesPage() {
                     Online <span className="text-primary">Courses</span>
                 </h1>
                 <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-                    Learn at your own pace with expert-built courses — videos, lessons, quizzes and certificates.
+                    Learn at your own pace with expert-built courses: videos, lessons, quizzes and certificates.
                 </p>
                 <div className="mt-8 flex justify-center max-w-md mx-auto relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
