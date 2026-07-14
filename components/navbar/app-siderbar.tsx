@@ -53,7 +53,7 @@ const navLinksMain: NavLink[] = [
   { label: "Home", icon: FaHome, href: "/dashboard" },
   { label: "Events", icon: FaCalendarAlt, href: "/member/events" },
   { label: "Trainings", icon: FaGraduationCap, href: "/training" },
-  { label: "Courses", icon: FaGraduationCap, href: "/courses" },
+  { label: "Courses", icon: FaGraduationCap, href: "/member/courses" },
   { label: "Forum", icon: FaComments, href: "/forum" },
 ];
 
