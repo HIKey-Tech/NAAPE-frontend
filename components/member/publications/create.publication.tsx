@@ -26,8 +26,6 @@ import {
 } from "@/components/ui/select";
 import { useCreatePublication } from "@/hooks/usePublications";
 import { toast } from "sonner";
-import { SubscriptionBanner } from "@/components/member/component/subscription.banner";
-import { useSubscriptionStatus } from "@/hooks/useSubscription";
 import { useAuth } from "@/context/authcontext";
 
 const publicationSchema = z.object({
@@ -66,12 +64,9 @@ const categories = [
 
 // Main Form Component
 const CreatePublicationComponent: React.FC = () => {
-  const { data: subscriptionStatus, isLoading: subscriptionLoading } = useSubscriptionStatus();
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
 
   const isAdmin = user?.role === "admin" || user?.role === "editor";
-  const hasActiveSubscription = isAdmin ? true : (subscriptionStatus?.hasSubscription || false);
-  const showSubscriptionCheck = !authLoading && !subscriptionLoading && !isAdmin;
 
   const form = useForm<PublicationInput>({
     resolver: zodResolver(publicationSchema),
@@ -216,17 +211,7 @@ const CreatePublicationComponent: React.FC = () => {
       aria-labelledby="create-publication-heading"
       tabIndex={-1}
     >
-      {/* Subscription Status Banner */}
-      {showSubscriptionCheck && !hasActiveSubscription && (
-        <SubscriptionBanner
-          showUpgradePrompt={true}
-          feature="create publications"
-        />
-      )}
-
-      {/* Only show form if user has subscription or is admin */}
-      {hasActiveSubscription ? (
-        <>
+      <>
           <header className="mb-7">
             <h1
               id="create-publication-heading"
@@ -434,14 +419,7 @@ const CreatePublicationComponent: React.FC = () => {
               </section>
             </form>
           </Form>
-        </>
-      ) : (
-        <div className="text-center py-8">
-          <p className="text-slate-500 dark:text-slate-400">
-            Please subscribe to create publications.
-          </p>
-        </div>
-      )}
+      </>
     </div>
   );
 };

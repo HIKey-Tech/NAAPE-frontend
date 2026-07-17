@@ -5,8 +5,6 @@ import { FilterHeader } from "../component/header";
 import { useMyPublications } from "@/hooks/usePublications";
 import { IPublication } from "@/app/api/publication/types";
 import { FaBookOpen, FaLayerGroup, FaEdit, FaHourglassHalf, FaTimesCircle } from "react-icons/fa";
-import { SubscriptionBanner } from "../component/subscription.banner";
-import { useSubscriptionStatus } from "@/hooks/useSubscription";
 
 const PUBLICATION_STATUSES: { label: string; value?: string; icon?: React.ReactNode; highlight?: string }[] = [
     { label: "All", value: undefined, icon: <FaLayerGroup className="inline mr-1" />, highlight: "bg-slate-50 dark:bg-slate-800" },
@@ -27,9 +25,6 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
     const [status, setStatus] = useState<string | undefined>();
 
     const { data: publications = [], isLoading, isError } = useMyPublications(status);
-    const { data: subscriptionStatus, isLoading: subscriptionLoading } = useSubscriptionStatus();
-
-    const hasActiveSubscription = isAdmin || subscriptionStatus?.hasSubscription;
 
     const normalize = (v: unknown) =>
         typeof v === "string"
@@ -181,16 +176,6 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
     return (
         <div className="w-full min-h-[75vh] bg-gradient-to-b from-slate-50/50 dark:from-[#0a0d14]/50 to-white dark:to-transparent pt-0 pb-28 sm:pb-12 relative flex flex-col">
             <div className="max-w-7xl mx-auto px-2 sm:px-7 w-full">
-                {/* Subscription Status Banner */}
-                {!subscriptionLoading && !hasActiveSubscription && (
-                    <div className="mt-4 mb-2">
-                        <SubscriptionBanner
-                            showUpgradePrompt={true}
-                            feature="view and create publications"
-                        />
-                    </div>
-                )}
-
                 {/* Hero / Showcase header */}
                 <div className="pt-2 pb-3 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-y-2">
                     <div className="w-full sm:w-auto flex flex-col items-center sm:items-start text-center sm:text-left">
@@ -208,9 +193,8 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
                     </div>
                 </div>
 
-                {/* Only show content if user has subscription or is admin */}
-                {hasActiveSubscription ? (
-                    <>
+                {/* Publications are available to authenticated members. */}
+                <>
                         <div className="mb-4 sm:mb-6">
                             <FilterHeader
                                 title={undefined}
@@ -226,12 +210,7 @@ export default function AllPublicationsPage({ isAdmin }: PubProps) {
                             />
                         </div>
                         {renderContent()}
-                    </>
-                ) : (
-                    <div className="mt-8">
-                        {/* Content is blocked - upgrade prompt already shown above */}
-                    </div>
-                )}
+                </>
             </div>
         </div>
     );

@@ -46,6 +46,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const PAYMENT_TYPE_LABELS: Record<string, string> = {
+  contribution: "Member Contribution",
   subscription: "Subscription",
   "tokenized-payment": "Tokenized Payment",
   transfer: "Transfer",
@@ -94,7 +95,7 @@ export default function AdminMemberPayments() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Member Payment History</h1>
-        <p className="text-slate-500 mt-1">Track and manage all membership payment transactions</p>
+        <p className="text-slate-500 mt-1">Track member contributions and event payment transactions</p>
       </div>
 
       {/* Stats Cards */}

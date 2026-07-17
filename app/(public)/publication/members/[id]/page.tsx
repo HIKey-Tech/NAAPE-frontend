@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import PublicationDetail from "@/components/ui/custom/publication.detail";
 import { getSinglePublicationPublic, getSinglePublication } from "@/app/api/publication/publication";
 import { useAuth } from "@/context/authcontext";
-import { NaapButton } from "@/components/ui/custom/button.naap";
 
 interface Publication {
   _id: string;
@@ -20,8 +19,6 @@ interface Publication {
   };
   category?: string;
   createdAt: string;
-  isPreview?: boolean;
-  requiresSubscription?: boolean;
 }
 
 export default function MemberPublicationDetailPage() {
@@ -101,46 +98,6 @@ export default function MemberPublicationDetailPage() {
         publishedDate={publication.createdAt}
         backHref="/publication/members"
       />
-      
-      {/* Premium Access Prompt */}
-      {publication.isPreview && publication.requiresSubscription && (
-        <div className="w-full max-w-3xl mx-auto mt-8 bg-white border border-slate-200 rounded-2xl p-8 text-center shadow-sm">
-          <h3 className="text-xl font-bold text-slate-900 mb-3">
-            Continue Reading with Premium Access
-          </h3>
-          <p className="text-slate-600 mb-6">
-            This is a preview of the full publication. Sign in or subscribe to read the complete article and access our full library of member publications.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {!user ? (
-              <>
-                <NaapButton
-                  variant="primary"
-                  onClick={() => router.push("/login")}
-                  className="px-6 py-3 rounded-lg font-semibold"
-                >
-                  Sign In
-                </NaapButton>
-                <NaapButton
-                  variant="ghost"
-                  onClick={() => router.push("/register")}
-                  className="px-6 py-3 rounded-lg font-semibold"
-                >
-                  Create Account
-                </NaapButton>
-              </>
-            ) : (
-              <NaapButton
-                variant="primary"
-                onClick={() => router.push("/dashboard")}
-                className="px-6 py-3 rounded-lg font-semibold"
-              >
-                Upgrade to Premium
-              </NaapButton>
-            )}
-          </div>
-        </div>
-      )}
     </main>
   );
 }

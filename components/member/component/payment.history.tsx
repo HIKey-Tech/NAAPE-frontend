@@ -3,7 +3,7 @@ import { useAuth } from "@/context/authcontext";
 import { usePaymentHistory } from "../../../hooks/usePaymentHistory";
 import { FaCreditCard, FaCheckCircle, FaTimesCircle, FaClock, FaExchangeAlt, FaSpinner, FaReceipt } from "react-icons/fa";
 
-type PaymentType = "event" | "subscription" | "tokenized-payment" | "transfer" | "other";
+type PaymentType = "event" | "contribution" | "subscription" | "tokenized-payment" | "transfer" | "other";
 interface PaymentHistoryItem {
   _id: string;
   user: string;
@@ -29,11 +29,13 @@ const STATUS_MAP: Record<string, { label: string; className: string; icon: React
 const TYPE_LABELS: Record<string, string> = {
   event: "Event Payment",
   subscription: "Subscription",
+  contribution: "Member Contribution",
 };
 
 const TABS: { key: PaymentType; label: string }[] = [
   { key: "event", label: "Events" },
   { key: "subscription", label: "Subscription" },
+  { key: "contribution", label: "Contributions" },
 ];
 
 function formatAmount(amount: number, currency: string) {
@@ -57,6 +59,7 @@ const PaymentRow: React.FC<{ item: PaymentHistoryItem }> = ({ item }) => {
   const md = item.metadata || {};
   if (item.type === "event" && (md.eventTitle || md.eventName)) details.push(`Event: ${md.eventTitle || md.eventName}`);
   if (item.type === "subscription" && md.planName) details.push(`Plan: ${md.planName}`);
+  if (item.type === "contribution" && md.percentage) details.push(`${md.percentage}% salary contribution`);
   if (md.description) details.push(md.description);
 
   return (
@@ -130,7 +133,7 @@ const PaymentHistory: React.FC = () => {
             </div>
             <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Payment <span className="text-primary">History</span></h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xl">
-              Track and manage all your past transactions, event bookings, and subscription payments in one place.
+              Track your event payments and voluntary NAAPE member contributions in one place.
             </p>
           </div>
 

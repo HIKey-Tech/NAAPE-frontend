@@ -23,7 +23,6 @@ import Image from "next/image";
 import React, { useCallback, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/authcontext";
-import { useSubscriptionStatus } from "@/hooks/useSubscription";
 import { LogoutDialog } from "@/components/ui/logout-dialog";
 
 // --- Types ---
@@ -58,7 +57,7 @@ const navLinksMain: NavLink[] = [
 ];
 
 const navLinksSecondary: NavLink[] = [
-  { label: "Subscription", icon: FaIdBadge, href: "/subscription" },
+  { label: "Member Contributions", icon: FaIdBadge, href: "/contributions" },
   { label: "Payment History", icon: FaCreditCard, href: "/payments" },
   { label: "Settings", icon: FaCog, href: "/settings" },
 ];
@@ -165,17 +164,10 @@ function DropdownNavItem({
 }
 
 function SidebarProfileCard({ user }: { user: User }) {
-  const { data: subscriptionStatus } = useSubscriptionStatus();
-
   if (!user || (!user.name && !user.email)) return null;
 
-  const showPremiumBadge = user.role === "admin" ||
-    user.role === "editor" ||
-    (subscriptionStatus?.hasSubscription && subscriptionStatus?.status === "active");
-
-  const premiumText = subscriptionStatus?.tier === "premium" ? "Premium" :
-    user.role === "admin" ? "Admin" :
-      user.role === "editor" ? "Editor" : "Subscribed";
+  const showRoleBadge = user.role === "admin" || user.role === "editor";
+  const roleText = user.role === "admin" ? "Admin" : "Editor";
 
   const getInitials = (name?: string) => {
     if (!name) return "U";
@@ -198,7 +190,7 @@ function SidebarProfileCard({ user }: { user: User }) {
             {getInitials(user.name)}
           </div>
         )}
-        {showPremiumBadge && (
+        {showRoleBadge && (
           <div className="absolute -bottom-1 -right-1 bg-amber-100 text-amber-600 p-0.5 rounded-full border border-white shadow-sm">
             <FaCrown size={10} />
           </div>
@@ -207,9 +199,9 @@ function SidebarProfileCard({ user }: { user: User }) {
       <div className="flex flex-col min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate max-w-[120px]">{user.name || "User"}</span>
-          {showPremiumBadge && (
+          {showRoleBadge && (
             <span className="text-[9px] uppercase font-extrabold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full border border-amber-100 dark:border-amber-900/50">
-              {premiumText}
+              {roleText}
             </span>
           )}
         </div>

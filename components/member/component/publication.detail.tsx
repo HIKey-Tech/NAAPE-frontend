@@ -12,7 +12,6 @@ import {
 } from "@/hooks/usePublications";
 
 import { useAuth } from "@/context/authcontext";
-import { useSubscriptionStatus } from "@/hooks/useSubscription";
 import { getAuthorLabel, isOwner, normalizeArray } from "@/lib/utils";
 import { parseAppSegmentConfig } from "next/dist/build/segment-config/app/app-segment-config";
 
@@ -238,7 +237,6 @@ export default function PublicationDetail({ hideStatus = false }: { hideStatus?:
 
     const { user } = useAuth();
     const router = useRouter();
-    const { data: subscriptionStatus, isLoading: subscriptionLoading } = useSubscriptionStatus();
 
     const {
         data: publication,
@@ -247,19 +245,7 @@ export default function PublicationDetail({ hideStatus = false }: { hideStatus?:
         refetch,
     } = useGetSinglePublication(publicationId as any);
 
-    useEffect(() => {
-        if (!subscriptionLoading && publication && user) {
-            const isAdmin = user.role === "admin" || user.role === "editor";
-            const hasActiveSubscription = subscriptionStatus?.hasSubscription;
-            const isAuthor = isOwner(user, publication.author);
-
-            if (!isAdmin && !hasActiveSubscription && !isAuthor) {
-                router.push(`/subscription?redirect=/publications/${publicationId}`);
-            }
-        }
-    }, [subscriptionStatus, subscriptionLoading, publication, user, router, publicationId]);
-
-    if (isPending || subscriptionLoading)
+    if (isPending)
         return (
             <div className="text-center py-20">
                 <div className="w-10 h-10 border-2 border-slate-200 dark:border-slate-700 border-t-primary rounded-full animate-spin mx-auto mb-3" />

@@ -8,7 +8,6 @@ import {
     useUpdateMyProfile,
     useUpdateMyPassword,
 } from "@/hooks/useProfile";
-import { useSubscriptionStatus } from "@/hooks/useSubscription";
 import { useAuth } from "@/context/authcontext";
 import {
     MdEdit,
@@ -34,7 +33,7 @@ import {
     MdSchool,
     MdVerified
 } from "react-icons/md";
-import { FaCrown, FaUserTie, FaBuilding } from "react-icons/fa";
+import { FaUserTie, FaBuilding } from "react-icons/fa";
 import { NaapButton } from "./button.naap";
 import { toast } from "sonner";
 import { LogoutDialog } from "@/components/ui/logout-dialog";
@@ -167,7 +166,6 @@ function InputField({
 export default function ProfilePage() {
     const router = useRouter();
     const { data: profile, isLoading, error } = useMyProfile();
-    const { data: subscriptionStatus } = useSubscriptionStatus();
     const updateProfile = useUpdateMyProfile();
     const updatePassword = useUpdateMyPassword();
     const { setAuthenticatedUser, user: authUser, token, logout } = useAuth();
@@ -381,12 +379,6 @@ export default function ProfilePage() {
                                     <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold uppercase tracking-wide">
                                         {profile.role}
                                     </span>
-                                    {(subscriptionStatus?.hasSubscription && subscriptionStatus?.status === "active") && (
-                                        <span className="px-3 py-1 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-xs font-bold uppercase tracking-wide flex items-center gap-1">
-                                            <FaCrown size={10} />
-                                            {subscriptionStatus.tier === "premium" ? "Premium" : "Subscribed"}
-                                        </span>
-                                    )}
                                 </div>
                             </div>
 
@@ -453,18 +445,11 @@ export default function ProfilePage() {
                             <DetailRow label="Member ID" value={<span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-xs">{profile._id}</span>} icon={MdBadge} />
                             <DetailRow label="Status" value={profile.isVerified ? "Verified" : "Unverified"} icon={MdOutlineCheckCircle} />
                             <div className="pt-2 mt-1 border-t border-slate-50 dark:border-slate-800/50">
-                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">Subscription</h4>
-                                {subscriptionStatus?.hasSubscription ? (
-                                    <div className="bg-amber-50 dark:bg-amber-900/20 p-2.5 rounded-lg border border-amber-100 dark:border-amber-800">
-                                        <p className="text-sm font-bold text-amber-800 dark:text-amber-500">{subscriptionStatus.planName || "Active Plan"}</p>
-                                        <p className="text-xs text-amber-600 mt-0.5">Expires: {new Date(subscriptionStatus.endDate!).toLocaleDateString()}</p>
-                                    </div>
-                                ) : (
-                                    <div className="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-lg border border-slate-100 dark:border-slate-700 text-center">
-                                        <p className="text-sm font-medium text-slate-500 mb-1.5">Basic Membership</p>
-                                        <a href="/subscription" className="text-xs font-bold text-primary hover:underline">Upgrade to Premium</a>
-                                    </div>
-                                )}
+                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">Member Contributions</h4>
+                                <div className="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-lg border border-slate-100 dark:border-slate-700 text-center">
+                                    <p className="text-sm font-medium text-slate-500 mb-1.5">Voluntary monthly contributions</p>
+                                    <a href="/contributions" className="text-xs font-bold text-primary hover:underline">Calculate contribution</a>
+                                </div>
                             </div>
                         </div>
                     </SectionCard>
