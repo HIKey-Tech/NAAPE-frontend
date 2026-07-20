@@ -185,7 +185,7 @@ const AdminOverview: React.FC = () => {
             <p className="text-sm text-slate-400 dark:text-slate-500 font-medium mt-1">Review the latest submissions</p>
           </div>
           <Link
-            href="/admin/publications/all-publications"
+            href="/admin/publications"
             className="px-5 py-2.5 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary dark:hover:text-primary transition-colors text-sm"
           >
             View All

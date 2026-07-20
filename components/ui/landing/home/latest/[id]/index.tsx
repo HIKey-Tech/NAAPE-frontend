@@ -106,7 +106,7 @@ export default function LatestNewsDetailsPage() {
                     </p>
                     <button
                         className="bg-primary text-white px-4 py-2 rounded-xl font-bold hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
-                        onClick={() => router.push("/home#latest")}
+                        onClick={() => router.push("/latest")}
                     >
                         Back to Latest News
                     </button>
@@ -124,7 +124,7 @@ export default function LatestNewsDetailsPage() {
                 date={news.date}
                 category={news.tag}
                 author={news.author}
-                backHref="/home#latest"
+                backHref="/latest"
             />
         </main>
     );

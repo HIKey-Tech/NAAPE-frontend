@@ -110,7 +110,7 @@ export default function LatestNewsDetailsPage() {
                     </p>
                     <button
                         className="inline-block bg-[#193B7A] text-white px-6 py-2 rounded-full font-bold text-base uppercase transition-colors hover:bg-[#154075]"
-                        onClick={() => router.push("/home#latest")}
+                        onClick={() => router.push("/latest")}
                     >
                         Back to Latest News
                     </button>
@@ -194,7 +194,7 @@ export default function LatestNewsDetailsPage() {
                 <nav className="border-t border-[#E5E7EB] p-6 pt-4 flex">
                     <button
                         className="inline-block bg-[#193B7A] text-white px-5 py-2 rounded-full font-bold text-base uppercase transition-colors hover:bg-[#154075]"
-                        onClick={() => router.push("/home#latest")}
+                        onClick={() => router.push("/latest")}
                         aria-label="Back to latest news"
                     >
                         ← Back to Latest News
