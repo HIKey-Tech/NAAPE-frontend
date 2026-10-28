@@ -1,8 +1,12 @@
 import OpenAI from "openai";
 
-const client = new OpenAI({ apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY! });
-
 export async function POST(req: Request) {
+  const apiKey = process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+  if (!apiKey) {
+    return new Response(JSON.stringify({ error: "Title suggestions are not configured." }), { status: 503 });
+  }
+  const client = new OpenAI({ apiKey });
+
   const { text } = await req.json();
 
   const prompt = `
