@@ -56,6 +56,8 @@ export default function AboutHeroSection() {
             src="/images/plane.jpg"
             alt="Aviation History"
             fill
+            sizes="(max-width: 1200px) 100vw, 1200px"
+            quality={75}
             className="object-cover"
             priority
           />

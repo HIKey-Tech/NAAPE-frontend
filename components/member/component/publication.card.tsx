@@ -4,6 +4,7 @@ import { useComments, useAddComment } from "@/hooks/useComment";
 import { useRouter } from "next/navigation";
 import { usePublicationUIStore } from "@/store/usePublicationStore";
 import { FaCheck, FaTimes, FaCommentAlt, FaRegClock, FaCircle, FaEdit } from "react-icons/fa";
+import { optimizeCloudinaryUrl } from "@/lib/utils";
 
 const STATUS_CONFIG = {
   draft: { label: "Draft", className: "bg-slate-100 text-slate-600", icon: FaEdit },
@@ -180,7 +181,7 @@ export const PublicationCard: React.FC<PublicationCardProps> = ({
       {/* Image */}
       <div className="relative w-full aspect-[4/2.2] bg-slate-100 dark:bg-slate-800 overflow-hidden">
         {image ? (
-          <img src={image} alt={`Cover image for ${title}`} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+          <img src={optimizeCloudinaryUrl(image, 800)} alt={`Cover image for ${title}`} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" />
         ) : (
           <div className="flex items-center justify-center w-full h-full text-slate-300 text-sm font-medium">No image</div>
         )}

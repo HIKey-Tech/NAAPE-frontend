@@ -6,6 +6,7 @@ import { EventCardProps } from "@/app/api/events/type";
 import { payForEvent, verifyPayment, getStatus } from "@/app/api/events/events";
 import { CalendarClock, MapPin, User2, Loader2, BadgeCheck, CheckCircle2, XCircle } from "lucide-react";
 import { useAuth } from "@/context/authcontext";
+import { optimizeCloudinaryUrl } from "@/lib/utils";
 
 const truncate = (text: string, max = 40) =>
     text.length > max ? text.slice(0, max - 1) + "…" : text;
@@ -104,7 +105,7 @@ const EventCard: React.FC<EventCardProps & { onCardClick?: () => void; isAdmin?:
             {/* Image */}
             <div className="relative w-full h-36 bg-slate-100 dark:bg-slate-800 overflow-hidden">
                 {imageUrl ? (
-                    <img src={imageUrl} alt={title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                    <img src={optimizeCloudinaryUrl(imageUrl, 800)} alt={title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" />
                 ) : (
                     <div className="flex w-full h-full items-center justify-center text-slate-300 dark:text-slate-600 text-sm font-medium">No Image</div>
                 )}

@@ -28,3 +28,20 @@ export function isOwner(user: any, author: any) {
     String(author?.email).toLowerCase()
   );
 }
+
+/**
+ * Optimizes Cloudinary image URLs on the fly by injecting auto-format,
+ * auto-quality compression, and responsive max-width constraints.
+ * Non-Cloudinary or local paths are returned unchanged.
+ */
+export function optimizeCloudinaryUrl(url?: string, width = 800): string {
+  if (!url) return "/images/plane.jpg";
+  if (typeof url !== "string") return url;
+  if (url.includes("res.cloudinary.com") && url.includes("/upload/")) {
+    if (url.includes("/upload/f_auto") || url.includes("/upload/q_auto")) {
+      return url;
+    }
+    return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width},c_limit/`);
+  }
+  return url;
+}

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Calendar, MapPin, Clock } from "lucide-react";
+import { optimizeCloudinaryUrl } from "@/lib/utils";
 
 export interface EventCardProps {
     imageUrl?: string;
@@ -42,7 +43,7 @@ export default function EventCard({
         }
     }
     const displayTime = time || "";
-    const displayImage = imageUrl || "/images/plane.jpg";
+    const displayImage = optimizeCloudinaryUrl(imageUrl, 800);
 
     return (
         <div
@@ -54,6 +55,8 @@ export default function EventCard({
                 <img
                     src={displayImage}
                     alt={title}
+                    loading="lazy"
+                    decoding="async"
                     className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />

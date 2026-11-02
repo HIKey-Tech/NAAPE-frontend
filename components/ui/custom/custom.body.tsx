@@ -135,6 +135,8 @@ export default function CustomBodySection({
             src={imageSrc}
             alt={imageAlt}
             fill
+            sizes="(max-width: 768px) 100vw, 600px"
+            quality={75}
             style={{ objectFit: "cover" }}
             className={imageClassName}
             priority

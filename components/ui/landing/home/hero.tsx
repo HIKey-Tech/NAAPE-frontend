@@ -88,6 +88,8 @@ export default function Hero() {
                     src="/images/hero_bg.jpg"
                     alt="Hero Background"
                     fill
+                    sizes="100vw"
+                    quality={75}
                     className="object-cover"
                     priority
                 />

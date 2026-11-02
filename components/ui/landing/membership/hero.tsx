@@ -69,6 +69,8 @@ export default function MembershipHeroSection() {
                             src="/images/plane.jpg"
                             alt="Nigerian pilots and engineers"
                             fill
+                            sizes="(max-width: 768px) 100vw, 500px"
+                            quality={75}
                             className="object-cover"
                             priority
                         />
